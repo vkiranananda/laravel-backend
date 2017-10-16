@@ -21,7 +21,7 @@
         "laravel": {
             "providers": [
                 "Backend\\Core\\Providers\\CoreServiceProvider"
-            ],
+            ]
         }
     },
     "minimum-stability": "stable"
