@@ -2,6 +2,7 @@
     "name": "vkiranananda/backend",
     "description": "Test call request  package",
     "license": "MIT",
+    
     "authors": [
         {
             "name": "Victor Kiran",
@@ -24,6 +25,5 @@
             ]
         }
     },
-    "minimum-stability" : "dev",
-    "prefer-stable" : true
+    "minimum-stability": "stable",
 }
