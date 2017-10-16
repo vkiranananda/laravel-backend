@@ -1,7 +1,7 @@
 <!-- Выводим список полей -->
 <?php
     //For uploads
-    $uploadAction = (isset($params['baseClass'])) ? '\Backend\\'.$params['baseClass'].'\Controllers\UploadController@index' : '' ;
+    $uploadAction = (isset($params['baseNamespace'])) ? "\\".$params['baseNamespace'].'\Controllers\UploadController@index' : '' ;
 
 ?>
 

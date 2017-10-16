@@ -37,7 +37,6 @@
 
         if(postID.val() == "" ){
             method = 'POST';
-            console.log('put');
         }
 
         var data = thisForm.serialize();
@@ -90,7 +89,7 @@
             },
             error: function( result ) {
                 console.log(result.responseText);
-                console.log(result);
+               console.log("'", result,"'");
 
                 if(result.status == 422){
                     resultArea.find('.error-422').show();
@@ -98,12 +97,11 @@
                     resultArea.find('.error-any').show();
                 }
 
-                for(var prop in result.responseJSON)
+                for(var prop in result.responseJSON['errors'])
                 {
                     var field = thisForm.find('[ name = '+prop+' ]');
                     field.closest(".Forms-field-con").addClass('has-danger');
-
-                    result.responseJSON[prop].forEach(function(item, i, arr) {
+                    result.responseJSON['errors'][prop].forEach(function(item, i, arr) {
                         field.nextAll(".Forms-error-text").append(item+" ");
                     });
                 }

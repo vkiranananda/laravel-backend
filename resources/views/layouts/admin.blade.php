@@ -47,10 +47,6 @@
 					<li class="list-group-item list-group-item-action title">
 				        <b>Управление</b>
 				  </li>
-				  <li class="list-group-item list-group-item-action">
-				    <a href="{{ action('\Backend\Ad\Controllers\AdController@index') }}">
-				    	Реклама</a>
-				  </li>
 			  	  <li class="list-group-item list-group-item-action">
 				    <a href="{{ action('\Backend\Option\Controllers\OptionGeneralController@edit') }}">
 				    	Настройки</a>

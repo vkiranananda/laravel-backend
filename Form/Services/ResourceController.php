@@ -32,8 +32,7 @@ class ResourceController extends Controller {
         $this->params = BackendConfig::get($config);
         $this->params['controllerName'] = '\\'.get_class($this);
         $this->params['baseClass'] = class_basename($this->post);
-
-
+        $this->params['baseNamespace'] = (preg_match('/(^.+)\\\.+\\\.+/', get_class($this), $mathces)) ? $mathces[1] : '' ;
         if(isset($this->params['conf']['edit-template'])){
             $this->editTemplate = $this->params['conf']['edit-template'];
         }

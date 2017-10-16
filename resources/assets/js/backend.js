@@ -4,8 +4,6 @@ require('../../../Upload/resources/assets/js/uploads.js');
 require('../../../Form/resources/assets/js/gui.js');
 
 require('../../../Category/resources/assets/js/tree.js');
-require('../../../Post/resources/assets/js/main.js');
-require('../../../Property/resources/assets/js/ya-maps-select.js');
 
 
 

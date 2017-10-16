@@ -46,7 +46,7 @@ class Categories
 		if($showDeleted)return $allCat;
 		else $this->allCat = $allCat;
 
-		$this->moduleControllers = BackendConfig::get('category-modules', true);
+		$this->moduleControllers = BackendConfig::get('category-modules');
 	}
 
 	public function getModuleControllers($mod)

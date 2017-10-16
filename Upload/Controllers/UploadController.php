@@ -30,10 +30,12 @@ class UploadController extends Controller
 
     public function index($id = '')
     {
+	$baseNamespace = (preg_match('/(^.+)\\\.+/', get_class($this), $mathces)) ? $mathces[1] : '' ;
+
         $list = MediaFile::where('imageable_type', $this->module)->where('imageable_id', $id)->orderBy('created_at', 'desc')->get();
 
-        $this->params['upload-url'] = action('\Backend\\'.$this->module.'\Controllers\\'.$this->controller.'@store');
-        $this->params['destroy-url'] = action('\Backend\\'.$this->module.'\Controllers\\'.$this->controller.'@destroy', '');
+        $this->params['upload-url'] = action('\\'.$baseNamespace.'\\'.$this->controller.'@store');
+        $this->params['destroy-url'] = action('\\'.$baseNamespace.'\\'.$this->controller.'@destroy', '');
 
         return view($this->viewTemplate, [ 'data' => $list, 'params' => $this->params, ] );
     }

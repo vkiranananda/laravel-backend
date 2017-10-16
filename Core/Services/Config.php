@@ -8,7 +8,7 @@ class Config {
     //Получаем конфиг
     //Если $backend == true и не указан модууль Post:: будет искать файл в бэкенде /Configs
     //Иначе в каталоге App/Configs
-    public function &get($conf, $backend = true)
+    public function &get($conf, $backend = false)
     {
         //Если конфиг уже загружен возвращаем его
         if(isset($this->loadedConfigs[$conf]))return $this->loadedConfigs[$conf];
@@ -16,17 +16,17 @@ class Config {
         $this->loadedConfigs[$conf] = Cache::tags('configs')->remember($conf, 43200, function() use ($conf, $backend)
         {
             $config = str_replace('.', '/', $conf);
+            $pathMain = base_path('vendor/vkiranananda/backend/');
+            $pathExt = base_path('backend/');
 
-            if(strrpos($config, '::') === false){
-                if($backend) $file = base_path()."/backend/Configs/".$config.".php";
-                else $file = app_path().'/Configs/'.$config.".php";
-            }else {
-                $config = str_replace('::', '/Configs/', $config);
-                $file = base_path()."/backend/".$config.".php";
+            $path = (strrpos($config, '::') === false) ? "Configs/".$config.".php" :  str_replace('::', '/Configs/', $config).".php";
+
+            if($backend == true){
+                return (is_file($pathMain.$path)) ? include ($pathMain.$path) : [];
             }
-
-            return (file_exists($file)) ? include ($file) : [];
-
+            if(is_file($pathExt.$path))return include ($pathExt.$path);
+            if(is_file($pathMain.$path))return include ($pathMain.$path);
+            return [];
         }); 
 
         return $this->loadedConfigs[$conf];
