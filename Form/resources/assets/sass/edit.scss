@@ -1,0 +1,37 @@
+.form-edit {
+	.card-header {
+		font-weight: 600;
+	}
+	#yaMapsId {
+		height: 500px;
+		margin-bottom: 20px;
+	}
+	.result-area {
+		font-style: italic;
+			margin-top: auto;
+			margin-bottom: auto;
+		span {
+
+			display: none;
+			color: #d9534f;
+
+			&.success {
+				color: green !important;
+			}
+		}
+	}
+}
+
+.ui-autocomplete {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+	padding: 5px 15px;
+	list-style: none;
+	background-color: #ffffff;
+	border: solid 1px #ccc;
+}
+.ui-helper-hidden-accessible{
+	display: none;
+}

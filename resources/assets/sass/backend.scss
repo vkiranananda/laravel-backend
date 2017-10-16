@@ -1,0 +1,9 @@
+@import "backend/Form/resources/assets/sass/style";
+@import "backend/Upload/resources/assets/sass/gallery";
+@import "backend/Category/resources/assets/sass/tree";
+
+
+a.disabled {
+   pointer-events: none;
+   cursor: default;
+}

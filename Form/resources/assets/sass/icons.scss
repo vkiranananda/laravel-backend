@@ -1,0 +1,50 @@
+// @font-face {
+//   font-family:"Octicons";
+//   src:url("../fonts/octicons.eot?ef21c39f0ca9b1b5116e5eb7ac5eabe6");
+//   src:url("../fonts/octicons.eot?#iefix") format("embedded-opentype"),
+// 		url("../fonts/octicons.woff2?ef21c39f0ca9b1b5116e5eb7ac5eabe6") format("woff2"),
+// 		url("../fonts/octicons.woff?ef21c39f0ca9b1b5116e5eb7ac5eabe6") format("woff"),
+// 		url("../fonts/octicons.ttf?ef21c39f0ca9b1b5116e5eb7ac5eabe6") format("truetype"),
+// 		url("../fonts/octicons.svg?ef21c39f0ca9b1b5116e5eb7ac5eabe6#octicons") format("svg");
+//   font-weight:normal;
+//   font-style:normal;
+// }
+// @include font-face(Octicons, ../fonts/octicons);
+@mixin icons-base() {
+	font-family: Octicons;
+	display: inline-block;
+	text-decoration: none;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	speak: none;
+}
+
+.icons-file:before {
+	@include icons-base();
+	content:"\f102";
+}
+.icons-directory:before {
+	@include icons-base();
+	content:"\f016";
+}
+.icons-pencil:before {
+	@include icons-base();
+	content:"\f058";
+}
+//delete
+.icons-trash:before {
+	@include icons-base();
+	content:"\f0d0";
+}
+.icons-media-file:before {
+	@include icons-base();
+	content:"\f012";
+}
+.icons-plus:before {
+	@include icons-base();
+	content:"\f05d";
+}
