@@ -10,7 +10,19 @@
     ],    
     "autoload": {
         "psr-4": {
-            "Backend\\Root\\": "."
+            "Backend\\": ""
         }
-    }
+    },
+    "require": {
+        "intervention/image": "2.*",
+        "laravel/framework": "5.5.*"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Backend\\Core\\Providers\\CoreServiceProvider"
+            ],
+        }
+    },
+    "minimum-stability": "stable"
 }
