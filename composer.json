@@ -3,6 +3,8 @@
     "description": "Test call request  package",
     "license": "MIT",
     
+    "minimum-stability": "stable",
+    
     "authors": [
         {
             "name": "Victor Kiran",
@@ -24,6 +26,5 @@
                 "Backend\\Core\\Providers\\CoreServiceProvider"
             ]
         }
-    },
-    "minimum-stability": "stable"
+    }
 }
