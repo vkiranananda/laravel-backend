@@ -2,15 +2,15 @@
     "name": "vkiranananda/backend",
     "description": "Test call request  package",
     "license": "MIT",
-    
+
     "minimum-stability": "stable",
-    
+
     "authors": [
         {
             "name": "Victor Kiran",
             "email": "kiran@light-joy.ru"
         }
-    ],    
+    ],
     "autoload": {
         "psr-4": {
             "Backend\\Root\\": ""
