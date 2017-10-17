@@ -2,7 +2,7 @@
   
   <?php
     if(!isset($field['value']) || !is_array($field['value']))$field['value'] = [];
-    else $mediaFiles = \Backend\Upload\Models\MediaFile::whereIn('id' ,$field['value'])->get();
+    else $mediaFiles = \Backend\Root\Upload\Models\MediaFile::whereIn('id' ,$field['value'])->get();
     array_unshift($field['value'], []);
   ?>
   <div class="conteiner" role="sortable">

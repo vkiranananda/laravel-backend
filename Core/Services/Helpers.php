@@ -1,5 +1,5 @@
 <?php
-namespace Backend\Core\Services;
+namespace Backend\Root\Core\Services;
 
 class Helpers {
     //Получаем все поля где есть массив options,передается параметр табов

@@ -1,12 +1,12 @@
 <?php
 
-namespace Backend\User\Controllers;
+namespace Backend\Root\User\Controllers;
 
 use App\User;
 use Mail;
 use Request;
 
-class UserController extends \Backend\Form\Services\ResourceController
+class UserController extends \Backend\Root\Form\Services\ResourceController
 {
     function __construct(User $post)
     {

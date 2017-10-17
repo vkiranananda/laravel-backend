@@ -1,5 +1,5 @@
 <?php
-namespace Backend\Core\Services;
+namespace Backend\Root\Core\Services;
 use Cache;
 
 class Config {

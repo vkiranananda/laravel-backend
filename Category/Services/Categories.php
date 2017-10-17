@@ -1,9 +1,9 @@
 <?php
 
-namespace Backend\Category\Services;
+namespace Backend\Root\Category\Services;
 
-use Backend\Category\Models\Category;
-use Backend\Core\Services\Helpers;
+use Backend\Root\Category\Models\Category;
+use Backend\Root\Core\Services\Helpers;
 use Route;
 use Cache;
 use BackendConfig;
@@ -57,7 +57,7 @@ class Categories
 	//Устанавливаем роуты
 	public function installRoutes()
 	{
-		Route::get('{url}', '\Backend\Category\Controllers\RouteController@index')->where('url', '.+');
+		Route::get('{url}', '\Backend\Root\Category\Controllers\RouteController@index')->where('url', '.+');
 	}
 
 	//Количество категорий

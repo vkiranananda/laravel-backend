@@ -13,7 +13,7 @@
     ],    
     "autoload": {
         "psr-4": {
-            "Backend\\": ""
+            "Backend\\Root\\": ""
         }
     },
     "require": {
@@ -23,7 +23,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Backend\\Core\\Providers\\CoreServiceProvider"
+                "Backend\\Root\\Core\\Providers\\CoreServiceProvider"
             ]
         }
     }

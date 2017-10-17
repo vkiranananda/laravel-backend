@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\News\Models;
+namespace Backend\Root\News\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

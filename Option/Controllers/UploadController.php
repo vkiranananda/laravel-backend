@@ -1,8 +1,8 @@
 <?php
 
-namespace Backend\Option\Controllers;
+namespace Backend\Root\Option\Controllers;
 
-class UploadController extends \Backend\Upload\Controllers\UploadController
+class UploadController extends \Backend\Root\Upload\Controllers\UploadController
 {
     protected $module = 'Option';
 }

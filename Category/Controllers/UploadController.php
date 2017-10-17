@@ -1,8 +1,8 @@
 <?php
 
-namespace Backend\Category\Controllers;
+namespace Backend\Root\Category\Controllers;
 
-class UploadController extends \Backend\Upload\Controllers\UploadController
+class UploadController extends \Backend\Root\Upload\Controllers\UploadController
 {
     protected $module = 'Category';
 }

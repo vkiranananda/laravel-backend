@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Info\Controllers;
+namespace Backend\Root\Info\Controllers;
 
 use App\Http\Controllers\Controller;
 use Categories;

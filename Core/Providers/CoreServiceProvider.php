@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Core\Providers;
+namespace Backend\Root\Core\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
@@ -27,21 +27,21 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->app->singleton('Backend', function($app)
         {
-            return new \Backend\Core\Services\Backend();
+            return new \Backend\Root\Core\Services\Backend();
         });
 
         $this->app->singleton('UploadedFiles', function($app)
         {
-            return new \Backend\Upload\Services\UploadedFiles();
+            return new \Backend\Root\Upload\Services\UploadedFiles();
         });
 
-        AliasLoader::getInstance()->alias('BackendConfig', '\Backend\Core\Facades\ConfigFacade');
-        AliasLoader::getInstance()->alias('Backend', '\Backend\Core\Facades\BackendFacade');
-        AliasLoader::getInstance()->alias('UploadedFiles', '\Backend\Upload\Facades\UploadedFilesFacade');
-        AliasLoader::getInstance()->alias('Categories', '\Backend\Category\Facades\CategoriesFacade');
-        AliasLoader::getInstance()->alias('Content', '\Backend\Site\Services\Content');
-        AliasLoader::getInstance()->alias('Helpers', '\Backend\Core\Services\Helpers');
-        AliasLoader::getInstance()->alias('Forms', '\Backend\Form\Services\Forms');
+        AliasLoader::getInstance()->alias('BackendConfig', '\Backend\Root\Core\Facades\ConfigFacade');
+        AliasLoader::getInstance()->alias('Backend', '\Backend\Root\Core\Facades\BackendFacade');
+        AliasLoader::getInstance()->alias('UploadedFiles', '\Backend\Root\Upload\Facades\UploadedFilesFacade');
+        AliasLoader::getInstance()->alias('Categories', '\Backend\Root\Category\Facades\CategoriesFacade');
+        AliasLoader::getInstance()->alias('Content', '\Backend\Root\Site\Services\Content');
+        AliasLoader::getInstance()->alias('Helpers', '\Backend\Root\Core\Services\Helpers');
+        AliasLoader::getInstance()->alias('Forms', '\Backend\Root\Form\Services\Forms');
 
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Backend\Category\Controllers;
+namespace Backend\Root\Category\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Categories;
-use Backend\Category\Models\Category;
-use Backend\Core\Services\Helpers;
+use Backend\Root\Category\Models\Category;
+use Backend\Root\Core\Services\Helpers;
 
 class CartController extends Controller
 {

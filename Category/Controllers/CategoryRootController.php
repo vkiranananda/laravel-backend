@@ -1,15 +1,15 @@
 <?php
 
-namespace Backend\Category\Controllers;
+namespace Backend\Root\Category\Controllers;
 
-use Backend\Category\Models\Category;
+use Backend\Root\Category\Models\Category;
 use Request;
-use Backend\Core\Services\Helpers;
+use Backend\Root\Core\Services\Helpers;
 use Cache;
 use Content;
 use BackendConfig;
 
-class CategoryRootController extends \Backend\Form\Services\ResourceController
+class CategoryRootController extends \Backend\Root\Form\Services\ResourceController
 {
     function __construct(Category $post)
     {

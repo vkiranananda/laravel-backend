@@ -1,13 +1,13 @@
 <?php
 
-namespace Backend\Option\Controllers;
+namespace Backend\Root\Option\Controllers;
 
-use Backend\Option\Models\Option;
-use Backend\Core\Services\Helpers;
+use Backend\Root\Option\Models\Option;
+use Backend\Root\Core\Services\Helpers;
 use Cache;
 use BackendConfig;
 
-class OptionController extends \Backend\Form\Services\ResourceController
+class OptionController extends \Backend\Root\Form\Services\ResourceController
 {
     function __construct(Option $post )
     {

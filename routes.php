@@ -1,12 +1,12 @@
 <?php
 
-use Backend\Core\Services\Backend;
+use Backend\Root\Core\Services\Backend;
 
 Backend::installRoutes('Sitemap');
 
 Route::group(['prefix' => 'control', 'middleware' => 'auth.basic'], function()
 {
-	Route::get('/', '\Backend\Home\Controllers\HomeController@admin');
+	Route::get('/', '\Backend\Root\Home\Controllers\HomeController@admin');
 	Backend::installRoutes('User');
 	Backend::installRoutes('Option', 'Backend', true);
 	Backend::installRoutes('Ad', 'Backend', true);
@@ -14,7 +14,7 @@ Route::group(['prefix' => 'control', 'middleware' => 'auth.basic'], function()
 
 Route::group(['prefix' => 'content', 'middleware' => 'auth.basic'], function()
 {
-	Route::get('/', '\Backend\Home\Controllers\HomeController@content');
+	Route::get('/', '\Backend\Root\Home\Controllers\HomeController@content');
 
 	Backend::installRoutes('Category', 'Backend', true);
 	Backend::installRoutes('Page', 'Backend', true);
@@ -28,8 +28,8 @@ Route::group(['prefix' => 'content', 'middleware' => 'auth.basic'], function()
 
 Route::group(['prefix' => 'utils', 'middleware' => 'auth.basic'], function()
 {
-	Route::get('/', '\Backend\Home\Controllers\HomeController@utils');
-	Route::get('routes', '\Backend\Info\Controllers\InfoController@routes');
+	Route::get('/', '\Backend\Root\Home\Controllers\HomeController@utils');
+	Route::get('routes', '\Backend\Root\Info\Controllers\InfoController@routes');
 	
 	Backend::installRoutes('Redirect');
 });

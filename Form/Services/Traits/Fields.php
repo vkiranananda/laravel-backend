@@ -1,10 +1,10 @@
 <?php
 
-namespace Backend\Form\Services\Traits;
+namespace Backend\Root\Form\Services\Traits;
 use Request;
-use Backend\Core\Services\Helpers;
+use Backend\Root\Core\Services\Helpers;
 use Content;
-use \Backend\Upload\Models\MediaFile;
+use \Backend\Root\Upload\Models\MediaFile;
 use  DB;
 use UploadedFiles;
 
@@ -42,7 +42,7 @@ trait Fields {
                     unset($value[0]);
                     $uniqueValue = array_unique($value);
 
-                    $imgReq = \Backend\Upload\Models\MediaFile::whereIn('id', $uniqueValue )->where('file_type', 'image');
+                    $imgReq = \Backend\Root\Upload\Models\MediaFile::whereIn('id', $uniqueValue )->where('file_type', 'image');
 
                     if($field['type'] == 'gallery' )$imgReq = $imgReq->where('file_type', 'image');
 
@@ -62,7 +62,7 @@ trait Fields {
                         if(preg_match('/width=[\'\"]{1}(\d+)[\'\"]{1}/', $img, $width) && preg_match('/height=[\'\"]{1}(\d+)[\'\"]{1}/', $img, $height)){
                             $sizes = [ $width[1], $height[1] ];
                             
-                            if( ($imgObj = \Backend\Upload\Models\MediaFile::find($imgId)) ){
+                            if( ($imgObj = \Backend\Root\Upload\Models\MediaFile::find($imgId)) ){
                                 $imgUrl = UploadedFiles::genImgLink($imgObj, $sizes)['thumb'];
 
                                 $img = preg_replace("/src=[\'\"]{1}.*?[\'\"]{1}/", "src=\"".$imgUrl."\"", $img);

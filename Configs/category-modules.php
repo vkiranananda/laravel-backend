@@ -1,12 +1,12 @@
 <?php
 return [
 	'News' => [
-		'resourceController' => '\Backend\News\Controllers\NewsController',
+		'resourceController' => '\Backend\Root\News\Controllers\NewsController',
 		'viewControllerAction' => '\App\Http\Controllers\NewsController',
 		'categoryController' => '\App\Http\Controllers\NewsController',
 		'label' => 'Новости',
 	],'Page' => [
-		'resourceController' => '\Backend\Page\Controllers\PageController',
+		'resourceController' => '\Backend\Root\Page\Controllers\PageController',
 		'viewControllerAction' => '\App\Http\Controllers\PageController',
 		'categoryController' => '\App\Http\Controllers\PageController',
 		'label' => 'Страницы',

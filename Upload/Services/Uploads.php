@@ -1,10 +1,10 @@
 <?php
-namespace Backend\Upload\Services;
+namespace Backend\Root\Upload\Services;
 
 use Storage;
 use Request;
 use Auth;
-use Backend\Upload\Models\MediaFile;
+use Backend\Root\Upload\Models\MediaFile;
 use Intervention\Image\Facades\Image as Image;
 
 class Uploads {

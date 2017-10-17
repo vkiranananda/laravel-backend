@@ -1,11 +1,11 @@
 <?php
 
-namespace Backend\Redirect\Controllers;
+namespace Backend\Root\Redirect\Controllers;
 
-use Backend\Redirect\Models\Redirect;
+use Backend\Root\Redirect\Models\Redirect;
 use Request;
 
-class RedirectController extends \Backend\Form\Services\ResourceController
+class RedirectController extends \Backend\Root\Form\Services\ResourceController
 {
     function __construct(Redirect $post)
     {

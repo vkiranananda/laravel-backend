@@ -1,12 +1,12 @@
 <?php
 
-namespace Backend\Upload\Facades;
+namespace Backend\Root\Upload\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 class UploadedFilesFacade extends Facade {
 
-    protected static function getFacadeAccessor() { return '\Backend\Upload\Services\UploadedFiles'; }
+    protected static function getFacadeAccessor() { return '\Backend\Root\Upload\Services\UploadedFiles'; }
 
 }
 

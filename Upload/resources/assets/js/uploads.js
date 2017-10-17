@@ -261,9 +261,10 @@
             error: function(result){
                 console.log(result.responseText);
                 console.log(result);
-                for(var prop in result.responseJSON)
+
+                for(var prop in result.responseJSON['errors'])
                 {
-                    goodRemove(uFile, file.name, result.responseJSON[prop][0]);
+                    goodRemove(uFile, file.name, result.responseJSON['errors'][prop][0]);
                 }
                 sendFile(fileID+1);
             }

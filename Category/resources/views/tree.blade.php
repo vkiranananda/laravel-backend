@@ -4,15 +4,15 @@
         <div class="dropdown">
             <button class="btn btn-secondary button-grabber" type="button" id="dropdownMenuButton-0"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-0">
-              <a class="dropdown-item" href="{{ action('\Backend\Category\Controllers\CategoryRootController@create')}}"><span class="icons-directory"></span>&nbsp;Новый раздел</a>
-              <!-- <a class="dropdown-item" href="{{action('\Backend\Category\Controllers\CartController@index')}}"> -->
+              <a class="dropdown-item" href="{{ action('\Backend\Root\Category\Controllers\CategoryRootController@create')}}"><span class="icons-directory"></span>&nbsp;Новый раздел</a>
+              <!-- <a class="dropdown-item" href="{{action('\Backend\Root\Category\Controllers\CartController@index')}}"> -->
               <!-- <span class="icons-trash"></span>&nbsp;Корзина</a> -->
             </div>
           </div>
   </li>
   @if(Categories::count() == 0)
   <li class="list-group-item list-group-item-action">
-      <a href="{{ action('\Backend\Category\Controllers\CategoryRootController@create') }}">
+      <a href="{{ action('\Backend\Root\Category\Controllers\CategoryRootController@create') }}">
         <span class="icons-plus add-root"></span>&nbsp;Добавить раздел</a>
   </li>
   @endif
@@ -69,11 +69,11 @@ function generateCategoryLists($elements, $parentId = 0, $depth = 0, $type = '')
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-'.$el['id'].'">';
 
           if( $type == 'hierarchical' ){
-            $res .= '<a class="dropdown-item" href="'.action('\Backend\Category\Controllers\CategoryController@create').'?cat='.$el['id'].'"><span class="icons-directory"></span>&nbsp;Новая категория</a>';
+            $res .= '<a class="dropdown-item" href="'.action('\Backend\Root\Category\Controllers\CategoryController@create').'?cat='.$el['id'].'"><span class="icons-directory"></span>&nbsp;Новая категория</a>';
           }
 
-          $res .= '<a class="dropdown-item" href="'.action('\Backend\Category\Controllers\Category'.$controller.'Controller@edit', $el['id']).'"><span class="icons-pencil"></span>&nbsp;Править</a>
-                <a class="dropdown-item" href="'.action('\Backend\Category\Controllers\CategoryController@destroy', $el['id']).'" data-role="delete-record"><span class="icons-trash"></span>&nbsp;Удалить</a>
+          $res .= '<a class="dropdown-item" href="'.action('\Backend\Root\Category\Controllers\Category'.$controller.'Controller@edit', $el['id']).'"><span class="icons-pencil"></span>&nbsp;Править</a>
+                <a class="dropdown-item" href="'.action('\Backend\Root\Category\Controllers\CategoryController@destroy', $el['id']).'" data-role="delete-record"><span class="icons-trash"></span>&nbsp;Удалить</a>
               </div>
             </div>';
 

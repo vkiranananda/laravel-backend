@@ -1,12 +1,12 @@
 <?php
 
-namespace Backend\Upload\Controllers;
+namespace Backend\Root\Upload\Controllers;
 
-use Backend\Core\Services\Helpers;
+use Backend\Root\Core\Services\Helpers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Backend\Upload\Models\MediaFile;
-use Backend\Upload\Services\Uploads;
+use Backend\Root\Upload\Models\MediaFile;
+use Backend\Root\Upload\Services\Uploads;
 use Content;
 use BackendConfig;
 use UploadedFiles;
@@ -51,11 +51,11 @@ class UploadController extends Controller
             $savedFile['thumb_url'] = $urls['thumb'];
             $savedFile['orig_url'] = $urls['orig'];
         }else {
-            $savedFile['orig_url'] = Content::genFileLink($savedFile);
+            $savedFile['orig_url'] = UploadedFiles::genFileLink($savedFile);
         }
 
-        $savedFile['data_get_url'] = action('\Backend\Upload\Controllers\EditController@getInfo', $savedFile['id']); 
-        $savedFile['data_save_url'] = action('\Backend\Upload\Controllers\EditController@saveInfo', $savedFile['id']);
+        $savedFile['data_get_url'] = action('\Backend\Root\Upload\Controllers\EditController@getInfo', $savedFile['id']); 
+        $savedFile['data_save_url'] = action('\Backend\Root\Upload\Controllers\EditController@saveInfo', $savedFile['id']);
 
         return $savedFile;
     }

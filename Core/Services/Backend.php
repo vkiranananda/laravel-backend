@@ -1,5 +1,5 @@
 <?php
-namespace Backend\Core\Services;
+namespace Backend\Root\Core\Services;
 use Route;
 use View;
 use Cache;
@@ -14,7 +14,7 @@ class Backend {
         {
         	$res = [];
         	$path['Backend'] = base_path('vendor/vkiranananda/backend/');
-        	$path['Backend\Ext'] = base_path('backend/');
+        	$path['Backend\Root\Ext'] = base_path('backend/');
 	        foreach ($path as $namespace => $p) {
 	        	$dir = opendir($p);
 	        	while(false !==  ($file = readdir($dir)) ) {

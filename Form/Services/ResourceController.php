@@ -1,23 +1,23 @@
 <?php
 
-namespace Backend\Form\Services;
+namespace Backend\Root\Form\Services;
 
 use Request;
 use App\Http\Controllers\Controller;
-use Backend\Core\Services\Helpers;
+use Backend\Root\Core\Services\Helpers;
 use Categories;
 use App;
 use Auth;
 use URL;
-use Backend\Upload\Services\Uploads;
-use \Backend\Upload\Models\MediaFile;
+use Backend\Root\Upload\Services\Uploads;
+use \Backend\Root\Upload\Models\MediaFile;
 use Content;
 use DB;
 use BackendConfig;
 
 class ResourceController extends Controller {
 
-    use \Backend\Form\Services\Traits\Fields;
+    use \Backend\Root\Form\Services\Traits\Fields;
 
     protected $params = [];
     protected $post;

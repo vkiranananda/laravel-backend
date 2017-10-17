@@ -1,11 +1,11 @@
 <?php
 
-namespace Backend\Core\Facades;
+namespace Backend\Root\Core\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 class ConfigFacade extends Facade {
 
-    protected static function getFacadeAccessor() { return '\Backend\Core\Services\Config'; }
+    protected static function getFacadeAccessor() { return '\Backend\Root\Core\Services\Config'; }
 
 }

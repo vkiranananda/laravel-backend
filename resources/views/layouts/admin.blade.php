@@ -19,7 +19,7 @@
 
 				<ul class="list-group mt-1 menu-tree mt-3">
 				  <li class="list-group-item list-group-item-action">
-				    <a href="{{ action('\Backend\MediaFile\Controllers\UploadController@index') }}">
+				    <a href="{{ action('\Backend\Root\MediaFile\Controllers\UploadController@index') }}">
 				    	<span class="icons-media-file"></span>&nbsp;Медиа файлы</a>
 				  </li>
 				</ul>
@@ -30,12 +30,12 @@
 				        <b>Утилиты</b>
 				  </li>
 					  <li class="list-group-item list-group-item-action">
-				    <a href="{{ action('\Backend\Redirect\Controllers\RedirectController@index') }}">
+				    <a href="{{ action('\Backend\Root\Redirect\Controllers\RedirectController@index') }}">
 				    	Редиректы
 				    </a>
 				  </li>
 				  <li class="list-group-item list-group-item-action">
-				    <a href="{{ action('\Backend\Info\Controllers\InfoController@routes') }}">
+				    <a href="{{ action('\Backend\Root\Info\Controllers\InfoController@routes') }}">
 				    	Роутинг
 				    </a>
 				  </li>
@@ -48,19 +48,19 @@
 				        <b>Управление</b>
 				  </li>
 			  	  <li class="list-group-item list-group-item-action">
-				    <a href="{{ action('\Backend\Option\Controllers\OptionGeneralController@edit') }}">
+				    <a href="{{ action('\Backend\Root\Option\Controllers\OptionGeneralController@edit') }}">
 				    	Настройки</a>
 				  </li>				 
 			  	  <li class="list-group-item list-group-item-action">
-				    <a href="{{ action('\Backend\Option\Controllers\OptionController@index') }}">
+				    <a href="{{ action('\Backend\Root\Option\Controllers\OptionController@index') }}">
 				    	Ключ-значение</a>
 				  </li>
 				  <li class="list-group-item list-group-item-action">
-				    <a href="{{ action('\Backend\User\Controllers\UserController@index') }}">
+				    <a href="{{ action('\Backend\Root\User\Controllers\UserController@index') }}">
 				    	Пользователи</a>
 				  </li>
 				  <!-- <li class="list-group-item list-group-item-action">
-				    <a href="action('\Backend\Controllers\Admin\FieldsController@index') ">
+				    <a href="action('\Backend\Root\Controllers\Admin\FieldsController@index') ">
 				    	Поля</a>
 				  </li> -->
 				</ul>

@@ -8,13 +8,13 @@
 	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 	    <ul class="navbar-nav mr-auto">
 	      <li class="nav-item">
-	        <a class="nav-link" href="{{ action('\Backend\Home\Controllers\HomeController@content') }}">Контент</a>
+	        <a class="nav-link" href="{{ action('\Backend\Root\Home\Controllers\HomeController@content') }}">Контент</a>
 	      </li>
 	      <li class="nav-item">
-	        <a class="nav-link" href="{{ action('\Backend\Home\Controllers\HomeController@admin') }}">Управление</a>
+	        <a class="nav-link" href="{{ action('\Backend\Root\Home\Controllers\HomeController@admin') }}">Управление</a>
 	      </li>
 	      <li class="nav-item">
-	        <a class="nav-link" href="{{ action('\Backend\Home\Controllers\HomeController@utils') }}">Утилиты</a>
+	        <a class="nav-link" href="{{ action('\Backend\Root\Home\Controllers\HomeController@utils') }}">Утилиты</a>
 	      </li>
 
 	      @if(isset($params['edit-link']))

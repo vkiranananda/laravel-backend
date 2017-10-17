@@ -1,8 +1,8 @@
 <?php
-namespace Backend\Site\Services;
+namespace Backend\Root\Site\Services;
 use Categories;
 use App;
-use \Backend\Upload\Models\MediaFile;
+use \Backend\Root\Upload\Models\MediaFile;
 use Cache;
 use Helpers;
 
@@ -23,7 +23,7 @@ class Content {
             if(! class_exists($class)){
                 //For backend widgets. Example category::category-tree
                 $name = str_replace("::","\\Widgets\\", ucwords($name, '::'));
-                $class = '\Backend\\'.$name;
+                $class = '\Backend\Root\\'.$name;
                 if(! class_exists($class)) return '';
             }
 
@@ -70,7 +70,7 @@ class Content {
     static public function setHeadersFromPage($page_id, $page_local_id)
     {
         if (App::environment('local')) $page_id = $page_local_id;
-        $post = \Backend\Page\Models\Page::findOrFail($page_id);
+        $post = \Backend\Root\Page\Models\Page::findOrFail($page_id);
 
         return Content::setHeaders($post);
     }

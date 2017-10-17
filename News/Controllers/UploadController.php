@@ -1,8 +1,8 @@
 <?php
 
-namespace Backend\News\Controllers;
+namespace Backend\Root\News\Controllers;
 
-class UploadController extends \Backend\Upload\Controllers\UploadController
+class UploadController extends \Backend\Root\Upload\Controllers\UploadController
 {
     protected $module = 'News';
 }

@@ -1,6 +1,6 @@
 <?php
-namespace Backend\Upload\Services;
-use \Backend\Upload\Models\MediaFile;
+namespace Backend\Root\Upload\Services;
+use \Backend\Root\Upload\Models\MediaFile;
 
 class UploadedFiles {
 
@@ -14,7 +14,7 @@ class UploadedFiles {
     //Геренрим линки на миниатюры
     public function genImgLink(&$img, $sizes)
     {  
-        $size = \Backend\Upload\Services\Uploads::sizesToStr($sizes);
+        $size = \Backend\Root\Upload\Services\Uploads::sizesToStr($sizes);
 
         $orig = url ($img['url'].$img['path'].urlencode($img['file'] ));
 
@@ -24,7 +24,7 @@ class UploadedFiles {
             if(! isset($img['sizes'][$size])){
                 if(!is_array($img['sizes']))$img['sizes'] = [];
                 
-                $img['sizes'] = array_merge($img['sizes'], \Backend\Upload\Services\Uploads::genSizes($img, [ $sizes ]));
+                $img['sizes'] = array_merge($img['sizes'], \Backend\Root\Upload\Services\Uploads::genSizes($img, [ $sizes ]));
                 
                 $img->save();
             }

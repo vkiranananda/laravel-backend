@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Redirect\Models;
+namespace Backend\Root\Redirect\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

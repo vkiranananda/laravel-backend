@@ -1,14 +1,14 @@
 <?php
 
-namespace Backend\Option\Controllers;
+namespace Backend\Root\Option\Controllers;
 
-use Backend\Option\Models\Option;
-use Backend\Core\Services\Helpers;
+use Backend\Root\Option\Models\Option;
+use Backend\Root\Core\Services\Helpers;
 use BackendConfig;
 
 class OptionGeneralController extends \App\Http\Controllers\Controller
 {
-    use \Backend\Form\Services\Traits\Fields;
+    use \Backend\Root\Form\Services\Traits\Fields;
     private $params;
     function __construct()
     {

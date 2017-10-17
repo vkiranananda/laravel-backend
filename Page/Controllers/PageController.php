@@ -1,13 +1,13 @@
 <?php
 
-namespace Backend\Page\Controllers;
+namespace Backend\Root\Page\Controllers;
 
-use Backend\Page\Models\Page;
+use Backend\Root\Page\Models\Page;
 use Content;
 
-class PageController extends \Backend\Form\Services\ResourceController
+class PageController extends \Backend\Root\Form\Services\ResourceController
 {
-    use \Backend\Category\Services\Traits\Category;
+    use \Backend\Root\Category\Services\Traits\Category;
     
     function __construct(Page $post)
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Category\Services\Traits;
+namespace Backend\Root\Category\Services\Traits;
 
 use Categories;
 use Request;

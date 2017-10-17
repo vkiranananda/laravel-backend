@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Home\Controllers;
+namespace Backend\Root\Home\Controllers;
 
 use App\Http\Controllers\Controller;
 

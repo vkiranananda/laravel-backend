@@ -1,8 +1,8 @@
 <?php
 
-namespace Backend\MediaFile\Controllers;
+namespace Backend\Root\MediaFile\Controllers;
 
-class UploadController extends \Backend\Upload\Controllers\UploadController
+class UploadController extends \Backend\Root\Upload\Controllers\UploadController
 {
     protected $module = 'MediaFile';
     protected $viewTemplate = 'MediaFile::list';

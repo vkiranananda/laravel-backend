@@ -1,9 +1,9 @@
 <?php
 
-namespace Backend\Sitemap\Controllers;
+namespace Backend\Root\Sitemap\Controllers;
 
 use App\Http\Controllers\Controller;
-use Backend\Core\Services\Helpers;
+use Backend\Root\Core\Services\Helpers;
 use Response;
 use Content;
 use BackendConfig;
@@ -47,7 +47,7 @@ class SitemapController extends Controller
             $url = ucfirst($url);
 
             $allCats = [];
-            foreach (\Backend\Category\Models\Category::where('mod', $url)->get(['id', 'mod', 'parent_id', 'array_data', 'updated_at', 'url']) as $cat) {       
+            foreach (\Backend\Root\Category\Models\Category::where('mod', $url)->get(['id', 'mod', 'parent_id', 'array_data', 'updated_at', 'url']) as $cat) {       
                 $allCats[$cat['id']] = Helpers::setArray($cat, ['id', 'parent_id', 'mod','url']);
 
                 foreach ($cat['array_data']['fields'] as $key => $el) {
@@ -71,7 +71,7 @@ class SitemapController extends Controller
             }
             
             //Get models data
-            $cont = '\Backend\\'.$url.'\Models\\'.$url;
+            $cont = '\Backend\Root\\'.$url.'\Models\\'.$url;
             $cont::chunk(200, function ($data) use (&$allCats, &$urls) {
                 foreach ($data as $el) {
                     if(!isset($allCats[$el['category_id']]) || $allCats[$el['category_id']]['enable'] == '0'){

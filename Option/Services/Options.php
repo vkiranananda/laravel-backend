@@ -1,8 +1,8 @@
 <?php
 
-namespace Backend\Option\Services;
+namespace Backend\Root\Option\Services;
 
-use Backend\Option\Models\Option;
+use Backend\Root\Option\Models\Option;
 
 class Options
 {

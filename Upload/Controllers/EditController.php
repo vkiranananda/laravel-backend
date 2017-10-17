@@ -1,10 +1,10 @@
 <?php
 
-namespace Backend\Upload\Controllers;
+namespace Backend\Root\Upload\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Backend\Upload\Models\MediaFile;
+use Backend\Root\Upload\Models\MediaFile;
 
 
 
@@ -25,7 +25,7 @@ class EditController extends Controller
     // {
     // 	$mf = MediaFile::findOrFail(281);
     // //	for ($i=0; $i < 10; $i++) { 
-    // 		\Backend\Upload\Services\Uploads::genSizes($mf, [ [200, 200, 'fit'], [200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit']  ]);
+    // 		\Backend\Root\Upload\Services\Uploads::genSizes($mf, [ [200, 200, 'fit'], [200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit']  ]);
     // //	}
 
     // 	printf('Скрипт выполнялся %.4F сек.', (microtime(true) - $GLOBALS['START-TIME']));

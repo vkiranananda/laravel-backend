@@ -20,7 +20,7 @@
 
         <a href='#' subrole='delete'>&times;</a>
         @if($key)
-        <a href="#" data-get-url="{{ action('\Backend\Upload\Controllers\EditController@getInfo', $file['id']) }}" data-save-url="{{ action('\Backend\Upload\Controllers\EditController@saveInfo', $file['id']) }}" subrole='edit' class="icons-pencil"></a>
+        <a href="#" data-get-url="{{ action('\Backend\Root\Upload\Controllers\EditController@getInfo', $file['id']) }}" data-save-url="{{ action('\Backend\Root\Upload\Controllers\EditController@saveInfo', $file['id']) }}" subrole='edit' class="icons-pencil"></a>
         @else
         <a href="#" subrole='edit' class="icons-pencil"></a>
         @endif
