@@ -13,13 +13,9 @@ class Backend {
         $this->data = Cache::tags('backend')->remember('data', 43200, function() 
         {
         	$res = [];
-<<<<<<< HEAD
         	$path['Backend\Root'] = base_path('vendor/vkiranananda/backend/');
         	$path['Backend'] = base_path('backend/');
-=======
-        	$path['Backend'] = base_path('vendor/vkiranananda/backend/');
-        	$path['Backend\Root\Ext'] = base_path('backend/');
->>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
+		
 	        foreach ($path as $namespace => $p) {
 	        	$dir = opendir($p);
 	        	while(false !==  ($file = readdir($dir)) ) {
@@ -50,22 +46,13 @@ class Backend {
 	        }
 	    }
 
-<<<<<<< HEAD
 	   // dd($this->data);
-=======
-	  //  dd($this->data);
->>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
 	}
 
 	public function installRoutes($mod = '', $namespace = 'Backend', $upload = false)
 	{
-
-<<<<<<< HEAD
 		if($namespace == 'Root') $namespace  =  'Backend\Root';
 
-=======
-		// static $routes = false;	
->>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
 		$modUrl = mb_strtolower($mod);
 		
 		if($upload){
