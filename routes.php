@@ -17,9 +17,6 @@ Route::group(['prefix' => 'content', 'middleware' => 'auth.basic'], function()
 	Backend::installRoutes('Page', 'Root', true);
 	Backend::installRoutes('News', 'Root', true);
 	Backend::installRoutes('MediaFile', 'Root', true);
-	Backend::installRoutes('Property', 'Root', true);
-	Backend::installRoutes('Excursion', 'Root', true);
-	Backend::installRoutes('Realty', 'Root', true);
 	Backend::installRoutes('Upload', 'Root');
 });
 
