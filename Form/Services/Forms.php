@@ -5,7 +5,13 @@ namespace Backend\Root\Form\Services;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Routing\Controller;
+<<<<<<< HEAD
+use Helpers;
+use \Backend\Root\Upload\Models\MediaFile;
+use DB;
+=======
 use Backend\Root\Core\Services\Helpers;
+>>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
 
 
 class Forms
@@ -154,4 +160,29 @@ class Forms
 		
 		echo Forms::$fn($options);
 	}
+<<<<<<< HEAD
+
+	//Подготавливаем поле для вывода.
+	static function prepField($post, $field)
+	{
+	    if(isset($field['name']))$field['attr']['name'] = $field['name'];
+        else return $field;
+    
+        if(( $val = Helpers::dataIsSetValue($post, $field['name'] ) ) !== false) 
+            $field['value'] = $val;
+        elseif(!isset($field['value']) ) 
+            $field['value'] = '';
+
+        if(!isset($field['attr']['id'])) $field['attr']['id'] = "Forms_".$field['name'];
+
+        if($field['type'] == 'files' || $field['type'] == 'gallery'){
+            if(!is_array($field['value']))$field['value'] = [];
+            elseif(count($field['value']) > 0) {
+                $field['value'] = MediaFile::whereIn('id', $field['value'])->orderByRaw(DB::raw("FIELD(id, ".implode(',', $field['value']).")"))->get()->toArray();
+            }
+        }
+        return $field;
+	}
+=======
+>>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
 }

@@ -4,7 +4,11 @@ namespace Backend\Root\Category\Controllers;
 
 use Backend\Root\Category\Models\Category;
 use Request;
+<<<<<<< HEAD
+use Helpers;
+=======
 use Backend\Root\Core\Services\Helpers;
+>>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
 use Cache;
 use Content;
 use BackendConfig;

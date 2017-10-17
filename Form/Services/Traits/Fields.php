@@ -2,11 +2,19 @@
 
 namespace Backend\Root\Form\Services\Traits;
 use Request;
+<<<<<<< HEAD
+use Helpers;
+use Content;
+use \Backend\Root\Upload\Models\MediaFile;
+use UploadedFiles;
+use Forms;
+=======
 use Backend\Root\Core\Services\Helpers;
 use Content;
 use \Backend\Root\Upload\Models\MediaFile;
 use  DB;
 use UploadedFiles;
+>>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
 
 //Подготовка и сохарнение полей
 
@@ -105,6 +113,9 @@ trait Fields {
     protected function prepEditFields(&$post, &$fields)
     {
         foreach ($fields as $name => &$field) {
+<<<<<<< HEAD
+            $field = Forms::prepField($post, $field);
+=======
             if(isset($field['name']))$field['attr']['name'] = $field['name'];
             else continue;
         
@@ -121,6 +132,7 @@ trait Fields {
                     $field['value'] = MediaFile::whereIn('id', $field['value'])->orderByRaw(DB::raw("FIELD(id, ".implode(',', $field['value']).")"))->get()->toArray();
                 }
             }
+>>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
         }
     }
 }

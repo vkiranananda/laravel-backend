@@ -24,7 +24,21 @@
         "laravel": {
             "providers": [
                 "Backend\\Root\\Core\\Providers\\CoreServiceProvider"
+<<<<<<< HEAD
+            ],
+            "aliases": {
+                "BackendConfig": "Backend\\Root\\Core\\Facades\\ConfigFacade", 
+                "Option": "Backend\\Root\\Option\\Facades\\OptionFacade",
+                "Backend": "Backend\\Root\\Core\\Facades\\BackendFacade",
+                "UploadedFiles": "Backend\\Root\\Upload\\Facades\\UploadedFilesFacade",
+                "Categories": "Backend\\Root\\Category\\Facades\\CategoriesFacade",
+                "Content": "Backend\\Root\\Site\\Services\\Content",
+                "Helpers": "Backend\\Root\\Core\\Services\\Helpers",
+                "Forms": "Backend\\Root\\Form\\Services\\Forms"
+            }
+=======
             ]
+>>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
         }
     }
 }
