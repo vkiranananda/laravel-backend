@@ -5,13 +5,9 @@ namespace Backend\Root\Form\Services;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Routing\Controller;
-<<<<<<< HEAD
 use Helpers;
 use \Backend\Root\Upload\Models\MediaFile;
 use DB;
-=======
-use Backend\Root\Core\Services\Helpers;
->>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
 
 
 class Forms
@@ -160,7 +156,6 @@ class Forms
 		
 		echo Forms::$fn($options);
 	}
-<<<<<<< HEAD
 
 	//Подготавливаем поле для вывода.
 	static function prepField($post, $field)
@@ -183,6 +178,4 @@ class Forms
         }
         return $field;
 	}
-=======
->>>>>>> 335b97e178203b3721db194e913a3e19b7c70ee0
 }
