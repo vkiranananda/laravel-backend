@@ -6,7 +6,7 @@ use Backend\Root\Category\Models\Category;
 use Backend\Root\Core\Services\Helpers;
 use Route;
 use Cache;
-use BackendConfig;
+use GetConfig;
 
 class Categories
 {
@@ -46,7 +46,7 @@ class Categories
 		if($showDeleted)return $allCat;
 		else $this->allCat = $allCat;
 
-		$this->moduleControllers = BackendConfig::get('category-modules');
+		$this->moduleControllers = GetConfig::backend('category-modules');
 	}
 
 	public function getModuleControllers($mod)

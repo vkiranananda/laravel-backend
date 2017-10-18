@@ -1,5 +1,5 @@
 <?php
-	$conf = BackendConfig::get("Post::uploads");
+	$conf = GetConfig::backend("Post::uploads");
 	$conf['validate'] = 'required';
 	return $conf;
 ?>

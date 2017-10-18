@@ -3,7 +3,7 @@ namespace Backend\Root\Core\Services;
 
 class Helpers {
     //Получаем все поля где есть массив options,передается параметр табов
-    static public function changeFieldsOptions(&$fields)
+    static public function changeFieldsOptions($fields)
     {
         $res = [];
 
@@ -12,6 +12,7 @@ class Helpers {
                 $field['options'] = Helpers::optionsToArr($field['options']);
             }
         }
+        return $fields;
     }
 
     //Заполняем массив значиениями keys

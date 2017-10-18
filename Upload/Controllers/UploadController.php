@@ -8,8 +8,7 @@ use App\Http\Controllers\Controller;
 use Backend\Root\Upload\Models\MediaFile;
 use Backend\Root\Upload\Services\Uploads;
 use Content;
-use BackendConfig;
-use UploadedFiles;
+use GetConfig;
 //type 0 deleted, 1 good, 2 hidden(for only field)
 
 class UploadController extends Controller
@@ -25,7 +24,7 @@ class UploadController extends Controller
     {
        setlocale(LC_ALL, 'ru_RU.utf8');
 
-       $this->params = BackendConfig::get($this->module."::".$this->configFile);
+       $this->params = GetConfig::backend($this->module."::".$this->configFile);
     }
 
     public function index($id = '')
@@ -47,11 +46,11 @@ class UploadController extends Controller
         $savedFile = Uploads::saveFile($this->params);
         
         if($savedFile->file_type == 'image'){
-            $urls = UploadedFiles::genImgLink($savedFile, [128, 128, 'fit']);
+            $urls = Content::genImgLink($savedFile, [128, 128, 'fit']);
             $savedFile['thumb_url'] = $urls['thumb'];
             $savedFile['orig_url'] = $urls['orig'];
         }else {
-            $savedFile['orig_url'] = UploadedFiles::genFileLink($savedFile);
+            $savedFile['orig_url'] = Content::genFileLink($savedFile);
         }
 
         $savedFile['data_get_url'] = action('\Backend\Root\Upload\Controllers\EditController@getInfo', $savedFile['id']); 

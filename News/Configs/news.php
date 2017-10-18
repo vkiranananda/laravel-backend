@@ -94,5 +94,5 @@
 			    ],
 			],
 		],
-	], BackendConfig::get('seo-fields')
+	], GetConfig::backend('seo-fields')
 );

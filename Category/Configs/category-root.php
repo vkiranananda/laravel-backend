@@ -120,5 +120,5 @@
 			    ],
 			],
 		],
-	], BackendConfig::get('seo-fields'), BackendConfig::get('Sitemap::fields') 
+	], GetConfig::backend('seo-fields'), GetConfig::backend('Sitemap::fields') 
 );

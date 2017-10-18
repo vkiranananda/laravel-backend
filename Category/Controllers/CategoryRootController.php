@@ -7,7 +7,7 @@ use Request;
 use Helpers;
 use Cache;
 use Content;
-use BackendConfig;
+use GetConfig;
 
 class CategoryRootController extends \Backend\Root\Form\Services\ResourceController
 {
@@ -22,7 +22,7 @@ class CategoryRootController extends \Backend\Root\Form\Services\ResourceControl
 
             $modules = [];
 
-            foreach ( BackendConfig::get('category-modules') as $key => $value) {
+            foreach ( GetConfig::backend('category-modules') as $key => $value) {
                 $modules[$key]['value'] = $key;
                 $modules[$key]['label'] = $value['label'];
             }

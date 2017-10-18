@@ -5,7 +5,6 @@ use Request;
 use Helpers;
 use Content;
 use \Backend\Root\Upload\Models\MediaFile;
-use UploadedFiles;
 use Forms;
 
 //Подготовка и сохарнение полей
@@ -63,7 +62,7 @@ trait Fields {
                             $sizes = [ $width[1], $height[1] ];
                             
                             if( ($imgObj = \Backend\Root\Upload\Models\MediaFile::find($imgId)) ){
-                                $imgUrl = UploadedFiles::genImgLink($imgObj, $sizes)['thumb'];
+                                $imgUrl = Content::genImgLink($imgObj, $sizes)['thumb'];
 
                                 $img = preg_replace("/src=[\'\"]{1}.*?[\'\"]{1}/", "src=\"".$imgUrl."\"", $img);
                             }

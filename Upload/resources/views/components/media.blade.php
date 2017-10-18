@@ -11,7 +11,7 @@
       <?php
         $img['thumb'] = '/images/system/file.png';
         if($key){
-          $img = ($file['file_type'] == 'image') ? UploadedFiles::genImgLink($file, [128, 128, 'fit']) : ['orig' => UploadedFiles::genFileLink($file), 'thumb' => $img['thumb']] ;
+          $img = ($file['file_type'] == 'image') ? Content::genImgLink($file, [128, 128, 'fit']) : ['orig' => Content::genFileLink($file), 'thumb' => $img['thumb']] ;
         }else {
           $img['orig'] = '';
         }

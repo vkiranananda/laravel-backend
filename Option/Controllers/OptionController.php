@@ -5,7 +5,7 @@ namespace Backend\Root\Option\Controllers;
 use Backend\Root\Option\Models\Option;
 use Backend\Root\Core\Services\Helpers;
 use Cache;
-use BackendConfig;
+use GetConfig;
 
 class OptionController extends \Backend\Root\Form\Services\ResourceController
 {
@@ -26,7 +26,7 @@ class OptionController extends \Backend\Root\Form\Services\ResourceController
             unset($this->params['fields']['autoload']);
         }elseif($type == 'update' || $type == 'edit') {
             
-            $conf = BackendConfig::get('Option::options-'.$this->post['array_data']['fields']['type']);
+            $conf = GetConfig::backend('Option::options-'.$this->post['array_data']['fields']['type']);
             
             $this->params = array_merge_recursive($this->params, $conf);
             $this->params['fields']['value']['field-save'] = 'array';

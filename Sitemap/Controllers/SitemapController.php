@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Backend\Root\Core\Services\Helpers;
 use Response;
 use Content;
-use BackendConfig;
+use GetConfig;
 
 class SitemapController extends Controller
 {
@@ -71,7 +71,8 @@ class SitemapController extends Controller
             }
             
             //Get models data
-            $cont = '\Backend\Root\\'.$url.'\Models\\'.$url;
+            $cont = (class_exists('\Backend\\'.$url.'\Models\\'.$url)) ? '\Backend\\'.$url.'\Models\\'.$url : '\Backend\Root\\'.$url.'\Models\\'.$url;
+
             $cont::chunk(200, function ($data) use (&$allCats, &$urls) {
                 foreach ($data as $el) {
                     if(!isset($allCats[$el['category_id']]) || $allCats[$el['category_id']]['enable'] == '0'){
@@ -107,7 +108,7 @@ class SitemapController extends Controller
                     ->withHeaders(['Content-Type' => 'text/xml']);
 
         }elseif($url == '') {
-            return response( view('Sitemap::sitemapindex', [ 'data' => array_keys(BackendConfig::get('category-modules', true)) ] ))
+            return response( view('Sitemap::sitemapindex', [ 'data' => array_keys(GetConfig::backend('category-modules', true)) ] ))
                    ->withHeaders(['Content-Type' => 'text/xml']);
         }
         

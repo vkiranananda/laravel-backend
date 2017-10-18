@@ -12,7 +12,7 @@ class UploadedFiles {
     }
 
     //Геренрим линки на миниатюры
-    public function genImgLink(&$img, $sizes)
+    public function genImgLink(&$img, &$sizes)
     {  
         $size = \Backend\Root\Upload\Services\Uploads::sizesToStr($sizes);
 
@@ -49,7 +49,7 @@ class UploadedFiles {
     }
 
     //Получить урл миниатюры
-    public function getImgUrl(&$post, $field, $sizes = [])
+    public function getImgUrl(&$post, &$field, $sizes = [])
     {
         if( isset($post['array_data']['fields'][$field]) ){
             $gal = $post['array_data']['fields'][$field];
@@ -71,7 +71,7 @@ class UploadedFiles {
         return '';
     }
     //Получить урлы по массиву
-    public function getImgUrlArr(&$post, $field, $sizes = [])
+    public function getImgUrlArr(&$post, &$field, $sizes = [])
     {
         if( isset($post['array_data']['fields'][$field]) ){
             $gal = $post['array_data']['fields'][$field];
@@ -87,7 +87,7 @@ class UploadedFiles {
     }
 
     //Получаем все картинки оптом что бы не плодить запросы
-    public function getImgUrlList(&$list, $field)
+    public function getImgUrlList(&$list, &$field)
     {
         $req = [];
         foreach ($list as $post) {

@@ -31,7 +31,7 @@ function generateCategoryLists($elements, $parentId = 0, $depth = 0, $type = '')
 
     $current = Request::input('cat', false);
 
-    $catModuels = BackendConfig::get('category-modules');
+    $catModuels = GetConfig::backend('category-modules');
 
     foreach ($elements as $el) {
         if ($el['parent_id'] == $parentId) {

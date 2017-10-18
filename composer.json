@@ -26,10 +26,9 @@
                 "Backend\\Root\\Core\\Providers\\CoreServiceProvider"
             ],
             "aliases": {
-                "BackendConfig": "Backend\\Root\\Core\\Facades\\ConfigFacade", 
+                "GetConfig": "Backend\\Root\\Core\\Facades\\GetConfigFacade", 
                 "Option": "Backend\\Root\\Option\\Facades\\OptionFacade",
                 "Backend": "Backend\\Root\\Core\\Facades\\BackendFacade",
-                "UploadedFiles": "Backend\\Root\\Upload\\Facades\\UploadedFilesFacade",
                 "Categories": "Backend\\Root\\Category\\Facades\\CategoriesFacade",
                 "Content": "Backend\\Root\\Site\\Services\\Content",
                 "Helpers": "Backend\\Root\\Core\\Services\\Helpers",

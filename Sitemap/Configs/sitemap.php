@@ -1,5 +1,5 @@
 <?php
-	$sitemapFields = BackendConfig::get('Sitemap::fields', true)['fields'];
+	$sitemapFields = GetConfig::backend('Sitemap::fields', true)['fields'];
 	unset($sitemapFields['sitemap-changefreq']['conf-field-save'],$sitemapFields['sitemap-priority']['conf-field-save']);
 	$sitemapFields['sitemap-changefreq']['name'] = 'changefreq';
 	$sitemapFields['sitemap-priority']['name'] = 'priority';

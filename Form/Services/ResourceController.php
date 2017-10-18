@@ -13,7 +13,7 @@ use Backend\Root\Upload\Services\Uploads;
 use \Backend\Root\Upload\Models\MediaFile;
 use Content;
 use DB;
-use BackendConfig;
+use GetConfig;
 
 class ResourceController extends Controller {
 
@@ -29,7 +29,7 @@ class ResourceController extends Controller {
     {
         $this->post = &$post;
         // dd($config);
-        $this->params = BackendConfig::get($config);
+        $this->params = GetConfig::backend($config);
         $this->params['controllerName'] = '\\'.get_class($this);
         $this->params['baseClass'] = class_basename($this->post);
         $this->params['baseNamespace'] = (preg_match('/(^.+)\\\.+\\\.+/', get_class($this), $mathces)) ? $mathces[1] : '' ;
@@ -67,7 +67,7 @@ class ResourceController extends Controller {
         $tmplite = (isset($this->params['conf']['list-template'])) ? $this->params['conf']['list-template'] : 'Form::list' ;
 
         //Подготавливаем поля
-        Helpers::changeFieldsOptions($this->params['fields']);
+        $this->params['fields'] = Helpers::changeFieldsOptions($this->params['fields']);
 
         return view($tmplite, [ 'data' => $this->post->paginate($this->pagination), 'params' => $this->params ]);
     }

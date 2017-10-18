@@ -1,6 +1,6 @@
 <?php
 
-	$sitemap = BackendConfig::get('Sitemap::fields');
+	$sitemap = GetConfig::backend('Sitemap::fields');
 	unset($sitemap['edit']['sitemap']['fields']['sitemap-link-enable']);
 	$sitemap['fields']['sitemap-enable']['desc'] = "Включить отображение данной страницы на карте сайта";
 	$sitemap['edit']['sitemap']['fields'][] = [ 'name' => 'sitemap-url' ];
@@ -81,5 +81,5 @@
 			    ],
 			],
 		],
-	], BackendConfig::get('seo-fields'), $sitemap
+	], GetConfig::backend('seo-fields'), $sitemap
 );

@@ -4,7 +4,7 @@ namespace Backend\Root\Option\Controllers;
 
 use Backend\Root\Option\Models\Option;
 use Backend\Root\Core\Services\Helpers;
-use BackendConfig;
+use GetConfig;
 
 class OptionGeneralController extends \App\Http\Controllers\Controller
 {
@@ -12,7 +12,7 @@ class OptionGeneralController extends \App\Http\Controllers\Controller
     private $params;
     function __construct()
     {
-        $this->params = BackendConfig::get('Option::options-general');
+        $this->params = GetConfig::backend('Option::options-general');
         $this->params['controllerName'] = '\\'.get_class($this);
         $this->params['baseClass'] = 'Option';
     }

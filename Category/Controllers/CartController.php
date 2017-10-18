@@ -45,7 +45,7 @@ class CartController extends Controller
 
                 // dd($newCats);
 
-    	return view('Category::cart', [ 'dataCats' => $newCats, 'params' => BackendConfig::get('Category::cart') ] );
+    	return view('Category::cart', [ 'dataCats' => $newCats, 'params' => GetConfig::backend('Category::cart') ] );
     }
 
 
