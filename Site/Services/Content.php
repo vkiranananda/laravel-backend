@@ -112,8 +112,6 @@ class Content {
         return $val;
     }
 
-
-
     //For Uploaded files functions
     static public function genFileLink(&$file)
     {
