@@ -65,12 +65,6 @@
 	            'label' => 'Галерея',
 	            'field-save' => 'array',
 	        ],
-	        'files' => [	
-	        	'name' => 'files',	
-	            'type' => 'files',  
-	            'label' => 'Файлы',
-	            'field-save' => 'array',
-	        ],
 	    ],
 
 		'edit' => [
