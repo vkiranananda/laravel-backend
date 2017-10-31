@@ -110,7 +110,8 @@ class Forms
 		if(!isset($options['options']) || !is_array($options['options']))return '';
 
 		$out = '<div class="row">';
-		$options['name'] .= "[]";
+		$options['attr']['name'] .= "[]";
+
 		foreach ($options['options'] as $el) {
 			$out .= '<div class="form-check ';
 			$out .= (isset($options['class-con'])) ? $options['class-con'] : 'col-12' ;
@@ -177,5 +178,14 @@ class Forms
             }
         }
         return $field;
+	}
+
+	//Подготавливаем поле для вывода.
+	static function prepAllFields($post, $fields)
+	{
+        foreach ($fields as $name => &$field) {
+            $field = Forms::prepField($post, $field);
+        }
+        return $fields;
 	}
 }

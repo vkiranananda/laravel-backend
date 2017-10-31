@@ -32,7 +32,7 @@ class OptionGeneralController extends \App\Http\Controllers\Controller
         }
         $this->params['url'] = action($this->params['controllerName'].'@update');
 
-        $this->prepEditFields($option, $this->params['fields']);
+        $this->params['fields'] = Forms::prepAllFields($option, $this->params['fields']);
 
         return view('Form::edit',[ 'params' => $this->params, 'data' => $option ]  );
     }

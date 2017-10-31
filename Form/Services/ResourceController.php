@@ -80,7 +80,7 @@ class ResourceController extends Controller {
             $this->setCategoryList('create');
             $this->localize();
         }
-        $this->prepEditFields($this->post, $this->params['fields']);
+        $this->params['fields'] = Forms::prepAllFields($this->post, $this->params['fields']);
         $this->params['url'] = action($this->params['controllerName'].'@store');
         $this->params['lang']['title'] = $this->params['lang']['create-title'];
         // if(!isset($this->params['previousUrl']))$this->params['previousUrl'] = URL::previous();
@@ -121,7 +121,7 @@ class ResourceController extends Controller {
             $this->setCategoryList('edit');
             $this->localize();
         }
-        $this->prepEditFields($this->post, $this->params['fields']);
+        $this->params['fields'] = Forms::prepAllFields($this->post, $this->params['fields']);
         $this->params['url'] = action($this->params['controllerName'].'@update', $id);
         $this->params['lang']['title'] = $this->params['lang']['edit-title'];
         $this->params['viewUrl'] = $this->getViewUrl();

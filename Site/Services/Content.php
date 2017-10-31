@@ -111,37 +111,36 @@ class Content {
         
         return $val;
     }
-}
 
 
 
     //For Uploaded files functions
-    public function genFileLink(&$file)
+    static public function genFileLink(&$file)
     {
-        return url($file['url'].$file['path'].$file['file']);
+        return app('UploadedFiles')->genFileLink($file);
     }
 
     //Геренрим линки на миниатюры
-    public function genImgLink(&$img, $sizes)
+    static public function genImgLink(&$img, $sizes)
     {  
         return app('UploadedFiles')->genImgLink($img, $sizes);
     }
 
     //Получить урл миниатюры
-    public function getImgUrl(&$post, $field, $sizes = [])
+    static public function getImgUrl(&$post, $field, $sizes = [])
     {
         return app('UploadedFiles')->getImgUrl($post, $field, $sizes);
     }
     //Получить урлы по массиву
-    public function getImgUrlArr(&$post, $field, $sizes = [])
+    static public function getImgUrlArr(&$post, $field, $sizes = [])
     {
-        return app('UploadedFiles')->getImgUrl($post, $field, $sizes);
+        return app('UploadedFiles')->getImgUrlArr($post, $field, $sizes);
     }
 
     //Получаем все картинки оптом что бы не плодить запросы
-    public function getImgUrlList(&$list, $field)
+    static public function getImgUrlList(&$list, $field)
     {
-        return app('UploadedFiles')->getImgUrl($list, $field, $sizes);
+        return app('UploadedFiles')->getImgUrlList($list, $field);
     }
-
+}
 ?>

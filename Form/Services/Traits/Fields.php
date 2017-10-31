@@ -11,11 +11,11 @@ use Forms;
 
 trait Fields {
 
-   protected function saveFields(&$post, &$fields)
+   protected function saveFields(&$post, $fields)
     {
         $relationFields = [];
         $validate = [];
-        $arrayData = (is_array($post['array_data'])) ? $post['array_data'] : [] ;
+        $arrayData = (isset($post['array_data']) && is_array($post['array_data'])) ? $post['array_data'] : [] ;
 
         foreach ($fields as $field) 
         {
@@ -29,6 +29,7 @@ trait Fields {
             //Проверки на select radio checkbox
             if(array_search($field['type'], ['select', 'radio', 'checkbox']) ){
                 //Пропускаем проверку если пустой чекбокс
+                // print_r($value);
                 if($field['type'] == 'checkbox' && $value == '') goto skipCheck;
                
                 if(!isset($field['options']) || !Helpers::optionsSearch($field['options'], $value )){ 
@@ -41,7 +42,7 @@ trait Fields {
                     unset($value[0]);
                     $uniqueValue = array_unique($value);
 
-                    $imgReq = \Backend\Root\Upload\Models\MediaFile::whereIn('id', $uniqueValue )->where('file_type', 'image');
+                    $imgReq = \Backend\Root\Upload\Models\MediaFile::whereIn('id', $uniqueValue );
 
                     if($field['type'] == 'gallery' )$imgReq = $imgReq->where('file_type', 'image');
 
@@ -98,13 +99,5 @@ trait Fields {
 
         return $relationFields;
 
-    }
-
-    //Подготоваливаем поля для формы редактирования.
-    protected function prepEditFields(&$post, &$fields)
-    {
-        foreach ($fields as $name => &$field) {
-            $field = Forms::prepField($post, $field);
-        }
     }
 }

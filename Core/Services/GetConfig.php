@@ -37,15 +37,17 @@ class GetConfig {
 
     }
 
-    public function &app($conf)
+    public function app($conf)
     {
         if(isset($this->loadedConfigs['app'][$conf]))return $this->loadedConfigs['app'][$conf];
 
-        $this->loadedConfigs['app'][$conf] = Cache::tags('configs')->remember($conf, 43200, function() use ($conf)
+        $this->loadedConfigs['app'][$conf] = Cache::tags('configs')->remember("app-".$conf, 43200, function() use ($conf)
         {
-            $file = base_path('backend/app/Configs/'.$conf.'.php');
-            if(is_file($file))return include ($file);
+            $file = base_path('app/Configs/'.$conf.'.php');
+
+            if(is_file($file)) return include ($file);
             return [];
         }); 
+        return $this->loadedConfigs['app'][$conf];
     }
 }
