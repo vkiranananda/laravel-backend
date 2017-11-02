@@ -84,7 +84,6 @@
             		[ 'name' => 'publication_date' ],
 					[ 'name' => 'status' ],
 					[ 'name' => 'gallery' ],
-					[ 'name' => 'files' ],
 			    ],
 			],
 		],

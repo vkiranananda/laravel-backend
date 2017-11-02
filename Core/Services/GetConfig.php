@@ -11,7 +11,7 @@ class GetConfig {
 
     public function &backend($conf, $root = false)
     {
-        $type = ($conf) ? 'root' : 'backend' ;
+        $type = ($root) ? 'root' : 'backend' ;
         //Если конфиг уже загружен возвращаем его
         if(isset($this->loadedConfigs[$type][$conf]))return $this->loadedConfigs[$type][$conf];
 
