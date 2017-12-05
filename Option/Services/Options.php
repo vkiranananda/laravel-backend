@@ -10,8 +10,8 @@ class Options
 
 	public function get($name, $key = 'value')
 	{
-		if(is_array($this->options) && isset($this->options[$name]) && $this->options[$name]['fields'][$key]){
-			return $this->options[$name]['fields'][$key];
+		if(is_array($this->options) && isset($this->options[$name])) {
+			return (isset($this->options[$name]['fields'][$key])) ? $this->options[$name]['fields'][$key] : '' ;
 		}
 
 		$option = Option::where('name', $name);
