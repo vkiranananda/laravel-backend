@@ -5,6 +5,7 @@ namespace Backend\Root\Option\Controllers;
 use Backend\Root\Option\Models\Option;
 use Backend\Root\Core\Services\Helpers;
 use GetConfig;
+use Forms;
 
 class OptionGeneralController extends \App\Http\Controllers\Controller
 {

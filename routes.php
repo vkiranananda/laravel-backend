@@ -2,6 +2,8 @@
 
 Backend::installRoutes('Sitemap', 'Root');
 
+Route::view('/robots.txt', 'Seo::robots');
+
 Route::group(['prefix' => 'control', 'middleware' => 'auth.basic'], function()
 {
 	Route::get('/', '\Backend\Root\Home\Controllers\HomeController@admin');
