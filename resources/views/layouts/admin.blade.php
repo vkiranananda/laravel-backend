@@ -9,7 +9,7 @@
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
-	<div class="container-fluid">
+	<div class="container-fluid" id="backend-body">
 	@include('Backend::components.panel')
 
 		<div class="row">

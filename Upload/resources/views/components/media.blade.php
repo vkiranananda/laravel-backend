@@ -3,7 +3,7 @@
     <div data-name="errorsArea"></div>
   @endif
   <?php 
-    $data->prepend(''); 
+    array_unshift($data, []);
   ?>
   <div class='file-upload' data-name="filesArea" >
     <div class='upload-button media-file'></div>

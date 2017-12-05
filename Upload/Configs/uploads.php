@@ -9,5 +9,6 @@ return [
 	'sizes' => [
 		'thumb' => [128, 128, 'fit'],
 	],
+	'save-info-url' => action('\Backend\Root\Upload\Controllers\EditController@saveInfo'),
 ];
 ?>

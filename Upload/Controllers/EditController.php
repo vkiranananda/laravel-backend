@@ -15,20 +15,14 @@ class EditController extends Controller
         return MediaFile::findOrFail($id);
     }
 
-    public function saveInfo(Request $request, $id)
+    public function saveInfo(Request $request)
     {
-        MediaFile::where('id', $id)->update( ['desc' => substr(htmlspecialchars($request->input('desc', '') ), 0, 250 ) ] );
+        $save = [];
+        foreach (['desc', 'img_title', 'img_alt'] as $field) {
+            $save[$field] = substr(htmlspecialchars($request->input($field, '') ), 0, 250 );
+        }
+        print_r($save);
+        MediaFile::where('id', $request->input('id', ''))->update( $save );
     }
 
-
-    // public function test()
-    // {
-    // 	$mf = MediaFile::findOrFail(281);
-    // //	for ($i=0; $i < 10; $i++) { 
-    // 		\Backend\Root\Upload\Services\Uploads::genSizes($mf, [ [200, 200, 'fit'], [200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit'],[200, 200, 'fit']  ]);
-    // //	}
-
-    // 	printf('Скрипт выполнялся %.4F сек.', (microtime(true) - $GLOBALS['START-TIME']));
-    //     return "eee";
-    // }
 }

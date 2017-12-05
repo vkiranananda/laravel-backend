@@ -68,22 +68,21 @@
             </div>
         </div>
     </div>
-@if( isset($params['conf']['media-files']) )
-    @component('Site::components.modal', [ 'params' => ['id' => 'content-uploads-modal', 'large' => true ] ])
-        @slot('title')
-          Медиа файлы
-        @endslot
 
-        @slot('footer')
-            <label class="form-check-label mr-5 link-img" ><input type="checkbox" class="form-check-input" name="link"> Создать ссылку на оригинал </label>
+@if( isset($params['conf']['media-files']) )
+   <modal id="content-uploads-modal" size="large" title="Медиа файлы">
+        <div slot="footer">
+ 			<label class="form-check-label mr-5 link-img" ><input type="checkbox" class="form-check-input" name="link"> Создать ссылку на оригинал </label>
             <button type="button" class="btn btn-primary" data-role="select-files"> Вставить</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-        @endslot
-        @endcomponent
+        </div>
+    </modal>
 @endif
 </form>
-
-
 @if( isset($params['conf']['media-files']) )
-    @component('Upload::components.edit-modal') @endcomponent
+	@component('Upload::components.edit-file' ) @endcomponent
+
+    <upload-edit-file></upload-edit-file>
 @endif
+
+

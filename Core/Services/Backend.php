@@ -13,7 +13,7 @@ class Backend {
         $this->data = Cache::tags('backend')->remember('data', 43200, function() 
         {
         	$res = [];
-        	$path['Backend\Root'] = base_path('vendor/vkiranananda/backend/');
+        	$path['Backend\Root'] = base_path('backend-root/');
         	$path['Backend'] = base_path('backend/');
 		
 	        foreach ($path as $namespace => $p) {
@@ -45,8 +45,7 @@ class Backend {
 	        	View::addNamespace($mod, $p);
 	        }
 	    }
-
-	   // dd($this->data);
+	   //dd($this->data);
 	}
 
 	public function installRoutes($mod = '', $namespace = 'Backend', $upload = false)
@@ -60,9 +59,10 @@ class Backend {
 			Route::post($modUrl.'/gallery', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@store');
 			Route::delete($modUrl.'/gallery/{id}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@destroy');
 		}
-
+//dd($this->data);
 		if ( isset($this->data['routes'][$mod][$namespace] ) ){
 			require_once($this->data['routes'][$mod][$namespace]);
+			//echo $this->data['routes'][$mod][$namespace];
 		}
 		else {
 			Route::resource($modUrl, '\\'.$namespace.'\\'.$mod.'\\Controllers\\'.$mod.'Controller');
@@ -73,7 +73,7 @@ class Backend {
 	public function loadBackendRoutes($mod = '')
 	{
 		if($mod == 'Backend') $mod = ''; 
-		if(is_file(base_path('vendor/vkiranananda/backend/'.$mod.'routes.php')))
-			require_once (base_path('vendor/vkiranananda/backend/'.$mod.'routes.php'));
+		if(is_file(base_path('backend-root/'.$mod.'routes.php')))
+			require_once (base_path('backend-root/'.$mod.'routes.php'));
 	}
 }

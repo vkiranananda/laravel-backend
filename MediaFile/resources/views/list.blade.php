@@ -5,13 +5,11 @@
 @section('content')
 
 <div class="card">
-  <div class="card-header">{{$params['title']}}</div>
-  <div class="card-block">
-      @component('Upload::components.media-search', ['params' => $params, 'data' => $data]) @endcomponent
-      @component('Upload::components.media', ['params' => $params, 'data' => $data]) @endcomponent
-    
-    {{ csrf_field() }}
-  </div>
+  	<div class="card-header">{{$params['title']}}</div>
+  	<div class="card-block">
+      	@component('Upload::components.media-search', ['params' => $params, 'data' => $data]) @endcomponent
+		<upload-file :params='@json($params)' :data='@json($data)'></upload-file>
+  	</div>
 </div>
-@component('Upload::components.edit-modal')  @endcomponent
+<upload-edit-file></upload-edit-file>
 @endsection

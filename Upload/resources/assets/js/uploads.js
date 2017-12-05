@@ -1,4 +1,32 @@
 
+
+// var editFile = new Vue({
+//     el: '#UploadEditModal',
+//     data: {
+//         id: '',
+//         desc: '',
+//         img_title: '',
+//         img_alt: ''
+//     },
+//     methods: {
+//         edit: function (id) {
+//             $('#UploadEditModal').modal('show');
+//             for (key in this.$data) {
+//                 console.log();
+//             }
+//             this.id = id;
+//             axios.get(this.$refs.form.dataset.editUrl + '/' + id).then(response => {
+//                 console.log(this);
+//               editFile = response.data;
+//             }).catch(error => {
+//                 console.log(error);
+//             });
+//         }
+//     }
+// });
+
+
+
 //Вставка из галереи
 
 (function( $ ){
@@ -31,11 +59,11 @@
                         if(uploadsModal.attr('owner-type') == 'gallery' && $(this).attr('data-file-type') != 'image'){
                             return;
                         }
-                        $(this).toggleClass('active');
+                        $(this).toggleClass('selected');
                     });
 
                     uploadsModalButton.click(function(){
-                      uploadsModal.find('[data-type = item].active').each(function(){
+                      uploadsModal.find('[data-type = item].selected').each(function(){
                         if(uploadsModal.attr('owner-type') == 'gallery' || uploadsModal.attr('owner-type') == 'files'){
                             if(uploadsModal.attr('owner-type') == 'gallery' && $(this).attr('data-file-type') != 'image' ){
                                 return;
@@ -67,7 +95,7 @@
                         window.onbeforeunload = $(document).formUnloadPage;
                       });
                       uploadsModal.modal('hide');
-                      uploadsModal.find('[data-type = item].active').removeClass('active');
+                      uploadsModal.find('[data-type = item].selected').removeClass('selected');
                     }); 
 
                   }
@@ -117,7 +145,7 @@
     //Изменяем элемент
 
     var changeLink;
-    var editModal = $('#content-uploads-modal-edit');
+    var editModal = $('#UploadEditModal');
     conteiner.find('[subrole=edit]').click(function(e)
     {
         e.stopPropagation();
@@ -131,7 +159,7 @@
             url: url,
             success: function(result){
                 console.log(result);
-                editModal.find('#content-uploads-modal-edit-desc').val(result.desc);
+                editModal.find('#UploadEditModal-desc').val(result.desc);
                              
             },
 
@@ -235,7 +263,7 @@
                     }
                 }else{
                     if(result.file !== undefined){
-                        uFile.addClass('active');
+                        uFile.addClass('selected');
                         uFile.find('progress').remove();
                         uFile.attr('data-id', result.id);
                         
