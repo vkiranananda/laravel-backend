@@ -2,7 +2,7 @@
 User-agent: *
 Disallow: /
 @endif
-@if( Option::get('general', 'robots-sitemap') !== '0' )
+@if( Option::get('general', 'robots-sitemap') === '1' )
 Sitemap: {{url('/').'/sitemap.xml'}}
 @endif
 {!!Option::get('general', 'robots')!!}
