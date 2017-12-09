@@ -38,8 +38,7 @@ trait Fields {
                 skipCheck:
                 
             }elseif($field['type'] == 'gallery' || $field['type'] == 'files'){ //Галлерею сохраняем
-                if(is_array($value) && count($value) > 1){
-                    unset($value[0]);
+                if(is_array($value) && count($value) > 0){
                     $uniqueValue = array_unique($value);
 
                     $imgReq = \Backend\Root\Upload\Models\MediaFile::whereIn('id', $uniqueValue );
@@ -50,7 +49,6 @@ trait Fields {
                 }else {
                     $value = [];
                 }
-
             }elseif ($field['type'] == 'mce') {
                 if( isset($field['upload'])){
 

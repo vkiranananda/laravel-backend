@@ -1,6 +1,8 @@
 <?php
 namespace Backend\Root\Upload\Services;
 use \Backend\Root\Upload\Models\MediaFile;
+use Content;
+use Helpers;
 
 class UploadedFiles {
 
@@ -101,4 +103,20 @@ class UploadedFiles {
         $this->_getImages($req);
         // dd($this->images);
     }
+
+    //Формируем вывод для галерей
+    public function prepGaleryData(&$list)
+    {
+    	$res = [];
+        foreach ($list as $key => $file) {
+			$res[] = array_merge(
+				( ($file['file_type'] == 'image') 
+					? Content::genImgLink($file, [128, 128, 'fit']) 
+					: ['orig' => Content::genFileLink($file), 'thumb' => '/images/system/file.png' ]),
+				Helpers::setArray($file, ['id', 'orig_name', 'file_type'])
+			);
+        }
+        return $res;
+    }
+
 }

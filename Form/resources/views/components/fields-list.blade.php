@@ -43,22 +43,19 @@
     }
  
 ?>
-
      <div class="form-group {{isset($field['conteiner-class']) ? $field['conteiner-class'] : ''}}" id="{{$field['attr']['id']}}-block">
       @if(isset($field['label']))
         <label for="{{$field['attr']['id']}}">{{$field['label']}}</label>
       @endif
       <div class="Forms-field-con">
         @if(isset($field['upload']))
-        <button type="button" class="btn btn-secondary btn-sm mb-1" role="attachFiles" data-url="{!!action($uploadAction, $dataId)!!}">
-            Выбрать файл
-        </button>
+        	<show-uploads-button url="{!!action($uploadAction, $dataId)!!}"></show-uploads-button>
         @endif
         @if( in_array($field['type'], ['gallery', 'files']) )
             <?php
                 $field['data-url'] = (isset($field['upload-action'])) ? action($field['upload-action'], $dataId) : action($uploadAction, $dataId);
             ?>
-            @component('Upload::components.files-field', [ 'field' => $field, 'postId' => $dataId]) @endcomponent
+        	<attached-files :field='@json($field)'></attached-files>
         @else
             {!!Forms::fieldHTML($field, $data)!!}
         @endif

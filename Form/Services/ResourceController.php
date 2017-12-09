@@ -173,14 +173,13 @@ class ResourceController extends Controller {
     public function saveMediaRelations($imageable = false, $id = false, $type = 1)
     {
         $mediaFiles = Request::input('_media-file-uploaded-id', false);
-        if( is_array($mediaFiles) && count($mediaFiles) > 1 ){
+
+        if( is_array($mediaFiles) && count($mediaFiles) > 0 ){
             
             if(isset($this->params['conf']['media-files']) && $this->params['conf']['media-files'] == 'hidden') $type = '2';
 
             if( $imageable == false ) $imageable = $this->params['baseClass'];
             if( $id == false ) $id = $this->post->id;
-
-            unset($mediaFiles[0]);
 
             MediaFile::whereIn('id', $mediaFiles)->where('imageable_type', $imageable)->update(['imageable_id' => $id, 'type' => $type ]);
         }

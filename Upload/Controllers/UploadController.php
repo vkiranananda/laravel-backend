@@ -37,44 +37,18 @@ class UploadController extends Controller
 
         $list = MediaFile::where('imageable_type', $this->module)->where('imageable_id', $id)->orderBy('id', 'desc')->get()->toArray();
 
-        foreach ($list as &$file) {
-            $this->getUrls($file);
-        }
-        return view($this->viewTemplate, [ 'data' => $list, 'params' => $this->params, ] );
+        return  [ 'data' => app('UploadedFiles')->prepGaleryData( $list ), 'params' => $this->params, ];
+
+        // return view($this->viewTemplate, [ 'data' => UploadedFiles::prepGaleryData( $list ), 'params' => $this->params, ] );
     }
 
-    //Устанвливаем урл миниатюры и урл на файл.
-    protected function getUrls(&$file)
-    {
-        if($file['file_type'] == 'image'){
-            $urls = Content::genImgLink($file, [128, 128, 'fit']);
-            $file['thumb_url'] = $urls['thumb'];
-            $file['orig_url'] = $urls['orig'];
-        }else {
-            $file['orig_url'] = Content::genFileLink($file);
-        }  
-    }
 
     public function store()
     {
         $this->validate(Request(), [ 'file' => $this->params['validate'] ] );
         $this->params['module'] = $this->module;
-        $savedFile = Uploads::saveFile($this->params);
-        
-        $this->getUrls($savedFile);
-
-        if($savedFile->file_type == 'image'){
-            $urls = Content::genImgLink($savedFile, [128, 128, 'fit']);
-            $savedFile['thumb_url'] = $urls['thumb'];
-            $savedFile['orig_url'] = $urls['orig'];
-        }else {
-            $savedFile['orig_url'] = Content::genFileLink($savedFile);
-        }
-
-        $savedFile['data_get_url'] = action('\Backend\Root\Upload\Controllers\EditController@getInfo', $savedFile['id']); 
-        $savedFile['data_save_url'] = action('\Backend\Root\Upload\Controllers\EditController@saveInfo', $savedFile['id']);
-
-        return $savedFile;
+        $savedFile[] = Uploads::saveFile($this->params);
+        return app('UploadedFiles')->prepGaleryData( $savedFile )[0];
     }
 
     public function destroy($id)

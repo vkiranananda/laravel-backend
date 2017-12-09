@@ -24,16 +24,7 @@
         "laravel": {
             "providers": [
                 "Backend\\Root\\Core\\Providers\\CoreServiceProvider"
-            ],
-            "aliases": {
-                "GetConfig": "Backend\\Root\\Core\\Facades\\GetConfigFacade", 
-                "Option": "Backend\\Root\\Option\\Facades\\OptionFacade",
-                "Backend": "Backend\\Root\\Core\\Facades\\BackendFacade",
-                "Categories": "Backend\\Root\\Category\\Facades\\CategoriesFacade",
-                "Content": "Backend\\Root\\Site\\Services\\Content",
-                "Helpers": "Backend\\Root\\Core\\Services\\Helpers",
-                "Forms": "Backend\\Root\\Form\\Services\\Forms"
-            }
+            ]
         }
     }
 }

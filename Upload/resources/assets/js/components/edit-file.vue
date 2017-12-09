@@ -1,7 +1,7 @@
 <template>
-    <form :action="params['save-info-url']" role="formAjax" method="POST" >
+    <form action="params['save-info-url']" role="formAjax" method="POST" >
         <modal id='UploadEditModal' title="Свойства файла">
-            <input type="hidden" v-model="file.id" name="id">
+            <input type="hidden" vb-model="file.id" name="id">
             <slot></slot>
             <div slot="footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
@@ -13,12 +13,15 @@
 
 <script>
     export default {
-        mounted () {
-            console.log(this.params);
+        // props: [ url ],
+        computed: {
+            editFile() { return this.$store.state.uploadStore.editFile },
         },
-         computed: {
-            file() { return this.$store.state.uploadStore.editingFile },
-            params() { return this.$store.state.uploadStore.params },
+        watch: {
+            editFile: function() {
+                if(this.editFile === false) return;
+                $('#UploadEditModal').modal('show');
+            }
         },
     }
 </script>

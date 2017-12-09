@@ -8,7 +8,7 @@ use Illuminate\Routing\Controller;
 use Helpers;
 use \Backend\Root\Upload\Models\MediaFile;
 use DB;
-
+use Content;
 
 class Forms
 {
@@ -174,7 +174,8 @@ class Forms
         if($field['type'] == 'files' || $field['type'] == 'gallery'){
             if(!is_array($field['value']))$field['value'] = [];
             elseif(count($field['value']) > 0) {
-                $field['value'] = MediaFile::whereIn('id', $field['value'])->orderByRaw(DB::raw("FIELD(id, ".implode(',', $field['value']).")"))->get()->toArray();
+            	$files = MediaFile::whereIn('id', $field['value'])->orderByRaw(DB::raw("FIELD(id, ".implode(',', $field['value']).")"))->get()->toArray();
+                $field['value'] = app('UploadedFiles')->prepGaleryData( $files );
             }
         }
         return $field;
