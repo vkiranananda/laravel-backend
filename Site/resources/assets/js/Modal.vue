@@ -28,7 +28,7 @@
             title: {}
         },
         computed: {
-            classSize() {
+            classSize: function() {
                 return (this.size == 'large') ? 'modal-lg' : ''
             }
         }

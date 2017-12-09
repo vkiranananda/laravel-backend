@@ -18,7 +18,7 @@
             editFile() { return this.$store.state.uploadStore.editFile },
         },
         watch: {
-            editFile: function() {
+            editFile() {
                 if(this.editFile === false) return;
                 $('#UploadEditModal').modal('show');
             }

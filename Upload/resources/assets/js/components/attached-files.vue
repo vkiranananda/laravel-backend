@@ -41,7 +41,7 @@
             deleteFile() { return this.$store.state.uploadStore.deleteFile },
         },
         watch: {
-            selectData: function() {
+            selectData() {
                 if(this.selectData.field == this.field.name && this.selectData.items.length > 0){
                     for (var i = 0; i < this.selectData.items.length; i++) {
                         this.files.unshift(this.selectData.items[i]);
@@ -49,7 +49,7 @@
                     window.onbeforeunload = $(document).formUnloadPage;
                 }
             },
-            deleteFile: function() {
+            deleteFile() {
                 if(this.deleteFile === false) return;
                 for (var i = 0; i < this.files.length; i++) {
                     if(this.files[i].id == this.deleteFile) {

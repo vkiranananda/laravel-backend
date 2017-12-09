@@ -39,7 +39,7 @@
         },
         watch: {
             //Очищаем все выбраные элементы
-            selectData: function() {
+            selectData() {
                 if (this.dataUrl != this.selectData.url) {
                     axios.get(this.selectData.url)
                     .then( (response) => {
@@ -57,11 +57,11 @@
             }
         },
         methods: {
-            chooseFiles: function ()
+            chooseFiles()
             {
                 this.$refs.upload.click();
             },
-            uploadFiles: function ()
+            uploadFiles()
             {
                 var files = this.$refs.upload.files;
                 this.errors = "";
@@ -108,7 +108,7 @@
                     })(files[i]);
                 }   
             },
-            selectFile: function (file) {
+            selectFile(file) {
                 if(this.selectable){ 
                     if( (this.selectData.type == 'image' && file.file_type == 'image') ||  this.selectData.type == 'all'){
                         this.$set(file, 'selected', (!file['selected']) );
@@ -116,7 +116,7 @@
                 }
             },
             //Выводит список файлов
-            insertFiles: function (type) {
+            insertFiles(type) {
                 var res = Object.assign({}, this.selectData);
                 res.items = [];
                 for (var i = 0; i < this.files.length; i++) {
@@ -127,11 +127,11 @@
                 this.$store.commit('uploadStore/SetSelectData', res );
             },
             //Изменяем элемент
-            edit: function (file) {
+            edit(file) {
                 this.$store.commit('uploadStore/EditFile', file.id );
                 $('#UploadEditModal').modal('show');
             },
-            del: function (file) {
+            del(file) {
                 if(!confirm('Файл "' + file['orig_name'] + '" будет удален безвозвратно. Удалить файл?'))return
 
                 this.errors = "";
