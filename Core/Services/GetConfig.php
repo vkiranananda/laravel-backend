@@ -20,7 +20,7 @@ class GetConfig {
         $this->loadedConfigs[$type][$conf] = Cache::tags('configs')->remember($conf, 43200, function() use ($conf, $root)
         {
             $config = str_replace('.', '/', $conf);
-            $pathRoot = base_path('backend-root/');
+            $pathRoot = base_path('vendor/vkiranananda/backend/');
             $pathExt = base_path('backend/');
 
             $path = (strrpos($config, '::') === false) ? "Configs/".$config.".php" :  str_replace('::', '/Configs/', $config).".php";
