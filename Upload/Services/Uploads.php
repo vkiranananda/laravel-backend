@@ -74,7 +74,7 @@ class Uploads {
     public static function genSizes(&$file, $sizes, $tmpFile = false)
     {
         $res = array();
-        $disk = Storage::disk($file->disk);
+        $disk = Storage::disk($file['disk']);
         $orig = false;
 
         $loadedFile = ($tmpFile) ? file_get_contents($tmpFile) : $disk->get($file['path'].$file['file']);

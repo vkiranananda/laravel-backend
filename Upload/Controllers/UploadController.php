@@ -35,7 +35,7 @@ class UploadController extends Controller
         $this->params['upload-url'] = action('\\'.$baseNamespace.'\\'.$this->controller.'@store');
         $this->params['destroy-url'] = action('\\'.$baseNamespace.'\\'.$this->controller.'@destroy', '');
 
-        $list = MediaFile::where('imageable_type', $this->module)->where('imageable_id', $id)->orderBy('id', 'desc')->get()->toArray();
+        $list = MediaFile::where('imageable_type', $this->module)->where('imageable_id', $id)->orderBy('id', 'desc')->get();
 
         return  [ 'data' => app('UploadedFiles')->prepGaleryData( $list ), 'params' => $this->params, ];
 

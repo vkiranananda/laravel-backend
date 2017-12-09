@@ -174,7 +174,7 @@ class Forms
         if($field['type'] == 'files' || $field['type'] == 'gallery'){
             if(!is_array($field['value']))$field['value'] = [];
             elseif(count($field['value']) > 0) {
-            	$files = MediaFile::whereIn('id', $field['value'])->orderByRaw(DB::raw("FIELD(id, ".implode(',', $field['value']).")"))->get()->toArray();
+            	$files = MediaFile::whereIn('id', $field['value'])->orderByRaw(DB::raw("FIELD(id, ".implode(',', $field['value']).")"))->get();
                 $field['value'] = app('UploadedFiles')->prepGaleryData( $files );
             }
         }
