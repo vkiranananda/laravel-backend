@@ -24,9 +24,29 @@
         methods: {
             insertFiles()
             {
-                console.log(this.selectData);
-            	var data = this.$refs.uploadedFiles.insertFiles();
-            	$('#UploadsModal').modal('hide');
+                var attachedRes = Object.assign({}, this.selectData);
+                var files = this.$refs.uploadedFiles.files;
+                attachedRes['items'] = [];
+
+                $('#UploadsModal').modal('hide');
+
+                for (var i = 0; i < files.length; i++) {
+                    if(files[i].selected){
+                        if(this.selectData.field == 'mce'){
+                           if( files[i].file_type == 'image'){
+                                var res = '<img alt="" src="'+files[i].orig+'" data-id="'+files[i].id+'" />';
+                                if( this.origLink ) res = '<a href="'+files[i].orig+'">'+res+'</a> ';
+                            } else {
+                                var res = files[i].orig;
+                                if( this.origLink ) res = '<a href="'+res+'">'+files[i].orig_name+'</a> ';
+                            }
+                            tinymce.activeEditor.insertContent(res);
+                        }else {
+                            attachedRes.items.push(files[i]);
+                        }
+                    }
+                }
+                this.$store.commit('uploadStore/SetSelectData', attachedRes );
             },
         }
     }

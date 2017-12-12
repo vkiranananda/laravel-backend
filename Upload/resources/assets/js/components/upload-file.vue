@@ -116,7 +116,7 @@
                 }
             },
             //Выводит список файлов
-            insertFiles(type) {
+            unselectFile(id) {
                 var res = Object.assign({}, this.selectData);
                 res.items = [];
                 for (var i = 0; i < this.files.length; i++) {
