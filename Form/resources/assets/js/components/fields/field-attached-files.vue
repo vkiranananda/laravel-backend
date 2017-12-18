@@ -2,15 +2,15 @@
     <div>
         <div class="attached-files" >
             <div class="mb-3">
-                <show-uploads-button :url="field['data-url']" :field-name="field.name" :data-type="field.type == 'files' ? 'all' : 'image'">
+                <show-uploads-button :url="data['filesUrl']" :field-name="data.name" :data-type="data.type == 'files' ? 'all' : 'image'">
                 </show-uploads-button>
             </div>
             <div class="conteiner">
                 <draggable v-model="files" :options="{draggable:'.item'}">
-                    <div v-for="file in files" class="media-file item" :class="field.type == 'gallery' ? 'image' : 'file'" :key="file.id">
+                    <div v-for="file in files" class="media-file item" :class="data.type == 'gallery' ? 'image' : 'file'" :key="file.id">
                         <a href='#' v-on:click.prevent="del(file)" class="delete">&times;</a>
                         <div class="file-body">
-                            <input type="hidden" :name="field.name+'[]'" :value="file.id">
+                            <input type="hidden" :name="data.name+'[]'" :value="file.id">
                             <img :src="file.thumb" alt="" class="image">
                             <div class="text">{{ file.orig_name}}</div>      
                         </div>
@@ -37,18 +37,18 @@
             draggable,
         },
         props: {
-            field: {
+            data: {
                 default: [],
            },
         },
         data() {
             return {
-                files: this.field.value,
+                files: this.data.value,
             }
         },
         methods: {
             attacheFiles(field, files){
-                if(field == this.field.name){
+                if(field == this.data.name){
                     for (var i = 0; i < files.length; i++) {
                         this.files.unshift(files[i]);
                     }

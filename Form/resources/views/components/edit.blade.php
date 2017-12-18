@@ -73,7 +73,7 @@
 @endif
 </form>
 @if( isset($params['conf']['media-files']) )
-	@component('Upload::components.edit-file' ) @endcomponent
+	<upload-edit-file url="{!!GetConfig::backend('Upload::edit')['conf']['get-info-url']!!}"></upload-edit-file>
 @endif
 
 

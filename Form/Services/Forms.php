@@ -159,7 +159,7 @@ class Forms
 	}
 
 	//Подготавливаем поле для вывода.
-	static function prepField($post, $field)
+	static function prepField(&$post, $field)
 	{
 	    if(isset($field['name']))$field['attr']['name'] = $field['name'];
         else return $field;

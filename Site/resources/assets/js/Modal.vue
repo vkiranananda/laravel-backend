@@ -9,7 +9,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <slot></slot>
+                <div class="text-center" v-if="loading">
+                    <img src="/images/system/loading5.gif" alt="" :style="{width: loadingSize+'%'}">
+                </div>
+                <slot v-else></slot>
             </div>
             <div class="modal-footer" slot="footer">
                 <slot name="footer"></slot>
@@ -22,14 +25,16 @@
 <script>
     export default {
         props: {
-            size: {
-                default: '',
-            },
+            size: { default: '' },
+            loading: { default: false },
             title: {}
         },
         computed: {
             classSize: function() {
                 return (this.size == 'large') ? 'modal-lg' : ''
+            },
+            loadingSize() {
+                return (this.size == 'large') ? 100 : 35;
             }
         }
     }

@@ -1,62 +1,79 @@
 <template>
     <div class='upload-file'>
-        <div data-name="errorsArea" v-html="errors"></div>
-        <div class='upload-button media-file' @click="chooseFiles()"></div>
-        <div class="conteiner">
-            <div class='media-file' v-for="(file, key, index) in files" :key="file.id">
-                <a href='#' v-on:click.prevent="del(file)" class="delete">&times;</a>
-                <a href="#" v-on:click.prevent="edit(file)" v-show="file.id" class="icons-pencil edit"></a>
+        <div class="loader text-center" v-if="loading">
+            <img src="/images/system/loading5.gif" alt="">
+        </div>
+        <div v-else>
+            <div data-name="errorsArea" v-html="errors"></div>
+            <div class='upload-button media-file' @click="chooseFiles()"></div>
+            <div class="conteiner">
+                <div class='media-file' v-for="(file, key, index) in files" :key="file.id">
+                    <a href='#' v-on:click.prevent="del(file)" class="delete">&times;</a>
+                    <a href="#" v-on:click.prevent="edit(file)" v-show="file.id" class="icons-pencil edit"></a>
 
-                <div :class="{ 'have-errors': file.haveErrors, 'selected': file.selected }" class="media-file-body" @click="selectFile(file)">
-                    <img :src="file.thumb" alt="">
-                    <input v-if="file.newUploadedFile" type="hidden" name="_media-file-uploaded-id[]" :value="file.id" />
-	                <div class="text" data-type="text" v-if="file.file_type != 'image'">{{ file.orig_name }}</div>
-	                <progress v-show="!file.id && !file.haveErrors" class="progress progress-info" :value="file.progress" max="100"></progress>
+                    <div :class="{ 'have-errors': file.haveErrors, 'selected': file.selected }" class="media-file-body" @click="selectFile(file)">
+                        <img :src="file.thumb" alt="">
+                        <input v-if="file.newUploadedFile" type="hidden" name="_media-file-uploaded-id[]" :value="file.id" />
+    	                <div class="text" data-type="text" v-if="file.file_type != 'image'">{{ file.orig_name }}</div>
+    	                <progress v-show="!file.id && !file.haveErrors" class="progress progress-info" :value="file.progress" max="100"></progress>
+                    </div>
                 </div>
             </div>
+            <input type="file" @change="uploadFiles" class="hidden-xs-up" ref="upload" multiple>
         </div>
-        <input type="file" @change="uploadFiles" class="hidden-xs-up" ref="upload" multiple>
     </div>
 </template>
 
 <script>
     export default {
+        created () {
+            this.$bus.$on('UploadFileModalButton', this.getFiles)
+        },
+        beforeDestroy(){
+            this.$bus.$off('UploadFileModalButton');
+        },
+
+
         props: {
             params: { default: function () { return [] } },
             data: { default: function () { return [] } },
             selectable: { default: false }
         },
-        conf: this.params,
-        dataUrl: '',
         data() {
             return {
                 files: this.data,
                 errors: '',
+                loading: false,
+                conf: this.params,
+                extConf: [],
             }
         },
-        computed: {
-            selectData() { return this.$store.state.uploadStore.selectData },
-        },
-        watch: {
-            //Очищаем все выбраные элементы
-            selectData() {
-                if (this.dataUrl != this.selectData.url) {
-                    axios.get(this.selectData.url)
+        methods: {
+            getFiles(conf) {
+                if (this.extConf.url != conf.url) {
+                    this.loading = true;
+                    axios.get(conf.url)
                     .then( (response) => {
                         this.conf = response.data.params;
                         this.files = response.data.data;
-                        this.dataUrl = this.selectData.url;
+                        this.loading = false;
                     })
                     .catch( (error) => {
                         console.log(error.response);
                     });      
                 }
+                if(this.extConf.fieldName != conf.fieldName){
+                    this.unselectFiles();
+                }
+                this.extConf = conf;
+            },
+
+            unselectFiles() {
+                //Очищаем все выбраные элементы
                 for (var i = 0; i < this.files.length; i++) {
                     if(this.files[i].selected)this.files[i].selected = false;
                 }
-            }
-        },
-        methods: {
+            },
             chooseFiles()
             {
                 this.$refs.upload.click();
@@ -110,26 +127,14 @@
             },
             selectFile(file) {
                 if(this.selectable){ 
-                    if( (this.selectData.type == 'image' && file.file_type == 'image') ||  this.selectData.type == 'all'){
+                    if( (this.extConf.dataType == 'image' && file.file_type == 'image') ||  this.extConf.dataType == 'all'){
                         this.$set(file, 'selected', (!file['selected']) );
                     }
                 }
             },
-            //Выводит список файлов
-            unselectFile(id) {
-                var res = Object.assign({}, this.selectData);
-                res.items = [];
-                for (var i = 0; i < this.files.length; i++) {
-                    if(this.files[i].selected){
-                        res.items.push(this.files[i]);
-                    }
-                }
-                this.$store.commit('uploadStore/SetSelectData', res );
-            },
             //Изменяем элемент
             edit(file) {
-                this.$store.commit('uploadStore/EditFile', file.id );
-                $('#UploadEditModal').modal('show');
+                this.$bus.$emit('UploadEditFile', file.id);
             },
             del(file) {
                 if(!confirm('Файл "' + file['orig_name'] + '" будет удален безвозвратно. Удалить файл?'))return
@@ -139,7 +144,7 @@
 
                 axios.delete(this.conf['destroy-url'] + '/' + file['id'])
                     .then( (response) => {
-                        this.$store.commit('uploadStore/DeleteFile', file.id );
+                        this.$bus.$emit('UploadDeleteFile', file.id);
                         this.$delete(this.files, this.files.indexOf(file) );
                     })
                     .catch( (error) => {
