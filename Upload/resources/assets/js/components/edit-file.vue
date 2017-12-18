@@ -29,18 +29,22 @@
         },
         methods: {
             getData(id) {
+                console.log(id, this.fileId);
                 $('#UploadEditModal').modal('show');
 
                 if(id == this.fileId) return;
 
                 this.loading = true;
                 
+                console.log(id, this.fileId, this.url + '/' + id);
+
                 axios.get(this.url + '/' + id )
                     .then( (response) => {
                         this.fileId = id;
                         this.saveUrl = response.data.saveUrl + '/' + id;
                         this.fields = response.data.fields;
                         this.loading = false;
+                                        console.log(id, this.fileId);
                     })
                     .catch( (error) => {
                         console.log(error.response.data);
