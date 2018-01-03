@@ -1,7 +1,7 @@
 <?php
 return [
 	'conf' => [
-		'save-info-url' => action('\Backend\Root\Upload\Controllers\EditController@saveInfo'),
+		'save-info-url' => action('\Backend\Root\Upload\Controllers\EditController@saveInfo', ''),
 		'get-info-url' => action('\Backend\Root\Upload\Controllers\EditController@getInfo', ''),
 	], 
 	'fields' => [

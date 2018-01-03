@@ -85,6 +85,10 @@ class Content {
             $res['seo-title'] = $post['name'];
         }
 
+        if(isset($post['array_data']['fields']['seo_title_h1']) ){
+        	$res['seo_title_h1'] = $post['array_data']['fields']['seo_title_h1'];
+        }
+
         if(isset($post['array_data']['fields']['seo_description']) && $post['array_data']['fields']['seo_description'] != ''){
             $res['seo-description'] = $post['array_data']['fields']['seo_description'];
         }

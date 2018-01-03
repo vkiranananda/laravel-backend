@@ -50,11 +50,11 @@ class UserController extends \Backend\Root\Form\Services\ResourceController
 
         $this->params['fields']['email']['validate'] .= ",".$id;
         
-        if( ! Request::has('password') ){
+        if( Request::input('password', '') == '' ){
             unset($this->params['fields']['password']);
         }
 
-        $this->SaveFields($this->post, $this->params['edit']);
+        $this->SaveFields($this->post, $this->params['fields']);
 
         if( Request::has('password') ) {
             $this->post->password = bcrypt($this->post->password);

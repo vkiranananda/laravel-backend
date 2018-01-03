@@ -12,6 +12,7 @@ const store = new Vuex.Store({
 	} 
 });
 
+
 Vue.prototype.$bus = new Vue();
 
 console.log(store.state.uploadStore);
