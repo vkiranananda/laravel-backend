@@ -2,7 +2,7 @@
 namespace Backend\Root\Core\Services;
 
 class Helpers {
-    //Получаем все поля где есть массив options,передается параметр табов
+    //Получаем все поля где есть массив options, передается параметр табов
     static public function changeFieldsOptions($fields)
     {
         $res = [];
@@ -97,22 +97,32 @@ class Helpers {
     }
 
 
+    //Выводим данные поля, если данных нет выводим false
     static public function dataIsSetValue(&$data, $id){
-        if(isset($data[$id])){
-            return $data[$id];
-        }
-        if(isset($data['array_data']['fields'][$id] )){
-            return $data['array_data']['fields'][$id];
-        }
+        if(isset($data[$id])) return $data[$id];
+
+        if(isset($data['array_data']['fields'][$id] )) return $data['array_data']['fields'][$id];
+ 
         return false;
     }
 
+    //То же самое что предыдущее но выводим false если значиение пустое.
     static public function dataIsSet(&$data, $id){
         $value = Helpers::dataIsSetValue($data, $id);
 
         if($value != '' && $value !== false)return $value;
       
         return false;
+    }
+
+    //Генерит список атрибутов для хтмл поля из массива key=value
+    static public function getAttrs($attr = [])
+    {
+    	$res = '';
+    	foreach ($attr as $key => $value) {
+    		$res .= ' '.$key.'="'.addslashes($value).'"';
+    	}
+    	return $res;
     }
 
 }

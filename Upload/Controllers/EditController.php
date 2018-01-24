@@ -19,8 +19,6 @@ class EditController extends Controller
 
     	$this->_getFields($config, $file);
 
-    	GetConfig::backend("Upload::edit")['conf']['save-info-url'];
-
     	return [
     		'fields' 	=> Forms::prepAllFields( $file, $config['fields'] ), 
     		'saveUrl'	=> $config['conf']['save-info-url']

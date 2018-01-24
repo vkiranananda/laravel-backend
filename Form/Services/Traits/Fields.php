@@ -61,7 +61,7 @@ trait Fields {
                             $sizes = [ $width[1], $height[1] ];
                             
                             if( ($imgObj = \Backend\Root\Upload\Models\MediaFile::find($imgId)) ){
-                                $imgUrl = Content::genImgLink($imgObj, $sizes)['thumb'];
+                                $imgUrl = Content::uFile()->genFileLink($imgObj, $sizes)['thumb'];
 
                                 $img = preg_replace("/src=[\'\"]{1}.*?[\'\"]{1}/", "src=\"".$imgUrl."\"", $img);
                             }
