@@ -16,7 +16,7 @@ class UploadedFiles {
     {  
         $size = \Backend\Root\Upload\Services\Uploads::sizesToStr($sizes);
 
-        $res = [ 'orig' => url ($file['url'].$file['path'].urlencode($file['file'] )) ];
+        $res = [ 'orig' => $file['url'].$file['path'].urlencode($file['file'] ) ];
 
         if( $file['file_type'] == 'image' ) {
 			if( pathinfo($file['file'])['extension'] == 'gif' || !$sizes ) {
@@ -30,7 +30,7 @@ class UploadedFiles {
 	                $file->save();
 	            }
 
-	            $res['thumb'] = url($file['url'].$file['path'].$file['sizes'][$size]['path'].urlencode($file['sizes'][$size]['file']));
+	            $res['thumb'] = $file['url'].$file['path'].$file['sizes'][$size]['path'].urlencode($file['sizes'][$size]['file']);
 	        }
         } 
         return $res;
