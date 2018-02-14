@@ -75,6 +75,7 @@ class Forms
 
 	static public function dateField($options = array())
 	{
+		if($options['value'] == 'now') $options['value'] = date("Y-m-d");
 		return Forms::inputField($options);
 	}
 
@@ -178,6 +179,7 @@ class Forms
                 $field['value'] = app('UploadedFiles')->prepGaleryData( $files );
             }
         }
+
         return $field;
 	}
 

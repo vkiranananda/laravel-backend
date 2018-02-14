@@ -47,7 +47,7 @@
     			'name' => 'publication_date',
 	            'type' => 'date', 
 	            'label' => 'Дата публикации',
-	            'value' => date("Y-m-d"),
+	            'value' => 'now',
 	            'validate' => 'date|date_format:Y-m-d',
 			],
 			'status' => [		

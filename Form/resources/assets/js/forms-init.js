@@ -72,6 +72,9 @@ require('./ajax-forms.js');
     {  
         $(this).attachFiles();
     });
+
+    //valueAsDate = new Date();
+
   };
 })( jQuery );
 
