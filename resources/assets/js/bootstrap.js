@@ -11,7 +11,7 @@ try {
     window.$ = window.jQuery = require('jquery');
 
 
-	require('tether');
+	// require('tether');
     require('bootstrap');
 
 } catch (e) {}
