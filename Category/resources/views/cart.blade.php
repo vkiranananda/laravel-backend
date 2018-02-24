@@ -7,7 +7,7 @@
 <div class="card">
   <div class="card-header">Корзина</div>
 
-  <div class="card-block">
+  <div class="card-body">
       <button type="button" class="btn btn-primary mb-3" data-role='href' href=''>
       	Очистить корзину
       </button>

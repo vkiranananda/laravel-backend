@@ -8,7 +8,7 @@
             @endif
             </small>
         </div>
-        <div class="card-block">
+        <div class="card-body">
             <input type="hidden" name="id" value="{{ $data['id'] }}">
             @foreach($params['fields'] as $name => $field)
                 @if(isset($field['type']) && $field['type'] == 'hidden')

@@ -6,7 +6,7 @@
 
 <div class="card">
   <div class="card-header">{{$params['title']}}</div>
-  <div class="card-block">
+  <div class="card-body">
 	<table class="table table-hover list" id="table-list">
       <thead>
           <tr class="table-success">

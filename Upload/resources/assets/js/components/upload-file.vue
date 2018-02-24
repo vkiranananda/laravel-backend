@@ -19,7 +19,7 @@
                     </div>
                 </div>
             </div>
-            <input type="file" @change="uploadFiles" class="hidden-xs-up" ref="upload" multiple>
+            <input type="file" @change="uploadFiles" class="d-none" ref="upload" multiple>
         </div>
     </div>
 </template>

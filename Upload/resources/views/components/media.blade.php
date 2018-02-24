@@ -46,5 +46,5 @@
   @if(isset($field))
     <div data-name="errorsArea"></div>
   @endif
-  <input type="file" data-name="filesInput" class="hidden-xs-up" multiple>
+  <input type="file" data-name="filesInput" class="d-none" multiple>
 </div>

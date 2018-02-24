@@ -110,9 +110,8 @@ class Forms
 	{		
 		if(!isset($options['options']) || !is_array($options['options']))return '';
 
-		$out = '<div class="row">';
 		$options['attr']['name'] .= "[]";
-
+		$out = '';
 		foreach ($options['options'] as $el) {
 			$out .= '<div class="form-check ';
 			$out .= (isset($options['class-con'])) ? $options['class-con'] : 'col-12' ;
@@ -125,7 +124,7 @@ class Forms
 			$out .= ">&nbsp;".$el['label'];
 			$out .= "</label></div>\n";
 		}
-		return $out."</div>";
+		return $out;
 	}
 
 
@@ -135,16 +134,16 @@ class Forms
 		
 		$res = '';
 		$id = 2;
-
-		foreach ($options['options'] as $key => $el) {
 		
+		foreach ($options['options'] as $key => $el) {
+			
 			$out = "<input type='radio' ";
 
 			if($el['value'] == $options['value']) $out .= "checked";
 
 			$out .= " ".Forms::attributes($options['attr']).' '.Forms::attributes($el, ['label'])."> ".$el['label'];
 
-			$res .= "<label class=\"form-check-label\">$out</label>\n";
+			$res .= "<div class='form-check'><label class=\"form-check-label\">$out</label></div>\n";
 			$options['attr']['id'] = $options['attr']['id']."".$id++;
 		}
 		return $res;
@@ -192,3 +191,5 @@ class Forms
         return $fields;
 	}
 }
+
+//form-check

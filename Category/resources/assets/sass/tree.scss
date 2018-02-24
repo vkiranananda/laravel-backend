@@ -39,14 +39,15 @@
 		content:"\f103"; 
 		font-family: Octicons;
 	    position: relative;
-	    top: -3px;
-	    left: -4px;
+	    top: -1px;
+	    left: 0px;
 	}
 	.button-grabber {
 		border: 0px;
 	    width: 33px;
 	    height: 33px;
 	    background-color: transparent;
+	    margin-right: 5px;
 	}
 	.dropdown {
 		display: none;
@@ -57,10 +58,15 @@
 	.tree-item:hover .dropdown,.tree-item-title:hover .dropdown {
 		display: block;
 	}
+	.tree-item:hover .button-grabber {
+		color: black !important;
+	}
 	.tree-item-title .button-grabber {
 		color: white !important;
 	}
-
+	.tree-item .button-grabber:active {
+		color: white !important;
+	}
 	.add-root{
 	    color: #5cb85c;
 	    font-size: 22px;

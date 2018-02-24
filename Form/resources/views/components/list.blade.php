@@ -11,11 +11,11 @@
                 if( isset($params['fields'][$field['name']]) )
                   $params['list'][$key] = array_replace($params['fields'][$field['name']], $field);
               ?>
-              <th {!! isset($field['attr']) ? Forms::attributes($field['attr']) : '' !!} >{{ isset($params['list'][$key]['label']) ? $params['list'][$key]['label'] : '' }}</th>
+              <th scope="col" {!! isset($field['attr']) ? Forms::attributes($field['attr']) : '' !!} >{{ isset($params['list'][$key]['label']) ? $params['list'][$key]['label'] : '' }}</th>
             @endforeach
 
             @if(!isset($params['conf']['list-no-actions']))
-              <th class="menu-td"></th>
+              <th scope="col" class="menu-td"></th>
             @endif
           </tr>
       </thead>
