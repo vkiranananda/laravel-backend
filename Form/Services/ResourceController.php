@@ -40,6 +40,7 @@ class ResourceController extends Controller {
 
     public function index()
     {
+    	$this->resourceCombine('index');
         //Если подключен трейт с категориями
         if(method_exists($this, 'setCategoryList')){
             if( ($this->params['cat'] = Request::input('cat', false) )){
@@ -102,7 +103,11 @@ class ResourceController extends Controller {
         $this->resourceCombineAfter('store');
         
         if(isset($this->params['conf']['store-redirect'])){
-            return ['redirect' => action($this->params['controllerName'].'@edit', $this->post->id)];
+        	if( !isset($this->params['conf']['store-redirect-url']) ) {
+        		$this->params['conf']['store-redirect-url'] = action($this->params['controllerName'].'@edit', $this->post->id);
+        	}
+
+            return ['redirect' => $this->params['conf']['store-redirect-url'] ];
         }
         return [ 
             'url' => action($this->params['controllerName'].'@edit', $this->post->id), 
@@ -144,7 +149,10 @@ class ResourceController extends Controller {
         $this->resourceCombineAfter('update');
 
         if(isset($this->params['conf']['update-redirect'])){
-            return ['redirect' => action($this->params['controllerName'].'@edit', $this->post->id)];
+        	if(!isset($this->params['conf']['update-redirect-url'])){
+        		$this->params['conf']['update-redirect-url'] = action($this->params['controllerName'].'@edit', $this->post->id);
+        	}
+            return [ 'redirect' => $this->params['conf']['update-redirect-url'] ];
         }
 
         return [ 
@@ -152,6 +160,26 @@ class ResourceController extends Controller {
         ];
     }
 
+    public function show($id)
+    {
+        if(!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
+        $this->resourceCombine('show');
+        // if(method_exists($this, 'setCategoryList')) {
+        //     $this->setCategoryList('edit');
+        //     $this->localize();
+        // }
+        // $this->params['fields'] = Forms::prepAllFields($this->post, $this->params['fields']);
+        $this->params['url'] = action($this->params['controllerName'].'@edit', $id);
+        $this->params['lang']['title'] = $this->params['lang']['show-title'];
+        $template = (isset($this->params['conf']['show-template'])) ? $this->params['conf']['show-template'] : 'Form::show' ;
+
+        //Подготавливаем поля
+        $this->params['fields'] = Helpers::changeFieldsOptions($this->params['fields']);
+
+        $this->resourceCombineAfter('show');
+        
+        return view($template,[ 'params' => $this->params, 'data' => $this->post ]  );
+    }
 
     public function destroy($id)
     {

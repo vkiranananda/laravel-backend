@@ -163,7 +163,7 @@ class Forms
 	{
 	    if(isset($field['name']))$field['attr']['name'] = $field['name'];
         else return $field;
-    
+
         if(( $val = Helpers::dataIsSetValue($post, $field['name'] ) ) !== false) 
             $field['value'] = $val;
         elseif(!isset($field['value']) ) 

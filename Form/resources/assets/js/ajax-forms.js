@@ -30,7 +30,7 @@
 
         btnSubmit.attr('disabled', true).text(btnSubmit.attr('data-send-text'));
         thisForm.find(".Forms-error-text").text('');
-        thisForm.find(".Forms-field-con").removeClass('has-danger');
+        thisForm.find(".is-invalid").removeClass('is-invalid');
         resultArea.find('span').hide();
 
         var method = 'PUT';
@@ -100,7 +100,8 @@
                 for(var prop in result.responseJSON['errors'])
                 {
                     var field = thisForm.find('[ name = '+prop+' ]');
-                    field.closest(".Forms-field-con").addClass('has-danger');
+                    field.addClass('is-invalid');
+
                     result.responseJSON['errors'][prop].forEach(function(item, i, arr) {
                         field.nextAll(".Forms-error-text").append(item+" ");
                     });

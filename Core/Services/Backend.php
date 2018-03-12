@@ -51,15 +51,13 @@ class Backend {
 	public function installRoutes($mod = '', $namespace = 'Backend', $upload = false)
 	{
 		if($namespace == 'Root') $namespace  =  'Backend\Root';
-
 		$modUrl = mb_strtolower($mod);
-		
 		if($upload){
 			Route::get($modUrl.'/gallery/index/{id?}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@index');
 			Route::post($modUrl.'/gallery', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@store');
 			Route::delete($modUrl.'/gallery/{id}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@destroy');
 		}
-//dd($this->data);
+
 		if ( isset($this->data['routes'][$mod][$namespace] ) ){
 			require_once($this->data['routes'][$mod][$namespace]);
 			//echo $this->data['routes'][$mod][$namespace];

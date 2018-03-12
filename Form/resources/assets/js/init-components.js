@@ -1,5 +1,5 @@
 Vue.component('field-block', require('./components/field-block.vue'));
-Vue.component('fields-list', require('./components/fields-list.vue'));
+//Vue.component('fields-list', require('./components/fields-list.vue'));
 Vue.component('field', require('./components/field.vue'));
 
 

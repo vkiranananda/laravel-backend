@@ -41,6 +41,10 @@
     {
         $field['attr']['class'] .= " form-check-input";
     }
+    // if($field['type'] == 'select') {
+    	
+    // 	dd($data->array_data);
+    // }
  
 ?>
      <div class="form-group {{isset($field['conteiner-class']) ? $field['conteiner-class'] : ''}}" id="{{$field['attr']['id']}}-block">
@@ -59,9 +63,9 @@
         @else
             {!!Forms::fieldHTML($field, $data)!!}
         @endif
-        <span class="form-control-feedback Forms-error-text"></span>
+        <div class="invalid-feedback Forms-error-text"></div>
         @if( isset($field['desc']) )
-            <small class="form-text text-muted">{{$field['desc']}}</small>
+            <small class="form-text text-muted">{!!$field['desc']!!}</small>
         @endif
       </div>
     </div>
