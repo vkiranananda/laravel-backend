@@ -10,3 +10,9 @@
 	<meta name="keywords" content="{{$params['page']['seo-keywords']}}">
 @endif
 
+@if(isset($params['page']['seo-canonical']))
+	<link rel="canonical" href="{{$params['page']['seo-canonical']}}" />
+@else
+	<link rel="canonical" href="{{str_ireplace('index.php', '', url()->current())}}" />
+@endif
+
