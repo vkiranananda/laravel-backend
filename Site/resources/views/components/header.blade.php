@@ -13,6 +13,6 @@
 @if(isset($params['page']['seo-canonical']))
 	<link rel="canonical" href="{{$params['page']['seo-canonical']}}" />
 @else
-	<link rel="canonical" href="{{str_ireplace('index.php', '', url()->current())}}" />
+	<link rel="canonical" href="{{str_ireplace('/index.php', '', url()->current())}}" />
 @endif
 
