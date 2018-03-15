@@ -1,6 +1,6 @@
 <template>
 	<div class="show-uploads-button">
-		<field-block v-for="field in fields" :data="field">
+		<field-block v-for="field in fields" :data="field" :key=field.name>
 			<field :data="field"></field>
 		</field-block>
     </div>

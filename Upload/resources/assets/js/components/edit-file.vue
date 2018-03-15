@@ -34,7 +34,6 @@
                 if(id == this.fileId) return;
 
                 this.loading = true;
-                
                 axios.get(this.url + '/' + id )
                     .then( (response) => {
                         this.fileId = id;

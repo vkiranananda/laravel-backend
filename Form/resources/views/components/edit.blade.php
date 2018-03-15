@@ -73,7 +73,6 @@
 @endif
 </form>
 @if( isset($params['conf']['media-files']) )
-	
 	<upload-edit-file url="{!!GetConfig::backend('Upload::edit')['conf']['get-info-url']!!}"></upload-edit-file>
 
 @endif
