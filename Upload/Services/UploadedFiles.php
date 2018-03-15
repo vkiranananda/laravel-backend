@@ -205,4 +205,25 @@ class UploadedFiles {
 
 		return [];
     }
+
+
+    //Получить массив файлов
+    public function files()
+    {
+    	$this->_getFiles($this->reqFiles);
+
+    	$res = [];
+
+		foreach ($this->reqFiles as $id) {
+			if(!isset($this->images[$id])) continue;
+
+			$res[] = &$this->images[$id];
+		}
+
+		if($this->reqResultArray) return $res;
+		elseif(count($res) > 0) return $res[0];
+
+		return [];
+    }
+
 }
