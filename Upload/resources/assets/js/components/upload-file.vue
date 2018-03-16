@@ -10,6 +10,7 @@
                 <div class='media-file' v-for="(file, key, index) in files" :key="file.id">
                     <a href='#' v-on:click.prevent="del(file)" class="delete">&times;</a>
                     <a href="#" v-on:click.prevent="edit(file)" v-show="file.id" class="icons-pencil edit"></a>
+                    <a :href="file.orig" class="icons-download download" download></a>
 
                     <div :class="{ 'have-errors': file.haveErrors, 'selected': file.selected }" class="media-file-body" @click="selectFile(file)">
                         <img :src="file.thumb" alt="">
@@ -27,7 +28,7 @@
 <script>
     export default {
         created () {
-            this.$bus.$on('UploadFileModalButton', this.getFiles)
+            this.$bus.$on('UploadFileModalButton', this.getFiles);
         },
         beforeDestroy(){
             this.$bus.$off('UploadFileModalButton');
@@ -57,6 +58,7 @@
                         this.conf = response.data.params;
                         this.files = response.data.data;
                         this.loading = false;
+                                    console.log(this.files[0].orig);
                     })
                     .catch( (error) => {
                         console.log(error.response);
@@ -195,8 +197,20 @@
                 font-size: 12px;
                 display: none;
             }
+            .download{
+                position: absolute;
+                right: 1px;
+                top: 33px;
+                display: inline-block;
+                text-align: center;
+                color: blue;
+                text-decoration: none;
+                border-radius: 13px;
+                font-size: 12px;
+                display: none;
+            }
             &:hover{
-                .delete, .edit {
+                .delete, .edit, .download {
                     display: inline-block;
                 }
             }

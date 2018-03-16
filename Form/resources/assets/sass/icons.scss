@@ -48,3 +48,7 @@
 	@include icons-base();
 	content:"\f05d";
 }
+.icons-download:before {
+	@include icons-base();
+	content:"\f00b";
+}

@@ -116,7 +116,7 @@ class UploadedFiles {
 			$res[] = array_merge(
 				( ($file['file_type'] == 'image') 
 					? $this->genFileLink($file, [128, 128, 'fit']) 
-					: ['orig' => $this->genFileLink($file), 'thumb' => '/images/system/file.png' ]),
+					: ['orig' => $this->genFileLink($file)['orig'], 'thumb' => '/images/system/file.png' ]),
 				Helpers::setArray($file, ['id', 'orig_name', 'file_type'])
 			);
         }

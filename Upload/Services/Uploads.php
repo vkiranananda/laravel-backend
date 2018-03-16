@@ -23,16 +23,21 @@ class Uploads {
         $mediaFile->orig_name = $file->getClientOriginalName();
         $mediaFile->imageable_type = $conf['module'];
 
+        $array_data['mime'] = $file->getClientMimeType();
+
         $mediaFile->save();
 
         $mediaFile->path = '000'.dechex($mediaFile->id);
         $mediaFile->path = mb_substr($mediaFile->path, -4, 2).'/'.mb_substr($mediaFile->path, -2, 2).'/';
         // $mediaFile->path = 'test/'; //Удалить когда протестируем..
 
+        $fileInfo = pathinfo($file->getClientOriginalName());
+        if(!isset($fileInfo['extension'])) $fileInfo['extension'] = '';
 
         //Устанавливаем имя файлу
         if($conf['file-name-type'] == 'id'){
-            $fileName = $mediaFile->id.'.'.$file->guessClientExtension();
+            $fileName = $mediaFile->id;
+            if($fileInfo['extension'] != '') $fileName .= '.'.$fileInfo['extension'];
         } else {
             $fileName = mb_substr(
                 str_replace(' ', '-', 
@@ -45,7 +50,7 @@ class Uploads {
         $mediaFile->file = Uploads::getIndividualName($mediaFile, $fileName );
 
         //Генерируем миниатюру
-        if( array_search($file->guessClientExtension(), ['jpeg', 'png', 'gif'], true) !== false ){
+        if( array_search($fileInfo['extension'], ['jpeg', 'png', 'gif', 'jpg'], true) !== false ){
             
             $mediaFile->file_type = 'image';
 
@@ -56,7 +61,9 @@ class Uploads {
 
         //Сохраняем файл
         $file->storeAs($mediaFile->path, $mediaFile->file, $mediaFile->disk);
-
+        
+        $mediaFile->array_data = $array_data;
+        
         $mediaFile->save();
 
         return $mediaFile;
@@ -131,6 +138,8 @@ class Uploads {
     private static function getIndividualName(&$newFile, $name)
     {
         $fInfo = pathinfo($name);
+        
+        $fInfo['extension'] = (isset($fInfo['extension'])) ? '.'.$fInfo['extension'] : '' ;
 
         //Получаем список файлов в каталоге
         $filesExists = [];
@@ -142,7 +151,7 @@ class Uploads {
         //Ищем подходящее имя файла
         while( isset($filesExists[$name]) )
         {
-            $name = $fInfo['filename']."-".$index++.'.'.$fInfo['extension'];
+            $name = $fInfo['filename']."-".$index++.$fInfo['extension'];
         }
 
         return $name;
