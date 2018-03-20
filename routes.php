@@ -7,7 +7,9 @@ Route::view('/robots.txt', 'Seo::robots');
 Route::group(['prefix' => 'control', 'middleware' => 'auth.basic'], function()
 {
 	Route::get('/', '\Backend\Root\Home\Controllers\HomeController@admin');
-	Backend::installRoutes('User', 'Root');
+	if(Auth::user()->role == 'admin'){
+		Backend::installRoutes('User', 'Root');
+	}
 	Backend::installRoutes('Option', 'Root', true);
 });
 

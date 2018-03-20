@@ -29,7 +29,11 @@
         </div>
    
         <div class="col-8">
-            {{ Content::getFieldValue($data, $field) }}
+        	@if(isset($field['link']))
+				<a href="{{$field['link']}}">{{ Content::getFieldValue($data, $field) }}</a>
+        	@else
+				{{ Content::getFieldValue($data, $field) }}
+        	@endif
         </div>
     </div>
 
