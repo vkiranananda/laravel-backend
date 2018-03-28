@@ -70,6 +70,9 @@ class ResourceController extends Controller {
         //Подготавливаем поля
         $this->params['fields'] = Helpers::changeFieldsOptions($this->params['fields']);
 
+        if(isset($this->params['conf']['list-count-items']))
+        	$this->pagination = $this->params['conf']['list-count-items'];
+
         return view($tmplite, [ 'data' => $this->post->paginate($this->pagination), 'params' => $this->params ]);
     }
 
