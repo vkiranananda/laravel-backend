@@ -15,6 +15,43 @@ class Helpers {
         return $fields;
     }
 
+
+    // Получаем массив полей из массива getFields с объедиенением результатов
+    static public function getFields($allFields, $getFields, $changeOptions = false)
+    {
+    	$res = [];
+    	foreach ($getFields as $field) {
+    		$res[$field['name']] = array_merge($allFields[$field['name']], $field);
+
+            if($changeOptions && isset($res[$field['name']]['options']) && is_array($res[$field['name']]['options'])){
+                $res[$field['name']]['options'] = Helpers::optionsToArr($res[$field['name']]['options']);
+            }
+    	}
+    	return $res;
+    }
+
+    // Получаем массив списка записей с нужными полями
+    static public function getArrayItems(&$data, $fields, $colums = ['id'])
+    {
+    	$res = [];
+    	foreach ($data as $el) {
+    		$item = [];
+    		foreach ($fields as $field) {
+    			$item[$field['name']] = Helpers::dataIsSetValue($el, $field['name']);
+    			if(isset($field['options']) 
+    				&& is_array($field['options']) 
+    				&& isset($field['options'][$item[$field['name']]])){
+    				$item[$field['name']] = $field['options'][$item[$field['name']]];
+    			}
+    		}
+    		foreach ($colums as $col) {
+    			$item[$col] = Helpers::dataIsSetValue($el, $col);
+    		}
+    		$res[] = $item;
+    	}
+    	return $res;
+    }
+
     //Заполняем массив значиениями keys
     static public function setArray(&$from, $keys)
     {

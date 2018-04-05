@@ -42,12 +42,11 @@ class ResourceController extends Controller {
     {
     	$this->resourceCombine('index');
         //Если подключен трейт с категориями
-        if(method_exists($this, 'setCategoryList')){
-            if( ($this->params['cat'] = Request::input('cat', false) )){
-                $this->post = $this->post->where('category_id', $this->params['cat']);
-                $this->params['url'] = '?cat='.$this->params['cat'];
-            }else {
-                abort(403, 'PostController категория не установлена');
+        if( method_exists($this, 'checkCategory') ){
+        	$this->params['cat'] = Request::input('cat', false);
+      		if( $this->checkCategory($this->params['cat']) ) {
+            	$this->post = $this->post->where('category_id', $this->params['cat']);
+            	$this->params['url'] = '?cat='.$this->params['cat'];
             }
         }
 
@@ -87,7 +86,6 @@ class ResourceController extends Controller {
         $this->params['fields'] = Forms::prepAllFields($this->post, $this->params['fields']);
         $this->params['url'] = action($this->params['controllerName'].'@store');
         $this->params['lang']['title'] = $this->params['lang']['create-title'];
-        // if(!isset($this->params['previousUrl']))$this->params['previousUrl'] = URL::previous();
         $this->resourceCombineAfter('create');
         return view($this->editTemplate,[ 'params' => $this->params, 'data' => $this->post ]);
     }
@@ -133,7 +131,6 @@ class ResourceController extends Controller {
         $this->params['url'] = action($this->params['controllerName'].'@update', $id);
         $this->params['lang']['title'] = $this->params['lang']['edit-title'];
         $this->params['viewUrl'] = $this->getViewUrl();
-        // if(!isset($this->params['previousUrl']))$this->params['previousUrl'] = URL::previous();
         $this->resourceCombineAfter('edit');
         return view($this->editTemplate,[ 'params' => $this->params, 'data' => $this->post ]  );
     }

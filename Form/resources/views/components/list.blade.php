@@ -59,3 +59,6 @@
   </table>
   {!! $data->appends(Request::All())->links('Form::components.pagination') !!}
 @endif
+@if(isset($params['sortable']))
+	<the-list-sortable></the-list-sortable >
+@endif

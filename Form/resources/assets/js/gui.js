@@ -47,6 +47,12 @@ $('[data-role=delete-record]').click(function(){
     return false;
 });
 
+$('#list-sortable-link').click(function(){
+    Vue.prototype.$bus.$emit('TheListSortableShow', $(this).attr('href'));
+    $('.dropdown-menu.show').dropdown('toggle');
+
+    return false;
+});
 
 
 

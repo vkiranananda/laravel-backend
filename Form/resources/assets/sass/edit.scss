@@ -6,20 +6,7 @@
 		height: 500px;
 		margin-bottom: 20px;
 	}
-	.result-area {
-		font-style: italic;
-			margin-top: auto;
-			margin-bottom: auto;
-		span {
 
-			display: none;
-			color: #d9534f;
-
-			&.success {
-				color: green !important;
-			}
-		}
-	}
 	.image-text-right {
 		float: left;
 	}

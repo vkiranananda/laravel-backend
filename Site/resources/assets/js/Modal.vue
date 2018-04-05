@@ -8,11 +8,13 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="text-center" v-if="loading">
-                    <img src="/images/system/loading5.gif" alt="" :style="{width: loadingSize+'%'}">
+            <div class="text-center" v-if="loading">
+                <img src="/images/system/loading5.gif" alt="">
+            </div>
+            <div v-else>
+                <div class="modal-body">
+                    <slot></slot>
                 </div>
-                <slot v-else></slot>
             </div>
             <div class="modal-footer" slot="footer">
                 <slot name="footer"></slot>

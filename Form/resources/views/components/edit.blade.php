@@ -1,4 +1,4 @@
-<form role="{{ isset($params['formRole']) ? $params['formRole'] : 'formAjax' }}" method="POST" action="{{ $params['url'] }}">
+<edit-form action="{{ $params['url'] }}">
     <div class="card form-edit">
         <div class="card-header">
             {{ $params['lang']['title'] }}
@@ -51,27 +51,13 @@
                 @endif
             @endif
             
-            <div class="row text-right">
-                <div class="col result-area">
-                    <span class="error error-any">Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.</span>
-                    <span class="error error-422">Проверьте правильность заполнения данных</span>
-                    <span class="success">Сохранено</span>
-                </div>
-                <div class="mr-4">
-                    @if( isset($params['previousUrl']) )
-                         <a class="btn btn-secondary mr-3" href="{{$params['previousUrl']}}" role="button">Назад</a>
-                    @else
-                         <a class="btn btn-secondary mr-3" href="javascript:history.back()" role="button">Назад</a>
-                    @endif
-                    <button type="button" class="btn btn-primary" role="submit" data-send-text="Сохраняю...">Сохранить</button>
-                </div>
-            </div>
+            <form-buttons close-url="{{(isset($params['conf']['back-url'])) ? $params['conf']['back-url'] : '' }}"></form-buttons>
         </div>
     </div>
 @if( isset($params['conf']['media-files']) )
 <upload-file-modal></upload-file-modal>
 @endif
-</form>
+</edit-form>
 @if( isset($params['conf']['media-files']) )
 	<upload-edit-file url="{!!GetConfig::backend('Upload::edit')['conf']['get-info-url']!!}"></upload-edit-file>
 @endif

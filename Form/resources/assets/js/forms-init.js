@@ -1,4 +1,4 @@
-require('jquery-ui/ui/widgets/sortable.js');
+// require('jquery-ui/ui/widgets/sortable.js');
 require('jquery-ui/ui/widgets/autocomplete.js');
 require('./ajax-forms.js');
 
@@ -15,14 +15,14 @@ require('./ajax-forms.js');
     var form = $(this);
 
     //Сортировка
-    form.find( "[role=sortable]" ).each(function(){
-        $(this).sortable();
+    // form.find( "[role=sortable]" ).each(function(){
+    //     $(this).sortable();
 
-    });
+    // });
 
     //Инитим аякс отправку формы
     form.find('[role = formAjax]').each(function(){
-        $(this).submitForm();
+        $(this).submitForm();    
     });
 
     //Инитим графический редактор.
@@ -62,16 +62,16 @@ require('./ajax-forms.js');
         });
     });
     //Инитим загрузку файлов
-    form.find('[role = filesUpload]').each(function()
-    {  
-        $(this).uploadsFiles();
-    });
+    // form.find('[role = filesUpload]').each(function()
+    // {  
+    //     $(this).uploadsFiles();
+    // });
 
     //Инитим галерею
-    form.find('[role = attachFiles]').each(function()
-    {  
-        $(this).attachFiles();
-    });
+    // form.find('[role = attachFiles]').each(function()
+    // {  
+    //     $(this).attachFiles();
+    // });
 
     //valueAsDate = new Date();
 

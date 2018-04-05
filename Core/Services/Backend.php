@@ -48,14 +48,18 @@ class Backend {
 	   //dd($this->data);
 	}
 
-	public function installRoutes($mod = '', $namespace = 'Backend', $upload = false)
+	public function installRoutes($mod = '', $namespace = 'Backend', $ext = [])
 	{
 		if($namespace == 'Root') $namespace  =  'Backend\Root';
 		$modUrl = mb_strtolower($mod);
-		if($upload){
+		if( array_search('upload', $ext) !== false ){
 			Route::get($modUrl.'/gallery/index/{id?}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@index');
 			Route::post($modUrl.'/gallery', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@store');
 			Route::delete($modUrl.'/gallery/{id}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@destroy');
+		}
+		if( array_search('sortable', $ext) !== false ){
+			Route::get($modUrl.'/sortable', '\\'.$namespace.'\\'.$mod.'\Controllers\\'.$mod.'Controller@listSortable');
+			Route::put($modUrl.'/sortable', '\\'.$namespace.'\\'.$mod.'\Controllers\\'.$mod.'Controller@listSortableSave');
 		}
 
 		if ( isset($this->data['routes'][$mod][$namespace] ) ){

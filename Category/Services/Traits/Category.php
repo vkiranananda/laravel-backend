@@ -19,6 +19,23 @@ trait Category {
         $this->params['lang'] = Categories::getRootCat($catID)['lang'];
     }
 
+    protected function checkCategory($catID)
+    {
+        //Нексколько проверочек на корректность данных
+        if( !$catID || ! ( $cat = Categories::getCat($catID)) ) 
+            abort(403, 'Категории не существует');
+        
+        if($this->params['baseClass'] != 'Category'){
+            if($this->params['baseClass'] != $cat['mod'])
+                abort(403, 'Модуль категории не соответсвует модулю данных');
+        }else {
+            if($type == 'update' && $this->post['mod'] != $cat['mod']) 
+                abort(403, 'Модуль категории не соответсвует модулю родительской категории');
+        }
+
+        return true;
+    }
+
     protected function setCategoryList($type)
     {
         $catName = ($this->params['baseClass'] == 'Category') ? 'parent_id' : 'category_id';
@@ -38,19 +55,9 @@ trait Category {
             default: $catID = false; break;       
         }
 
-        //Нексколько проверочек на корректность данных
-        if( !$catID || ! ( $cat = Categories::getCat($catID)) ) 
-            abort(403, 'Родительской категории не существует');
-        
-        if($this->params['baseClass'] != 'Category'){
-            if($this->params['baseClass'] != $cat['mod'])
-                abort(403, 'Модуль категории не соответсвует модулю данных');
-        }else {
-            if($type == 'update' && $this->post['mod'] != $cat['mod']) 
-                abort(403, 'Модуль категории не соответсвует модулю родительской категории');
-        }
+        $this->checkCategory($catID);
 
-        //Если полне не селект, дерево не генерим.
+        //Если поле не селект, дерево не генерим.
         if($this->params['fields'][$catName]['type'] != 'select') return;
 
         $exclude = ($catName == 'parent_id' && ($type == 'update' || $type == 'edit')) ? $this->post['id'] : '' ;

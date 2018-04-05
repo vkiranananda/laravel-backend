@@ -8,9 +8,7 @@
   <div class="card-header">{{$params['lang']['title']}}</div>
 
   <div class="card-body">
-      <button type="button" class="btn btn-primary mb-3" data-role='href' href='{{ action($params['controllerName'].'@create') }}{{ isset($params['url']) ? $params['url'] : '' }}'>
-      	{{ isset($params['lang']['create-title']) ? $params['lang']['create-title'] : 'Создать' }}
-      </button>
+	  @component('Form::components.list-button', ['params' => $params ]) @endcomponent
       
       @if (isset($params['conf']['breadcrumb']) && $params['conf']['breadcrumb'] == true )
         @component('Form::components.breadcrumb', ['params' => $params ]) @endcomponent
