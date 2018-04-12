@@ -72,6 +72,7 @@ class Uploads {
 
     //Преобразуем массив с размеров в строку...
     public static function sizesToStr($size){
+    	if(count($size) < 2) return '';
         $res = $size[0]."x".$size[1];
         $res .= (isset($size[2]) && $size[2] == 'fit') ? '-fit' : '' ;
         return $res;

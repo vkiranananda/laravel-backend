@@ -28,10 +28,11 @@ trait Category {
         if($this->params['baseClass'] != 'Category'){
             if($this->params['baseClass'] != $cat['mod'])
                 abort(403, 'Модуль категории не соответсвует модулю данных');
-        }else {
-            if($type == 'update' && $this->post['mod'] != $cat['mod']) 
-                abort(403, 'Модуль категории не соответсвует модулю родительской категории');
         }
+        // else {
+        //     if($type == 'update' && $this->post['mod'] != $cat['mod']) 
+        //         abort(403, 'Модуль категории не соответсвует модулю родительской категории');
+        // }
 
         return true;
     }

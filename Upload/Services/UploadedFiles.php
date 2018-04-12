@@ -8,19 +8,19 @@ class UploadedFiles {
 
     private $images = [];
     private $reqFiles = [];
-    private $reqImgSize = false;
+    private $reqImgSize = [];
     private $reqResultArray = true; 
 
     //Геренрим линки на файл
-    public function genFileLink(&$file, $sizes = false)
+    public function genFileLink(&$file, $sizes = [])
     {  
         $size = \Backend\Root\Upload\Services\Uploads::sizesToStr($sizes);
 
         $res = [ 'orig' => $file['url'].$file['path'].urlencode($file['file'] ) ];
 
         if( $file['file_type'] == 'image' ) {
-			if( pathinfo($file['file'])['extension'] == 'gif' || !$sizes ) {
-            	$res['thumb'] = $orig;
+			if( pathinfo($file['file'])['extension'] == 'gif' || $size == '' ) {
+            	$res['thumb'] = $res['orig'];
             } else {
 	            if(! isset($file['sizes'][$size])){
 	                if(!is_array($file['sizes']))$file['sizes'] = [];
@@ -130,7 +130,7 @@ class UploadedFiles {
     // Инитим данные из поля, для выборки массива
     public function get(&$post, $field)
     {
-    	$this->reqImgSize = false;
+    	$this->reqImgSize = [];
     	$this->reqResultArray = true;
     	$this->reqFiles = Helpers::dataIsSetValue($post, $field);
     	if(!is_array($this->reqFiles)) $this->reqFiles = [];
@@ -141,7 +141,7 @@ class UploadedFiles {
     // Инитим данные из поля, для выборки первого элемента
     public function getFirst(&$post, $field)
     {
-    	$this->reqImgSize = false;
+    	$this->reqImgSize = [];
     	$this->reqResultArray = false;
 
     	$files = Helpers::dataIsSetValue($post, $field);
@@ -155,13 +155,13 @@ class UploadedFiles {
     //Устанавливает размер возвращаемой миниатюры. Только для картинок.
     public function size($size)
     {
-    	$this->reqImgSize = $size;
+    	$this->reqImgSize[] = $size;
 
     	return $this;
     }
 
 
-    //Получаем готовый тэг html img, только для картинок, если вызван метод size будут сгенереный нужные размеры
+    //Получаем готовый тэг html img, только для картинок, если вызван метод size будут сгенереный нужные размеры, если метод size вызван несколько раз, будет сгенерирован тег srcset. src будет первый вызваный size
     public function htmlImg($attr = [])
     {
     	$this->_getFiles($this->reqFiles);
@@ -177,7 +177,30 @@ class UploadedFiles {
 	    	if (!isset($attr['alt'])) 
 	    		$attrNew['alt'] = Helpers::dataIsSetValue($this->images[$id], 'img_alt');
 
-			$res[] = '<img src="'.$this->genFileLink($this->images[$id], $this->reqImgSize)['thumb'].'" '.Helpers::getAttrs($attrNew).'>';
+			
+	    	$countImgSize = count($this->reqImgSize);
+			if ($countImgSize > 0) {
+				$srcset = '';
+				foreach ($this->reqImgSize as $key => $size) {
+					//Сначала получаем урл миниатюры и если нету генерим ее
+					$thumb = $this->genFileLink($this->images[$id], $size)['thumb'];
+					
+					//Генерим srcset если функция size была вызвана более одного раза
+					if($countImgSize > 1) {
+						//Далее получаем текстовый размер
+						$strSize = \Backend\Root\Upload\Services\Uploads::sizesToStr($size);
+						//Тут нужно получить ширину для srcset, если нет миниатюры не добавляем srcset 
+						if(isset($this->images[$id]['sizes'][$strSize])){
+							$srcset .= $thumb." ".$this->images[$id]['sizes'][$strSize]['size'][0]."w, ";
+						}
+					}
+					if($key == 0)$src = $thumb;
+				}
+			} else {
+				$src = $this->genFileLink($this->images[$id])['thumb'];
+			}
+			if($srcset != '')$srcset = 'srcset="'.mb_substr($srcset, 0, -2).'"';
+			$res[] = '<img src="'.$src.'" '.$srcset.' '.Helpers::getAttrs($attrNew).'>';
 		}
 		if($this->reqResultArray) return $res;
 		elseif(count($res) > 0) return $res[0];
@@ -187,7 +210,7 @@ class UploadedFiles {
     }
 
 
-    //Получить список урлов, если вызван метод size будут сгенереный нужные размеры(только для изображений)
+    //Получить список урлов, если вызван метод size будут сгенереный нужные размеры(только для изображений). Если указано нескольколь размеров, то будет отдан массив с размерами по порядку указания.
     public function url()
     {
     	$this->_getFiles($this->reqFiles);
@@ -197,7 +220,15 @@ class UploadedFiles {
 		foreach ($this->reqFiles as $id) {
 			if(!isset($this->images[$id])) continue;
 
-			$res[] = $this->genFileLink($this->images[$id], $this->reqImgSize);
+			if (count($this->reqImgSize) > 0) {
+				$sizes = [];
+				foreach ($this->reqImgSize as $size) {
+					$sizes[] = $this->genFileLink($this->images[$id], $size);
+				}
+				$res[] = (count($sizes) > 1) ? $sizes : $sizes[0];
+			} else {
+				$res[] = $this->genFileLink($this->images[$id]);
+			}
 		}
 
 		if($this->reqResultArray) return $res;
