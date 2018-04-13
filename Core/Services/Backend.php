@@ -20,7 +20,7 @@ class Backend {
 	        	$dir = opendir($p);
 	        	while(false !==  ($file = readdir($dir)) ) {
 	               if ($file == '..')continue;
-	               if( is_dir($p.$file.'/resources/views') ) {
+	               if(is_dir($p.$file.'/resources') && is_dir($p.$file.'/resources/views') ) {
 	               		$ext = (isset($res['views'][$file]) && $file != '.') ? '-ext' : '' ;
 						$res['views'][$file.$ext] = $p.$file.'/resources/views';
 	               }
