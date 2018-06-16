@@ -175,7 +175,7 @@ class UploadedFiles {
 			if (!isset($attr['title'])) 
 	    		$attrNew['title'] = Helpers::dataIsSetValue($this->images[$id], 'img_title');
 	    	if (!isset($attr['alt'])) 
-	    		$attrNew['alt'] = Helpers::dataIsSetValue($this->images[$id], 'img_alt');
+	    		$attrNew['alt'] =  Helpers::dataIsSetValue($this->images[$id], 'img_alt');
 
 			
 	    	$countImgSize = count($this->reqImgSize);

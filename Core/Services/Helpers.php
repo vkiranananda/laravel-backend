@@ -157,7 +157,7 @@ class Helpers {
     {
     	$res = '';
     	foreach ($attr as $key => $value) {
-    		$res .= ' '.$key.'="'.addslashes($value).'"';
+    		$res .= ' '.$key.'="'.htmlspecialchars($value).'"';
     	}
     	return $res;
     }
