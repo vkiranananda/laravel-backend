@@ -159,7 +159,7 @@ class Forms
 	}
 
 	//Подготавливаем поле для вывода.
-	static function prepField(&$post, $field)
+	static function prepPostField(&$post, $field)
 	{
 	    if(isset($field['name']))$field['attr']['name'] = $field['name'];
         else return $field;
@@ -182,11 +182,25 @@ class Forms
         return $field;
 	}
 
+	//Подготавливаем поле для вывода не используем post. Для поиска например
+	static function prepField($field)
+	{
+	    if(isset($field['name']))$field['attr']['name'] = $field['name'];
+        else return $field;
+
+        $field['value'] = Request::input($field['name']);
+
+        if(!isset($field['attr']['id'])) $field['attr']['id'] = "Forms_".$field['name'];
+
+        return $field;
+	}
+
+
 	//Подготавливаем поле для вывода.
 	static function prepAllFields($post, $fields)
 	{
         foreach ($fields as $name => &$field) {
-            $field = Forms::prepField($post, $field);
+        	$field = ($post) ? Forms::prepPostField($post, $field) : Forms::prepField($field) ;
         }
         return $fields;
 	}

@@ -72,6 +72,35 @@ class ResourceController extends Controller {
         if(isset($this->params['conf']['list-count-items']))
         	$this->pagination = $this->params['conf']['list-count-items'];
 
+
+        //Если есть форма поиска
+        if(isset($this->params['search'])) {
+      	 	$this->params['search'] = Forms::prepAllFields(false, $this->params['search']);
+      	 	
+      	 	if(!isset($this->params['url'])){
+      	 		$this->params['url'] = action($this->params['controllerName'].'@index');
+      	 	}
+      	 	
+  	 		$this->post = $this->post->where(function ($query) 
+  	 		{
+  	 			$first = true;
+  	 			foreach ($this->params['search'] as $field) {
+  	 				if(isset($field['name']) && isset($field['fields']) && is_array($field['fields']) ){
+  	 					$req = Request::input($field['name'], false);
+  	 					if(!$req) continue;
+  	 					$req = '%'.$req.'%';
+  	 					foreach ($field['fields'] as $column) {
+  	 						if($first) {
+  	 							$query = $query->where($column, 'like', $req);
+  	 						}else {
+  	 							$query = $query->orWhere($column, 'like', $req);
+  	 						}
+  	 						$first = false;
+  	 					}
+  	 				}
+  	 			}
+        	});
+    	}
         return view($tmplite, [ 'data' => $this->post->paginate($this->pagination), 'params' => $this->params ]);
     }
 
