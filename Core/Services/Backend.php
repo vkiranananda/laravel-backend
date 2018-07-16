@@ -52,6 +52,10 @@ class Backend {
 	{
 		if($namespace == 'Root') $namespace  =  'Backend\Root';
 		$modUrl = mb_strtolower($mod);
+		if(!is_array($ext)){
+			echo $mod;
+			return;
+		}
 		if( array_search('upload', $ext) !== false ){
 			Route::get($modUrl.'/gallery/index/{id?}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@index');
 			Route::post($modUrl.'/gallery', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@store');
