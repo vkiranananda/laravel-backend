@@ -41,8 +41,8 @@
 			</div>
 		</div>
 	</div>
-	@if(isset($params['search-params']))
-		@foreach($params['search-params'] as $param)
+	@if(isset($params['conf']['search-params']))
+		@foreach($params['conf']['search-params'] as $param)
 			<input type="hidden" name="{{$param}}" value="{{Request::input($param, '')}}">
 		@endforeach
 	@endif
