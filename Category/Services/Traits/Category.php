@@ -7,6 +7,7 @@ use Request;
 
 trait Category {
     
+    //Получаел локализацию
     public function localize()
     {
         //Если вызвано там гед уже есть локализация
@@ -19,6 +20,7 @@ trait Category {
         $this->params['lang'] = Categories::getRootCat($catID)['lang'];
     }
 
+    //Проверка корректностикатегории
     protected function checkCategory($catID)
     {
         //Нексколько проверочек на корректность данных

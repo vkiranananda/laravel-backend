@@ -41,12 +41,28 @@ class ResourceController extends Controller {
     public function index()
     {
     	$this->resourceCombine('index');
+
+    	$searchReq = $this->search();
         //Если подключен трейт с категориями
         if( method_exists($this, 'checkCategory') ){
         	$this->params['cat'] = Request::input('cat', false);
       		if( $this->checkCategory($this->params['cat']) ) {
-            	$this->post = $this->post->where('category_id', $this->params['cat']);
-            	$this->params['url'] = '?cat='.$this->params['cat'];
+      			//Локализация
+	        	$this->localize();
+	        	
+	        	if(isset($this->params['search'] )){
+	        	    if(!isset($this->params['conf']['search-params'])) {
+      					$this->params['conf']['search-params'] = [];
+      				}
+      				$this->params['conf']['search-params'][] = 'cat';	
+	        	}
+      			
+      			if($searchReq) {//Если был произведен поиск, ищем во всех вложенных категориях
+      				$this->post = $this->post->whereIn('category_id', Categories::getListIds($this->params['cat'], true));
+      			} else {
+      				$this->post = $this->post->where('category_id', $this->params['cat']);
+//            		$this->params['url'] = '?cat='.$this->params['cat'];
+      			}
             }
         }
 
@@ -59,36 +75,44 @@ class ResourceController extends Controller {
         }else {
             $this->post = $this->post->orderBy('id', 'DESC');
         }
-        
-        if(method_exists($this, 'localize')) $this->localize();
 
+        //Выставляем title
         $this->params['lang']['title'] = $this->params['lang']['list-title'];
 
-        $tmplite = (isset($this->params['conf']['list-template'])) ? $this->params['conf']['list-template'] : 'Form::list' ;
+        $templite = (isset($this->params['conf']['list-template'])) ? $this->params['conf']['list-template'] : 'Form::list';
 
         //Подготавливаем поля
         $this->params['fields'] = Helpers::changeFieldsOptions($this->params['fields']);
 
-        if(isset($this->params['conf']['list-count-items']))
+        //Выставлемя количество записей на странице из конфига
+        if(isset($this->params['conf']['list-count-items'])){
         	$this->pagination = $this->params['conf']['list-count-items'];
+        }
 
+        return view($templite, [ 'data' => $this->post->paginate($this->pagination), 'params' => $this->params ]);
+    }
 
-        //Если есть форма поиска
+    //Функция поиска для списка, возвращает true если есть что искать.
+    protected function search() {
+    	$searchReq = false;
         if(isset($this->params['search'])) {
+
       	 	$this->params['search'] = Forms::prepAllFields(false, $this->params['search']);
       	 	
       	 	if(!isset($this->params['url'])){
       	 		$this->params['url'] = action($this->params['controllerName'].'@index');
       	 	}
-      	 	
-  	 		$this->post = $this->post->where(function ($query) 
-  	 		{
-  	 			$first = true;
-  	 			foreach ($this->params['search'] as $field) {
-  	 				if(isset($field['name']) && isset($field['fields']) && is_array($field['fields']) ){
-  	 					$req = Request::input($field['name'], false);
-  	 					if(!$req) continue;
-  	 					$req = '%'.$req.'%';
+      	 	foreach ($this->params['search'] as $field) {
+  	 			if(isset($field['name']) && isset($field['fields']) && is_array($field['fields']) ){
+ 				  	if( ($req = Request::input($field['name'], '')) == '' ) continue;
+ 					$req = '%'.$req.'%';
+
+ 					$searchReq = true;
+
+		  	 		$this->post = $this->post->where(function ($query)
+		  	 		use (&$field, $req) 
+		  	 		{
+		  	 			$first = true;
   	 					foreach ($field['fields'] as $column) {
   	 						if($first) {
   	 							$query = $query->where($column, 'like', $req);
@@ -96,12 +120,13 @@ class ResourceController extends Controller {
   	 							$query = $query->orWhere($column, 'like', $req);
   	 						}
   	 						$first = false;
+  	 						
   	 					}
-  	 				}
-  	 			}
-        	});
+		        	});
+	  	 		}
+	        }
     	}
-        return view($tmplite, [ 'data' => $this->post->paginate($this->pagination), 'params' => $this->params ]);
+    	return $searchReq;
     }
 
     public function create()

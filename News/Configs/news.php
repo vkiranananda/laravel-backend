@@ -87,5 +87,16 @@
 			    ],
 			],
 		],
+		'search' => [
+          	[
+          		'name' => 'search',
+          		'type' => 'text',
+        		'attr' => [
+        			'placeholder' => 'Введите текст для поиска',
+        		],
+        		'conteiner-class' => 'col-4',
+          		'fields' => [ 'name' ],
+          	],
+        ],
 	], GetConfig::backend('seo-fields')
 );

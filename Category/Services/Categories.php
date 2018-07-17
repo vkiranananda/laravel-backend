@@ -146,12 +146,14 @@ class Categories
 		return $res;
 	}
 
-	//получаем список id шников вложенной в указанную категорию
+	//получаем список id шников вложенной в указанную категорию 
+	//resCur == true вывод c  текущей категорией
 	public function getListIds($rootCat = 0, $resCur = false)
 	{
 		$res = [];
 		$pref['root'] = $rootCat;
 		$this->genTree($res, $pref, $rootCat);
+
 		$res = Helpers::getListIds($res);
 		if($resCur)array_unshift($res, $rootCat);
 		
