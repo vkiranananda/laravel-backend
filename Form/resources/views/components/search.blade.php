@@ -1,6 +1,6 @@
 
 @foreach ( $params['search'] as $key => $field)
-<form action="{!!$params['url']!!}" method="GET">
+<form action="{!!action($params['controllerName'].'@index')!!}" method="GET">
 <div class="card mb-3">
   <div class="card-body pb-2">
     <h6 class="card-subtitle mb-2">Поиск</h6>
@@ -41,9 +41,7 @@
 			</div>
 		</div>
 	</div>
-	@if(isset($params['conf']['search-params']))
-		@foreach($params['conf']['search-params'] as $param)
-			<input type="hidden" name="{{$param}}" value="{{Request::input($param, '')}}">
-		@endforeach
-	@endif
+	@foreach($params['conf']['url-params'] as $param)
+		<input type="hidden" name="{{$param}}" value="{{Request::input($param, '')}}">
+	@endforeach
 </form>

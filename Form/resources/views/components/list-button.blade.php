@@ -1,13 +1,18 @@
 <?php
 	$menu = [];
-	$url = (isset($params['url'])) ? $params['url'] : '' ;
+	$urlPostfix = "";
+
+	foreach ($params['conf']['url-params'] as $param) {
+		$urlPostfix .= ($urlPostfix == '') ? '?' : '&' ;
+		$urlPostfix .= $param.'='.Request::input($param, '');
+	}
 
 // dd($params);
 	$menu[0]['name'] = isset($params['lang']['create-title']) ? $params['lang']['create-title'] : 'Создать';
-	$menu[0]['link'] = action($params['controllerName'].'@create').$url;
+	$menu[0]['link'] = action($params['controllerName'].'@create').$urlPostfix;
 
 	if(isset($params['sortable'])) {
-		$menu[] = '<a id="list-sortable-link" class="dropdown-item" href="'.action($params['controllerName'].'@listSortable').$url.'">Сортировка</a>';
+		$menu[] = '<a id="list-sortable-link" class="dropdown-item" href="'.action($params['controllerName'].'@listSortable').$urlPostfix.'">Сортировка</a>';
 	}
 
 ?>

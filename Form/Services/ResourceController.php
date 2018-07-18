@@ -41,6 +41,13 @@ class ResourceController extends Controller {
     public function index()
     {
     	$this->resourceCombine('index');
+    	//Урл для создания
+    	$this->params['create-url'] = action($this->params['controllerName'].'@create');
+
+    	//Добавочные параметры для всех урлов. Устанавливаем значение по умолчанию если нет. 
+    	if(!isset($this->params['conf']['url-params'])) {
+      		$this->params['conf']['url-params'] = [];
+      	}
 
     	$searchReq = $this->search();
         //Если подключен трейт с категориями
@@ -49,19 +56,13 @@ class ResourceController extends Controller {
       		if( $this->checkCategory($this->params['cat']) ) {
       			//Локализация
 	        	$this->localize();
-	        	
-	        	if(isset($this->params['search'] )){
-	        	    if(!isset($this->params['conf']['search-params'])) {
-      					$this->params['conf']['search-params'] = [];
-      				}
-      				$this->params['conf']['search-params'][] = 'cat';	
-	        	}
+	        	//Параметры для урла
+        		$this->params['conf']['url-params'][] = 'cat';
       			
       			if($searchReq) {//Если был произведен поиск, ищем во всех вложенных категориях
       				$this->post = $this->post->whereIn('category_id', Categories::getListIds($this->params['cat'], true));
       			} else {
       				$this->post = $this->post->where('category_id', $this->params['cat']);
-//            		$this->params['url'] = '?cat='.$this->params['cat'];
       			}
             }
         }
@@ -97,11 +98,9 @@ class ResourceController extends Controller {
     	$searchReq = false;
         if(isset($this->params['search'])) {
 
+
       	 	$this->params['search'] = Forms::prepAllFields(false, $this->params['search']);
       	 	
-      	 	if(!isset($this->params['url'])){
-      	 		$this->params['url'] = action($this->params['controllerName'].'@index');
-      	 	}
       	 	foreach ($this->params['search'] as $field) {
   	 			if(isset($field['name']) && isset($field['fields']) && is_array($field['fields']) ){
  				  	if( ($req = Request::input($field['name'], '')) == '' ) continue;
