@@ -7,12 +7,12 @@
 		$urlPostfix .= $param.'='.Request::input($param, '');
 	}
 
-// dd($params);
 	$menu[0]['name'] = isset($params['lang']['create-title']) ? $params['lang']['create-title'] : 'Создать';
 	$menu[0]['link'] = action($params['controllerName'].'@create').$urlPostfix;
 
 	if(isset($params['sortable'])) {
-		$menu[] = '<a id="list-sortable-link" class="dropdown-item" href="'.action($params['controllerName'].'@listSortable').$urlPostfix.'">Сортировка</a>';
+		$sUrl = (isset($params['conf']['url-sortable'])) ? $params['conf']['url-sortable'] : action($params['controllerName'].'@listSortable').$urlPostfix;
+		$menu[] = '<a id="list-sortable-link" class="dropdown-item" href="'.$sUrl.'">Сортировка</a>';
 	}
 
 ?>

@@ -17,8 +17,8 @@ trait ListSortable {
             }
         }
 
-        $this->post = $this->post->orderBy('sort_num');
-        
+      	$this->post = $this->post->orderBy('sort_num');
+
         $fields = Helpers::getFields($this->params['fields'], $this->params['sortable'], true);
         $data = [];
 

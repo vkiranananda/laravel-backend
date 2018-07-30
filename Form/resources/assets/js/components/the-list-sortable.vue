@@ -61,6 +61,7 @@
                         this.url = url;
                         this.loading = false;
                         this.fields = response.data.fields;
+                        console.log(response.data);
                         //Получаем имя первого столбца, что бы вставить инпут хидден в td
                         for (var key in this.fields) {
                             this.firstField = this.fields[key]['name'];

@@ -48,6 +48,8 @@ class ResourceController extends Controller {
     	if(!isset($this->params['conf']['url-params'])) {
       		$this->params['conf']['url-params'] = [];
       	}
+      	//
+      	// dd($this->params['conf']['url-params']);
 
     	$searchReq = $this->search();
         //Если подключен трейт с категориями
@@ -69,13 +71,28 @@ class ResourceController extends Controller {
 
         //Сортировка по умолчанию
         if(isset($this->params['conf']['order-by'])) {
-            if(!isset($this->params['conf']['order-by-type']) || $this->params['conf']['order-by-type'] != 'desc'){
-                $this->params['conf']['order-by-type'] = 'asc';
-            }
-            $this->post = $this->post->orderBy($this->params['conf']['order-by'], $this->params['conf']['order-by-type']);
-        }else {
-            $this->post = $this->post->orderBy('id', 'DESC');
-        }
+
+        	//Обрабатываем старый стиль.
+        	if(!is_array($this->params['conf']['order-by'])) {
+        		
+        		$tOrder['col'] = $this->params['conf']['order-by'];
+
+        		if(isset($this->params['conf']['order-by-type'])){
+        			$tOrder['type'] = $this->params['conf']['order-by'];
+        		}
+        		$this->params['conf']['order-by'] = $tOrder;
+        	}
+
+        	foreach ($this->params['conf']['order-by'] as $order) {
+	            if(!isset($order['type']) || $order['type'] != 'desc'){
+	                $order['type'] = 'asc';
+	            }
+	            $this->post = $this->post->orderBy($order['col'], $order['type']);
+        	}
+       	//Сортировка по умолчанию
+        } else {
+	        $this->post = $this->post->orderBy('id', 'DESC');
+	    }	
 
         //Выставляем title
         $this->params['lang']['title'] = $this->params['lang']['list-title'];
@@ -97,11 +114,16 @@ class ResourceController extends Controller {
     protected function search() {
     	$searchReq = false;
         if(isset($this->params['search'])) {
-
-
-      	 	$this->params['search'] = Forms::prepAllFields(false, $this->params['search']);
-      	 	
-      	 	foreach ($this->params['search'] as $field) {
+      	 	foreach ($this->params['search'] as &$field) {
+      	 		//Копируем данные поля из основных полей
+      	 		if(isset($field['field-from'])){
+      	 			$field = array_replace_recursive($this->params['fields'][$field['field-from']], $field);
+      	 		}
+      	 		//Добавляем пустой элемент в начало.
+      	 		if(isset($field['options-empty'])){
+      	 			array_unshift($field['options'], ['value' => '', 'label' => $field['options-empty']]);
+      	 		}
+      	 		//Создаем выборку
   	 			if(isset($field['name']) && isset($field['fields']) && is_array($field['fields']) ){
  				  	if( ($req = Request::input($field['name'], '')) == '' ) continue;
  					$req = '%'.$req.'%';
@@ -124,6 +146,7 @@ class ResourceController extends Controller {
 		        	});
 	  	 		}
 	        }
+      	 	$this->params['search'] = Forms::prepAllFields(false, $this->params['search']);
     	}
     	return $searchReq;
     }

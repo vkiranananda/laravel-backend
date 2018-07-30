@@ -17,7 +17,7 @@ class Forms
 		$res  = '';
 
 		foreach ($attributes as $key => $value) {
-			if($value != '' && array_search($key, $ignore) === false ){
+			if(array_search($key, $ignore) === false ){
 				$res .= ' '.$key.'="'.$value.'"';
 			}
 		}
