@@ -71,18 +71,6 @@ class ResourceController extends Controller {
 
         //Сортировка по умолчанию
         if(isset($this->params['conf']['order-by'])) {
-
-        	//Обрабатываем старый стиль.
-        	if(!is_array($this->params['conf']['order-by'])) {
-        		
-        		$tOrder['col'] = $this->params['conf']['order-by'];
-
-        		if(isset($this->params['conf']['order-by-type'])){
-        			$tOrder['type'] = $this->params['conf']['order-by'];
-        		}
-        		$this->params['conf']['order-by'] = $tOrder;
-        	}
-
         	foreach ($this->params['conf']['order-by'] as $order) {
 	            if(!isset($order['type']) || $order['type'] != 'desc'){
 	                $order['type'] = 'asc';

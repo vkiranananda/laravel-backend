@@ -4,8 +4,9 @@
         'conf' => [
         	'use-category' => true,
 			'breadcrumb' => true,
-			'order-by' => 'publication_date',
-			'order-by-type' => 'desc',
+			'order-by' => [
+				['col' => 'publication_date', 'type' => 'desc'],
+			],
         	'media-files' => 'hidden',
 	        'load-scripts' => [
         		"/js/tinymce/tinymce.min.js",
