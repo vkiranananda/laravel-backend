@@ -50,7 +50,7 @@ class Uploads {
         $mediaFile->file = Uploads::getIndividualName($mediaFile, $fileName );
 
         //Генерируем миниатюру
-        if( array_search($fileInfo['extension'], ['jpeg', 'png', 'gif', 'jpg'], true) !== false ){
+        if( array_search(strtolower($fileInfo['extension']), ['jpeg', 'png', 'gif', 'jpg'], true) !== false ){
             
             $mediaFile->file_type = 'image';
 
