@@ -75,8 +75,7 @@ class Forms
 
 	static public function dateField($options = array())
 	{
-		if($options['value'] == 'now') $options['value'] = date("Y-m-d");
-		return Forms::inputField($options);
+		return "<field-date :prefs='".json_encode($options)."'></field-date>";
 	}
 
 	static public function emailField($options = array())

@@ -1,7 +1,9 @@
 <template>
     <div>
-    	<date-picker  :input-class="inputClass" v-model="date" @change="changeDate" :input-name="name" :first-day-of-week="1" :format="format" :lang="lang"></date-picker>
-    	<date-picker :input-class="inputClass" v-model="dateTo" :not-before="notBefore" :input-name="nameTo" :first-day-of-week="1"  :format="format" v-if="range" :lang="lang"></date-picker>
+    	<date-picker  :input-class="inputAttr.class" v-model="date" :input-name="'_'+name" :first-day-of-week="1" :format="format" :lang="lang"></date-picker>
+    	<date-picker :input-class="inputAttr.class" v-model="dateTo" :not-before="rangeNotBefore" :input-name="'_'+nameTo" :first-day-of-week="1"  :format="format" v-if="range" :lang="lang"></date-picker>
+    	<input type="hidden" :name="name" :value="inputDate">
+    	<input type="hidden" :name="nameTo" :value="inputDateTo" v-if="range">
 	</div>
 </template>
 
@@ -11,61 +13,60 @@ import fecha from 'fecha'
 
 export default {
 	props: {
-	  data: {
+	  prefs: {
 	  	default: () => [],
-	  	// type: Array
 	  },
 	},
 	created() {
-		console.log(this.data);
-		if(this.data.value != undefined && this.data.value != '') 
-			this.date = this.parceDate(this.data.value);
-		if(this.data['value-to'] != undefined && this.data['value-to'] != '') 
-			this.dateTo = this.parceDate(this.data['value-to']);
-	
-		if(this.data.attr != undefined) {
-			if (this.data.attr.class != undefined)this.inputClass += ' '+this.data.attr.class;
-		} 
-		if(this.data.format != undefined)this.format = this.data.format;
-
-		if(this.data.name != undefined)this.name = this.data.name;
-		if(this.data.nameTo != undefined)this.nameTo = this.data['name-to'];
-
-		if(this.data.range != undefined)this.range = true;
-
+		this.date = this.dateOrig;
+		this.dateTo = this.dateToOrig;		
 	},
-  components: { DatePicker },
-  data() {
-    return {
-      date: '',
-      dateTo: '',
-      lang: 'ru',
-      notBefore: '',
+	components: { DatePicker },
+		data() {
+		return {
+			date: null,
+			dateTo: null,
+			lang: 'ru',
+		}
+	},
+  	computed: {
+  		dateOrig: function () { return this.getDate(this.prefs.value) },
+  		dateToOrig: function () { return this.getDate(this.prefs['value-to']) },
+  		name: function () {	return this.prefs.name != undefined ? this.prefs.name : 'date' },
+  		nameTo: function () { return this.prefs['name-to'] != undefined ? this.prefs['name-to'] : 'dateTo' },
+  		format: function () { return this.prefs.format != undefined ? this.prefs.format : 'DD.MM.YYYY' },
 
-      range: false,
-      inputClass: 'mx-input form-control',
-      format: 'DD.MM.YYYY',
-	  name: 'date',
-	  nameTo: 'dateTo'
-    }
-  },
-    methods: {
-	    changeDate: function (time) {
+  		range: function () { return this.prefs.range != undefined ? true : false },
+  		rangeNotBefore: function () { return this.range && this.date != '' ? this.date : '' },
+   		inputAttr: function () { 
+   			var objClass = 'mx-input form-control';
+   			var resObj = this.prefs.attr != undefined ? Object.assign({}, this.prefs.attr) : {};
+
+   			if(resObj.class == undefined) resObj.class = objClass;
+   		
+   			return resObj;
+   		},
+   		//Возвращаем дату с нужным форматированем
+  		inputFormat: function () {return this.prefs['input-format'] != undefined ? this.prefs['input-format'] : 'YYYY-MM-DD'},
+   		inputDate: function() { console.log(this.date); return this.date != null ? fecha.format(this.date, this.inputFormat) : '' },
+   		inputDateTo: function() { return this.dateTo != null ? fecha.format(this.dateTo, this.inputFormat) : '' }
+	},
+	watch: {
+		dateOrig() {console.log(this.dateOrig); if(this.date != this.dateOrig) this.date = this.dateOrig },
+		dateToOrig() { if(this.dateTo != this.dateToOrig) this.dateTo = this.dateToOrig },
+		date: function() { 
 	    	if(this.range) {
-	    		this.notBefore = time;
-	    		console.log(this.dateTo, '11');
-	    		if(this.dateTo != '' && this.dateTo < this.date){
+	    		if(this.dateTo != '' && this.dateTo < this.date && this.date != ''){
 	    			this.dateTo = this.date;
 	    		}
-	    	}
-
-	    },
-		parceDate (date) {
-		  try {
-		    return fecha.parse(date, this.format)
-		  } catch (e) {
-		    return ''
-		  }
+	    	}			
+		},
+	},
+    methods: {
+		getDate (date) {
+            if ( date == undefined || date == null ) return null;
+            if ( date == 'now' ) return new Date();
+            else return fecha.parse(date, this.inputFormat);
 		}
   }
 }

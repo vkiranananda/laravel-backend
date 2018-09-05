@@ -48,6 +48,9 @@ trait ListSortable {
         		}
         	}
 		});
+
+		$this->resourceCombineAfter('sortable-save');
+		
 		return ['reload' => true];
     }
 }

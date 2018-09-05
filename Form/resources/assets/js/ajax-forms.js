@@ -89,7 +89,7 @@
             },
             error: function( result ) {
                 console.log(result.responseText);
-               console.log("'", result,"'");
+                console.log("'", result,"'");
 
                 if(result.status == 422){
                     resultArea.find('.error-422').show();
@@ -103,7 +103,7 @@
                     field.addClass('is-invalid');
 
                     result.responseJSON['errors'][prop].forEach(function(item, i, arr) {
-                        field.nextAll(".Forms-error-text").append(item+" ");
+                        field.closest('#Forms_'+prop+'-block').find(".Forms-error-text").append(item+" ").show();
                     });
                 }
                 

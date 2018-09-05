@@ -1,5 +1,5 @@
 <?php
 	return [
-		'Uploads' => 
+		'date-format' => 'd.m.Y'
 	];
 ?>
