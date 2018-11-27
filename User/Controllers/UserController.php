@@ -10,17 +10,17 @@ class UserController extends \Backend\Root\Form\Services\ResourceController
 {
     function __construct(User $post)
     {
-        parent::init($post, 'User::users');
+        parent::init($post);
     }
 
     public function create (){
-        $this->params['fields']['password']['value'] = str_random(8);
+        $this->fields['fields']['password']['value'] = str_random(8);
         return parent::create();
     }
 
     public function store()
     {
-        $this->saveFields($this->post, $this->params['fields']);
+        $this->saveFields($this->post, $this->fields['fields']);
 
         $user = &$this->post;
         if(Request::input('send_mail', false) == 'yes'){
@@ -33,14 +33,14 @@ class UserController extends \Backend\Root\Form\Services\ResourceController
         $this->post->password = bcrypt($this->post->password);
         $this->post->save();
 
-        return [ 'redirect' =>  action($this->params['controllerName'].'@edit', $this->post->id) ];
+        return [ 'redirect' =>  action($this->config['controllerName'].'@edit', $this->post->id) ];
     }
 
     public function edit($id)
     {
         $this->post = $this->post->findOrFail($id);
         $this->post->password = '';
-        unset($this->params['fields']['send_mail']);
+        unset($this->fields['fields']['send_mail']);
         return parent::edit($id);
     }
 
@@ -48,13 +48,13 @@ class UserController extends \Backend\Root\Form\Services\ResourceController
     {
         $this->post = $this->post->findOrFail( $id );
 
-        $this->params['fields']['email']['validate'] .= ",".$id;
+        $this->fields['fields']['email']['validate'] .= ",".$id;
         
         if( Request::input('password', '') == '' ){
-            unset($this->params['fields']['password']);
+            unset($this->fields['fields']['password']);
         }
         
-        $this->SaveFields($this->post, $this->params['fields']);
+        $this->SaveFields($this->post, $this->fields['fields']);
 
         if( Request::input('password', '') != '' ) {
             $this->post->password = bcrypt($this->post->password);

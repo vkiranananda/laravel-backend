@@ -1,20 +1,16 @@
-Vue.component('field-block', require('./components/field-block.vue'));
-Vue.component('fields-list', require('./components/fields-list.vue'));
-Vue.component('field', require('./components/field.vue'));
+
+// Vue.component('fields-list', require('./components/fields-list.vue'));
+
+//Компоненты для фиелдсов
+// Vue.component('print-field', require('./components/fields/field.vue'));
+//Компоненты для вывода списка полей
+Vue.component('fields-list', require('./components/form/fields.vue'));
+//Отправка формы
+Vue.component('send-form', require('./components/form/send.vue'));
+//Полный вывод формы редактирование
+Vue.component('edit-html-form', require('./components/form/edit-html.vue'));
 
 
-Vue.component('edit-form', require('./components/edit-form.vue'));
-Vue.component('form-buttons', require('./components/form-buttons.vue'));
+
+
 Vue.component('the-list-sortable', require('./components/the-list-sortable.vue'));
-
-
-
-Vue.component('field-input', require('./components/fields/field-input.vue'));
-Vue.component('field-date', require('./components/fields/field-date.vue'));
-Vue.component('field-textarea', require('./components/fields/field-textarea.vue'));
-Vue.component('field-mce', require('./components/fields/field-mce.vue'));
-Vue.component('field-attached-files', require('./components/fields/field-attached-files.vue'));
-Vue.component('field-radio', require('./components/fields/field-radio.vue'));
-Vue.component('field-select', require('./components/fields/field-select.vue'));
-
-

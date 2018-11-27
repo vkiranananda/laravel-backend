@@ -1,12 +1,10 @@
 
 @extends('Backend::layouts.admin')
 
-@section('title', $params['lang']['title'])
+@section('title', $config['title'])
 
 @section('content')
 
-    @component('Form::components.edit', ['params' => $params, 'data' => $data])
-        
-    @endcomponent
+	<edit-html-form :fields='@json($fields)' :config='@json($config)'></edit-html-form>	
 
 @endsection

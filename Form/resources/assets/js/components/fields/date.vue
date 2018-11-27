@@ -13,7 +13,7 @@ import fecha from 'fecha'
 
 export default {
 	props: {
-	  prefs: {
+	  field: {
 	  	default: () => [],
 	  },
 	},
@@ -30,24 +30,24 @@ export default {
 		}
 	},
   	computed: {
-  		dateOrig: function () { return this.getDate(this.prefs.value) },
-  		dateToOrig: function () { return this.getDate(this.prefs['value-to']) },
-  		name: function () {	return this.prefs.name != undefined ? this.prefs.name : 'date' },
-  		nameTo: function () { return this.prefs['name-to'] != undefined ? this.prefs['name-to'] : 'dateTo' },
-  		format: function () { return this.prefs.format != undefined ? this.prefs.format : 'DD.MM.YYYY' },
+  		dateOrig: function () { return this.getDate(this.field.value) },
+  		dateToOrig: function () { return this.getDate(this.field['value-to']) },
+  		name: function () {	return this.field.name != undefined ? this.field.name : 'date' },
+  		nameTo: function () { return this.field['name-to'] != undefined ? this.field['name-to'] : 'dateTo' },
+  		format: function () { return this.field.format != undefined ? this.field.format : 'DD.MM.YYYY' },
 
-  		range: function () { return this.prefs.range != undefined ? true : false },
+  		range: function () { return this.field.range != undefined ? true : false },
   		rangeNotBefore: function () { return this.range && this.date != '' ? this.date : '' },
    		inputAttr: function () { 
    			var objClass = 'mx-input form-control';
-   			var resObj = this.prefs.attr != undefined ? Object.assign({}, this.prefs.attr) : {};
+   			var resObj = this.field.attr != undefined ? Object.assign({}, this.field.attr) : {};
 
    			if(resObj.class == undefined) resObj.class = objClass;
    		
    			return resObj;
    		},
    		//Возвращаем дату с нужным форматированем
-  		inputFormat: function () {return this.prefs['input-format'] != undefined ? this.prefs['input-format'] : 'YYYY-MM-DD'},
+  		inputFormat: function () {return this.field['input-format'] != undefined ? this.field['input-format'] : 'YYYY-MM-DD'},
    		inputDate: function() { console.log(this.date); return this.date != null ? fecha.format(this.date, this.inputFormat) : '' },
    		inputDateTo: function() { return this.dateTo != null ? fecha.format(this.dateTo, this.inputFormat) : '' }
 	},

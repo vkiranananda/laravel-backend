@@ -22,8 +22,9 @@ class OptionController extends \Backend\Root\Form\Services\ResourceController
 
     protected function resourceCombine($type)
     {
+
         if($type == 'store' || $type == 'create'){
-            unset($this->params['fields']['autoload']);
+            unset($this->fields['fields']['autoload']);
         }elseif($type == 'update' || $type == 'edit') {
             
             $conf = GetConfig::backend('Option::options-'.$this->post['array_data']['fields']['type']);

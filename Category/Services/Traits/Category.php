@@ -11,13 +11,13 @@ trait Category {
     public function localize()
     {
         //Если вызвано там гед уже есть локализация
-        if(isset($this->params['lang'])) return false;
+        if(isset($this->config['lang'])) return false;
 
         if(! ($catID = Request::input('cat', false) )){
             if( !isset($this->post['category_id'] ))return false;
             $catID = $this->post['category_id'];
         }
-        $this->params['lang'] = Categories::getRootCat($catID)['lang'];
+        $this->config['lang'] = Categories::getRootCat($catID)['lang'];
     }
 
     //Проверка корректностикатегории
@@ -27,8 +27,8 @@ trait Category {
         if( !$catID || ! ( $cat = Categories::getCat($catID)) ) 
             abort(403, 'Категории не существует');
         
-        if($this->params['baseClass'] != 'Category'){
-            if($this->params['baseClass'] != $cat['mod'])
+        if($this->config['baseClass'] != 'Category'){
+            if($this->config['baseClass'] != $cat['mod'])
                 abort(403, 'Модуль категории не соответсвует модулю данных');
         }
         // else {
@@ -41,10 +41,10 @@ trait Category {
 
     protected function setCategoryList($type)
     {
-        $catName = ($this->params['baseClass'] == 'Category') ? 'parent_id' : 'category_id';
+        $catName = ($this->config['baseClass'] == 'Category') ? 'parent_id' : 'category_id';
 
-        if( !isset($this->params['fields'][$catName]) ) {
-            $this->params['fields'][$catName] = ['name' => $catName, 'type' => 'hidden'];
+        if( !isset($this->fields['fields'][$catName]) ) {
+            $this->fields['fields'][$catName] = ['name' => $catName, 'type' => 'hidden'];
         }
         
         switch ($type) {
@@ -61,10 +61,10 @@ trait Category {
         $this->checkCategory($catID);
 
         //Если поле не селект, дерево не генерим.
-        if($this->params['fields'][$catName]['type'] != 'select') return;
+        if($this->fields['fields'][$catName]['type'] != 'select') return;
 
         $exclude = ($catName == 'parent_id' && ($type == 'update' || $type == 'edit')) ? $this->post['id'] : '' ;
-        $this->params['fields'][$catName]['options'] = Categories::getHtmlTree([
+        $this->fields['fields'][$catName]['options'] = Categories::getHtmlTree([
             'empty' => true, 
             'root' => Categories::getRootCat($catID)['id'], 
             'exclude' => [ $exclude ],

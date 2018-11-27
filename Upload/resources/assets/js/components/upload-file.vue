@@ -261,7 +261,7 @@
         }
 
         .upload-button {
-            background: url(/images/system/file_add.png) no-repeat;
+            background: url(/backend/images/file_add.png) no-repeat;
             background-size: contain;
             cursor: pointer;
             border: none;

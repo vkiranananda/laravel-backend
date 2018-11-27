@@ -10,11 +10,6 @@ if(!!window.performance && window.performance.navigation.type === 2)
     window.location.reload();
 }
 
-//Инитим элементы формы
-require('./forms-init.js');
-$(document).initForms();
-
-
 //Показываем скрываем элементы 
 $('input[data-role = showHide]').click(function(){
     $($(this).attr('data-show')).show();

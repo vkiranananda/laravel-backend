@@ -41,6 +41,5 @@ class CoreServiceProvider extends ServiceProvider
         AliasLoader::getInstance()->alias('Categories', '\Backend\Root\Category\Facades\CategoriesFacade');
         AliasLoader::getInstance()->alias('Content', '\Backend\Root\Site\Services\Content');
         AliasLoader::getInstance()->alias('Helpers', '\Backend\Root\Core\Services\Helpers');
-        AliasLoader::getInstance()->alias('Forms', '\Backend\Root\Form\Services\Forms');
     }
 }

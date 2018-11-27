@@ -5,17 +5,22 @@ import Vuex from 'vuex';
 
 
 import uploadStore from '../../../Upload/resources/assets/js/store';
+import editForm from '../../../Form/resources/assets/js/store/edit';
+
 
 const store = new Vuex.Store({
 	modules: {
-		uploadStore
+		editForm,
+		// formEdit,
 	} 
 });
 
 
+//module.exports = {store: store}
+
 Vue.prototype.$bus = new Vue();
 
-console.log(store.state.uploadStore);
+Vue.prototype.store = store;
 
 require('../../../Form/resources/assets/js/init-components.js');
 require('../../../Upload/resources/assets/js/init-components.js');
@@ -28,7 +33,7 @@ const backend = new Vue({
     // data: {
     // 	bus: vueBus
     // },
-    store,
+//    store,
     // bus: vueBus
 });
 

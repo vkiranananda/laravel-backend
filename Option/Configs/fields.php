@@ -1,15 +1,5 @@
 <?php
 	return [
-		'lang' => [
-			'list-title' => 'Список "ключ-значение"',
-			'create-title' => 'Создать "ключ-значение"',
-			'edit-title' => 'Редактирование "ключ-значение"',
-		],
-	    'conf' => [
-	        'media-files' => 'hidden',
-	        'store-redirect' => true,
-        ],
-
         'list' => [
         	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit'],
           ],
@@ -52,8 +42,7 @@
 				'tab_name' => 'Основные',
 				'id' => 'main',
 				'fields' => [
-					[ 'name' => 'name' ],
-					[ 'name' => 'value' ],
+					[ 'name' => 'name', 'attr' => ['test' => 'test'] ],
 			        [ 'name' => 'type' ],
 			   		[ 'name' => 'autoload' ],
 			    ],
