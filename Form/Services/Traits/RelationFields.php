@@ -4,30 +4,31 @@ namespace Backend\Root\Form\Services\Traits;
 
 trait RelationFields {
 
-    protected function saveRelationFields($relationFields, $del = false)
+	//Добавляет новую связь
+    protected function saveRelationFields($post, $relationFields)
     {
-        if(count ($relationFields) > 0) {
-            if($del) {
-                $this->post->relationFields()->whereIn('field_name', array_keys($relationFields))->delete();
-            }
-            foreach ($relationFields as $key => $value) {
-                if(is_array($value)){
-                    foreach ($value as $lValue) {
-                        $this->post->relationFields()->create([
-                          'field_name' => $key, 'value' => $lValue,
-                        ]);
-                    }
-                }else {
-                    $this->post->relationFields()->create([
-                      'field_name' => $key, 'value' => $value,
+        if ( count ($relationFields) == 0 ) return;
+
+        //Перебираем все поля для сохранения
+        foreach ($relationFields as $key => $value) {
+        	//Если поле массив дробим его на отдельные записи и сохраняем каждую 
+            if ( is_array($value) ) {
+                foreach ($value as $lValue) {
+                    $post->relationFields()->create([
+                      'field_name' => $key, 'value' => $lValue,
                     ]);
                 }
+            } else { //Иначе просто сохраянем.
+                $post->relationFields()->create([
+                  'field_name' => $key, 'value' => $value,
+                ]);
             }
         }
     }
 
-    protected function destroyRelationFields()
+    //Удаляет все связи
+    protected function destroyRelationFields($post)
     {
-        $this->post->relationFields()->delete();
+        $post->relationFields()->delete();
     }
 }

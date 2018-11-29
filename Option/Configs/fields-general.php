@@ -1,9 +1,5 @@
 <?php
 	return [
-		'lang' => [
-			'title' => 'Настройки',
-		],
-
 		'fields' => [
 			'title' => [		
 	            'type' => 'text', 
@@ -16,6 +12,7 @@
 	            'name' => 'description', 
 	            'label' => 'Описание сайта', 
 	            'field-save' => 'array',
+	            'attr' => [ 'rows' => '3' ]
     		 ],
     		 'robots-index-deny' => [
 	            'type' => 'radio', 
@@ -48,25 +45,17 @@
 	            ],
 	        ],
 	    ],
-	
 
 		'edit' => [
 			'default' => [
-				'tab_name' => 'Основные',
-				'id' => 'main',
-				'fields' => [
-					[ 'name' => 'title' ],
-					[ 'name' => 'description', 'attr' => [ 'rows' => '3' ] ],
-			    ],
+				'label' => 'Основные',
+				'name' => 'main',
+				'fields' => [ 'title', 'description' ],
 			],
 			'seo' => [
-				'tab_name' => 'SEO',
-				'id' => 'seo',
-				'fields' => [
-					[ 'name' => 'robots' ],
-					[ 'name' => 'robots-sitemap' ],
-					[ 'name' => 'robots-index-deny' ],
-			    ],
+				'label' => 'SEO',
+				'name' => 'seo',
+				'fields' => [ 'robots', 'robots-sitemap', 'robots-index-deny' ],
 			],
 		],
 	];

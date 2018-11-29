@@ -22,6 +22,7 @@
 
 
 <script>
+    //import forOwn from 'lodash.forown'
     export default {
         props: {
             url: { default: '' },
@@ -48,8 +49,7 @@
                 this.errorHave = false;
                 this.saveing = true;
 
-                console.log('Sending editForm', res);
-
+                console.log('Sending editForm', res, this.store.state[this.storeName].fields);
 
                 axios({
                     url: this.url,
@@ -57,7 +57,37 @@
                     data: res
                 })
                 .then( (response) => {
+                    
                     console.log(response);
+
+                    var result = response.data;
+
+                    //Отменяе предупреждающее окно при закрытии страницы
+                    window.onbeforeunload = null;
+
+                    //Если нужно редиректим
+                    if (result.redirect != undefined) {
+                        if (result.redirect == 'back') history.back()
+                        else window.location = result.redirect;
+                    } 
+
+                    //Инитим конфиг
+                    if (result.config != undefined) {
+                        if (result.fields != undefined ) {//Полный инит
+                            this.store.dispatch('editForm/initData', { 
+                                config: result.config,
+                                fields: result.fields
+                            });
+                        } 
+                        //Инитим элементы конфига
+                        else this.store.commit('editForm/initCustomConfig', result.config)
+                    }
+                    
+                    //Меняем урл если задано
+                    if (result.replaceUrl != undefined) {
+                        history.replaceState('data', '', result.replaceUrl);
+                    }
+
                     this.saved = true;
                     this.saveing = false;
                     this.store.commit('editForm/setErrors', {});
@@ -69,17 +99,10 @@
                 .catch( (error) => {
                     this.saveing = false;
                     if(error.response.status == 422){
-                        var errors = error.response.data.errors;
-                        console.log(error.response.data);
-                        var resErrors = {};
-                        //Set errors
-                        for (var key in errors) {
-                            resErrors[key] = '';
-                            for (var i = 0; i < errors[key].length; i++) {
-                              resErrors[key] += errors[key][i] + ' ';
-                            }
-                        }
-                        this.store.commit('editForm/setErrors', resErrors);
+
+                        console.log(error.response.data.errors);
+
+                        this.store.commit('editForm/setErrors', error.response.data.errors);
 
                         this.errorHave = true;
 
@@ -139,10 +162,16 @@ function getValuesFromFields (fields)
         if (currentField['v-show'] === false) continue; //Пропускаем если скрыто поле.
         
         if (currentField['type'] == 'repeated') { //Для повторителей
-            res[fieldName] = {};
+            res[fieldName] = [];
             //Перебираем блоки полей
-            for (var repIndex = 0; repIndex < currentField.data.length; repIndex++) {
-                res[fieldName][repIndex] = getValuesFromFields (currentField.data[repIndex].fields);
+            var currentFieldValue = currentField.value;
+
+            for (var repIndex = 0; repIndex < currentFieldValue.length; repIndex++) {
+                //Добавляем ключ сортировки, нужен для грамотного отображения ошибок.
+                res[fieldName][ repIndex ] = { 
+                    key: currentFieldValue[repIndex].key,
+                    value: getValuesFromFields (currentFieldValue[repIndex].fields)
+                };
             }
             continue;
         }

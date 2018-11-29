@@ -11,20 +11,20 @@
             <div v-if="countTabs > 1">
                 <ul class="nav nav-tabs" role="tablist">
                   <li v-for="(tab, key) in tabs" :key="key" class="nav-item" v-if="tab['v-show'] !== false">
-                    <a class="nav-link" :class="activeTab == key ? 'active' : ''" data-toggle="tab" :href="'#tab-'+key" role="tab" v-on:click='changeTab(key)'>
-                        {{ tab.label }}
+                    <a class="nav-link" :class="activeTab == key ? 'active' : ''"   data-toggle="tab" :href="'#tab-'+key" role="tab" v-on:click='changeTab(key)'>
+                        <span :class="errorsTab[key]">{{ tab.label }}</span>
                     </a>
                   </li>
                 </ul>
                 <!-- Tabs content -->
                 <div class="tab-content pt-3 pb-3">
                     <div v-for="(tab, key) in tabs" class="tab-pane" :class="activeTab == key ? 'active' : ''" :id="'tab-'+key" role="tabpanel" :key="key" v-if="tab['v-show'] !== false">
-                        <fields-list :fields='tab.fields' fields-type='tab' store-name='editForm'></fields-list>
+                        <fields-list :fields='tab.fields' :errors="errors" fields-type='tab' store-name='editForm'></fields-list>
                     </div>
                 </div>
             </div>
             <div v-else>
-                <fields-list :fields='tabs[activeTab].fields' store-name='editForm'></fields-list>
+                <fields-list :fields='tabs[activeTab].fields' :errors="errors" store-name='editForm'></fields-list>
             </div>
             <send-form store-name='editForm' :url='conf.url' :method='conf.method'></send-form>
         </div>
@@ -59,6 +59,19 @@
             },
             conf () {
                 return this.store.state.editForm.config;
+            },
+            errors () {
+                return this.store.state.editForm.errors; 
+            },
+            //Реализуем подсветку табов при ошибке
+            errorsTab () {
+                var res = {};
+                for (var tabName in this.tabs) {
+                    for (var fieldName in this.tabs[tabName].fields) {
+                        if (this.errors[fieldName] != undefined) res[tabName] = 'text-danger';
+                    }
+                }
+                return res;
             }
         },
         methods: {

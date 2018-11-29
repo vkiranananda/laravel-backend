@@ -10,18 +10,20 @@ use Forms;
 class OptionGeneralController extends \App\Http\Controllers\Controller
 {
     use \Backend\Root\Form\Services\Traits\Fields;
-    private $params;
+
+    private $fields;
+
     function __construct()
     {
-        $this->params = GetConfig::backend('Option::options-general');
-        $this->params['controllerName'] = '\\'.get_class($this);
-        $this->params['baseClass'] = 'Option';
+        $this->fields = GetConfig::backend('Option::fields-general');
     }
 
     public function edit()
     {
         $option = Option::where('name', 'general')->first();
-        if(!$option) {
+      
+      	//Если запись не создана, ставим умолчания и создаем
+        if (!$option) {
             $option = new Option();
             $option->name = 'general';
             $option->autoload = '1';
@@ -31,17 +33,28 @@ class OptionGeneralController extends \App\Http\Controllers\Controller
 
             $option->save();
         }
-        $this->params['url'] = action($this->params['controllerName'].'@update');
 
-        $this->params['fields'] = Forms::prepAllFields($option, $this->params['fields']);
-
-        return view('Form::edit',[ 'params' => $this->params, 'data' => $option ]  );
+        $this->dataReturn = [ 
+        	'config'	=> [
+        		'url' 		=> action('Backend\Root\Option\Controllers\OptionGeneralController@update'),
+        		'title'		=> GetConfig::backend('Option::options-general')['lang']['title'],
+        		'method'	=> 'put'
+        	], 
+        	'fields'	=>	[
+        		'fields'	=> $this->prepEditFields( $this->fields['fields'], $option ),
+        		'tabs'		=> $this->fields['edit']
+        	]
+        ];
     }
 
     public function update()
     {
         $option = Option::where('name', 'general')->firstOrFail();
-        $this->SaveFields($option, $this->params['fields']);
-        $option->save();
+        
+        $data = $this->SaveFields($option, $this->fields['fields'], $this->fields['edit']);
+
+        if ( $data['errors'] !== true ) return Response::json([ 'errors' => $data['errors'] ], 422);
+
+        $data['post']->save();
       }
 }

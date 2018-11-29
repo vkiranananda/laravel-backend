@@ -29,6 +29,8 @@ export default {
                 state.tabs[name].fields = resFields;
             }
         },
+        //Инитим отдельные опции конфига.
+        initCustomConfig (state, data) { for (var key in data) state.config[key] = data[key] },
         //Устанавливаем свойство в поле property
         setFieldProp (state, data) { Vue.set (data.field, data.property, data.value ) },
         //Устанавливаем уникальный идентификатор для некоторых полей. Нужно для ретитед полей, что бы обозначить уникальность поля с одним именем
@@ -42,11 +44,9 @@ export default {
         setErrors (state, errors) { state.errors = errors },
         // Добавляем новый репитед блок
         addRepeatedBlock (state, field) { 
-            field.data.push({fields: cloneDeep(field['fields']), index: field['unique-index'] });
+            field.value.push({fields: cloneDeep(field['fields']), key: field['unique-index'] });
             field['unique-index']++;
         },
-        // Сортируем репитед блоки
-        sortRepeatedBlocks (state, data) { Vue.set( data.field, 'data', data.value ) },
         //Удаляем репитед блок 
         delRepeatedBlock (state, data) { data.block.splice(data.index, 1); }
      },
@@ -56,10 +56,11 @@ export default {
             commit('addRepeatedBlock', field);
 
             //Обновляем видимость полей
-            setVShowData(commit, field.data[field.data.length - 1].fields, true );
+            setVShowData(commit, field.value[field.value.length - 1].fields, true );
         },
         //Устанавливаем value
         setFieldProp ({ commit, state }, data) {
+            // console.log(data);
             var field = data.fields[data.name];
             //Устанавливаем значение в поле.
             commit('setFieldProp', { field, property: data.property, value: data.value });
@@ -70,6 +71,8 @@ export default {
                     if (data.fieldsType == 'tab' ) setVShowDataRoot(commit, state);
                     else setVShowData(commit, data.fields); 
                 }
+
+                beforeClose();
             }
         },
 
@@ -106,9 +109,9 @@ function setVShowData (commit, fields, all) {
         //Бежим по всему дереву вверх текущих полей
         if(all === true) {
             if (fields[name].type == 'repeated') {
-                var repData = fields[name].data;
-                for (var i = 0; i < repData.length; i++) {
-                   setVShowData (commit, repData[i].fields, all) 
+                var repData = fields[name].value;
+                for ( let repDataBlock of repData ) {
+                   setVShowData (commit, repDataBlock, all) 
                 }
             }
         }
@@ -158,3 +161,10 @@ function vShowCheck (show, fields) {
 
     return res;
 }
+
+function beforeClose () {
+    window.onbeforeunload = function(e) {
+        return 'Данные формы не сохранены. Для сохранения, останьтесь на странице и нажмите кнопку [Сохранить]';
+    };
+}
+           

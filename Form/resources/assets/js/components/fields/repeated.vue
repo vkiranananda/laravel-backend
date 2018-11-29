@@ -1,11 +1,11 @@
 <template>
     <div class="card">
         <div class="card-body">
-            <draggable :options="{draggable:'.card', element: 'md-list'}" v-model='repBlocks' class="repeated-field" >
-                <div class="card mb-4" v-for="(block, key) in repBlocks" :key="block.index">
+            <draggable :options="{draggable:'.card'}" v-model='repBlocks' class="repeated-field" >
+                <div class="card mb-4" v-for="(block, key) in repBlocks" :key="block.key">
                     <div href='#' @click="delBlock(key)" class="delete" v-if="repBlocks.length > 1">&times;</div>
                     <div class="card-body">
-                        <fields-list  :fields='block.fields' :store-name='storeName'></fields-list>
+                        <fields-list  :fields='block.fields' :errors="errors[block.key]" :store-name='storeName'></fields-list>
                     </div>
                 </div>
                 <div class="text-right">
@@ -28,36 +28,34 @@
         },
         props: { 
         	field: {},
-        	error: {
-        		type: String,
-        		default: ''
-        	},
+        	error: undefined,
             storeName: {
                 type: String,
                 default: ''
             }
         },
         computed: {
+            errors: function () {
+                if (this.error == undefined) return {};
+                return this.error;
+            },
             repBlocks: {
-                get () { return this.field.data },
-                set (blocks) {
-                    this.store.commit(this.storeName+'/sortRepeatedBlocks', { 
-                        field: this.field, 
-                        value: blocks
-                    }); 
-                }
+                get () { return this.field.value },
+                set (blocks) { this.$emit('change', blocks) }
             }
         },
         methods: {
             addNew () {
                 this.store.dispatch(this.storeName+'/addRepeatedBlock', this.field);     
+                this.$emit('change', this.repBlocks);
             },
             delBlock (key) {
                 if ( confirm('Подтвердите удаление.') ){
                     this.store.commit(this.storeName+'/delRepeatedBlock', { 
-                        block: this.field.data,
+                        block: this.field.value,
                         index: key
                     });  
+                    this.$emit('change', this.repBlocks);
                 }
             }
         }

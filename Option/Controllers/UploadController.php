@@ -6,5 +6,3 @@ class UploadController extends \Backend\Root\Upload\Controllers\UploadController
 {
     protected $module = 'Option';
 }
-
-// 

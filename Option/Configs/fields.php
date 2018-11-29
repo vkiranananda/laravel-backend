@@ -2,7 +2,7 @@
 	return [
         'list' => [
         	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit'],
-          ],
+        ],
 
 		'fields' => [
 	        'name' => [
@@ -15,7 +15,6 @@
 	            'type' => 'select', 
 	            'name' => 'type', 
 	            'label' => 'Тип',
-	            // 'value' => ''
 	            'options' => [
 	            	['label' => 'Текст', 'value' => 'text'],
 	            	['label' => 'Редактор', 'value' => 'mce'],
@@ -24,6 +23,51 @@
 	            ],
 	            'field-save' => 'array',
 	        ],
+
+			'gallery' => [		
+	            'type' => 'gallery', 
+	            'name' => 'gallery', 
+	            'label' => 'Галерея',
+	            'field-save' => 'array',
+	     		'show' => [
+					['field' => 'type', 'value' => 'gallery', 'type' => '=='],
+				],
+			],
+
+			'mce' => [	
+		        'type' => 'mce', 
+		        'name' => 'mce', 
+		        'label' => 'Текст',
+		        'height' => 300,
+		        'upload' => true,
+		        'field-save' => 'array',
+	     		'show' => [
+					['field' => 'type', 'value' => 'mce', 'type' => '=='],
+				],
+	        ],
+
+			'menu' => [	
+		        'type' => 'mce', 
+		        'name' => 'menu', 
+		        'label' => 'Текст',
+		        'height' => 300,
+		        'field-save' => 'array',
+	     		'show' => [
+					['field' => 'type', 'value' => 'menu', 'type' => '=='],
+				],
+	        ],
+
+			'text' => [	
+		        'type' => 'textarea', 
+		        'name' => 'text', 
+		        'label' => 'Значение',
+		        'attr' => [ 'rows' => '15' ],
+		        'field-save' => 'array',
+	     		'show' => [
+					['field' => 'type', 'value' => 'text', 'type' => '=='],
+				],
+	        ],
+
 	        'autoload' => [
 	            'type' => 'radio', 
 	            'name' => 'autoload', 
@@ -39,13 +83,9 @@
 
 		'edit' => [
 			'default' => [
-				'tab_name' => 'Основные',
-				'id' => 'main',
-				'fields' => [
-					[ 'name' => 'name', 'attr' => ['test' => 'test'] ],
-			        [ 'name' => 'type' ],
-			   		[ 'name' => 'autoload' ],
-			    ],
+				'label' => 'Основные',
+				'name' => 'main',
+				'fields' => [ 'name', 'type', 'gallery', 'mce', 'text', 'menu', 'autoload' ],
 			],
 		],
 	];

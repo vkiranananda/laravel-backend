@@ -14,6 +14,8 @@ use \Backend\Root\Upload\Models\MediaFile;
 use Content;
 use DB;
 use GetConfig;
+use Response;
+use Log;
 
 class ResourceController extends Controller {
 
@@ -43,8 +45,8 @@ class ResourceController extends Controller {
     //Шаблон для edit. Берется из конфига.
     private $editTemplate = 'Form::edit';
 
-    //Генерируемый конфиг для веб данных
-    protected $configReturn = [];
+    //Генерируемый массив с данными для веб
+    protected $dataReturn = [];
 
     //Инитим данные.
     public function init(&$post)
@@ -64,13 +66,10 @@ class ResourceController extends Controller {
         $this->config['baseClass'] = class_basename($this->post);
         $this->config['baseNamespace'] = (preg_match('/(^.+)\\\.+\\\.+/', get_class($this), $mathces)) ? $mathces[1] : '' ;
 
-
-        if ( isset($this->config['conf']['edit-template']) ) {
-            $this->editTemplate = $this->config['conf']['edit-template'];
-        }
+        if ( isset($this->config['edit-template']) ) $this->editTemplate = $this->config['edit-template'];
     }
 
-    //Вввод списка записей
+    //!Вввод списка записей
     public function index()
     {
     	$this->resourceCombine('index');
@@ -78,21 +77,21 @@ class ResourceController extends Controller {
     	$this->config['create-url'] = action($this->config['controllerName'].'@create');
 
     	//Добавочные параметры для всех урлов. Устанавливаем значение по умолчанию если нет. 
-    	if(!isset($this->config['conf']['url-params'])) {
-      		$this->config['conf']['url-params'] = [];
-      	}
+    	if(!isset($this->config['url-params'])) $this->config['url-params'] = [];
 
     	$searchReq = $this->search();
+
         //Если подключен трейт с категориями
-        if( method_exists($this, 'checkCategory') ){
+        if ( method_exists($this, 'checkCategory') ) {
         	$this->config['cat'] = Request::input('cat', false);
-      		if( $this->checkCategory($this->config['cat']) ) {
+      		if ( $this->checkCategory($this->config['cat']) ) {
       			//Локализация
 	        	$this->localize();
 	        	//Параметры для урла
-        		$this->config['conf']['url-params'][] = 'cat';
+        		$this->config['url-params'][] = 'cat';
       			
-      			if($searchReq) {//Если был произведен поиск, ищем во всех вложенных категориях
+      			//Если был произведен поиск, ищем во всех вложенных категориях
+      			if ($searchReq) {
       				$this->post = $this->post->whereIn('category_id', Categories::getListIds($this->config['cat'], true));
       			} else {
       				$this->post = $this->post->where('category_id', $this->config['cat']);
@@ -131,7 +130,7 @@ class ResourceController extends Controller {
         return view($templite, [ 'data' => $this->post->paginate($this->pagination), 'config' => $this->config ]);
     }
 
-    //Функция поиска для списка, возвращает true если есть что искать.
+    //!Функция поиска для списка, возвращает true если есть что искать.
     protected function search() {
     	$searchReq = false;
         if(isset($this->config['search'])) {
@@ -176,28 +175,28 @@ class ResourceController extends Controller {
     public function create()
     {
         $this->resourceCombine('create');
-        //For categories if trait enable
-        if(method_exists($this, 'setCategoryList')) {
+        
+        //Если трейт с категориями включен
+        if ( method_exists($this, 'setCategoryList') ) {
             $this->setCategoryList('create');
             $this->localize();
         }
 
-        $this->configReturn = [ 
+        $this->dataReturn = [ 
         	'config'	=> [
-        		'url' 		=> action($this->config['controllerName'].'@store'),
+        		'url' 		=> action ($this->config['controllerName'].'@store'),
         		'title'		=> $this->config['lang']['create-title'],
         		'method'	=> 'post'
         	], 
         	'fields'	=>	[
-        		'fields'	=> $this->prepEditFields( $this->fields['fields'], $this->post ),
+        		'fields'	=> $this->prepEditFields ( $this->fields['fields'], $this->post ),
         		'tabs'		=> $this->fields['edit']
-        	],
-        	'data'		=> $this->post, 
+        	]
         ];
 
-        $this->resourceCombineAfter('create');
+        $this->resourceCombineAfter ('create');
    
-        return view($this->editTemplate, $this->configResult);
+        return view ($this->editTemplate, $this->dataReturn);
     }
 
     //Сохраняем запись
@@ -209,27 +208,36 @@ class ResourceController extends Controller {
         $this->resourceCombine('store');
       
         //Сохраняем данные в запись
-        $relationFields = $this->SaveFields($this->post, $this->fields['fields'], $this->fields['edit']);
+        $data = $this->SaveFields($this->post, $this->fields['fields'], $this->fields['edit']);
+
+        //Если ошибка валидации
+        if ( $data['errors'] !== true ) return Response::json([ 'errors' => $data['errors'] ], 422);
+
+        $this->post = $data['post'];
         
         //Сохрням юзер id
-        if (isset($this->config['conf']['user-id']) ) $this->post->user_id = Auth::user()->id;
+        if ( isset($this->config['user-id']) ) $this->post->user_id = Auth::user()->id;
         
         $this->post->save();
 
-        if ( method_exists($this, 'saveRelationFields') )$this->saveRelationFields($relationFields);
+        if ( method_exists($this, 'saveRelationFields') )$this->saveRelationFields($data['relations']);
         
-        //Сохраняем медиафайлы
-        $this->saveMediaRelations();
+        //!Сохраняем медиафайлы
+        //$this->saveMediaRelations();
 
         //Вызываем хук
         $this->resourceCombineAfter('store');
 
         //Обработка редиректов
-        if ( isset($this->config['store-redirect-url']) ) {
-            return ['redirect' => $this->config['store-redirect-url'] ];
+        if ( isset($this->config['store-redirect']) ) {
+            return ['redirect' => $this->config['store-redirect'] ];
         }
 
-        return $this->edit($this->post['id']);
+        //Выставляем дополнительные параметры.
+        $editResult = $this->edit($this->post['id']);
+        $editResult['replaceUrl'] = action($this->config['controllerName'].'@edit', $this->post['id']);
+
+        return $editResult;
     }
 
     //Редактируем запись вебка
@@ -240,12 +248,13 @@ class ResourceController extends Controller {
         
         $this->resourceCombine('edit');
         
-        if(method_exists($this, 'setCategoryList')) {
+        //Если трейт с категориями включен
+        if ( method_exists($this, 'setCategoryList') ) {
             $this->setCategoryList('edit');
             $this->localize();
         }
 
-        $this->configReturn = [ 
+        $this->dataReturn = [ 
         	'config'	=> [
         		'url' 		=> action($this->config['controllerName'].'@update', $id),
         		'title'		=> $this->config['lang']['edit-title'],
@@ -255,42 +264,58 @@ class ResourceController extends Controller {
         	'fields'	=>	[
         		'fields'	=> $this->prepEditFields( $this->fields['fields'], $this->post ),
         		'tabs'		=> $this->fields['edit']
-        	],
-        	'data'		=> $this->post, 
+        	]
         ];
+
+//        Log::info( print_r($this->post->toArray(), true) );
 
         $this->resourceCombineAfter('edit');
         
-        return view($this->editTemplate, $this->configReturn );
+        if ( Request::ajax() ) return $this->dataReturn;
+
+        return view($this->editTemplate, $this->dataReturn );
     }
 
     //Обновляем запись
     public function update($id)
     {
-        if(!isset($this->post['id'])) $this->post = $this->post->findOrFail( $id );
+        if ( !isset($this->post['id']) ) $this->post = $this->post->findOrFail( $id );
+        
         $this->resourceCombine('update');
+        
         if(method_exists($this, 'setCategoryList')) $this->setCategoryList('update');
-        $relationFields = $this->SaveFields($this->post, $this->fields['fields']);
+        
+    	//Сохраняем данные в запись
+        $data = $this->SaveFields($this->post, $this->fields['fields'], $this->fields['edit']);
+
+        //Если ошибка валидации
+        if ( $data['errors'] !== true ) return Response::json([ 'errors' => $data['errors'] ], 422);
+
+        $this->post = $data['post'];
+        
         $this->post->save();
 
-        if(method_exists($this, 'saveRelationFields'))$this->saveRelationFields($relationFields, true);
+        if ( method_exists($this, 'saveRelationFields') ) {
+        	//Удаялем все записи
+        	$this->destroyRelationFields ($this->post);
+        	//Добавляем новые
+        	$this->saveRelationFields ($this->post, $data['relations']);
+        }
+        
+        //!Сохраняем медиафайлы
+        //$this->saveMediaRelations();
 
-        $this->saveMediaRelations();
+        //Вызываем хук
         $this->resourceCombineAfter('update');
 
-        if(isset($this->config['conf']['update-redirect'])){
-        	if(!isset($this->config['conf']['update-redirect-url'])){
-        		$this->config['conf']['update-redirect-url'] = action($this->config['controllerName'].'@edit', $this->post->id);
-        	}
-            return [ 'redirect' => $this->config['conf']['update-redirect-url'] ];
+        if ( isset($this->config['update-redirect']) ) {
+        	return [ 'redirect' => $this->config['update-redirect'] ];
         }
 
-        return [ 
-            'viewUrl' => $this->getViewUrl(), 
-        ];
+        return [ 'config' => [ 'viewUrl' => $this->getViewUrl() ] ];
     }
 
-    //Показываем запись
+    //!Показываем запись
     public function show($id)
     {
         if(!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
@@ -311,34 +336,25 @@ class ResourceController extends Controller {
     //Удаляем запись
     public function destroy($id)
     {
-        $this->post = $this->post->findOrFail( $id );
-        
-        $this->resourceCombine('destroy');
-
-        if(method_exists($this, 'destroyRelationFields'))$this->destroyRelationFields();
-
-        if(isset($this->config['conf']['media-files']) && $this->config['conf']['media-files'] == 'hidden'){
-            Uploads::deleteFiles( MediaFile::where('imageable_type', $this->config['baseClass'])->where('imageable_id', $id)->get() );
-
-            MediaFile::where('imageable_type', $this->config['baseClass'])->where('imageable_id', $id)->delete();
-        }
-        $this->post->destroy($id);
-        $this->resourceCombineAfter('destroy');
+        $this->resourceCombine ('destroy');
+        $this->post->destroy ($id);
+        $this->resourceCombineAfter ('destroy');
     }
 
     //Сахраняем загруженные данные.
-    public function saveMediaRelations($imageable = false, $id = false, $type = 1)
+    public function saveMediaRelations($files, $imageable = false, $id = false)
     {
-        $mediaFiles = Request::input('_media-file-uploaded-id', false);
+        if ( is_array($files) && count($files) > 0 ) {
 
-        if( is_array($mediaFiles) && count($mediaFiles) > 0 ){
-            
-            if(isset($this->config['conf']['media-files']) && $this->config['conf']['media-files'] == 'hidden') $type = '2';
+        	//Возможность задать класс для сохранения файла
+            if ( $imageable == false ) $imageable = $this->confg['baseClass'];
+            //Возможность задать id
+            if ( $id == false ) $id = $this->post->id;
 
-            if( $imageable == false ) $imageable = $this->confg['baseClass'];
-            if( $id == false ) $id = $this->post->id;
-
-            MediaFile::whereIn('id', $mediaFiles)->where('imageable_type', $imageable)->update(['imageable_id' => $id, 'type' => $type ]);
+            //Сохраняем.
+            MediaFile::whereIn('id', $files)
+            	->where('imageable_type', $imageable)
+            	->update( ['imageable_id' => $id, 'type' => 2 ] );
         }
     }
 
@@ -353,10 +369,7 @@ class ResourceController extends Controller {
     //Функция возвращает урл поста
     protected function getViewUrl()
     {
-        if(method_exists($this, 'setCategoryList')) {
-            return Content::getUrl($this->post);
-        }else {
-            return '';
-        }
+        if (method_exists($this, 'setCategoryList')) return Content::getUrl($this->post);
+        else return '';
     }
 }

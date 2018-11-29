@@ -1,5 +1,5 @@
 <template>
-    <fields-list  :fields='field.fields' :store-name='storeName'></fields-list>
+    <fields-list  :fields='field.fields' :errors="errors" :store-name='storeName'></fields-list>
 </template>
 
 <script>
@@ -10,15 +10,18 @@
         },
         props: { 
         	field: {},
-        	error: {
-        		type: String,
-        		default: ''
-        	},
+        	error: undefined,
             storeName: {
                 type: String,
                 default: ''
             }
-        }
+        },
+        computed: {
+            errors: function () {
+                if (this.error == undefined) return {};
+                return this.error;
+            }
+        },
     }
 </script>
 

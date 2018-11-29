@@ -7,14 +7,14 @@
             </div>
             <div v-else-if="field.type == 'repeated'"  class="form-group">
                 <label v-if="field.label" v-html="field.label"></label>
-                <repeated-field :field='field' :store-name='storeName' :error='errors[field.name]'></repeated-field>
+                <repeated-field :field='field' :store-name='storeName' :error='currentErrors[field.name]' v-on:change="onChange($event, field.name)"></repeated-field>
                 <small class="form-text text-muted" v-if="field.desc != ''" v-html="field.desc"></small>
             </div>
-            <group-field v-else-if="field.type == 'group'" :field='field' :store-name='storeName' :error='errors[field.name]'></group-field>
+            <group-field v-else-if="field.type == 'group'" :field='field' :store-name='storeName' :error='currentErrors[field.name]'></group-field>
             <div v-else class="form-group">
                 <label v-if="field.label" v-html="field.label"></label>
-                <print-field :field='field' :error='errors[field.name]' v-on:change="onChange($event, field.name)"></print-field>
-                <div class="invalid-feedback">{{errors[field.name]}}</div>
+                <print-field :field='field' :error='currentErrors[field.name]' v-on:change="onChange($event, field.name)"></print-field>
+                <div class="invalid-feedback">{{currentErrors[field.name]}}</div>
                 <small class="form-text text-muted" v-if="field.desc != ''" v-html="field.desc"></small>
             </div>                   
         </div>
@@ -42,17 +42,14 @@
             fieldsType: {
                 type: String,
                 default: ''
-            }
+            },
+            errors: undefined
         },
         computed: {
-            errors () {
-                if(this.storeName != '') {
-                    var errors = this.store.state[this.storeName].errors;
-
-                    // if (this.repeated.name != undefined && errors[this.repeated.name] == undefined) return {}
-                    //else
-                    return errors; 
-                }
+            currentErrors () {
+                if (this.errors != undefined) return this.errors;
+                else return {};
+                // if(this.storeName != '') return this.store.state[this.storeName].errors; 
             }
         },
         methods: {
