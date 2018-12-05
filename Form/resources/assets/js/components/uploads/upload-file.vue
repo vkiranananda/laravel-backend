@@ -1,20 +1,18 @@
 <template>
     <div class='upload-file'>
         <div class="loader text-center" v-if="loading">
-            <img src="/images/system/loading5.gif" alt="">
+            <img src="/backend/images/loading5.gif" alt="">
         </div>
         <div v-else>
             <div data-name="errorsArea" v-html="errors"></div>
             <div class='upload-button media-file' @click="chooseFiles()"></div>
             <div class="conteiner">
-                <div class='media-file' v-for="(file, key, index) in files" :key="file.id">
+                <div class='media-file' v-for="file in files" :key="file.id">
                     <a href='#' v-on:click.prevent="del(file)" class="delete">&times;</a>
                     <a href="#" v-on:click.prevent="edit(file)" v-show="file.id" class="icons-pencil edit"></a>
-                    <a :href="file.orig" class="icons-download download" download></a>
 
                     <div :class="{ 'have-errors': file.haveErrors, 'selected': file.selected }" class="media-file-body" @click="selectFile(file)">
                         <img :src="file.thumb" alt="">
-                        <input v-if="file.newUploadedFile" type="hidden" name="_media-file-uploaded-id[]" :value="file.id" />
     	                <div class="text" data-type="text" v-if="file.file_type != 'image'">{{ file.orig_name }}</div>
     	                <progress v-show="!file.id && !file.haveErrors" class="progress progress-info" :value="file.progress" max="100"></progress>
                     </div>
@@ -28,71 +26,80 @@
 <script>
     export default {
         created () {
-            this.$bus.$on('UploadFileModalButton', this.getFiles);
+            // Получаем все новые файлы, для сохранения
+            this.store.commit('uploadForm/setMethod', {name: 'getUploadedFiles', method: this.getUploadedFiles});
+            // Отменяем выделение файлов
+            this.store.commit('uploadForm/setMethod', {name: 'unselectFiles', method: this.unselectFiles});
+            // Получаем все выделенные файлы
+            this.store.commit('uploadForm/setMethod', {name: 'getSelectedFiles', method: this.getSelectedFiles});
         },
-        beforeDestroy(){
-            this.$bus.$off('UploadFileModalButton');
-        },
-
-
-        props: {
-            params: { default: function () { return [] } },
-            data: { default: function () { return [] } },
-            selectable: { default: false }
-        },
+        props: [ 'url' ],
         data() {
             return {
-                files: this.data,
                 errors: '',
                 loading: false,
-                conf: this.params,
-                extConf: [],
+                selectedItems: [],
+
+                urls: [],
+                files: [],
+                loadedUrl: '',
+            }
+        },
+        computed: {
+            //Получем конфиг
+            config () { return this.store.state.uploadForm.filesUploadConfig }
+        },
+        watch: {
+            //Инитим данные при изменении переменной
+            config: function (config) { 
+                //Если данные не загружались, загружаем
+                if (this.loadedUrl != this.url) {
+                    this.loading = true;
+                    axios.get(this.url)
+                    .then( (response) => {
+                        this.urls = response.data.urls;
+                        this.files = response.data.files;
+                        this.loading = false;
+                    })
+                    .catch( (error) => { console.log(error.response) });     
+
+                    this.loadedUrl = this.url;
+                }
             }
         },
         methods: {
-            getFiles(conf) {
-                if (this.extConf.url != conf.url) {
-                    this.loading = true;
-                    axios.get(conf.url)
-                    .then( (response) => {
-                        this.conf = response.data.params;
-                        this.files = response.data.data;
-                        this.loading = false;
-                                    console.log(this.files[0].orig);
-                    })
-                    .catch( (error) => {
-                        console.log(error.response);
-                    });      
-                }
-                if(this.extConf.fieldName != conf.fieldName){
-                    this.unselectFiles();
-                }
-                this.extConf = conf;
+            //Очищаем все выбраные элементы
+            unselectFiles() { 
+                for (var file of this.files) if (file.selected) file.selected = false;
+                this.selectedItems = [];
             },
-
-            unselectFiles() {
-                //Очищаем все выбраные элементы
-                for (var i = 0; i < this.files.length; i++) {
-                    if(this.files[i].selected)this.files[i].selected = false;
-                }
+            //Выбираем файлы
+            chooseFiles() { this.$refs.upload.click() },
+            // Выводит массив новых файлов
+            getUploadedFiles () {
+                var res = [];
+                for (var file of this.files) if (file.newFile) res.push (file.id);
+                return res;
             },
-            chooseFiles()
-            {
-                this.$refs.upload.click();
+            //Получаем все выбранные файлы
+            getSelectedFiles () {
+                var res = [];
+                for (var file of this.files) if (file.selected) res.push(file);
+                return res;
             },
-            uploadFiles()
-            {
+            //Загружаем файлы
+            uploadFiles() {
                 var files = this.$refs.upload.files;
                 this.errors = "";
+
                 //выходим если пусто
-                if(files[0] === undefined){
-                    return;
-                }
+                if(files[0] === undefined) return;
+
                 //выводим файлы для загрузки.
                 for (var i  = files.length - 1; i >= 0; i--) {
                     this.files.unshift({progress: 0, orig_name: files[i]['name'], haveErrors: false });
 
-                    ( (file) => {
+                    ((file) => {
                         var fileInArr = this.files[0];
                         var data = new FormData();
 
@@ -104,12 +111,12 @@
                                 Math.round( (progressEvent.loaded * 100) / progressEvent.total );
                             }
                         }
-                        axios.post(this.conf['upload-url'], data, config)
+                        axios.post(this.urls.upload, data, config)
                             .then( (response) => {
-                                var indexFile = this.files.indexOf(fileInArr);
-                                response.data.newUploadedFile = true;
-                                this.$set(this.files, indexFile, response.data);
-                                this.selectFile(this.files[indexFile]);
+                                //Копируем нужные атрибуты
+                                for (var key in response.data) fileInArr[key] = response.data[key];
+                                fileInArr.newFile = true; //Файл новый
+                                this.selectFile(fileInArr);
                             })
                             .catch( (error) => {
                                 console.log(error.response);
@@ -127,31 +134,65 @@
                     })(files[i]);
                 }   
             },
+
+            //Выбираем файл
             selectFile(file) {
-                if(this.selectable){ 
-                    if( (this.extConf.dataType == 'image' && file.file_type == 'image') ||  this.extConf.dataType == 'all'){
-                        this.$set(file, 'selected', (!file['selected']) );
+                if( (this.config.type == 'image' && file.file_type == 'image') ||  this.config.type == 'all') {
+
+                    if (file.selected) {
+                        //Удаляем из выбранных элементов
+                        this.selectedItems.splice(this.selectedItems.indexOf(file.id), 1);
+                        file.selected = false;
+                    } else {
+                        // console.log('set');
+                        //Снимаем пометку с самого первого элемента, если лимит исчерпан
+                        if ( this.config.count != undefined && this.config.count <= this.selectedItems.length) {
+                            //Ищем индекс в списке файлов и снимаем его.
+                            var lastEl = this.selectedItems.length - 1;
+                            for ( var fileSearch of this.files ){
+                                if (fileSearch.id == this.selectedItems[lastEl]) fileSearch.selected = false;
+                            }
+                            this.selectedItems.splice(lastEl, 1);
+                        }
+                        //Добавляем элемент.
+                        if ( this.config.count == undefined || this.config.count > this.selectedItems.length)  {
+                            this.selectedItems.push(file.id);
+                            this.$set(file, 'selected', true);
+                        }
                     }
                 }
             },
             //Изменяем элемент
-            edit(file) {
-                this.$bus.$emit('UploadEditFile', file.id);
+            edit(file) { 
+                this.$bus.$emit( 'UploadFilesEditModalShow', Object.assign({ 
+                    deleteMethod: this.del,
+                    deleteValue: file,
+                    deleteType: 'delete'
+                }, file))
             },
+            
+            //Удаляем файл
             del(file) {
-                if(!confirm('Файл "' + file['orig_name'] + '" будет удален безвозвратно. Удалить файл?'))return
+                console.log(file)
+                if (!confirm('Файл "' + file['orig_name'] + '" будет удален безвозвратно. Удалить файл?')) return
 
+                //Снимаем выделение если было.
+                if (file['selected']) this.selectFile(file);
+
+                // Очищаем ошибки
                 this.errors = "";
+                //Подсвечиваем удаляемый файл
                 this.$set(file, 'haveErrors', true);
 
-                axios.delete(this.conf['destroy-url'] + '/' + file['id'])
+                // Удаляем
+                axios.delete(this.urls.destroy + '/' + file['id'])
                     .then( (response) => {
-                        this.$bus.$emit('UploadDeleteFile', file.id);
-                        this.$delete(this.files, this.files.indexOf(file) );
+                        //Оповестить всех что файл удален
+                        this.store.commit('uploadForm/deleteFile', file.id);
+                        //Удаляем из списка
+                        this.$delete(this.files, this.files.indexOf(file));
                     })
-                    .catch( (error) => {
-                        console.log(error.response);
-                    });
+                    .catch( (error) => { console.log(error.response) });
             }
         }
     }
@@ -197,20 +238,8 @@
                 font-size: 12px;
                 display: none;
             }
-            .download{
-                position: absolute;
-                right: 1px;
-                top: 33px;
-                display: inline-block;
-                text-align: center;
-                color: blue;
-                text-decoration: none;
-                border-radius: 13px;
-                font-size: 12px;
-                display: none;
-            }
             &:hover{
-                .delete, .edit, .download {
+                .delete, .edit {
                     display: inline-block;
                 }
             }

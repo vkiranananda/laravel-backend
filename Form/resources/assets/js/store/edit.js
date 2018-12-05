@@ -98,22 +98,21 @@ export default {
 //Выставляем значения видимости репитед полей.
 function setVShowData (commit, fields, all) {
     //Перебираем все поля 
-    for ( var name in fields ) {
-        if (fields[name]['show'] != undefined) {
+    for (let key in fields ) {
+        let field = fields[key];
+        if (field.show != undefined) {
             commit('setFieldProp', {
-                field: fields[name],
+                field: field,
                 property: 'v-show',
-                value: vShowCheck(fields[name]['show'], fields)
+                value: vShowCheck(field.show, fields)
             });           
         }
         //Бежим по всему дереву вверх текущих полей
         if(all === true) {
-            if (fields[name].type == 'repeated') {
-                var repData = fields[name].value;
-                for ( let repDataBlock of repData ) {
-                   setVShowData (commit, repDataBlock, all) 
-                }
+            if (field.type == 'repeated') {
+                for ( let repDataBlock of field.value ) setVShowData (commit, repDataBlock.fields, all) 
             }
+            if (field.type == 'group') setVShowData (commit, field.fields, all)
         }
     }
 }

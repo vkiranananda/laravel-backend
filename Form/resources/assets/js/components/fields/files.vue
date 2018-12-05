@@ -1,71 +1,97 @@
 <template>
     <div>
         <div class="attached-files" >
-            <div class="mb-3">
-                <show-uploads-button :url="field['filesUrl']" :field-name="field.name" :data-type="field.type == 'files' ? 'all' : 'image'">
-                </show-uploads-button>
+            <div class="mb-3" v-if="сountAgain != 0">
+                <show-uploads-button :config="uploadConf"></show-uploads-button>
             </div>
             <div class="conteiner">
                 <draggable v-model="files" :options="{draggable:'.item'}">
-                    <div v-for="file in files" class="media-file item" :class="field.type == 'gallery' ? 'image' : 'file'" :key="file.id">
+                    <div v-for="(file, key) in files" class="media-file item" :class="field.type == 'gallery' ? 'image' : 'file'" :key="key">
                         <a href='#' v-on:click.prevent="del(file)" class="delete">&times;</a>
-                        <div class="file-body">
-                            <input type="hidden" :name="field.name+'[]'" :value="file.id">
+                        <div class="file-body" v-on:click.prevent="edit(file)">
                             <img :src="file.thumb" alt="" class="image">
-                            <div class="text">{{ file.orig_name}}</div>      
+                            <div class="text">{{ file.orig_name}}</div>
                         </div>
                     </div>
                 </draggable>
             </div>
             <div class="clearfix"></div>
+            <small class="form-text text-muted" v-if="сountAgain == 0">Привышен лимит. Для того что бы выбрать новый файл сначала удалить имеющийся</small>
         </div>
     </div>
 </template>
 
 <script>
     import draggable from 'vuedraggable'
+    import showUploadsButton from '../uploads/show-uploads-button'
+
     export default {
-        created () {
-            this.$bus.$on('UploadDeleteFile', this.fileDeleted);
-            this.$bus.$on('UploadAttacheFiles', this.attacheFiles)
-        },
-        beforeDestroy(){
-            this.$bus.$off('UploadDeleteFile');
-            this.$bus.$off('UploadAttacheFiles');
-        },
         components: {
             draggable,
+            'show-uploads-button': showUploadsButton
         },
         props: {
             field: {
                 default: [],
            },
         },
-        data() {
-            return {
-                files: this.field.value,
+        computed: {
+            //Количество файлов доступное для загрузки
+            сountAgain () {
+                var res = undefined; //Унлимитед
+                if (this.field['max-files'] != undefined) {
+                    res = this.field['max-files'] - this.field.value.length;
+                    if (res < 0) res = 0;
+                }
+                return res;
+            },
+            uploadConf () {
+                return {
+                    type: (this.field['type'] == 'files') ? 'all' : 'image',
+                    count: this.сountAgain,
+                    attach: this.attachFiles
+                }
+            },
+            files: {
+                get () { return this.field.value },
+                set (files) { this.$emit('change', files) }
+            }
+        },
+        watch: {
+            //Хук на удаление файла
+            'store.state.uploadForm.deleteFile': function(id) {
+                var exist = false;
+                var res = [];
+                
+                for (var file of this.files) {
+                    if (id == file.id) {
+                        exist = true;
+                        continue;
+                    }
+                    res.push(file);
+                }
+                //Если элемент был делам событие change
+                if (exist) this.$emit('change', res);
             }
         },
         methods: {
-            attacheFiles(field, files){
-                if(field == this.field.name){
-                    for (var i = 0; i < files.length; i++) {
-                        this.files.unshift(files[i]);
-                    }
-                    window.onbeforeunload = $(document).formUnloadPage;
-                }
+            // Добавляем файлы
+            attachFiles (files) {
+                var newValue = this.field.value.slice();
+                for (var file of files) newValue.unshift(file)
+                this.$emit('change', newValue);
+                console.log(newValue);
             },
-            del(file)
-            {
+            del(file) {
                 this.$delete(this.files, this.files.indexOf(file));
                 window.onbeforeunload = $(document).formUnloadPage;
             },
-            fileDeleted(id) {
-                for (var i = 0; i < this.files.length; i++) {
-                    if(this.files[i].id == id) {
-                        this.$delete(this.files, i);
-                    }
-                }
+            edit(file) { 
+                this.$bus.$emit( 'UploadFilesEditModalShow', Object.assign({ 
+                    deleteMethod: this.del,
+                    deleteValue: file,
+                    deleteType: 'unfasten'
+                }, file)) 
             }
         }
     }
@@ -84,6 +110,7 @@
             float: left;
             position: relative;
             .file-body {
+                cursor: pointer;
                 width: 100px;
                 height: 100px;
                 border: solid 1px #eceeef;

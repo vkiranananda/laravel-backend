@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Root\Upload\Models;
+namespace Backend\Root\Form\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

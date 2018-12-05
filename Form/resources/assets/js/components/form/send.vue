@@ -14,9 +14,6 @@
                 </button>
             </div>
         </div>
-
-        <upload-file-modal></upload-file-modal>
-        <upload-edit-file url=""></upload-edit-file>
     </div>
 </template>
 
@@ -42,7 +39,9 @@
                 var res = {};
                 if(this.storeName != ''){
                     //Получаем все value
-                    res = getValuesFromTabs(this.store.state[this.storeName].tabs);
+                    res['fields'] = getValuesFromTabs(this.store.state[this.storeName].tabs);
+                    //Получаем загруженные файлы
+                    res['files'] = this.store.state.uploadForm.methods.getUploadedFiles();
                 }
 
                 this.errorHaveAny = false;
@@ -161,7 +160,7 @@ function getValuesFromFields (fields)
         
         if (currentField['v-show'] === false) continue; //Пропускаем если скрыто поле.
         
-        if (currentField['type'] == 'repeated') { //Для повторителей
+        if (currentField.type == 'repeated') { //Для повторителей
             res[fieldName] = [];
             //Перебираем блоки полей
             var currentFieldValue = currentField.value;
@@ -175,10 +174,16 @@ function getValuesFromFields (fields)
             }
             continue;
         }
-        if (currentField['type'] == 'group') { //Для групп полей
+        if (currentField.type == 'group') { //Для групп полей
             res[fieldName] =  getValuesFromFields (currentField['fields']);
             continue;
         } 
+        //Обрабатываем галлереи и файлы
+        if (currentField.type == 'gallery' || currentField.type == 'files') {
+            res[fieldName] = [];
+            for ( var currentFieldValue of currentField.value ) res[fieldName].push(currentFieldValue.id);
+            continue;
+        }
         res[fieldName] = currentField['value'];
     }
     return res;

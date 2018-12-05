@@ -7,7 +7,7 @@ use Backend\Root\Core\Services\Helpers;
 use Cache;
 use GetConfig;
 
-class OptionController extends \Backend\Root\Form\Services\ResourceController
+class OptionController extends \Backend\Root\Form\Controllers\ResourceController
 {
     function __construct(Option $post )
     {

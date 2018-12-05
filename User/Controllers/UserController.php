@@ -6,7 +6,7 @@ use App\User;
 use Mail;
 use Request;
 
-class UserController extends \Backend\Root\Form\Services\ResourceController
+class UserController extends \Backend\Root\Form\Controllers\ResourceController
 {
     function __construct(User $post)
     {

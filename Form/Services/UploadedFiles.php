@@ -1,6 +1,6 @@
 <?php
-namespace Backend\Root\Upload\Services;
-use \Backend\Root\Upload\Models\MediaFile;
+namespace Backend\Root\Form\Services;
+use \Backend\Root\Form\Models\MediaFile;
 use Content;
 use Helpers;
 
@@ -14,7 +14,7 @@ class UploadedFiles {
     //Геренрим линки на файл
     public function genFileLink(&$file, $sizes = [])
     {  
-        $size = \Backend\Root\Upload\Services\Uploads::sizesToStr($sizes);
+        $size = \Backend\Root\Form\Services\Uploads::sizesToStr($sizes);
 
         $res = [ 'orig' => $file['url'].$file['path'].urlencode($file['file'] ) ];
 
@@ -25,7 +25,7 @@ class UploadedFiles {
 	            if(! isset($file['sizes'][$size])){
 	                if(!is_array($file['sizes']))$file['sizes'] = [];
 	                
-	                $file['sizes'] = array_merge($file['sizes'], \Backend\Root\Upload\Services\Uploads::genSizes($file, [ $sizes ]));
+	                $file['sizes'] = array_merge($file['sizes'], \Backend\Root\Form\Services\Uploads::genSizes($file, [ $sizes ]));
 	                
 	                $file->save();
 	            }
@@ -116,7 +116,7 @@ class UploadedFiles {
 			$res[] = array_merge(
 				( ($file['file_type'] == 'image') 
 					? $this->genFileLink($file, [128, 128, 'fit']) 
-					: ['orig' => $this->genFileLink($file)['orig'], 'thumb' => '/images/system/file.png' ]),
+					: ['orig' => $this->genFileLink($file)['orig'], 'thumb' => '/backend/images/file.png' ]),
 				Helpers::setArray($file, ['id', 'orig_name', 'file_type'])
 			);
         }
@@ -188,7 +188,7 @@ class UploadedFiles {
 					//Генерим srcset если функция size была вызвана более одного раза
 					if($countImgSize > 1) {
 						//Далее получаем текстовый размер
-						$strSize = \Backend\Root\Upload\Services\Uploads::sizesToStr($size);
+						$strSize = \Backend\Root\Form\Services\Uploads::sizesToStr($size);
 						//Тут нужно получить ширину для srcset, если нет миниатюры не добавляем srcset 
 						if(isset($this->images[$id]['sizes'][$strSize])){
 							$srcset .= $thumb." ".$this->images[$id]['sizes'][$strSize]['size'][0]."w, ";

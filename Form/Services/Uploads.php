@@ -1,10 +1,10 @@
 <?php
-namespace Backend\Root\Upload\Services;
+namespace Backend\Root\Form\Services;
 
 use Storage;
 use Request;
 use Auth;
-use Backend\Root\Upload\Models\MediaFile;
+use Backend\Root\Form\Models\MediaFile;
 use Intervention\Image\Facades\Image as Image;
 
 class Uploads {
@@ -19,7 +19,8 @@ class Uploads {
         $mediaFile->disk = $conf['disk'];
         $mediaFile->type = $conf['store-type'];
         $mediaFile->url = $conf['url'];
-        $mediaFile->user_id = Auth::user()->id;
+        // $mediaFile->user_id = Auth::user()->id;
+        $mediaFile->user_id = 1;
         $mediaFile->orig_name = $file->getClientOriginalName();
         $mediaFile->imageable_type = $conf['module'];
 
@@ -161,13 +162,16 @@ class Uploads {
     //Удаляет массив файлов
     public static function deleteFiles($files){
         foreach ($files as $file) {
+        	//Удаляем основной файл
             Storage::disk( $file['disk'] )->delete($file['path'].$file['file']);
 
             if(! is_array($file['sizes']))continue;
-
+            // Удаляем миниатюры
             foreach ($file['sizes'] as $fileSizes) {
                 Storage::disk( $file['disk'] )->delete($file['path'].$fileSizes['path'].$fileSizes['file']);
             }
+            //Удаляем из базы
+            MediaFile::destroy($file['id']);
         }
     }
 }

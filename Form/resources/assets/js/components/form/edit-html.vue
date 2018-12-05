@@ -28,6 +28,10 @@
             </div>
             <send-form store-name='editForm' :url='conf.url' :method='conf.method'></send-form>
         </div>
+        <div v-if="conf.upload !== false">
+            <upload-files-modal  :url="conf.upload.uploadUrl"></upload-files-modal>
+            <upload-edit-file-modal :url="conf.upload.editUrl"></upload-edit-file-modal>
+        </div>
     </div>
 </template>
 
@@ -36,9 +40,16 @@
 //    import assign from 'lodash.assign'
     import size from 'lodash.size';
     import fieldsList from './fields.vue'
+    import uploadFilesModal from '../uploads/files-modal.vue'
+    import uploadEditFileModal from '../uploads/edit-modal.vue'
+    import sendForm from './send.vue'
+
     export default {
         components: {
             'fields-list': fieldsList, 
+            'upload-files-modal': uploadFilesModal,
+            'upload-edit-file-modal': uploadEditFileModal,
+            'send-form': sendForm,
         },
         props: {
             fields: {},
@@ -48,21 +59,11 @@
             this.store.dispatch('editForm/initData', { fields: this.fields, config: this.config } );
         },
         computed: {
-            tabs () {
-                return this.store.state.editForm.tabs;
-            },
-            activeTab () {
-                return this.store.state.editForm.tabActive;
-            },
-            countTabs () {
-                return size(this.tabs);
-            },
-            conf () {
-                return this.store.state.editForm.config;
-            },
-            errors () {
-                return this.store.state.editForm.errors; 
-            },
+            tabs () { return this.store.state.editForm.tabs },
+            activeTab () { return this.store.state.editForm.tabActive },
+            countTabs () { return size(this.tabs) },
+            conf () { return this.store.state.editForm.config },
+            errors () { return this.store.state.editForm.errors },
             //Реализуем подсветку табов при ошибке
             errorsTab () {
                 var res = {};

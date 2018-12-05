@@ -4,12 +4,13 @@ namespace Backend\Root\Form\Services\Traits;
 use Request;
 use Helpers;
 use Content;
-use \Backend\Root\Upload\Models\MediaFile;
+use \Backend\Root\Form\Models\MediaFile;
 use Forms;
 use GetConfig;
 use Log;
 use Validator;
 use Response;
+use Illuminate\Support\Facades\DB;
 
 //Подготовка и сохарнение полей
 
@@ -32,8 +33,6 @@ trait Fields {
     		$field = $this->_prepEditField($field, $post, $arrayData);
 	    }
 
-	    	// dd($fields);
-
 		return $fields;
     }
 
@@ -54,10 +53,15 @@ trait Fields {
     		}
     	} 
     	//Проверяем есть ли значение в корне записи если field-save не установлен
-    	elseif ( isset($post[ $field['name'] ]) ) return $post[ $field['name'] ];
+    	if ( isset($post[ $field['name'] ]) ) return $post[ $field['name'] ];
     	 
     	//Берем значение из value по умолчанию
     	elseif ( isset($field['value']) ) return $field['value'];
+
+    	//Если нет значения по умолчанию для селектов и радио, ставим первый элемент
+    	elseif ( array_search($field['type'], ['select', 'radio']) !== false ) {
+    		if ( isset ($field['options'][0]['value'])  ) return $field['options'][0]['value'];
+    	}
 
     	//Если неичего не получилось выводим пустую строку
     	return '';
@@ -152,17 +156,23 @@ trait Fields {
 	    //Gallery, files fields
         elseif ($field['type'] == 'files' || $field['type'] == 'gallery') {
            
-            if ( !is_array($value) ) { //set default value
+            if ( !is_array($value) ) $field['value'] = [];
 
-            	$field['value'] = [];
-            	$field['data'] = [];
-          
-            } 
             elseif ( count($value) > 0 ) { //Получаем миниатюры и полные версии изображений
-            
-            	$files = MediaFile::whereIn('id', $value)->orderByRaw(DB::raw("FIELD(id, ".implode(',', $value).")"))->get();
-                $field['data'] = app('UploadedFiles')->prepGaleryData( $files );
-          
+            	$files = MediaFile::whereIn('id', $value)->get();
+            	
+            	$filesGoodKey = [];
+            	//Перебираем массив и создаем из свойства id ключ
+                foreach (app('UploadedFiles')->prepGaleryData( $files ) as $file) {
+                	$filesGoodKey[ $file['id'] ] = $file;
+                }
+
+                // Теперь наполняем значние value. Весь этот сыр бор замучен для сортировки и если
+                // в value есть одинаковые файлы.
+                $field['value'] = [];
+                foreach ($value as $fileId) {
+                	if (isset($filesGoodKey[$fileId])) $field['value'][] = $filesGoodKey[$fileId];
+                }
             }
        
         } else {
@@ -181,28 +191,32 @@ trait Fields {
 ///////---------------------------------------Saving-----------------------------------------------
 
 
-	protected function saveFields(&$post, $fields, $tabs = []) 
+	protected function saveFields($post, $fields, $request, $tabs = false) 
 	{
 		$newFields = [];
-		$request = Request::all();
 		$relationData = [];
 		$arrayData = ( isset($post['array_data']) ) ? $post['array_data'] : [];
 		$arrayDataFields = [];
 
 		if ( !isset($arrayData['fields']) || !is_array($arrayData['fields']) ) $arrayData['fields'] = [];
-				
+		
+		//Если табы не установлены идем по полям
+		if (!$tabs) {
+			$newFields = $fields;
+		}
+		//Получаем все поля в табах которые не скрыты 
+		else {
+			foreach ($tabs as $tab) {
+				//Скрытый
 
-		//Получаем все поля в табах которые не скрыты
-		foreach ($tabs as $tab) {
-			//Скрытый
+				if ( !isset($tab ['show']) || $this->showCheck($tab['show'], $request) !== false) {
+					
 
-			if ( !isset($tab ['show']) || $this->showCheck($tab['show'], $request) !== false) {
-				
-
-				foreach ($tab['fields'] as $fieldName) { //Массив из доступных полей
-					$newFields[ $fieldName ] = $fields[ $fieldName ];
-				}
-			} 
+					foreach ($tab['fields'] as $fieldName) { //Массив из доступных полей
+						$newFields[ $fieldName ] = $fields[ $fieldName ];
+					}
+				} 
+			}
 		}
 
 		$errors = $this->_saveFieldsList($newFields, $request, $post, $arrayDataFields, $relationData);
@@ -327,7 +341,7 @@ trait Fields {
                 $uniqueValue = array_unique($value);
 
                 //Инитим запрос
-                $imgReq = \Backend\Root\Upload\Models\MediaFile::whereIn('id', $uniqueValue );
+                $imgReq = \Backend\Root\Form\Models\MediaFile::whereIn('id', $uniqueValue );
 
                 if ($field['type'] == 'gallery' ) $imgReq = $imgReq->where('file_type', 'image');
 
@@ -355,7 +369,7 @@ trait Fields {
                         $sizes = [ $width[1], $height[1] ];
                     	
                     	//Ищем эти картинки в базе и создаем на них миниатюры    
-                        if( ($imgObj = \Backend\Root\Upload\Models\MediaFile::find($imgId)) ){
+                        if( ($imgObj = \Backend\Root\Form\Models\MediaFile::find($imgId)) ){
                             $imgUrl = Content::uFile()->genFileLink($imgObj, $sizes)['thumb'];
 
                             //Меняем на новую ссылку на картинку

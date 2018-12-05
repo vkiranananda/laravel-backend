@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="text-center" v-if="loading">
-                <img src="/images/system/loading5.gif" alt="">
+                <img src="/backend/images/loading5.gif" alt="">
             </div>
             <div v-else>
                 <div class="modal-body">
@@ -41,3 +41,6 @@
         }
     }
 </script>
+
+
+.modal { overflow: auto !important; }

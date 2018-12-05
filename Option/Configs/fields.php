@@ -1,9 +1,17 @@
 <?php
 	return [
         'list' => [
-        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit'],
+        	[ 
+        		'name' => 'name', 
+        		'icon' => 'file', 
+        		'link' => 'edit', 
+        		//Если равно true подставляем автоматически эти данные. 
+        		'order' => [ 'default' => true, 'type' => 'asc' ]
+        	],
         ],
-
+       			// 'add-rules' => [
+        			// 	['type' => 'asc', 'col' => 'name']
+        			// ],
 		'fields' => [
 	        'name' => [
 	            'type' => 'text', 
@@ -20,8 +28,10 @@
 	            	['label' => 'Редактор', 'value' => 'mce'],
 	            	['label' => 'Меню', 'value' => 'menu'],
 	            	['label' => 'Галерея', 'value' => 'gallery'],
+	            	['label' => 'Загрузить файлы', 'value' => 'files'],
 	            ],
 	            'field-save' => 'array',
+	            'value' => 'gallery'
 	        ],
 
 			'gallery' => [		
@@ -29,11 +39,21 @@
 	            'name' => 'gallery', 
 	            'label' => 'Галерея',
 	            'field-save' => 'array',
+	            'max-files' => 2,
 	     		'show' => [
 					['field' => 'type', 'value' => 'gallery', 'type' => '=='],
 				],
 			],
-
+			'files' => [		
+	            'type' => 'files', 
+	            'name' => 'files', 
+	            'label' => 'Файлы',
+	            'field-save' => 'array',
+	            'max-files' => 2,
+	     		'show' => [
+					['field' => 'type', 'value' => 'files', 'type' => '=='],
+				],
+			],
 			'mce' => [	
 		        'type' => 'mce', 
 		        'name' => 'mce', 
@@ -85,7 +105,7 @@
 			'default' => [
 				'label' => 'Основные',
 				'name' => 'main',
-				'fields' => [ 'name', 'type', 'gallery', 'mce', 'text', 'menu', 'autoload' ],
+				'fields' => [ 'name', 'type', 'gallery','files', 'mce', 'text', 'menu', 'autoload' ],
 			],
 		],
 	];

@@ -1,3 +1,4 @@
+<!-- Для использования в других модулях кроме основного, repeated и group поля работать не будут! -->
 <template>
     <div>
         <div v-for="(field, key) in fields" :key="key" v-if="field['v-show'] !== false">
@@ -21,10 +22,8 @@
     </div>
 </template>
 <script>
-    // import merge from 'lodash.merge'
-    import cloneDeep from 'lodash.clonedeep'
-    import repeatedField from '../fields/repeated.vue'
-    import groupField from '../fields/group.vue'
+    import repeatedField from './repeated.vue'
+    import groupField from './group.vue'
     import printField from '../fields/field.vue'
 
     export default {
@@ -49,18 +48,19 @@
             currentErrors () {
                 if (this.errors != undefined) return this.errors;
                 else return {};
-                // if(this.storeName != '') return this.store.state[this.storeName].errors; 
             }
         },
         methods: {
             onChange: function (value, name) {
-                this.store.dispatch(this.storeName + '/setFieldProp', { 
-                    name, 
-                    value, 
-                    fields: this.fields, 
-                    property: 'value', 
-                    fieldsType: this.fieldsType
-                });
+                if (this.storeName == '') this.$emit ('change', value, name)
+                else 
+                    this.store.dispatch(this.storeName + '/setFieldProp', { 
+                        name, 
+                        value, 
+                        fields: this.fields, 
+                        property: 'value', 
+                        fieldsType: this.fieldsType
+                    });
             }
         }
     }

@@ -8,11 +8,9 @@
     import date from './date.vue'
     import textarea from './textarea.vue'
     import mce from './mce.vue'
-    import attachedFiles from './attached-files.vue'
+    import attachedFiles from './files.vue'
     import radio from './radio.vue'
     import select from './select.vue'
-    import repeated from './repeated.vue'
-    import group from './group.vue'
 
     export default {
         props: {
@@ -29,13 +27,12 @@
             'textarea-field': textarea, 
             'radio-field': radio, 
             'select-field': select, 
-            'attached-files-field': attachedFiles,
-            'repeated-field': repeated
+            'files-field': attachedFiles,
         },
         computed: {
             component(){
                 if( [ 'text', 'email', 'password', 'tel' ].indexOf(this.field.type) != -1 ) return 'input';
-                if( [ 'gallery', 'files' ].indexOf(this.field.type) != -1 ) return 'attached-files';
+                if( [ 'gallery', 'files' ].indexOf(this.field.type) != -1 ) return 'files';
                 return this.field.type;
             }
         }

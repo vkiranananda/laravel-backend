@@ -4,14 +4,14 @@ window.Vue = require('vue');
 import Vuex from 'vuex';
 
 
-import uploadStore from '../../../Upload/resources/assets/js/store';
+import uploadForm from '../../../Form/resources/assets/js/store/upload';
 import editForm from '../../../Form/resources/assets/js/store/edit';
 
 
 const store = new Vuex.Store({
 	modules: {
 		editForm,
-		// formEdit,
+		uploadForm
 	} 
 });
 
@@ -23,10 +23,8 @@ Vue.prototype.$bus = new Vue();
 Vue.prototype.store = store;
 
 require('../../../Form/resources/assets/js/init-components.js');
-require('../../../Upload/resources/assets/js/init-components.js');
+// require('../../../Upload/resources/assets/js/init-components.js');
 
-
-Vue.component('modal', require('../../../Site/resources/assets/js/Modal.vue'));
 
 const backend = new Vue({
     el: '#backend-body',

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<show-uploads-button url="field.filesUrl" v-if="field.upload"></show-uploads-button>
+		<show-uploads-button :config="{type: 'all', fieldType: 'mce'}" v-if="field.upload"></show-uploads-button>
     	<textarea :id='mceId'></textarea>
 	</div>
 </template>
@@ -43,12 +43,12 @@
 
 	import 'tinymce-i18n/langs/ru'
 
-	import clone from 'lodash.clone'
+	// import clone from 'lodash.clone'
+
+	import showUploadsButton from '../uploads/show-uploads-button'
 
     export default {
-    	updated: function () {
-    		//this.editor.setContent(this.field.value);
-    	},
+        components: { 'show-uploads-button': showUploadsButton },
   		mounted: function () { 
   		console.log('mount'+this.mceId);			
 			tinymce.init({
