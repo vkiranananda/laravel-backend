@@ -6,20 +6,29 @@
 
 <script>
     export default {
-        props: { config: {} },
-        created () { this.fieldKey = Math.floor(Math.random() * 100000 ) },
-        data() { return { fieldKey: '' } },
+        props: [ 'config' ],
+        data() { return { fieldKey: Math.floor(Math.random() * 100000 ) } },
         computed: {
             //Добавляем свойства с уникальным номером для массива
             newConfig () { return Object.assign({fieldKey: this.fieldKey}, this.config) }
         },
         watch: {
-            //Пишем конфиг в хранилище
-            newConfig: function (conf) { this.store.commit('uploadForm/setFilesUploadConfig', conf ) }
+            //Если в конфиге произошли изменения 
+            newConfig: function (conf) { 
+                // Проверяем, если в хранилище наш конфиг, меняем, если нет не трогаем.
+                // Нужно для ограничений выделения элементов для полей files
+                if (this.store.state.uploadForm.filesUploadConfig.fieldKey == this.fieldKey)
+                    this.saveConfig (conf);
+            }
         },
         methods: {
             //Открываем окно аплоадинга файлов.
-            show(fileType) { this.$bus.$emit('UploadFilesModalShow') }
+
+            show(fileType) { 
+                this.saveConfig (this.newConfig);
+                this.$bus.$emit('UploadFilesModalShow') 
+            },
+            saveConfig (config) { this.store.commit('uploadForm/setFilesUploadConfig', config ) }
         }
     }
 </script>

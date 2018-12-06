@@ -14,30 +14,35 @@
             <span v-if="file.deleteType == 'delete'">Удалить файл</span>
         </a>
         <div class="clearfix"></div>
-            <fields-list :fields="file.fields" ></fields-list>
         
-        <div slot="footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-            <button v-if="loading == false" type="button" class="btn btn-primary" role="submit" data-send-text="Сохраняю..." v-on:click="closeForm">Сохранить</button>
-        </div>
+        <field-wrapper v-for="(field, key) in file.fields" :field="field" :key="key">
+            <print-field :field='field' v-on:change="onChange($event, field.name)"></print-field>
+        </field-wrapper>  
+            
+        <save-buttons modal="#UploadEditModal" :status="status" v-on:submit="submit"></save-buttons>
     </modal>
 </template>
 
 <script>
-    import fieldsList from '../form/fields.vue'
+    import printField from '../fields/field.vue'
+    import fieldWrapper from '../fields/wrapper.vue'
+    import saveButtons from '../form/save-buttons'
     export default {
         //Создаем слушателей событий
         created () { this.$bus.$on('UploadFilesEditModalShow', this.showModal) },
         beforeDestroy() { this.$bus.$off('UploadFilesEditModalShow') },
 
-        components: { 'fields-list': fieldsList },
+        components: {
+            'print-field': printField,
+            'field-wrapper': fieldWrapper,
+            'save-buttons': saveButtons
+        },
         props: [ 'url' ],
         data() {
             return { 
-                fields: false,
                 loading: true,
-                saveUrl: '',
-                file: {},
+                file: false,
+                status: ''
             }
         },
         methods: {
@@ -58,7 +63,6 @@
                             this.$set(this.file, key, response.data[key])
                         }
                         this.loading = false;
-                        console.log(response.data, file);
                     })
                     .catch( (error) => { console.log(error.response) });     
                 } else {
@@ -74,6 +78,31 @@
                 // Покзываем окно
                 $('#UploadEditModal').modal('show');
             },
+            submit () {
+                var res = {};
+                //Получаем значения
+                for (let key in this.file.fields) res[key] = this.file.fields[key].value
+                this.status = 'saveing';
+                
+                axios({
+                    url: this.file.saveUrl,
+                    method: 'put',
+                    data: res
+                })
+                .then( (response) => { this.status = 'saved'; this.closeForm()  })
+                .catch( (error) => {
+                    if(error.response.status == 422){
+                        //Пока вроде нет нужды в таких ошибках, оставим на потом
+                        console.log(error.response.data.errors);
+                        this.status = 'errorFields';
+                    } else {
+                        this.status = 'errorAny';
+                        console.log(error.response);
+                    }
+                }); 
+            },
+            //Сохраянем изменения
+            onChange (value, name) { this.file.fields[name].value = value },
             closeForm() { $('#UploadEditModal').modal('hide') },
             
             delFile() {

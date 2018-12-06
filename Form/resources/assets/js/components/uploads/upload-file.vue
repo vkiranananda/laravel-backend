@@ -188,7 +188,7 @@
                 axios.delete(this.urls.destroy + '/' + file['id'])
                     .then( (response) => {
                         //Оповестить всех что файл удален
-                        this.store.commit('uploadForm/deleteFile', file.id);
+                        this.$bus.$emit('UploadFilesDeleteFile', file.id);
                         //Удаляем из списка
                         this.$delete(this.files, this.files.indexOf(file));
                     })

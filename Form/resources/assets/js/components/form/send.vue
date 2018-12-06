@@ -1,37 +1,18 @@
 <template>
-    <div>
-        <div class="row text-right form-buttons">
-            <div class="col result-area">
-                <span class="error" v-if='errorHaveAny'>Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.</span>
-                <span class="error" v-if='errorHave'>Проверьте правильность заполнения данных</span>
-                <span class="success" v-if='saved'>Сохранено</span>
-            </div>
-            <div class="mr-4">
-                <button class="btn btn-secondary mr-3" v-on:click.stop.prevent="close" role="button">{{closeLabel}}</button>
-                <button type="button" class="btn btn-primary" v-on:click.stop.prevent="submit" :disabled="saveing">
-                    <span v-if='saveing'>Сохраняю...</span>
-                    <span v-else='saveing'>Сохранить</span>
-                </button>
-            </div>
-        </div>
-    </div>
+    <save-buttons :modal="modal" :close-url="closeUrl" :status="status" v-on:submit="submit"></save-buttons>
 </template>
 
 
 <script>
-    //import forOwn from 'lodash.forown'
+    import saveButtons from './save-buttons'
     export default {
+        components: { 'save-buttons': saveButtons },
         props: {
             url: { default: '' },
             method: { default: 'POST' },
             modal: { default: false },
             closeUrl: { default: false },
             storeName: { type: String, default: '' }
-        },
-        computed: {
-            closeLabel: function() {
-                return (this.modal) ? 'Закрыть' : 'Назад'
-            },
         },
         methods: {
             submit()  
@@ -44,9 +25,7 @@
                     res['files'] = this.store.state.uploadForm.methods.getUploadedFiles();
                 }
 
-                this.errorHaveAny = false;
-                this.errorHave = false;
-                this.saveing = true;
+                this.status = 'saveing';
 
                 console.log('Sending editForm', res, this.store.state[this.storeName].fields);
 
@@ -87,53 +66,26 @@
                         history.replaceState('data', '', result.replaceUrl);
                     }
 
-                    this.saved = true;
-                    this.saveing = false;
+                    this.status = 'saved';
                     this.store.commit('editForm/setErrors', {});
-
-                    setTimeout(() => {
-                        this.saved = false;
-                    }, 3000);
                 })
                 .catch( (error) => {
-                    this.saveing = false;
                     if(error.response.status == 422){
 
                         console.log(error.response.data.errors);
 
                         this.store.commit('editForm/setErrors', error.response.data.errors);
 
-                        this.errorHave = true;
+                        this.status = 'errorFields';
 
                     } else {
-                        this.errorHaveAny = true;
+                        this.status = 'errorAny';
                         console.log(error.response);
                     }
                 }); 
-            },
-
-            close()
-            {
-                if(this.closeUrl){
-                    window.location = this.closeUrl;
-                } else {
-                    if(this.modal) {
-                        $(this.modal).modal('hide');
-                    } else {
-                        history.back();
-                    }
-                }
-                return false;
-            },
-        },
-        data() {
-            return {
-                errorHaveAny: false,
-                errorHave: false,
-                saved: false,
-                saveing: false
             }
-        }
+        },
+        data() { return { status: '' } }
     }
 
 

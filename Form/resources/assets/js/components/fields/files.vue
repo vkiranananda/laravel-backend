@@ -1,23 +1,21 @@
 <template>
-    <div>
-        <div class="attached-files" >
-            <div class="mb-3" v-if="сountAgain != 0">
-                <show-uploads-button :config="uploadConf"></show-uploads-button>
-            </div>
-            <div class="conteiner">
-                <draggable v-model="files" :options="{draggable:'.item'}">
-                    <div v-for="(file, key) in files" class="media-file item" :class="field.type == 'gallery' ? 'image' : 'file'" :key="key">
-                        <a href='#' v-on:click.prevent="del(file)" class="delete">&times;</a>
-                        <div class="file-body" v-on:click.prevent="edit(file)">
-                            <img :src="file.thumb" alt="" class="image">
-                            <div class="text">{{ file.orig_name}}</div>
-                        </div>
-                    </div>
-                </draggable>
-            </div>
-            <div class="clearfix"></div>
-            <small class="form-text text-muted" v-if="сountAgain == 0">Привышен лимит. Для того что бы выбрать новый файл сначала удалить имеющийся</small>
+    <div class="attached-files" >
+        <div class="mb-3" v-if="сountAgain != 0">
+            <show-uploads-button :config="uploadConf"></show-uploads-button>
         </div>
+        <div class="conteiner">
+            <draggable v-model="files" :options="{draggable:'.item'}">
+                <div v-for="(file, key) in files" class="media-file item" :class="field.type == 'gallery' ? 'image' : 'file'" :key="key">
+                    <a href='#' v-on:click.prevent="del(file)" class="delete">&times;</a>
+                    <div class="file-body" v-on:click.prevent="edit(file)">
+                        <img :src="file.thumb" alt="" class="image">
+                        <div class="text">{{ file.orig_name}}</div>
+                    </div>
+                </div>
+            </draggable>
+        </div>
+        <div class="clearfix"></div>
+        <small class="form-text text-muted" v-if="сountAgain == 0">Привышен лимит. Для того что бы выбрать новый файл сначала удалить имеющийся</small>
     </div>
 </template>
 
@@ -26,15 +24,13 @@
     import showUploadsButton from '../uploads/show-uploads-button'
 
     export default {
+        created () { this.$bus.$on('UploadFilesDeleteFile', this.delById) },
+        beforeDestroy() { this.$bus.$off('UploadFilesDeleteFile') },
         components: {
             draggable,
             'show-uploads-button': showUploadsButton
         },
-        props: {
-            field: {
-                default: [],
-           },
-        },
+        props: [ 'field' ],
         computed: {
             //Количество файлов доступное для загрузки
             сountAgain () {
@@ -57,9 +53,15 @@
                 set (files) { this.$emit('change', files) }
             }
         },
-        watch: {
-            //Хук на удаление файла
-            'store.state.uploadForm.deleteFile': function(id) {
+        methods: {
+            // Добавляем файлы
+            attachFiles (files) {
+                var newValue = this.field.value.slice();
+                for (var file of files) newValue.unshift(file)
+                this.$emit('change', newValue);
+                console.log(newValue);
+            },
+            delById (id) {
                 var exist = false;
                 var res = [];
                 
@@ -72,15 +74,6 @@
                 }
                 //Если элемент был делам событие change
                 if (exist) this.$emit('change', res);
-            }
-        },
-        methods: {
-            // Добавляем файлы
-            attachFiles (files) {
-                var newValue = this.field.value.slice();
-                for (var file of files) newValue.unshift(file)
-                this.$emit('change', newValue);
-                console.log(newValue);
             },
             del(file) {
                 this.$delete(this.files, this.files.indexOf(file));

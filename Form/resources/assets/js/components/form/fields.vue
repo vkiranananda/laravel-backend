@@ -12,12 +12,10 @@
                 <small class="form-text text-muted" v-if="field.desc != ''" v-html="field.desc"></small>
             </div>
             <group-field v-else-if="field.type == 'group'" :field='field' :store-name='storeName' :error='currentErrors[field.name]'></group-field>
-            <div v-else class="form-group">
-                <label v-if="field.label" v-html="field.label"></label>
+            
+            <field-wrapper v-else :error="currentErrors[field.name]" :field="field">
                 <print-field :field='field' :error='currentErrors[field.name]' v-on:change="onChange($event, field.name)"></print-field>
-                <div class="invalid-feedback">{{currentErrors[field.name]}}</div>
-                <small class="form-text text-muted" v-if="field.desc != ''" v-html="field.desc"></small>
-            </div>                   
+            </field-wrapper>                   
         </div>
     </div>
 </template>
@@ -25,12 +23,14 @@
     import repeatedField from './repeated.vue'
     import groupField from './group.vue'
     import printField from '../fields/field.vue'
+    import fieldWrapper from '../fields/wrapper.vue'
 
     export default {
         components: {
             'repeated-field': repeatedField, 
             'group-field': groupField, 
-            'print-field': printField
+            'print-field': printField,
+            'field-wrapper': fieldWrapper
         },
         props: {
             fields: {},

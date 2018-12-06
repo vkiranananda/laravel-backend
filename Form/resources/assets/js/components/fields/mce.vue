@@ -50,7 +50,6 @@
     export default {
         components: { 'show-uploads-button': showUploadsButton },
   		mounted: function () { 
-  		console.log('mount'+this.mceId);			
 			tinymce.init({
 	            selector: '#'+this.mceId,
 	            plugins: [
@@ -87,9 +86,7 @@
 			});
 
   		},
-  		beforeDestroy: function () {
-  			this.editor.destroy();
-  		}, 
+  		beforeDestroy: function () { this.editor.destroy() }, 
         data() {
             return {
                 editor: null,

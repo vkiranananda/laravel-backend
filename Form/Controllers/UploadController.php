@@ -9,7 +9,6 @@ use Backend\Root\Form\Models\MediaFile;
 use Backend\Root\Form\Services\Uploads;
 use Content;
 use GetConfig;
-use Log;
 //type 0 deleted, 1 good, 2 hidden(for only field)
 
 class UploadController extends Controller
@@ -21,15 +20,15 @@ class UploadController extends Controller
 	//Если установить в false будет загружен базовый конфиг
     protected $configPath = false;
 
+    // Если малоли хочется изменить поля в форме редактирования файлв.
+    protected $editConfigPath = 'Form::upload-edit';
+
     public function __construct()
     {
     	//Инитим локаль
     	setlocale(LC_ALL, 'ru_RU.utf8');
 
-
-
        	if ($this->moduleName == '') abort(403, 'UploadController: moduleName не установлена');
-       	// Log::info( print_r($this->config, true) );
     }
 
     //Получаем список всех файлов для записи
@@ -48,6 +47,7 @@ class UploadController extends Controller
         ];
     }
 
+    //Загружаем файл
     public function store(Request $request)
     {
     	// Получаем конфиг
@@ -62,8 +62,6 @@ class UploadController extends Controller
         $config['module'] = $this->moduleName;
 
         $savedFile[] = Uploads::saveFile($config);
-        
-        // Log::info( print_r($savedFile, true) ); 
 
         return app('UploadedFiles')->prepGaleryData( $savedFile )[0];
     }
@@ -78,7 +76,7 @@ class UploadController extends Controller
 	//Получаем данные о картинке
     public function edit($id)
     {
-    	$file = MediaFile::findOrFail($id);
+    	$file = MediaFile::where('imageable_type', $this->moduleName)->findOrFail($id);
 
     	$size = ($file['file_type'] == 'image') ? $file['sizes']['orig']['size'][0].' x '.$file['sizes']['orig']['size'][1] : '';
 
@@ -93,7 +91,7 @@ class UploadController extends Controller
     //Дорабатываем поля
     private function _getFields(&$file)
     {
-    	$fields = $this->prepEditFields( GetConfig::backend("Form::upload-edit"), $file);
+    	$fields = $this->prepEditFields( GetConfig::backend($this->editConfigPath), $file);
 
     	if($file['file_type'] != 'image'){
     		unset($fields['img_title'], $fields['img_alt']);
@@ -101,18 +99,14 @@ class UploadController extends Controller
     	return $fields;
     }
 
+    //Изменяем информацию о картинке
     public function update(Request $request, $id)
     {
-    	// $file = MediaFile::findOrFail($id);
-    	// $arrayData = 
+    	$file = MediaFile::findOrFail($id);
 
-    	// $config = GetConfig::backend("Upload::edit");
-
-    	// $this->_getFields($config, $file);
-
-    	// $this->saveFields($file, $config['fields']);
-
-    	// $file->save();
+        //Сохраняем данные в запись
+        $data = $this->SaveFields($file, GetConfig::backend($this->editConfigPath), $request->all());
+        $data['post']->save();
     }
 
 

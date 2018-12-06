@@ -61,7 +61,7 @@ class Backend {
 			Route::post($modUrl.'/upload', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@store');
 			Route::delete($modUrl.'/upload/{id}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@destroy');
 			Route::get($modUrl.'/upload/edit/{id?}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@edit');
-			Route::get($modUrl.'/upload/update/{id?}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@update');
+			Route::put($modUrl.'/upload/update/{id?}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@update');
 		}
 		if( array_search('sortable', $ext) !== false ){
 			Route::get($modUrl.'/sortable', '\\'.$namespace.'\\'.$mod.'\Controllers\\'.$mod.'Controller@listSortable');

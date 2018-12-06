@@ -42,5 +42,6 @@
     }
 </script>
 
-
-.modal { overflow: auto !important; }
+<style lang='scss'>
+    .modal { overflow: auto !important; }
+</style>
