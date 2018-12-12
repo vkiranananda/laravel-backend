@@ -1,17 +1,13 @@
 <?php
 	return [
         'list' => [
-        	[ 
-        		'name' => 'name', 
-        		'icon' => 'file', 
-        		'link' => 'edit', 
-        		//Если равно true подставляем автоматически эти данные. 
-        		'order' => [ 'default' => true, 'type' => 'asc' ]
-        	],
+        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true ],
+        	[ 'name' => 'type', 'sortable' => true, 'attr' => [ 'width' => '100px' ] ],
+        	[ 'name' => 'autoload', 'sortable' => true, 'attr' => [ 'width' => '100px' ] ]
         ],
-       			// 'add-rules' => [
-        			// 	['type' => 'asc', 'col' => 'name']
-        			// ],
+		'search' => [
+          	[ 'name' => 'search', 'type' => 'text', 'fields' => [ 'name' ] ]
+        ],
 		'fields' => [
 	        'name' => [
 	            'type' => 'text', 
@@ -30,7 +26,6 @@
 	            	['label' => 'Галерея', 'value' => 'gallery'],
 	            	['label' => 'Загрузить файлы', 'value' => 'files'],
 	            ],
-	            'field-save' => 'array',
 	            'value' => 'gallery'
 	        ],
 
@@ -39,7 +34,7 @@
 	            'name' => 'gallery', 
 	            'label' => 'Галерея',
 	            'field-save' => 'array',
-	            'max-files' => 2,
+	            // 'max-files' => 2,
 	     		'show' => [
 					['field' => 'type', 'value' => 'gallery', 'type' => '=='],
 				],
@@ -49,7 +44,7 @@
 	            'name' => 'files', 
 	            'label' => 'Файлы',
 	            'field-save' => 'array',
-	            'max-files' => 2,
+	            // 'max-files' => 2,
 	     		'show' => [
 					['field' => 'type', 'value' => 'files', 'type' => '=='],
 				],

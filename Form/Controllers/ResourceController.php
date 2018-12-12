@@ -36,10 +36,12 @@ class ResourceController extends Controller {
     //Переменная где содержатся данные поста 
     protected $post = null;
 
-    //
+    //Поготовленный вывод для index
+    // protected $dataReturn = [];
+
     // protected $cat = false;
 
-    //Количество страниц в пагинации
+    //Количество страниц в пагинации 30
     protected $pagination = 30;
 
     //Шаблон для edit. Берется из конфига.
@@ -76,13 +78,18 @@ class ResourceController extends Controller {
     public function index()
     {
     	$this->resourceCombine('index');
-    	//Урл для создания
-    	// $this->config['create-url'] = action($this->config['controllerName'].'@create');
 
     	//Добавочные параметры для всех урлов. Устанавливаем значение по умолчанию если нет. 
-    	// if ( !isset($this->config['url-params']) ) $this->config['url-params'] = [];
+    	if ( !isset($this->config['url-params']) ) $this->config['url-params'] = [];
 
-    	// $searchReq = $this->search();
+        // Выставлемя количество записей на странице из конфига
+        if ( isset($this->config['list']['count-items']) ) $this->pagination = $this->config['list']['count-items'];
+
+        //Поиск
+    	$searchReq = $this->indexSearch();
+
+        //Сортировка
+        $this->indexOrder();
 
         // //Если подключен трейт с категориями
         // if ( method_exists($this, 'checkCategory') ) {
@@ -102,74 +109,192 @@ class ResourceController extends Controller {
         //     }
         // }
 
-        //Сортировка по умолчанию
-        if (isset($this->config['order-by']) ) {
-        	foreach ($this->config['conf']['order-by'] as $order) {
-	            if(!isset($order['type']) || $order['type'] != 'desc'){
-	                $order['type'] = 'asc';
-	            }
-	            $this->post = $this->post->orderBy($order['col'], $order['type']);
+    	//Параметры к урлу
+		$urlPostfix = "";
+
+		//Получаем все дополнительные параметры.
+		foreach ($this->config['url-params'] as $param) {
+			$urlPostfix .= ($urlPostfix == '') ? '?' : '&' ;
+			$urlPostfix .= $param.'='.Request::input($param, '');
+		}
+
+		$this->dataReturn['config']['urlPostfix'] = $urlPostfix;
+
+
+        //------------------------------Кнопка Создать----------------------------------------
+
+    	$menu = [];
+
+		//Создать
+		$menu[0]['label'] = isset($this->config['lang']['create-title']) ? $this->config['lang']['create-title'] : 'Создать';
+		$menu[0]['link'] = action($this->config['controllerName'].'@create').$urlPostfix;
+
+		//Для ручной сортировки
+		if ( isset($this->config['list']['sortable']) ) {
+			$menu[1]['label'] = 'Сортировка';
+			$menu[1]['link'] = isset($this->config['list']['url-sortable']) ? $this->config['list']['url-sortable'] : action($this->config['controllerName'].'@listSortable').$urlPostfix;
+			$menu[1]['type'] = 'sortable';
+		}
+
+		$this->dataReturn['config']['menu'] = $menu;
+
+        //-------------------------------Подготавливаем поля----------------------------------
+     
+        $fields = [];
+        $optionFields = []; //Поля имеющие option
+     
+        foreach ($this->fields['list'] as $field) {
+        
+        	//Получаем базовое поле. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
+        	$mainField = ( isset ($this->fields['fields'][ $field['name'] ]) ) ? $this->fields['fields'][ $field['name'] ] : [];
+
+        	//Выставляем имя если на задано
+        	if ( !isset($field['label']) && isset($mainField['label']) ) {
+        		$field['label'] = $mainField['label'];
         	}
-       	//Сортировка по умолчанию
-        } else {
-	        $this->post = $this->post->orderBy('id', 'DESC');
-	    }	
 
-        //Выставляем title
-        // $this->config['lang']['title'] = $this->config['lang']['list-title'];
+        	//Подготавливаем опции в нужный формат, что бы подставлять верное значение
+        	if ( isset( $mainField['options']) && is_array($mainField['options']) ) {
+        		$optionFields[ $field['name'] ] = Helpers::optionsToArr($mainField['options']);
+        	}
 
-        $templite = (isset($this->config['conf']['list-template'])) ? $this->config['conf']['list-template'] : 'Form::list';
+        	$fields [] = $field;
 
+        }
 
+        // Делаем выборку
+        $query = $this->post->paginate($this->pagination)->toArray();
+        if ($query['last_page'] < $query['current_page']) {
+        	$query = $this->post->paginate($this->pagination, ['*'], 'page', $query['last_page'])->toArray();
+        }
 
-        //Подготавливаем поля
-        $this->fields['fields'] = Helpers::changeFieldsOptions($this->fields['fields']);
+        // Для пагинации
+        $this->dataReturn['items']['currentPage'] = $query['current_page'];
+        $this->dataReturn['items']['lastPage'] = $query['last_page'];
+        
+        //урл страницы списка.
+        $this->dataReturn['config']['indexUrl'] = $query['path'];
 
-        //Выставлемя количество записей на странице из конфига
-        // if(isset($this->config['conf']['list-count-items'])){
-        // 	$this->pagination = $this->config['conf']['list-count-items'];
-        // }
+        //Список полей для вывода
+        $this->dataReturn['fields'] = $fields;
+        $this->dataReturn['config']['title'] = $this->config['lang']['list-title'];
 
-        return view($templite, [ 'data' => $this->post->paginate($this->pagination), 'config' => $this->config ]);
+		$this->dataReturn['items']['data'] = [];
+
+    	//Погдотавливаем поля поиска
+    	if ( isset($this->fields['search']) ) {
+    		foreach ($this->fields['search'] as $field) {
+    			unset($field['fields']); //удаляем ненужные опции
+    			$this->dataReturn['search'][] = $field;
+    		}
+    	}
+
+        //Подготваливаем все поля
+        foreach ($query['data'] as $post) {
+        	$res = []; //Преобразованные данные
+        	
+        	foreach ($fields as $field) {
+        		
+        		$name = $field['name'];
+
+        		//Выставляем значние
+        		$value = Helpers::dataIsSetValue($post, $name);
+
+        		if ( isset($optionFields[$name][$value]) ) $res[$name] = $optionFields[$name][$value];
+        		else $res[$name] = $value;
+
+				//Обрабатываем ссылки
+        		if ( isset($field['link']) ) {
+        			if ($field['link'] == 'edit') $res['_links']['edit'] = action($this->config['controllerName'].'@edit', $post['id']);
+        		}
+        		$res['_links']['destroy'] = action($this->config['controllerName'].'@destroy', $post['id']);
+        		// $res['_id']['id'] = 
+        		
+        	}
+        	$this->dataReturn['items']['data'][] = $res;
+        }
+
+        //Получаем шаблон 
+    	$templite = (isset($this->config['list']['template'])) ? $this->config['list']['template'] : 'Form::list';
+
+    	//Хук
+    	$this->resourceCombineAfter ('index');
+        
+        // dd($this->dataReturn);
+        
+        if ( Request::ajax() ) return $this->dataReturn;
+
+        return view($templite, [ 'data' => $this->dataReturn ]);
     }
 
-    //!Функция поиска для списка, возвращает true если есть что искать.
-    protected function search() {
+    //Функция для сортировки списка
+    protected function indexOrder() 
+    {
+ 		$order = Request::input('order', false);
+
+        //Если выставлена опция ручной сортировки, то сортировка по умолчанию будет по sort_num
+        if ( isset($this->config['list']['sortable']) )  {
+        	$orderField = 'sort_num';
+        	$orderType = 'asc'; //от меньшего к большему
+        } else {
+        	$orderField = 'id'; //Иначе по id
+        	$orderType = 'desc'; //От большего к меньшему
+        }
+
+        if ($order !== false && isset($this->fields['list'][$order]['sortable']) ) {
+        	$orderType = Request::input('order-type', 'desc');
+        	$orderField = $this->fields['list'][$order]['name'];
+        	$this->fields['list'][$order]['sortable'] = $orderType;
+        }
+
+        $this->post = $this->post->orderBy($orderField, $orderType);
+    }
+
+    //Функция поиска для списка, возвращает true если есть что искать.
+    protected function indexSearch() {
+    	
     	$searchReq = false;
-        if(isset($this->config['search'])) {
-      	 	foreach ($this->config['search'] as &$field) {
+        
+        //Если есть поля для поиска
+        if ( isset($this->fields['search']) ) {
+      	 	//Перебираем
+      	 	foreach ($this->fields['search'] as &$field) {
+      	 		
       	 		//Копируем данные поля из основных полей
-      	 		if(isset($field['field-from'])){
+      	 		if ( isset($field['field-from']) ) {
       	 			$field = array_replace_recursive($this->fields['fields'][$field['field-from']], $field);
       	 		}
+      	 		
       	 		//Добавляем пустой элемент в начало.
-      	 		if(isset($field['options-empty'])){
+      	 		if ( isset($field['options-empty'] ) ){
       	 			array_unshift($field['options'], ['value' => '', 'label' => $field['options-empty']]);
       	 		}
+      	 		
       	 		//Создаем выборку
-  	 			if(isset($field['name']) && isset($field['fields']) && is_array($field['fields']) ){
- 				  	if( ($req = Request::input($field['name'], '')) == '' ) continue;
- 					$req = '%'.$req.'%';
+  	 			if ( isset($field['name']) && isset($field['fields']) && is_array($field['fields']) ) {
+ 				  	
+ 				  	$field['value'] = Request::input($field['name'], '');
+ 				  	
+ 				  	if ( $field['value'] == '' ) continue;
+
+ 					$req = '%'.$field['value'].'%';
 
  					$searchReq = true;
 
+ 					//Выборка по группе полей, если в каком то поле есть то данные выедутся
 		  	 		$this->post = $this->post->where(function ($query)
 		  	 		use (&$field, $req) 
 		  	 		{
 		  	 			$first = true;
   	 					foreach ($field['fields'] as $column) {
-  	 						if($first) {
-  	 							$query = $query->where($column, 'like', $req);
-  	 						}else {
-  	 							$query = $query->orWhere($column, 'like', $req);
-  	 						}
+  	 						if ($first) $query = $query->where($column, 'like', $req);
+  	 						else $query = $query->orWhere($column, 'like', $req);
+
   	 						$first = false;
-  	 						
   	 					}
 		        	});
 	  	 		}
 	        }
-      	 	// $this->config['search'] = Forms::prepAllFields(false, $this->fields['search']);
     	}
     	return $searchReq;
     }
@@ -355,6 +480,9 @@ class ResourceController extends Controller {
         $this->resourceCombine ('destroy');
         $this->post->destroy ($id);
         $this->resourceCombineAfter ('destroy');
+
+        //Редиректим на индекс
+        if (Request::input('_index-redirect', false) ) return $this->index();
     }
 
     //Сахраняем загруженные данные.

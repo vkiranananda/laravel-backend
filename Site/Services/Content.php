@@ -109,8 +109,8 @@ class Content {
     {
         $val = Helpers::dataIsSet($data, $field['name']);
         
-        if(isset($field['options']) && is_array($field['options'])){
-            $val = (isset($field['options'][$val])) ? $field['options'][$val] : 'Не установлено' ;
+        if ( isset($field['options']) && is_array($field['options']) ) {
+            $val = ( isset($field['options'][$val]) ) ? $field['options'][$val] : 'Не установлено' ;
         }
         
         return $val;

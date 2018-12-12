@@ -1,4 +1,3 @@
-
 @extends('Backend::layouts.admin')
 
 @section('title', $config['title'])

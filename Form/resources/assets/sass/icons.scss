@@ -52,3 +52,11 @@
 	@include icons-base();
 	content:"\f00b";
 }
+.icons-chevron-down:before {
+	@include icons-base();
+	content:"\f0a3";
+}
+.icons-chevron-up:before {
+	@include icons-base();
+	content:"\f0a2";
+}

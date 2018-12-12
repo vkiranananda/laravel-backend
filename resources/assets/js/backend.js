@@ -35,6 +35,4 @@ const backend = new Vue({
     // bus: vueBus
 });
 
-
-require('../../../Form/resources/assets/js/gui.js');
 require('../../../Category/resources/assets/js/tree.js');

@@ -86,7 +86,7 @@ class Helpers {
     }
 
     //Фукнция генерит из списка опций ассиотивный массив
-    static public function optionsToArr(&$options)
+    static public function optionsToArr($options)
     {
         $res = [];
         foreach ($options as $option) {

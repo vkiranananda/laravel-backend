@@ -46,7 +46,7 @@
         },
         computed: {
             currentErrors () {
-                if (this.errors != undefined) return this.errors;
+                if (this.errors != undefined) return this.errors; 
                 else return {};
             }
         },
