@@ -17,7 +17,7 @@
     		 'robots-index-deny' => [
 	            'type' => 'radio', 
 	            'name' => 'robots-index-deny', 
-	            'label' => 'Запретить индексацию са сайта в robots.txt',
+	            'label' => 'Запретить индексацию сайта в robots.txt',
 	            'desc' => 'Если Да то, сайт индексироваться не будет',
 	            'field-save' => 'array',
 	            'value' => '1',

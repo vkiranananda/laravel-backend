@@ -328,8 +328,8 @@ trait Fields {
         //---------------------Проверки на select radio checkbox---------------------
         if ( array_search($field['type'], ['select', 'radio', 'checkbox']) ) {
            
-            if ( !Helpers::optionsSearch( $field['options'], $value ) ) { 
-                abort(403, 'saveFields has error in '.$field['type'].':'.$field['name']);
+            if ( ! Helpers::optionsSearch( $field['options'], $value ) ) { 
+                abort(403, 'saveFields has error in '.$field['type'].':'.$field['name'].':'.$field['value']);
             }
             
         } 

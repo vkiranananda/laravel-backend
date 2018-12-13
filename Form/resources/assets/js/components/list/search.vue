@@ -10,7 +10,7 @@
 			    </div>
 
 		    	<div class="col-auto">
-		  			<button class="btn btn-primary" v-on:submit.prevent="search()">Поиск</button>
+		  			<button class="btn btn-outline-secondary" v-on:submit.prevent="search()">Поиск</button>
 				</div>
 			</div>
 		</div>

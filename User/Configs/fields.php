@@ -2,10 +2,10 @@
 	return [
 		
         'list' => [
-        	[ 'name' => 'id', 'label' => 'ID',  'attr' => [ 'width' => '30px' ] ],
-        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit'],
-        	[ 'name' => 'email' ],
-        	[ 'name' => 'updated_at', 'label' => 'Дата модификации', 'attr' => [ 'width' => '190px;' ] ]
+        	[ 'name' => 'id', 'label' => 'ID',  'attr' => [ 'width' => '30px' ], 'sortable' => true ],
+        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true ],
+        	[ 'name' => 'email', 'sortable' => true  ],
+        	[ 'name' => 'updated_at', 'label' => 'Дата модификации', 'attr' => [ 'width' => '190px;' ], 'sortable' => true ]
         ],
 
 		'fields' => [
@@ -55,16 +55,10 @@
 		],
 
 		'edit' => [
-			'default' => [
-				'tab_name' => 'Основные',
-				'id' => 'main',
-				'fields' => [
-			        [ 'name' => 'name' ],
-			        [ 'name' => 'role' ],
-			        [ 'name' => 'email' ],
-			        [ 'name' => 'password' ],
-			        [ 'name' => 'send_mail' ],
-			    ],
+			'main' => [
+				'label' => 'Основные',
+				'name' => 'main',
+				'fields' => [ 'name', 'role', 'email', 'password', 'send_mail' ],
 			],
 		],
 	];

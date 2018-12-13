@@ -60,3 +60,24 @@
 	@include icons-base();
 	content:"\f0a2";
 }
+
+.icons-gear:before {
+	@include icons-base();
+	content:"\f02f";
+}
+.icons-users:before {
+	@include icons-base();
+	content:"\f037";
+}
+.icons-key:before {
+	@include icons-base();
+	content:"\f049";
+}
+.icons-terminal:before {
+	@include icons-base();
+	content:"\f0c8";
+}
+.icons-home:before {
+	@include icons-base();
+	content:"\f08d";
+}

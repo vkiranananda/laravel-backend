@@ -5,12 +5,12 @@
 		    <div class="row mb-3">
 		    	<div class="col-auto mr-auto"></div>
 	            <div class="col-auto">
-	                <list-paginate :data="items" @change="pageChange"></list-paginate>
+	                <list-paginate v-if="items.lastPage > 1" :data="items" @change="pageChange"></list-paginate>
 	            </div>
 	        </div>
 			<table  class="table table-hover" id="table-list">
 		    	<thead>
-		        	<tr class="table-success">
+		        	<tr class="table-light">
 						<th v-for="(field, key) in fields" :key="field.name" class="align-middle" scope="col" v-bind="field.attr">
 							<div v-if="field.sortable != undefined" class="sortable" :class="field.sortable === true ? 'none' : field.sortable" @click="sortable(key)">
 								{{ field.label }}
@@ -46,7 +46,7 @@
 		    <div class="row">
 		    	<div class="col-auto mr-auto"></div>
 	            <div class="col-auto">
-	                <list-paginate :data="items" @change="pageChange"></list-paginate>
+	                <list-paginate v-if="items.lastPage > 1" :data="items" @change="pageChange"></list-paginate>
 	            </div>
 	        </div>
 		</div>

@@ -20,18 +20,22 @@ class UserController extends \Backend\Root\Form\Controllers\ResourceController
 
     public function store()
     {
-        $this->saveFields($this->post, $this->fields['fields']);
+        $this->request = Request::all();
+
+        $this->request['fields']['password'] = bcrypt($this->request['fields']['password']);
+
+        $res = parent::store();
 
         $user = &$this->post;
-        if(Request::input('send_mail', false) == 'yes'){
+
+        if ( isset($this->request['fields']['send_mail']) && $this->request['fields']['send_mail'] == 'yes'){
             Mail::send('User::emails.register-admin', [ 'user' => $user ], function($message) use ($user)
             {
                 $message->to( $user['email'], '')->subject('Новый аккаунт на сайте '.url('/'));
             });
         }
 
-        $this->post->password = bcrypt($this->post->password);
-        $this->post->save();
+
 
         return [ 'redirect' =>  action($this->config['controllerName'].'@edit', $this->post->id) ];
     }
@@ -40,7 +44,9 @@ class UserController extends \Backend\Root\Form\Controllers\ResourceController
     {
         $this->post = $this->post->findOrFail($id);
         $this->post->password = '';
+        
         unset($this->fields['fields']['send_mail']);
+
         return parent::edit($id);
     }
 

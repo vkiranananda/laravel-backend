@@ -22,7 +22,9 @@
                     //Получаем все value
                     res['fields'] = getValuesFromTabs(this.store.state[this.storeName].tabs);
                     //Получаем загруженные файлы
-                    res['files'] = this.store.state.uploadForm.methods.getUploadedFiles();
+                    if (this.store.state.uploadForm.methods.getUploadedFiles != undefined){
+                        res['files'] = this.store.state.uploadForm.methods.getUploadedFiles();
+                    }
                 }
 
                 this.status = 'saveing';

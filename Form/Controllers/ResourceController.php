@@ -336,11 +336,13 @@ class ResourceController extends Controller {
       	//Вызываем хук
         $this->resourceCombine('store');
       
+        if (!$this->request) $this->request = Request::all();
+
         //Сохраняем данные в запись
         $data = $this->SaveFields(
         	$this->post, 
         	$this->fields['fields'], 
-        	Request::input('fields', []), 
+        	$this->request['fields'], 
         	$this->fields['edit']
         );
 

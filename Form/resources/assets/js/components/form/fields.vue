@@ -53,7 +53,7 @@
         methods: {
             onChange: function (value, name) {
                 if (this.storeName == '') this.$emit ('change', value, name)
-                else 
+                else {
                     this.store.dispatch(this.storeName + '/setFieldProp', { 
                         name, 
                         value, 
@@ -61,6 +61,7 @@
                         property: 'value', 
                         fieldsType: this.fieldsType
                     });
+                }
             }
         }
     }
