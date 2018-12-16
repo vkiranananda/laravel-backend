@@ -112,7 +112,7 @@ function getValuesFromFields (fields)
     for (var fieldName in fields) {
         var currentField = fields[fieldName];
         
-        if (currentField['v-show'] === false) continue; //Пропускаем если скрыто поле.
+        if (currentField['v-show'] === false) continue; //Пропускаем если скрыто поле или 
         
         if (currentField.type == 'repeated') { //Для повторителей
             res[fieldName] = [];

@@ -9,42 +9,56 @@ use Cache;
 use Content;
 use GetConfig;
 
-class CategoryRootController extends \Backend\Root\Form\Services\ResourceController
+class CategoryRootController extends \Backend\Root\Form\Controllers\ResourceController
 {
+    protected $configPath = "Category::config-root";
+    protected $fieldsPath = "Category::fields-root";
+
     function __construct(Category $post)
     {
-       parent::init($post, 'Category::category-root');
+    	parent::init($post);
     }
     
     protected function resourceCombine($type)
     {
-        if($type == 'create' || $type == 'store'){
+        if ( array_search($type, ['create', 'store', 'edit', 'index']) !== false ) {
 
             $modules = [];
-
+            //Получаем список доступных модулей для категорий
             foreach ( GetConfig::backend('category-modules') as $key => $value) {
-                $modules[$key]['value'] = $key;
-                $modules[$key]['label'] = $value['label'];
+                $modules[] = [ 
+                	'value' => $key,
+                	'label' => $value['label']
+                ];
             }
-            $this->params['fields']['mod']['options'] = $modules;
-        }elseif($type == 'update' || $type == 'edit') {
-            unset($this->params['fields']['mod']);
+            $this->fields['fields']['mod']['options'] = $modules;
+        } 
+
+        //Для сохранения убираем поле, что бы не изменть значние
+        elseif ($type == 'update') { 
+        	unset( $this->fields['fields']['mod'] );
         }
+
+        //Делаем поле неактивным, так как модуль нельзя поменять
+        if ( $type == 'edit') { 
+        	//Убираем поле 'mod'.
+        	$this->fields['fields']['mod']['attr'] = ['disabled' => true];
+        } 
         
         // if( ($type == 'update' || $type == 'store') && ! Request::has('url') ){
-        //     $this->params['tabs']['default']['fields']['url']['conf-validate'] = '';
+        //     $this->params['fields']['url']['conf-validate'] = '';
         // }
     }
     protected function resourceCombineAfter($type)
     {
-        if( array_search($type, ['store', 'update', 'destroy']) !== false ){
+    	// Очидаем кэши
+        if ( array_search($type, ['store', 'update', 'destroy']) !== false ) {
             Cache::tags('category')->flush();
         }
     }
 
     protected function getViewUrl()
     {
-        $this->post->parent_id = 0;
         return Content::getUrl($this->post);
     }
 }

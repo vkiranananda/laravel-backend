@@ -211,9 +211,11 @@ trait Fields {
 
 				if ( !isset($tab ['show']) || $this->showCheck($tab['show'], $request) !== false) {
 					
-
 					foreach ($tab['fields'] as $fieldName) { //Массив из доступных полей
-						$newFields[ $fieldName ] = $fields[ $fieldName ];
+						//Если поля нет в общем списке, например его удалили, то пропускаем обработку
+						if (! isset ($fields[$fieldName]) ) continue; 
+
+						$newFields[$fieldName] = $fields[$fieldName];
 					}
 				} 
 			}

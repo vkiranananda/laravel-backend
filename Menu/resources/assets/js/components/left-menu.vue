@@ -3,7 +3,7 @@
 		<div class="list-group">
 			<ul>
 				<li v-for="item in newMenu">
-					<a class="text-light" :class="item.classes" :href="item.url"> &nbsp;{{ item.label }}</a>
+					<a class="text-light octicon" :class="item.classes" :href="item.url"> &nbsp;{{ item.label }}</a>
 		    	</li>
 			</ul>
 		</div>
@@ -20,7 +20,7 @@
         		for (let item of this.menu) {
         			let classes = '';
         			
-        			if (item.icon != undefined) classes += ' icons-' + item.icon;
+        			if (item.icon != undefined) classes += ' octicon-' + item.icon;
         			if (item['space-bottom'] != undefined) classes += ' mb-' + item['space-bottom'];
         			if (item['space-top'] != undefined) classes += ' mt-' + item['space-top'];
         			

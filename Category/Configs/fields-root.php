@@ -1,18 +1,11 @@
 <?php
-	
-	return  array_merge_recursive( [
-		'lang' => [
-			'create-title' => 'Новый раздел',
-			'edit-title' => 'Редактирование раздела',
-		],
-		'conf' => [
-		    'media-files' => 'hidden',
-		    'update-redirect' => true,
-		    'store-redirect' => true,
-	        'load-scripts' => [
-        		"/js/tinymce/tinymce.min.js",
-        	],
-		],
+	return [
+		'list' => [
+        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit' ],
+        	[ 'name' => 'url', 'attr' => [ 'width' => '50px' ] ],
+        	[ 'name' => 'mod', 'attr' => [ 'width' => '50px' ] ],
+        	[ 'name' => 'conf-type', 'attr' => [ 'width' => '50px' ] ]
+        ],
 		'fields' => [
 	        'name' => [
 	        	'name' => 'name',
@@ -35,26 +28,29 @@
 	         		[ 'value' => 'hierarchical', 'label' => 'Древовидная' ],
 	         	],
 			],
-			'sort_num' => [
-				'name' => 'sort_num',
-	            'type' => 'text', 
-	            'label' => 'Номер сортировки',
-	            'validate' => 'integer',
-	            'value' => '0',
-	        ],
+	        'conf-icon' => [ 
+	        	'name' => 'conf-icon',      			   
+	            'type' => 'input', 
+	            'field-save' => 'array',
+	            'label' => 'Иконка в списке',
+	            'field-save' => 'array',
+	            'desc' => 'Иконки можно посмотреть <a href="https://octicons.github.com"target="_blank">тут</a> пишем без .octicon-'
+			],
 	        'desc' => [
 	        	'name' => 'desc',
 	            'type' => 'textarea',  
 	            'label' => 'Описание',
+	            'field-save' => 'array',
+	            'attr' => ['rows' => '8']
 	        ],
 	        'conf-count-posts' => [
 	        	'name' => 'conf-count-posts',
 	            'type' => 'text',  
 	            'label' => 'Количество записей на странице',
-	            'value' => '12',
+	            'value' => '30',
 	            'desc' > '0 вывести все записи',
 	            'field-save' => 'array',
-	            'validate' => 'alpha_num',
+	            'validate' => 'integer|required',
 	        ],
 	        'lang-list-title' => [
 	        	'name' => 'lang-list-title',
@@ -87,38 +83,39 @@
 	            'type' => 'mce', 
 	            'label' => 'Текст',
 	            'upload' => true,
+	            'height' => '500'
 	        ],
+			'url' => [
+	            'name' => 'url',
+	            'type' => 'text', 
+	            'label' => 'URL',
+	            'validate' => 'nullable|alpha_dash',
+	        ],
+    		'seo' => [
+    			'name' => 'seo',
+    			'type' => 'group',
+    			'load-from' => 'seo-fields',
+    			'field-save' => 'array' 
+    		],
 		],
 		'edit' => [
-			'default' => [
-				'tab_name' => 'Основные',
-				'id' => 'main',
-				'fields' => [
-			        [ 'name' => 'name' ],
-			        [ 'name' => 'mod' ],
-			        [ 'name' => 'conf-type' ],
-			        [ 'name' => 'sort_num' ],
-			        [ 'name' => 'desc', 
-			            'attr' => ['rows' => '8'] 
-			        ],
-			    ],
+			'main' => [
+				'label' => 'Основные',
+				'name' => 'main',
+				'fields' => [ 'name', 'mod', 'conf-type', 'conf-icon', 'desc' ]
 			],'conf' => [
-				'tab_name' => 'Настройки',
-				'id' => 'conf',		
-				'fields' => [
-			        [ 'name' => 'conf-count-posts' ],
-			        [ 'name' => 'lang-list-title' ],
-			        [ 'name' => 'lang-create-title' ],
-			        [ 'name' => 'lang-edit-title' ],
-			    ],
+				'label' => 'Настройки',
+				'name' => 'conf',		
+				'fields' => [ 'conf-count-posts', 'lang-list-title', 'lang-create-title', 'lang-edit-title' ]
 			],'post' => [
-				'tab_name' => 'Страница',
-				'id' => 'post',
-				'fields' => [
-			        [ 'name' => 'post_name' ],
-			        [ 'name' => 'post_text', 'attr' => [ 'height' => '500' ] ],
-			    ],
+				'label' => 'Страница',
+				'name' => 'post',
+				'fields' => [ 'post_name', 'post_text' ],
+			],'seo' => [
+				'label' => 'SEO',
+				'name' => 'seo',
+				'fields' => [ 'url', 'seo' ],
 			],
 		],
-	], GetConfig::backend('seo-fields'), GetConfig::backend('Sitemap::fields') 
-);
+	];
+// GetConfig::backend('Sitemap::fields')

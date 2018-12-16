@@ -22,10 +22,10 @@ class ResourceController extends Controller {
     use \Backend\Root\Form\Services\Traits\Fields;
 
     //Имя общего конфиг, если false берется как config
-    public $configPath = false;
+    protected $configPath = false;
 
     //Имя конфига для полей, если false берется как fields
-    public $fieldsPath = false;
+    protected $fieldsPath = false;
 
     //Конфиг общий
     protected $config = [];
@@ -336,13 +336,11 @@ class ResourceController extends Controller {
       	//Вызываем хук
         $this->resourceCombine('store');
       
-        if (!$this->request) $this->request = Request::all();
-
         //Сохраняем данные в запись
         $data = $this->SaveFields(
         	$this->post, 
         	$this->fields['fields'], 
-        	$this->request['fields'], 
+        	Request::input('fields'), 
         	$this->fields['edit']
         );
 

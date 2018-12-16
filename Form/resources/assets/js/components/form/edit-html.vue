@@ -1,33 +1,30 @@
 <template>
-    <div class="card form-edit">
-        <div class="card-header">
-            <span v-html="conf.title"></span>
-            <br>
-            <small id="post-link-area" v-if="conf.viewUrl">
-                <a :href="conf.viewUrl" v-html="conf.viewUrl"></a>
-            </small>
-        </div>
-        <div class="card-body">
-            <div v-if="countTabs > 1">
-                <ul class="nav nav-tabs" role="tablist">
-                  <li v-for="(tab, key) in tabs" :key="key" class="nav-item" v-if="tab['v-show'] !== false">
-                    <a class="nav-link" :class="activeTab == key ? 'active' : ''"   data-toggle="tab" :href="'#tab-'+key" role="tab" v-on:click='changeTab(key)'>
-                        <span :class="errorsTab[key]">{{ tab.label }}</span>
-                    </a>
-                  </li>
-                </ul>
-                <!-- Tabs content -->
-                <div class="tab-content pt-3 pb-3">
-                    <div v-for="(tab, key) in tabs" class="tab-pane" :class="activeTab == key ? 'active' : ''" :id="'tab-'+key" role="tabpanel" :key="key" v-if="tab['v-show'] !== false">
-                        <fields-list :fields='tab.fields' :errors="errors" store-name='editForm'></fields-list>
-                    </div>
+    <div class="edit-form">
+        <h3 class="mb-4">{{ conf.title }}</h3>
+        <small id="post-link-area" v-if="conf.viewUrl" class="url">
+            <a :href="conf.viewUrl" v-html="conf.viewUrl" target="_blank"></a>
+        </small>
+
+        <div v-if="countTabs > 1" >
+            <ul class="nav nav-tabs" role="tablist">
+              <li v-for="(tab, key) in tabs" :key="key" class="nav-item" v-if="tab['v-show'] !== false">
+                <a class="nav-link" :class="activeTab == key ? 'active' : ''"   data-toggle="tab" :href="'#tab-'+key" role="tab" v-on:click='changeTab(key)'>
+                    <span :class="errorsTab[key]">{{ tab.label }}</span>
+                </a>
+              </li>
+            </ul>
+            <!-- Tabs content -->
+            <div class="tab-content pt-3 pb-3">
+                <div v-for="(tab, key) in tabs" class="tab-pane" :class="activeTab == key ? 'active' : ''" :id="'tab-'+key" role="tabpanel" :key="key" v-if="tab['v-show'] !== false">
+                    <fields-list :fields='tab.fields' :errors="errors" store-name='editForm'></fields-list>
                 </div>
             </div>
-            <div v-else>
-                <fields-list :fields='tabs[activeTab].fields' :errors="errors" store-name='editForm'></fields-list>
-            </div>
-            <send-form store-name='editForm' :url='conf.url' :method='conf.method'></send-form>
         </div>
+        <div v-else>
+            <fields-list :fields='tabs[activeTab].fields' :errors="errors" store-name='editForm'></fields-list>
+        </div>
+        <send-form store-name='editForm' :url='conf.url' :method='conf.method'></send-form>
+
         <div v-if="conf.upload !== false && conf.upload != undefined">
             <upload-files-modal  :url="conf.upload.uploadUrl"></upload-files-modal>
             <upload-edit-file-modal :url="conf.upload.editUrl"></upload-edit-file-modal>
@@ -82,3 +79,12 @@
         }
     }
 </script>
+
+<style lang='scss'>
+    .edit-form {
+        .url{
+            position: relative;
+            top: -22px;
+        }
+    }
+</style>

@@ -22,9 +22,8 @@ export default {
             for (var name in state.tabs) {
                 var tabFields = state.tabs[name].fields;
                 var resFields = {};
-                for (var index = 0; index < tabFields.length; index++) {
-                    var fieldName = tabFields[index];
-                    resFields[ fieldName ] = state.fields[ fieldName ];
+                for (let fieldName of tabFields) if (state.fields[fieldName] != undefined) {
+                    resFields[fieldName] = state.fields[fieldName];
                 }
                 state.tabs[name].fields = resFields;
             }

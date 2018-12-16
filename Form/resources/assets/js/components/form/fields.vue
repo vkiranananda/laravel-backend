@@ -32,7 +32,7 @@
             'print-field': printField,
             'field-wrapper': fieldWrapper
         },
-        props: {
+        props: { 
             fields: {},
             storeName: {
                 type: String,

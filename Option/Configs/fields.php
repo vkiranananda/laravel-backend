@@ -1,4 +1,6 @@
 <?php
+
+// Если нужно добавить группу полей то нужно делать через group
 	return [
         'list' => [
         	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true ],

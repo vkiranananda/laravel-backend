@@ -2,7 +2,8 @@
 
 namespace Backend\Root\Category\Controllers;
 
-class UploadController extends \Backend\Root\Upload\Controllers\UploadController
+class UploadController extends \Backend\Root\Form\Controllers\UploadController
 {
-    protected $module = 'Category';
+	protected $moduleName = 'Category';
+    protected $configPath = 'Category::upload';
 }
