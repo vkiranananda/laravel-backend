@@ -1,16 +1,15 @@
 <?php
 
-namespace Backend\Root\News\Controllers;
+namespace Backend\Root\Page\Controllers;
 
-use Backend\Root\News\Models\News;
-use Cache;
+use Backend\Root\Page\Models\Page;
 use Content;
 
-class NewsController extends \Backend\Root\Form\Controllers\ResourceController
+class PageController extends \Backend\Root\Form\Controllers\ResourceController
 {
-    use \Backend\Root\Category\Services\Traits\Category;
-
-    function __construct(News $post)
+   use \Backend\Root\Category\Services\Traits\Category;
+    
+    function __construct(Page $post)
     {
        parent::init($post);
     }

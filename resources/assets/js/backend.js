@@ -24,9 +24,6 @@ Vue.prototype.store = store;
 
 require('../../../Form/resources/assets/js/init-components.js');
 
-Vue.component('the-left-menu', require('../../../Menu/resources/assets/js/components/left-menu.vue'));
-
-
 const backend = new Vue({
     el: '#backend-body',
     // data: {

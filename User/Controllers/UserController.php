@@ -13,59 +13,52 @@ class UserController extends \Backend\Root\Form\Controllers\ResourceController
         parent::init($post);
     }
 
-    public function create (){
-        $this->fields['fields']['password']['value'] = str_random(8);
-        return parent::create();
+    //Криптуем пароль и отправляем email
+    protected function preSaveData($type){ 
+    	
+    	$fields = Request::input('fields', []);
+
+    	if ($type == 'store') {
+    		//Отправляем письмо с настройками пользователя
+	    	$user = $this->post;
+
+	        if ( isset($fields['send_mail']) && $fields['send_mail'] == 'yes' ) {
+	            Mail::send('User::emails.register-admin', [ 'user' => $user ], function($message) use ($user)
+	            {
+	                $message->to( $user['email'], '')->subject('Новый аккаунт на сайте '.url('/'));
+	            });
+	        }
+    	}
+
+    	// Криптуем пароль
+    	if ($fields['password'] != '') $this->post['password'] = bcrypt($fields['password']);
     }
 
-    public function store()
-    {
-        $this->request = Request::all();
+	protected function resourceCombine($type){ 
 
-        $this->request['fields']['password'] = bcrypt($this->request['fields']['password']);
+    	// Генерим пароль по умолчанию при создании записи
+		if ($type == 'create') {
+        	$this->fields['fields']['password']['value'] = str_random(8);
+		}
+		// добавляем валидацию
+		elseif ($type == 'store') {
+        	$this->fields['fields']['password']['validate'] .= "|required";
+		}
+		// Убираем поле отправки на email. И очищаем хэш пароля
+		elseif ($type == 'edit') { 
+			unset($this->fields['fields']['send_mail']);
+			$this->post->password = '';
+		} 
 
-        $res = parent::store();
-
-        $user = &$this->post;
-
-        if ( isset($this->request['fields']['send_mail']) && $this->request['fields']['send_mail'] == 'yes'){
-            Mail::send('User::emails.register-admin', [ 'user' => $user ], function($message) use ($user)
-            {
-                $message->to( $user['email'], '')->subject('Новый аккаунт на сайте '.url('/'));
-            });
-        }
-
-
-
-        return [ 'redirect' =>  action($this->config['controllerName'].'@edit', $this->post->id) ];
-    }
-
-    public function edit($id)
-    {
-        $this->post = $this->post->findOrFail($id);
-        $this->post->password = '';
-        
-        unset($this->fields['fields']['send_mail']);
-
-        return parent::edit($id);
-    }
-
-    public function update($id)
-    {
-        $this->post = $this->post->findOrFail( $id );
-
-        $this->fields['fields']['email']['validate'] .= ",".$id;
-        
-        if( Request::input('password', '') == '' ){
-            unset($this->fields['fields']['password']);
-        }
-        
-        $this->SaveFields($this->post, $this->fields['fields']);
-
-        if( Request::input('password', '') != '' ) {
-            $this->post->password = bcrypt($this->post->password);
-        }
-
-        $this->post->save();
-    }
+		// При обновлении записи
+		elseif ($type == 'update') {
+			// Для unique валидации добавляем id в исключение
+        	$this->fields['fields']['email']['validate'] .= ",".$this->post->id;
+	
+			// Если пароль не был задан, оставляем тот что бы ранее
+	        if ( Request::input('fields')['password'] == '' ) {
+	            unset($this->fields['fields']['password']);
+	        }
+		}
+	}
 }

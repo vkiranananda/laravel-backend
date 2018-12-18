@@ -6,6 +6,7 @@ export default {
   	state: {
         fields: {},
         tabs: {},
+        hiddenFields: {},
         tabActive: '',
         errors: {},
         config: {},
@@ -13,10 +14,11 @@ export default {
     },
 
   	mutations: {
-        initData (state, data) {
-            state.fields = data.fields.fields;
-            state.tabs = data.fields.tabs;
-            state.config = data.config;
+        initData (state, {fields, config}) {
+            state.fields = fields.fields;
+            state.hiddenFields = fields.hidden;
+            state.tabs = fields.tabs;
+            state.config = config;
 
             //Наполняем табы реальными полями
             for (var name in state.tabs) {

@@ -2,7 +2,8 @@
 
 namespace Backend\Root\News\Controllers;
 
-class UploadController extends \Backend\Root\Upload\Controllers\UploadController
+class UploadController extends \Backend\Root\Form\Controllers\UploadController
 {
-    protected $module = 'News';
+	protected $moduleName = 'News';
+    protected $configPath = 'News::upload';
 }

@@ -10,11 +10,11 @@ trait Category {
     //Получаел локализацию
     public function localize()
     {
-        //Если вызвано там гед уже есть локализация
-        if(isset($this->config['lang'])) return false;
+        //Если вызвано там где уже есть локализация
+        if ( isset($this->config['lang']) ) return false;
 
-        if(! ($catID = Request::input('cat', false) )){
-            if( !isset($this->post['category_id'] ))return false;
+        if (! ($catID = Request::input('cat', false) ) ) {
+            if (! isset($this->post['category_id'] ) ) return false;
             $catID = $this->post['category_id'];
         }
         $this->config['lang'] = Categories::getRootCat($catID)['lang'];
@@ -22,49 +22,63 @@ trait Category {
 
     //Проверка корректностикатегории
     protected function checkCategory($catID)
-    {
-        //Нексколько проверочек на корректность данных
-        if( !$catID || ! ( $cat = Categories::getCat($catID)) ) 
-            abort(403, 'Категории не существует');
+    {    	
+    	$cat = Categories::getCat($catID);
+
+        //Несколько проверочек на корректность данных
+        if ( $catID === false || $cat === false ) abort(403, 'Категории "'.$catID.'" не существует');
         
-        if($this->config['baseClass'] != 'Category'){
-            if($this->config['baseClass'] != $cat['mod'])
+        if ($this->config['baseClass'] != 'Category') {
+            if ($this->config['baseClass'] != $cat['mod'])
                 abort(403, 'Модуль категории не соответсвует модулю данных');
         }
-        // else {
-        //     if($type == 'update' && $this->post['mod'] != $cat['mod']) 
-        //         abort(403, 'Модуль категории не соответсвует модулю родительской категории');
-        // }
 
         return true;
     }
 
     protected function setCategoryList($type)
     {
-        $catName = ($this->config['baseClass'] == 'Category') ? 'parent_id' : 'category_id';
 
-        if( !isset($this->fields['fields'][$catName]) ) {
-            $this->fields['fields'][$catName] = ['name' => $catName, 'type' => 'hidden'];
-        }
+    	// Если поле скрыто, то выставляем как true
+    	$hidden = false;
         
+        // Если поле категории не установлено добавляем его в скрытые поля
+        if ( !isset($this->fields['fields']['category_id']) ) {
+            $this->fields['hidden'][] = [ 
+            	'name' 	=> 'category_id', 
+            ];
+
+            $hidden = true;
+        }
+
+        // Получаем значение категории
         switch ($type) {
             case 'create':
                 $catID = Request::input('cat', false); 
-                $this->post[$catName] = $catID;
+                $this->post['category_id'] = $catID;
                 break;
             case 'store': 
-            case 'update': $catID = Request::input($catName, false); break;
-            case 'edit': $catID = $this->post[$catName]; break;     
+            case 'update': 
+            	$catID = ($hidden) ? Request::input('hidden')['category_id'] : Request::input('fields')['category_id'];
+            	break;
+            case 'edit': $catID = $this->post['category_id']; break;     
             default: $catID = false; break;       
         }
 
         $this->checkCategory($catID);
 
-        //Если поле не селект, дерево не генерим.
-        if($this->fields['fields'][$catName]['type'] != 'select') return;
+        //Если поле скрытое, далее не обрабатываем
+        if ($hidden) return;
 
-        $exclude = ($catName == 'parent_id' && ($type == 'update' || $type == 'edit')) ? $this->post['id'] : '' ;
-        $this->fields['fields'][$catName]['options'] = Categories::getHtmlTree([
+        //Если поле не селект, дерево не генерим.
+        if ($this->fields['fields']['category_id']['type'] != 'select') {
+        	abort(403, 'setCategoryList: Поле category_id должно быть select');
+        	return;
+        }
+
+        $exclude = ('category_id' == 'parent_id' && ($type == 'update' || $type == 'edit')) ? $this->post['id'] : '' ;
+
+        $this->fields['fields']['category_id']['options'] = Categories::getHtmlTree([
             'empty' => true, 
             'root' => Categories::getRootCat($catID)['id'], 
             'exclude' => [ $exclude ],

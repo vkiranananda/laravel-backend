@@ -33,12 +33,6 @@ class CategoryController extends \Backend\Root\Form\Services\ResourceController
         }
     }
 
-    public function treeExpand($id, $status)
-    {
-        if($status == 1)Session::put('config.category.tree.'.$id, '1');
-        else Session::forget('config.category.tree.'.$id);
-    }
-
     public function destroy($id)
     {
         if( !( $cat = Categories::getCat($id) ) )abort(403, 'Удаляем категорию, категории не существует');

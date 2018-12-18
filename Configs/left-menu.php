@@ -3,9 +3,21 @@
 return [
 	[
 		'label' => 'Сайт', 
+		'icon' => 'globe', 
+		'url' => url('/'),
+	],[
+		'separator' => true,
+		'space-top' => 2,
+	],[
+		'label' => 'Админка главная', 
 		'icon' => 'home', 
 		'url' => url('/'),
-		'space-bottom' => 4,	//0-4
+	],[
+		'separator' => true,
+	],[
+		'category' => true,
+	],[
+		'separator' => true,
 	],[
 		'label' => 'Разделы', 
 		'icon' => 'list-unordered', 

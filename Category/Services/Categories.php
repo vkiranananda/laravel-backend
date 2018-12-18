@@ -18,23 +18,28 @@ class Categories
 		$this->init();
 	}
 
-	public function init($showDeleted = false)
+	public function init()
 	{
 
-        $allCat = Cache::tags('category')->remember('allCat', 43200, function() use ($showDeleted)
+        $this->allCat = Cache::tags('category')->remember('allCat', 43200, function()
         {
         	$allCat = [];
 
-			$cats = ($showDeleted) ? Category::onlyTrashed()->orderBy('deleted_at', 'desc')->get() : Category::orderBy('sort_num')->get();
-
-			foreach ($cats as $cat) {
+			foreach (Category::orderBy('sort_num')->get() as $cat) {
 				$id = $cat['id'];
-				$allCat[$id] = Helpers::setArray($cat, ['name', 'id', 'url', 'parent_id', 'mod']);
-				if($cat['parent_id'] == 0 && is_array($cat['array_data']['fields'])){
+				//Устанавливаем основные параметры
+				$allCat[$id] = Helpers::setArray($cat, ['name', 'id', 'url', 'category_id', 'mod']);
+
+				// Для корневых категорий (Разделов)
+				if ( $cat['category_id'] == 0 && is_array($cat['array_data']['fields']) ) {
+					
 					foreach ($cat['array_data']['fields'] as $key => $el) {
-						if(preg_match("/^conf-(.*)/", $key, $matches)){
+						// Параметры с префиксом conf-*
+						if (preg_match("/^conf-(.*)/", $key, $matches) ) {
 							$allCat[$id]['conf'][$matches[1]] = $el;
-						}elseif(preg_match('/^lang-(.*)/', $key, $matches)){
+						} 
+						// Локализация
+						elseif (preg_match('/^lang-(.*)/', $key, $matches)) {
 							$allCat[$id]['lang'][$matches[1]] = $el;
 						}
 					}
@@ -43,12 +48,10 @@ class Categories
 			return $allCat;
         }); 
 
-		if($showDeleted)return $allCat;
-		else $this->allCat = $allCat;
-
 		$this->moduleControllers = GetConfig::backend('category-modules');
 	}
 
+	//Получаем данные по типу раздела
 	public function getModuleControllers($mod)
 	{
 		return $this->moduleControllers[$mod];
@@ -65,6 +68,7 @@ class Categories
 	{
 		return count($this->allCat);
 	}
+
 	//Выводим роуты
 	public function printRoutes()
 	{
@@ -80,12 +84,12 @@ class Categories
 	}
 
 	//Генерим все роуты
-	private function getRoutes( &$res, $parent_id = 0, $url = '')
+	private function getRoutes( &$res, $category_id = 0, $url = '')
 	{
 		foreach ($this->allCat as $cat) {
 			$newUrl = $url;
-			if($cat['parent_id'] == $parent_id){
-				if($parent_id == 0)	$newUrl = '';
+			if($cat['category_id'] == $category_id){
+				if($category_id == 0)	$newUrl = '';
 				if($cat['url'] != '') $newUrl .= '/'.$cat['url'];
 				
 				$res[$newUrl][$cat['mod']][] = $cat['id'];
@@ -106,34 +110,33 @@ class Categories
 	private function _getPath($catID, &$res)
 	{
 		if(isset( $this->allCat[$catID] ) ){
-			if( $this->allCat[$catID]['parent_id'] != 0 ){
-				$this->_getPath($this->allCat[$catID]['parent_id'] , $res);
+			if( $this->allCat[$catID]['category_id'] != 0 ){
+				$this->_getPath($this->allCat[$catID]['category_id'] , $res);
 			}
 			$res[] = $this->allCat[$catID];
 		}	
 	}
 
 
-	//Получаем ID корневой записи для post_type
+	//Получаем ID корневой записи для catID
 	public function getRootCat($catID)
 	{
-		if(!isset($this->allCat[$catID]))abort(403, 'Categories::getRootCat() категории не существует');
+		if ( !isset($this->allCat[$catID]) ) abort(403, 'Categories::getRootCat() категории не существует');
 	
-		if( $this->allCat[$catID]['parent_id'] == 0 )return $this->allCat[$catID];
-		else return $this->getRootCat($this->allCat[$catID]['parent_id']);
+		if ($this->allCat[$catID]['category_id'] == 0) return $this->allCat[$catID];
+		else return $this->getRootCat($this->allCat[$catID]['category_id']);
 	}
 
-	//Получаем категорию, если false выводим все
-	public function getCat($id = false){
+	//Получаем категорию, если $id = false выводим все
+	public function getCat($id = false)
+	{
 		//Выводим все категории
-		if(!$id)return $this->allCat;
+		if (!$id) return $this->allCat;
 		//Если категории нет
-		if(!isset($this->allCat[$id]))return false;
+		if (!isset($this->allCat[$id])) return false;
 		//Выводим нужную категорию
 		return $this->allCat[$id];
 	}
-
-
 
 	//Гереним дерево
 	public function getHtmlTree($pref)
@@ -147,7 +150,7 @@ class Categories
 	}
 
 	//получаем список id шников вложенной в указанную категорию 
-	//resCur == true вывод c  текущей категорией
+	//resCur == true вывод c текущей категорией
 	public function getListIds($rootCat = 0, $resCur = false)
 	{
 		$res = [];
@@ -172,7 +175,7 @@ class Categories
 		}
 
 		foreach ($this->allCat as $id => $cat) {
-			if( $cat['parent_id'] != $parentId ) continue;
+			if( $cat['category_id'] != $parentId ) continue;
 			if( isset( $pref['exclude'] ) && is_array( $pref['exclude'] ) && array_search($id, $pref['exclude'] ) !== false) continue;
 
 			//Устанавливаем смещение, либо доп поле либо префиксы

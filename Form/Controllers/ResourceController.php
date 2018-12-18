@@ -36,9 +36,6 @@ class ResourceController extends Controller {
     //Переменная где содержатся данные поста 
     protected $post = null;
 
-    //Поготовленный вывод для index
-    // protected $dataReturn = [];
-
     // protected $cat = false;
 
     //Количество страниц в пагинации 30
@@ -72,6 +69,7 @@ class ResourceController extends Controller {
         $this->config['baseNamespace'] = (preg_match('/(^.+)\\\.+\\\.+/', get_class($this), $mathces)) ? '\\'.$mathces[1] : '' ;
 
         if ( isset($this->config['edit-template']) ) $this->editTemplate = $this->config['edit-template'];
+
     }
 
     //!Вввод списка записей
@@ -91,23 +89,31 @@ class ResourceController extends Controller {
         //Сортировка
         $this->indexOrder();
 
-        // //Если подключен трейт с категориями
-        // if ( method_exists($this, 'checkCategory') ) {
-        // 	$this->config['cat'] = Request::input('cat', false);
-      		// if ( $this->checkCategory($this->config['cat']) ) {
-      		// 	//Локализация
-	       //  	$this->localize();
-	       //  	//Параметры для урла
-        // 		$this->config['url-params'][] = 'cat';
+        //Если подключен трейт с категориями
+        if ( method_exists($this, 'checkCategory') ) {
+     
+        	$this->config['cat'] = Request::input('cat', false);
+     
+      		// Проверяем категорию
+      		if ( $this->checkCategory($this->config['cat']) ) {
+      			//Локализация
+	        	$this->localize();
+	        	
+	        	// Добавляем параметры для урла
+        		$this->config['url-params'][] = 'cat';
       			
-      		// 	//Если был произведен поиск, ищем во всех вложенных категориях
-      		// 	if ($searchReq) {
-      		// 		$this->post = $this->post->whereIn('category_id', Categories::getListIds($this->config['cat'], true));
-      		// 	} else {
-      		// 		$this->post = $this->post->where('category_id', $this->config['cat']);
-      		// 	}
-        //     }
-        // }
+      			//Если был произведен поиск, ищем во всех вложенных категориях
+      			if ($searchReq) {
+      				$this->post = $this->post->whereIn(
+      					'category_id', 
+      					Categories::getListIds($this->config['cat'], 
+      					true
+      				));
+      			} else {
+      				$this->post = $this->post->where('category_id', $this->config['cat']);
+      			}
+            }
+        }
 
     	//Параметры к урлу
 		$urlPostfix = "";
@@ -310,6 +316,8 @@ class ResourceController extends Controller {
             $this->localize();
         }
 
+
+
         $this->dataReturn = [ 
         	'config'	=> [
         		'url' 		=> action ($this->config['controllerName'].'@store'),
@@ -318,7 +326,8 @@ class ResourceController extends Controller {
         		'upload'	=> $this->_getUploadUrls()
         	], 
         	'fields'	=>	[
-        		'fields'	=> $this->prepEditFields ( $this->fields['fields'], $this->post ),
+        		'fields'	=> $this->prepEditFields(),
+        		'hidden'	=> $this->prepHiddenFields(),
         		'tabs'		=> $this->fields['edit']
         	]
         ];
@@ -331,27 +340,27 @@ class ResourceController extends Controller {
     //Сохраняем запись
     public function store()
     {
-        if ( method_exists($this, 'setCategoryList') ) $this->setCategoryList('store');
-      	
       	//Вызываем хук
         $this->resourceCombine('store');
+
+    	//Обработка категорий
+    	if ( method_exists($this, 'setCategoryList') ) $this->setCategoryList('store');
       
         //Сохраняем данные в запись
-        $data = $this->SaveFields(
-        	$this->post, 
-        	$this->fields['fields'], 
-        	Request::input('fields'), 
-        	$this->fields['edit']
-        );
+        $data = $this->SaveFields();
 
         //Если ошибка валидации
         if ( $data['errors'] !== true ) return Response::json([ 'errors' => $data['errors'] ], 422);
 
+        // Устанавливаем новое значние поста
         $this->post = $data['post'];
-        
+
         //Сохрням юзер id
         if ( isset($this->config['user-id']) ) $this->post->user_id = Auth::user()->id;
         
+        //Хук перед сохранением
+        $this->preSaveData('store');
+
         $this->post->save();
 
         //Сохраяняем связи
@@ -360,19 +369,19 @@ class ResourceController extends Controller {
         //Сохраняем медиафайлы
         if ( isset($this->config['uploads']) ) $this->saveMediaRelations( Request::input('files', []) );
 
+        //Обработка редиректов
+        if ( isset($this->config['store-redirect']) ) {
+            $this->dataReturn['redirect'] = $this->config['store-redirect'];
+        } else {
+	        //Выставляем дополнительные параметры.
+	        $this->dataReturn = $this->edit($this->post['id']);
+	        $this->dataReturn['replaceUrl'] = action($this->config['controllerName'].'@edit', $this->post['id']);
+	    }
+        
         //Вызываем хук
         $this->resourceCombineAfter('store');
 
-        //Обработка редиректов
-        if ( isset($this->config['store-redirect']) ) {
-            return ['redirect' => $this->config['store-redirect'] ];
-        }
-
-        //Выставляем дополнительные параметры.
-        $editResult = $this->edit($this->post['id']);
-        $editResult['replaceUrl'] = action($this->config['controllerName'].'@edit', $this->post['id']);
-
-        return $editResult;
+        return $this->dataReturn;
     }
 
     //Редактируем запись вебка
@@ -399,11 +408,11 @@ class ResourceController extends Controller {
         		'postId'	=> $this->post['id'],
         	], 
         	'fields'	=>	[
-        		'fields'	=> $this->prepEditFields( $this->fields['fields'], $this->post ),
+        		'fields'	=> $this->prepEditFields(),
+        		'hidden'	=> $this->prepHiddenFields(),
         		'tabs'		=> $this->fields['edit']
         	]
         ];
-//        Log::info( print_r($this->post->toArray(), true) );
 
         $this->resourceCombineAfter('edit');
         
@@ -419,20 +428,21 @@ class ResourceController extends Controller {
         
         $this->resourceCombine('update');
         
-        if(method_exists($this, 'setCategoryList')) $this->setCategoryList('update');
+        //Обработка категорий
+        if ( method_exists($this, 'setCategoryList') ) $this->setCategoryList('update');
         
     	//Сохраняем данные в запись
-        $data = $this->SaveFields(
-        	$this->post, 
-        	$this->fields['fields'], 
-        	Request::input('fields', []),
-        	$this->fields['edit']);
+        $data = $this->SaveFields();
 
         //Если ошибка валидации
         if ( $data['errors'] !== true ) return Response::json([ 'errors' => $data['errors'] ], 422);
 
+        // Устанавливаем новое значние поста
         $this->post = $data['post'];
-        
+
+        //Хук перед сохранением
+        $this->preSaveData('update');
+
         $this->post->save();
 
         //Сохраяняем связи
@@ -446,14 +456,18 @@ class ResourceController extends Controller {
         //Сохраняем медиафайлы
         if ( isset($this->config['uploads']) ) $this->saveMediaRelations( Request::input('files', []) );
 
+        //Редиректы
+        if ( isset($this->config['update-redirect']) ) {
+        	 $this->dataReturn[ 'redirect'] = $this->config['update-redirect'];
+        } else {
+        	//Выставляем урл просмотра
+        	$this->dataReturn['config']['viewUrl'] = $this->getViewUrl();
+        }
+
         //Вызываем хук
         $this->resourceCombineAfter('update');
 
-        if ( isset($this->config['update-redirect']) ) {
-        	return [ 'redirect' => $this->config['update-redirect'] ];
-        }
-
-        return [ 'config' => [ 'viewUrl' => $this->getViewUrl() ] ];
+        return $this->dataReturn;
     }
 
     //!Показываем запись
@@ -478,11 +492,12 @@ class ResourceController extends Controller {
     public function destroy($id)
     {
         $this->resourceCombine ('destroy');
+
         $this->post->destroy ($id);
+
         $this->resourceCombineAfter ('destroy');
 
-        //Редиректим на индекс
-        if (Request::input('_index-redirect', false) ) return $this->index();
+        return $this->dataReturn;
     }
 
     //Сахраняем загруженные данные.
@@ -518,6 +533,9 @@ class ResourceController extends Controller {
 
     //Тоже но после сохранения записи. Удобно кэши чистить и прочее..
     protected function resourceCombineAfter($type){ }
+
+    // Вызывается перед сохранением данных. Что бы была возможность поменять что то в модели, после всех обработок. В параметре type указывается, store update
+    protected function preSaveData($type){ }
 
 
     //Функция возвращает урл поста

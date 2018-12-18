@@ -136,9 +136,9 @@ class Helpers {
 
     //Выводим данные поля, если данных нет выводим false
     static public function dataIsSetValue(&$data, $id){
-        if(isset($data[$id])) return $data[$id];
+        if ( isset($data[$id]) ) return $data[$id];
 
-        if(isset($data['array_data']['fields'][$id] )) return $data['array_data']['fields'][$id];
+        if ( isset($data['array_data']['fields'][$id] ) ) return $data['array_data']['fields'][$id];
  
         return false;
     }

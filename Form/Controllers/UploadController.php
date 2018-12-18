@@ -71,8 +71,6 @@ class UploadController extends Controller
         Uploads::deleteFiles( [ MediaFile::findOrFail($id) ] );
     }
 
-
-
 	//Получаем данные о картинке
     public function edit($id)
     {
@@ -88,14 +86,21 @@ class UploadController extends Controller
     	];
     }
 
-    //Дорабатываем поля
+    //Получаем поля
     private function _getFields(&$file)
     {
-    	$fields = $this->prepEditFields( GetConfig::backend($this->editConfigPath), $file);
+    	$fields = GetConfig::backend($this->editConfigPath);
 
+    	// Удаляем поля если тип file
     	if($file['file_type'] != 'image'){
     		unset($fields['img_title'], $fields['img_alt']);
     	}
+    	
+    	// Наполняем поля данными
+    	foreach ($fields as $name => &$field) {
+    		$field['value'] = ( isset($file['array_data']['fields'][$name]) ) ? $file['array_data']['fields'][$name] : '' ;
+    	}
+
     	return $fields;
     }
 
@@ -105,8 +110,16 @@ class UploadController extends Controller
     	$file = MediaFile::findOrFail($id);
 
         //Сохраняем данные в запись
-        $data = $this->SaveFields($file, GetConfig::backend($this->editConfigPath), $request->all());
-        $data['post']->save();
+        $arrayData = $file['array_data'];
+        foreach (GetConfig::backend($this->editConfigPath) as $name => $field) {
+        	if ( ($value = $request->input($name, false)) ) {
+        		$arrayData['fields'][$name] = $value;
+        	} 
+        }
+        
+        $file['array_data'] = $arrayData;
+
+        $file->save();
     }
 
 

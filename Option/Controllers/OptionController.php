@@ -33,7 +33,7 @@ class OptionController extends \Backend\Root\Form\Controllers\ResourceController
     public function update($id)
     {
     	//Игнорим текущую запись в валидации
-        $this->fields['fields']['name']['validate'] .= ','.$id;
+        $this->fields['fields']['name']['validate'] .= ','.$id.',id,deleted_at,NULL';
         
         return parent::update($id);
     }

@@ -11,7 +11,7 @@ return [
 		'categoryController' => '\App\Http\Controllers\PageController',
 		'label' => 'Страницы',
 	],'Blog' => [
-		'resourceController' => '\Backend\Root\Blog\Controllers\PageController',
+		'resourceController' => '\Backend\Root\Blog\Controllers\BlogController',
 		'viewControllerAction' => '\App\Http\Controllers\BlogController',
 		'categoryController' => '\App\Http\Controllers\BlogController',
 		'label' => 'Блог',

@@ -1,6 +1,6 @@
 <?php
 	return [
         'lang' => [
-			'title' => 'Настройки',
+			'edit-title' => 'Настройки',
 		]
     ];

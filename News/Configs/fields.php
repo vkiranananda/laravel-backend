@@ -1,23 +1,10 @@
 <?php
 
-	return array_merge_recursive( [
-        'conf' => [
-        	'use-category' => true,
-			'breadcrumb' => true,
-			'order-by' => [
-				['col' => 'publication_date', 'type' => 'desc'],
-			],
-        	'media-files' => 'hidden',
-	        'load-scripts' => [
-        		"/js/tinymce/tinymce.min.js",
-        	],
-        ],
-
+	return [
         'list' => [
-        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit'],
-        	[ 'name' => 'updated_at', 'label' => 'Дата модификации', 'attr' => [ 'width' => '190px;' ] ]
+        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true],
+        	[ 'name' => 'publication_date', 'label' => 'Дата публикации', 'attr' => [ 'width' => '190px;' ], 'sortable' => true ]
         ],
-
 		'fields' => [
 	        'name' => [
 	            'type' => 'text', 
@@ -30,14 +17,21 @@
 	            'type' => 'textarea', 
 	            'label' => 'Анонс',
 	            'field-save' => 'array',
+	            'attr' => [ 'rows' => '5']
 	        ],
 	        'text' => [
 	        	'name' => 'text',
 	            'type' => 'mce', 
 	            'label' => 'Текст новости',
 	            'upload' => true,
+	            'height' => 500
 			],
-
+			'url' => [
+	            'name' => 'url',
+	            'type' => 'text', 
+	            'label' => 'URL',
+	            'validate' => 'nullable|alpha_dash|unique:news,url',
+	        ],
 	        'category_id' => [ 
 	        	'name' => 'category_id',
         		'type' => 'select', 
@@ -49,7 +43,7 @@
 	            'type' => 'date', 
 	            'label' => 'Дата публикации',
 	            'value' => 'now',
-	            'validate' => 'date|date_format:Y-m-d',
+	            'validate' => 'required|date|date_format:Y-m-d',
 			],
 			'status' => [		
 				'name' => 'status',            
@@ -60,44 +54,42 @@
 	         		[ 'value' => '0', 'label' => 'Черновик' ],
 	         	],
 			],
-			'gallery' => [	
-				'name' => 'gallery',	
+			'icon' => [	
+				'name' => 'icon',	
 	            'type' => 'gallery', 
-	            'label' => 'Галерея',
+	            'label' => 'Иконка',
 	            'field-save' => 'array',
+	            'max-files' => 1
 	        ],
+    		'seo' => [
+    			'name' => 'seo',
+    			'type' => 'group',
+    			'load-from' => 'seo-fields',
+    			'field-save' => 'array' 
+    		],
 	    ],
 
 		'edit' => [
-			'default' => [
-				'tab_name' => 'Основные',
-				'id' => 'main',
-				'fields' => [
-			        [ 'name' => 'name', ],
-			        [ 'name' => 'announcement', 'attr' => [ 'rows' => '5'] ],
-			        [ 'name' => 'text', 'attr' => [ 'rows' => '15' ] ],
-			    ],
+			'main' => [
+				'label' => 'Основные',
+				'name' => 'main',
+				'fields' => ['name', 'announcement', 'text' ]
 			],'attr' => [
-				'tab_name' => 'Атрибуты',
-				'id' => 'attr',
-				'fields' => [
-			        [ 'name' => 'category_id' ],
-            		[ 'name' => 'publication_date' ],
-					[ 'name' => 'status' ],
-					[ 'name' => 'gallery' ],
-			    ],
-			],
+				'label' => 'Атрибуты',
+				'name' => 'attr',
+				'fields' => [ 'category_id', 'publication_date', 'status', 'icon' ],
+			],'seo' => [
+				'label' => 'SEO',
+				'name' => 'seo',
+				'fields' => [ 'url', 'seo' ]
+			]
 		],
 		'search' => [
           	[
           		'name' => 'search',
           		'type' => 'text',
-        		'attr' => [
-        			'placeholder' => 'Введите текст для поиска',
-        		],
-        		'conteiner-class' => 'col-4',
-          		'fields' => [ 'name' ],
+        		'attr' => [ 'placeholder' => 'Введите текст для поиска'	],
+          		'fields' => [ 'name', 'text' ],
           	],
         ],
-	], GetConfig::backend('seo-fields')
-);
+	];

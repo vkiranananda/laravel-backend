@@ -89,7 +89,7 @@
 	            'name' => 'url',
 	            'type' => 'text', 
 	            'label' => 'URL',
-	            'validate' => 'nullable|alpha_dash',
+	            'validate' => 'nullable|alpha_dash|unique:categories,url',
 	        ],
     		'seo' => [
     			'name' => 'seo',

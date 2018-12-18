@@ -8,54 +8,32 @@ use GetConfig;
 use Forms;
 use Request;
 
-class OptionGeneralController extends \App\Http\Controllers\Controller
+class OptionGeneralController extends \Backend\Root\Form\Controllers\ResourceController
 {
-    use \Backend\Root\Form\Services\Traits\Fields;
+    protected $configPath = 'Option::config-general';
+    protected $fieldsPath = 'Option::fields-general';
 
-    private $fields;
-
-    function __construct()
+    function __construct(Option $post)
     {
-        $this->fields = GetConfig::backend('Option::fields-general');
+        parent::init($post);
     }
 
-    public function edit()
+    public function edit($id = '')
     {
-        $option = Option::where('name', 'general')->first();
+        $this->post = Option::where('name', 'general')->first();
       
       	//Если запись не создана, ставим умолчания и создаем
-        if (!$option) {
-            $option = new Option();
-            $option->name = 'general';
-            $option->autoload = '1';
-            $option->hidden = '1';
-            $option->type = '';
+        if (!$this->post) {
+        	$this->post = new Option;
+            $this->post->name = 'general';
+            $this->post->autoload = '1';
+            $this->post->hidden = '1';
+            $this->post->type = '';
             $array_fields['fields']['robots-index-deny'] = '1';
-            $option->array_data = $array_fields;
+            $this->post->array_data = $array_fields;
 
-            $option->save();
+            $this->post->save();
         }
-        return view('Form::edit', [ 
-	        	'config'	=> [
-	        		'url' 		=> action('\Backend\Root\Option\Controllers\OptionGeneralController@update'),
-	        		'title'		=> GetConfig::backend('Option::config-general')['lang']['title'],
-	        		'method'	=> 'put',
-	        	], 
-	        	'fields'	=>	[
-	        		'fields'	=> $this->prepEditFields( $this->fields['fields'], $option ),
-	        		'tabs'		=> $this->fields['edit']
-	        	]
-        ]);
+        return parent::edit($this->post['id']);
     }
-
-    public function update()
-    {
-        $option = Option::where('name', 'general')->firstOrFail();
-        
-        $data = $this->SaveFields($option, $this->fields['fields'], Request::input('fields', []), $this->fields['edit']);
-
-        if ( $data['errors'] !== true ) return Response::json([ 'errors' => $data['errors'] ], 422);
-
-        $data['post']->save();
-      }
 }

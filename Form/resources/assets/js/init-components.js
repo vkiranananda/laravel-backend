@@ -7,8 +7,10 @@
 Vue.component('fields-list', require('./components/form/fields.vue'));
 
 
-
+//Модальное окно
 Vue.component('modal', require('./components/modal.vue'));
+//Меню слева
+Vue.component('the-left-menu', require('./components/left-menu.vue'));
 
 
 //Полный вывод формы редактирование

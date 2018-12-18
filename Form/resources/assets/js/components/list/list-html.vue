@@ -55,8 +55,10 @@
                 }
 
                 //Для поиска
-                for (let field of this.myData.search) if (field.value != ''){
-                    params = this.genUrl(params, field.name, field.value);
+                if(this.myData.search != undefined){
+                    for (let field of this.myData.search) if (field.value != ''){
+                        params = this.genUrl(params, field.name, field.value);
+                    }
                 }
 
                 let url = this.myData.config.indexUrl + params;

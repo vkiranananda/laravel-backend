@@ -20,10 +20,12 @@
                 var res = {};
                 if(this.storeName != ''){
                     //Получаем все value
-                    res['fields'] = getValuesFromTabs(this.store.state[this.storeName].tabs);
+                    res.fields = getValuesFromTabs(this.store.state[this.storeName].tabs);
+                    // Получаем скрытые поля
+                    res.hidden = this.store.state[this.storeName].hiddenFields;
                     //Получаем загруженные файлы
                     if (this.store.state.uploadForm.methods.getUploadedFiles != undefined){
-                        res['files'] = this.store.state.uploadForm.methods.getUploadedFiles();
+                        res.files = this.store.state.uploadForm.methods.getUploadedFiles();
                     }
                 }
 
@@ -70,6 +72,11 @@
 
                     this.status = 'saved';
                     this.store.commit('editForm/setErrors', {});
+                   
+                    //Вызываем хуки
+                    if (result.hook != undefined && result.hook.name) {
+                        this.$bus.$emit(result.hook.name, result.hook.data)
+                    }
                 })
                 .catch( (error) => {
                     if(error.response.status == 422){

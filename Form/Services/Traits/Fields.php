@@ -17,12 +17,14 @@ use Illuminate\Support\Facades\DB;
 trait Fields {
 
 	//Подготавливаем все поля для отображения. 
-    protected function prepEditFields($fields, $post)
+    protected function prepEditFields()
     {
-    	$arrayData = ( isset($post['array_data']['fields']) ) ? $post['array_data']['fields'] : [];
+    	$arrayData = ( isset($this->post['array_data']['fields']) ) ? $this->post['array_data']['fields'] : [];
 
+    	$fields = $this->fields['fields'];
+    	$post = $this->post;
     	//Перебираем корневые поля и устанавлтваем значение по умолчанию
-		foreach ($fields as $name => &$field) {
+		foreach ($fields as &$field) {
 			
 			//Если нет данных полей пропускаем
 			if( !isset($field['name']) || !isset($field['type']) ) continue;
@@ -34,6 +36,21 @@ trait Fields {
 	    }
 
 		return $fields;
+    }
+
+	//Подготавливаем скрытые поля для отображения. 
+    protected function prepHiddenFields()
+    {
+    	//Возвращаем пустой массив если значение не установлено
+    	if (! isset ($this->fields['hidden']) || ! is_array($this->fields['hidden'])) return [];
+
+    	$res = [];
+
+		foreach ($this->fields['hidden'] as $field) {
+			$res[ $field['name'] ] = Helpers::dataIsSetValue($this->post, $field['name'] );
+	    }
+
+		return $res;
     }
 
     //Получаем значение для поля, none - если значение
@@ -191,57 +208,70 @@ trait Fields {
 ///////---------------------------------------Saving-----------------------------------------------
 
 
-	protected function saveFields($post, $fields, $request, $tabs = false) 
+	protected function saveFields() 
 	{
+
+		$request = Request::input('fields', []);
+
 		$newFields = [];
 		$relationData = [];
+		$post = $this->post;
 		$arrayData = ( isset($post['array_data']) ) ? $post['array_data'] : [];
+
 		$arrayDataFields = [];
-
-		if ( !isset($arrayData['fields']) || !is_array($arrayData['fields']) ) $arrayData['fields'] = [];
 		
-		//Если табы не установлены идем по полям
-		if (!$tabs) {
-			$newFields = $fields;
-		}
 		//Получаем все поля в табах которые не скрыты 
-		else {
-			foreach ($tabs as $tab) {
-				//Скрытый
+		foreach ($this->fields['edit'] as $tab) {
+			// не скрытый
+			if ( !isset($tab ['show']) || $this->showCheck($tab['show'], $request) !== false) {
+				
+				foreach ($tab['fields'] as $fieldName) { //Массив из доступных полей
+					//Если поля нет в общем списке, например его удалили, то пропускаем обработку
+					if (! isset ($this->fields['fields'][$fieldName]) ) continue; 
 
-				if ( !isset($tab ['show']) || $this->showCheck($tab['show'], $request) !== false) {
-					
-					foreach ($tab['fields'] as $fieldName) { //Массив из доступных полей
-						//Если поля нет в общем списке, например его удалили, то пропускаем обработку
-						if (! isset ($fields[$fieldName]) ) continue; 
-
-						$newFields[$fieldName] = $fields[$fieldName];
-					}
-				} 
-			}
+					$newFields[$fieldName] = $this->fields['fields'][$fieldName];
+				}
+			} 
 		}
 
 		$errors = $this->_saveFieldsList($newFields, $request, $post, $arrayDataFields, $relationData);
 
+		// Сохраняем скрытые поля
+    	if ( isset ($this->fields['hidden']) && is_array($this->fields['hidden'])){
+    		// Проставляем всем полям тип
+    		$hiddenFields = [];
+    		foreach ($this->fields['hidden'] as $field) {
+    			$field['type'] = 'hidden';
+    			$hiddenFields[] = $field;
+    		}
+    		$this->_saveFieldsList(
+    			$hiddenFields,	
+    			Request::input('hidden', []), 
+    			$post,
+    			$arrayData,
+    			$relationData
+    		);
+    	}
+
+    	// Устанавливаем array_data
 		if ( count($arrayDataFields) > 0 ) {
 			$arrayData['fields'] = $arrayDataFields;
 			$post['array_data'] = $arrayData;
 		}
-		// Log::info( print_r($post->toArray(), true) );
 
 		return [
 			'errors' => $errors,
-			'post' => $post,
-			'relations' =>  $relationData
+			'relations' =>  $relationData,
+			'post' => $post
 		];
 	}
 
 	//Обходит массив полей и сохраняет данные. Рекурсивная функция
 	private function _saveFieldsList (
 		$fields, //Список полей
-		&$request, //Данные формы
-		&$post, //Пост
-		&$arrayData, //Массивные данны
+		$request, //Данные формы
+		&$post, //  Пост
+		&$arrayData, //Массивные данные
 		&$relationData, //Данные для сохранения в другую таблицу
 		$fieldSave = null //Куда сохраняем поле
 	){
@@ -311,8 +341,8 @@ trait Fields {
 				//Продолжаем обработку полей.
 				$error = $this->_saveFieldsList(
 					$field['fields'], 
+					$post,
 					$repData['value'], 
-					$post, 
 					$arrayData[ $field['name'] ][ $indexRepBlock ], 
 					$relationData, 'array'
 				);

@@ -31,7 +31,7 @@
 	            'name' => 'email', 
 	            'label' => 'Email',
 	            'desc' => 'Используется для входа',
-	            'validate' => 'email|unique:users,email',
+	            'validate' => 'required|email|unique:users,email',
 	        ],
 	        'password' => [
 	            'type' => 'text', 

@@ -78,7 +78,14 @@
     				this.$emit('change', { destroy: 'begin'});
     				
     				axios.delete(url)
-                		.then( (response) => { this.$emit('change', { destroy: 'finished' }) })
+                		.then( (response) => { 
+                			this.$emit('change', { destroy: 'finished' });
+
+                	        //Вызываем хуки
+		                    if (response.data.hook != undefined && response.data.hook.name) {
+		                        this.$bus.$emit(response.data.hook.name, response.data.hook.data)
+		                    }
+                		})
                 		.catch( (error) => { 
                 			console.log(error.response); 
                 			this.$emit('change', { destroy: 'error' });

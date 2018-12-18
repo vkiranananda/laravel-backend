@@ -39,15 +39,13 @@ class Content {
     //Генерим урл на пост - категорию
     static public function getUrl(&$post)
     { 
-        if(!isset($post['id']))return '';
+        if (! isset($post['id']) ) return '';
 
-        $url = (isset($post['url'])) ? $post['url'] : '' ;
+        $url = ( isset($post['url']) ) ? $post['url'] : '' ;
 
-        if(isset($post['category_id'])){
+        if ( isset($post['category_id']) ) {
             $category_id = $post['category_id'];
-        }elseif(isset($post['parent_id']) ) {
-            $category_id = $post['parent_id'];
-        }else {
+        } else {
             abort(403, 'URLs::get неверный тип данных при создании ссылки');
         }
 
