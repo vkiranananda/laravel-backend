@@ -11,7 +11,7 @@ return [
 	],[
 		'label' => 'Админка главная', 
 		'icon' => 'home', 
-		'url' => url('/'),
+		'url' => action('\Backend\Root\Home\Controllers\HomeController@main'),
 	],[
 		'separator' => true,
 	],[
