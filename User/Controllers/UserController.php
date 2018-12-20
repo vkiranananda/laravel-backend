@@ -22,8 +22,7 @@ class UserController extends \Backend\Root\Form\Controllers\ResourceController
     	if ($type == 'store') {
 	        if ( isset($fields['send_mail']) && $fields['send_mail'] == 'yes' ) {
 
-	        	Mail::to($this->user['email'])
-	        		->subject( 'Новый аккаунт на сайте '.url('/') )
+	        	Mail::to($this->post['email'])
 	        		->send(new \Backend\Root\User\Mail\UserMail($this->post));
 
 	        }

@@ -1,13 +1,13 @@
 <?php
 
-namespace Backend\Root\User\Controllers\Mail;
+namespace Backend\Root\User\Mail;
 
 use App\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class OrderShipped extends Mailable
+class UserMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -20,6 +20,8 @@ class OrderShipped extends Mailable
     
     public function build()
     {
+	$this->subject( 'Новый аккаунт на сайте '.url('/') );
+
         return $this->view('User::emails.register-admin')
                     ->with([ 'user' => $this->user ]);
     }
