@@ -5,6 +5,7 @@ namespace Backend\Root\User\Controllers;
 use App\User;
 use Mail;
 use Request;
+use Log;
 
 class UserController extends \Backend\Root\Form\Controllers\ResourceController
 {
@@ -19,14 +20,12 @@ class UserController extends \Backend\Root\Form\Controllers\ResourceController
     	$fields = Request::input('fields', []);
 
     	if ($type == 'store') {
-    		//Отправляем письмо с настройками пользователя
-	    	$user = $this->post;
-
 	        if ( isset($fields['send_mail']) && $fields['send_mail'] == 'yes' ) {
-	            Mail::send('User::emails.register-admin', [ 'user' => $user ], function($message) use ($user)
-	            {
-	                $message->to( $user['email'], '')->subject('Новый аккаунт на сайте '.url('/'));
-	            });
+
+	        	Mail::to($this->user['email'])
+	        		->subject( 'Новый аккаунт на сайте '.url('/') )
+	        		->send(new \Backend\Root\User\Mail\UserMail($this->post));
+
 	        }
     	}
 

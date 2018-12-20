@@ -26,11 +26,4 @@ require('../../../Form/resources/assets/js/init-components.js');
 
 const backend = new Vue({
     el: '#backend-body',
-    // data: {
-    // 	bus: vueBus
-    // },
-//    store,
-    // bus: vueBus
 });
-
-require('../../../Category/resources/assets/js/tree.js');
