@@ -4,21 +4,20 @@
 //Компоненты для фиелдсов
 // Vue.component('print-field', require('./components/fields/field.vue'));
 //!!!Компоненты для вывода списка полей. НАДО ПОРАБОТАТЬ ТУТ ЭТОГО БЫТЬ НЕ ДОЛЖНО!
-Vue.component('fields-list', require('./components/form/fields.vue'));
+Vue.component('fields-list', require('./components/form/fields.vue').default);
 
 
 //Модальное окно
-Vue.component('modal', require('./components/modal.vue'));
+Vue.component('modal', require('./components/modal.vue').default);
 //Меню слева
-Vue.component('the-left-menu', require('./components/left-menu.vue'));
-
+Vue.component('the-left-menu', require('./components/left-menu.vue').default);
 
 //Полный вывод формы редактирование
-Vue.component('edit-html-form', require('./components/form/edit-html.vue'));
+Vue.component('edit-html-form', require('./components/form/edit-html.vue').default);
 //
-Vue.component('list-html-posts', require('./components/list/list-html.vue'));
+Vue.component('list-html-posts', require('./components/list/list-html.vue').default);
 
 
 
 //С этим потом надо разбираться...
-Vue.component('the-list-sortable', require('./components/the-list-sortable.vue'));
+Vue.component('the-list-sortable', require('./components/the-list-sortable.vue').default);
