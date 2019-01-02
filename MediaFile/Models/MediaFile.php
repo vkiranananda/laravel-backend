@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Root\Form\Models;
+namespace Backend\Root\MediaFile\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

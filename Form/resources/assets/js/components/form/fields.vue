@@ -26,6 +26,9 @@
     import fieldWrapper from '../fields/wrapper.vue'
 
     export default {
+        created() {
+            console.log(this.fields)
+        },
         components: {
             'repeated-field': repeatedField, 
             'group-field': groupField, 

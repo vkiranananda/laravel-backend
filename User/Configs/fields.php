@@ -33,6 +33,13 @@
 	            'desc' => 'Используется для входа',
 	            'validate' => 'required|email|unique:users,email',
 	        ],
+	        'photo' => [
+	            'type' => 'gallery', 
+	            'name' => 'photo', 
+	            'label' => 'Фото',
+	            'max-files' => 1,
+	            'field-save' => 'array',
+	        ],
 	        'password' => [
 	            'type' => 'text', 
 	            'name' => 'password', 
@@ -58,7 +65,7 @@
 			'main' => [
 				'label' => 'Основные',
 				'name' => 'main',
-				'fields' => [ 'name', 'role', 'email', 'password', 'send_mail' ],
+				'fields' => [ 'name', 'photo', 'role', 'email', 'password', 'send_mail' ],
 			],
 		],
 	];

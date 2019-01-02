@@ -32,7 +32,7 @@ class CoreServiceProvider extends ServiceProvider
 
         $this->app->singleton('UploadedFiles', function($app)
         {
-            return new \Backend\Root\Form\Services\UploadedFiles();
+            return new \Backend\Root\MediaFile\Services\UploadedFiles();
         });
 
         AliasLoader::getInstance()->alias('GetConfig', '\Backend\Root\Core\Facades\GetConfigFacade');

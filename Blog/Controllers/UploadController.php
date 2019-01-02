@@ -2,7 +2,7 @@
 
 namespace Backend\Root\Blog\Controllers;
 
-class UploadController extends \Backend\Root\Form\Controllers\UploadController
+class UploadController extends \Backend\Root\MediaFile\Controllers\UploadController
 {
 	protected $moduleName = 'Blog';
     protected $configPath = 'Blog::upload';

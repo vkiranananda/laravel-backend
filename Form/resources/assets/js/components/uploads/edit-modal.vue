@@ -16,7 +16,7 @@
         <div class="clearfix"></div>
         
         <field-wrapper v-for="(field, key) in file.fields" :field="field" :key="key">
-            <print-field :field='field' v-on:change="onChange($event, field.name)"></print-field>
+            <print-field :field='field' v-on:change="onChange($event, key)"></print-field>
         </field-wrapper>  
             
         <save-buttons modal="#UploadEditModal" :status="status" v-on:submit="submit"></save-buttons>
@@ -62,6 +62,7 @@
                         for (let key in response.data) {
                             this.$set(this.file, key, response.data[key])
                         }
+
                         this.loading = false;
                     })
                     .catch( (error) => { console.log(error.response) });     

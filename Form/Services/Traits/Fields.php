@@ -4,7 +4,7 @@ namespace Backend\Root\Form\Services\Traits;
 use Request;
 use Helpers;
 use Content;
-use \Backend\Root\Form\Models\MediaFile;
+use \Backend\Root\MediaFile\Models\MediaFile;
 use Forms;
 use GetConfig;
 use Log;
@@ -373,7 +373,7 @@ trait Fields {
                 $uniqueValue = array_unique($value);
 
                 //Инитим запрос
-                $imgReq = \Backend\Root\Form\Models\MediaFile::whereIn('id', $uniqueValue );
+                $imgReq = MediaFile::whereIn('id', $uniqueValue );
 
                 if ($field['type'] == 'gallery' ) $imgReq = $imgReq->where('file_type', 'image');
 
@@ -401,7 +401,7 @@ trait Fields {
                         $sizes = [ $width[1], $height[1] ];
                     	
                     	//Ищем эти картинки в базе и создаем на них миниатюры    
-                        if( ($imgObj = \Backend\Root\Form\Models\MediaFile::find($imgId)) ){
+                        if( ($imgObj = MediaFile::find($imgId)) ){
                             $imgUrl = Content::uFile()->genFileLink($imgObj, $sizes)['thumb'];
 
                             //Меняем на новую ссылку на картинку

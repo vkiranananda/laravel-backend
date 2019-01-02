@@ -9,7 +9,7 @@ use Request;
 use Cache;
 use Content;
 
-class CategoryController extends \Backend\Root\Form\Services\ResourceController
+class CategoryController extends \Backend\Root\Form\Controllers\ResourceController
 {
     use \Backend\Root\Category\Services\Traits\Category;
 

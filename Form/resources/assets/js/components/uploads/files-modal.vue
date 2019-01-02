@@ -14,7 +14,8 @@
 
     export default {
         //Создаем слушателей событий
-        created () { this.$bus.$on('UploadFilesModalShow', this.showModal) },
+        created () { 
+            this.$bus.$on('UploadFilesModalShow', this.showModal) },
         beforeDestroy() { this.$bus.$off('UploadFilesModalShow') },
 
         props: [ 'url' ],

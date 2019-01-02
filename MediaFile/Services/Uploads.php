@@ -1,10 +1,10 @@
 <?php
-namespace Backend\Root\Form\Services;
+namespace Backend\Root\MediaFile\Services;
 
 use Storage;
 use Request;
 use Auth;
-use Backend\Root\Form\Models\MediaFile;
+use Backend\Root\MediaFile\Models\MediaFile;
 use Intervention\Image\Facades\Image as Image;
 
 class Uploads {
@@ -18,9 +18,8 @@ class Uploads {
       
         $mediaFile->disk = $conf['disk'];
         $mediaFile->type = $conf['store-type'];
-        $mediaFile->url = $conf['url'];
-        // $mediaFile->user_id = Auth::user()->id;
-        $mediaFile->user_id = 1;
+        $mediaFile->url = $conf['url'];        
+        $mediaFile->user_id = ( isset($conf['user-id']) ) ? $conf['user-id'] : Auth::user()->id;
         $mediaFile->orig_name = $file->getClientOriginalName();
         $mediaFile->imageable_type = $conf['module'];
 

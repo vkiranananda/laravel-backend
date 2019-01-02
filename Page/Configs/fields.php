@@ -24,7 +24,6 @@
 	            'type' => 'mce', 
 	            'label' => 'Текст',
 	            'upload' => true,
-	            'field-save' => 'array',
 	        ],
 
     		'seo' => [
