@@ -161,7 +161,7 @@ class UploadedFiles {
     // Инитим данные из поля, для выборки массива
     public function getByField($post, $field, $first = false)
     {
-    	$this->get( Helpers::dataIsSetValue($post, $field, $first) );
+    	$this->get( Helpers::dataIsSetValue($post, $field), $first );
 
         return $this;
     }
