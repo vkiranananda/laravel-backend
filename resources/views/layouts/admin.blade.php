@@ -11,7 +11,7 @@
 <body class="bg-light1">
 	<div class="container-fluid" id="backend-body">
 		<div class="row py-0">
-			<the-left-menu :menu='@json(GetConfig::backend("Menu::menu"))'></the-left-menu>
+			{!! Content::getWidget('form::left-menu', '', ['tags' => 'category']) !!}
 			<div class="col content-block bg-light1 mt-3">
 				
 				@yield('content')
@@ -28,3 +28,4 @@
 
 </body>
 </html>
+
