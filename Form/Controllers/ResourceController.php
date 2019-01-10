@@ -21,7 +21,7 @@ class ResourceController extends Controller {
 
     use \Backend\Root\Form\Services\Traits\Fields;
 
-    //Имя общего конфиг, если false берется как config
+    //Имя общего конфига, если false берется как config
     protected $configPath = false;
 
     //Имя конфига для полей, если false берется как fields
@@ -35,17 +35,6 @@ class ResourceController extends Controller {
 
     //Переменная где содержатся данные поста 
     protected $post = null;
-
-    // protected $cat = false;
-
-    //Количество страниц в пагинации 30
-    protected $pagination = 30;
-
-    //Шаблон для edit. Берется из конфига.
-    private $editTemplate = 'Form::edit';
-
-    //Контролер для работы с загрузкой файлов, лучше не менять, там много что на это завязано
-    private $uploadController = 'UploadController';
 
     //Генерируемый массив с данными для веб
     protected $dataReturn = [];
@@ -61,14 +50,16 @@ class ResourceController extends Controller {
     	if (!$this->configPath) $this->configPath = $baseClass."::config";
     	if (!$this->fieldsPath) $this->fieldsPath = $baseClass."::fields";
 
-        $this->config = GetConfig::backend($this->configPath);
+        $this->config = array_replace_recursive(
+        	GetConfig::backend('Form::config'),
+        	GetConfig::backend($this->configPath)
+        );
+
         $this->fields = GetConfig::backend($this->fieldsPath);
 
         $this->config['controllerName'] = '\\'.get_class($this);
         $this->config['baseClass'] = class_basename($this->post);
         $this->config['baseNamespace'] = (preg_match('/(^.+)\\\.+\\\.+/', get_class($this), $mathces)) ? '\\'.$mathces[1] : '' ;
-
-        if ( isset($this->config['edit-template']) ) $this->editTemplate = $this->config['edit-template'];
 
     }
 
@@ -79,9 +70,6 @@ class ResourceController extends Controller {
 
     	//Добавочные параметры для всех урлов. Устанавливаем значение по умолчанию если нет. 
     	if ( !isset($this->config['url-params']) ) $this->config['url-params'] = [];
-
-        // Выставлемя количество записей на странице из конфига
-        if ( isset($this->config['list']['count-items']) ) $this->pagination = $this->config['list']['count-items'];
 
         //Поиск
     	$searchReq = $this->indexSearch();
@@ -118,7 +106,7 @@ class ResourceController extends Controller {
     	//Параметры к урлу
 		$urlPostfix = "";
 
-		//Получаем все дополнительные параметры.
+		// Получаем все дополнительные параметры.
 		foreach ($this->config['url-params'] as $param) {
 			$urlPostfix .= ($urlPostfix == '') ? '?' : '&' ;
 			$urlPostfix .= $param.'='.Request::input($param, '');
@@ -149,6 +137,9 @@ class ResourceController extends Controller {
         $fields = [];
         $optionFields = []; //Поля имеющие option
      
+     	// Меню для элемента списка
+        $this->dataReturn['itemMenu'] = $this->config['list']['menu-item'];
+
         foreach ($this->fields['list'] as $field) {
         
         	//Получаем базовое поле. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
@@ -169,9 +160,9 @@ class ResourceController extends Controller {
         }
 
         // Делаем выборку
-        $query = $this->post->paginate($this->pagination)->toArray();
+        $query = $this->post->paginate($this->config['list']['count-items'])->toArray();
         if ($query['last_page'] < $query['current_page']) {
-        	$query = $this->post->paginate($this->pagination, ['*'], 'page', $query['last_page'])->toArray();
+        	$query = $this->post->paginate($this->config['list']['count-items'], ['*'], 'page', $query['last_page'])->toArray();
         }
 
         // Для пагинации
@@ -199,23 +190,17 @@ class ResourceController extends Controller {
         foreach ($query['data'] as $post) {
         	$res = []; //Преобразованные данные
         	
+        	$res['_links'] = $this->indexLinks($post);
+
         	foreach ($fields as $field) {
         		
         		$name = $field['name'];
 
         		//Выставляем значние
-        		$value = Helpers::dataIsSetValue($post, $name);
+        		$value = Helpers::dataIsSetValue($post, $name, '');
 
         		if ( isset($optionFields[$name][$value]) ) $res[$name] = $optionFields[$name][$value];
         		else $res[$name] = $value;
-
-				//Обрабатываем ссылки
-        		if ( isset($field['link']) ) {
-        			if ($field['link'] == 'edit') $res['_links']['edit'] = action($this->config['controllerName'].'@edit', $post['id']);
-        		}
-        		$res['_links']['destroy'] = action($this->config['controllerName'].'@destroy', $post['id']);
-        		// $res['_id']['id'] = 
-        		
         	}
         	$this->dataReturn['items']['data'][] = $res;
         }
@@ -232,6 +217,16 @@ class ResourceController extends Controller {
 
         return view($templite, [ 'data' => $this->dataReturn ]);
     }
+    
+    // Обрабатываем ссылки в списке
+    protected function indexLinks($post) {
+    	return [
+    		'edit' 		=> action($this->config['controllerName'].'@edit', $post['id']),
+    		'destroy' 	=> action($this->config['controllerName'].'@destroy', $post['id'])
+    	];
+    }
+
+
 
     //Функция для сортировки списка
     protected function indexOrder() 
@@ -334,7 +329,7 @@ class ResourceController extends Controller {
 
         $this->resourceCombineAfter ('create');
    
-        return view ($this->editTemplate, $this->dataReturn);
+        return view ($this->config['edit']['template'], $this->dataReturn);
     }
 
     //Сохраняем запись
@@ -367,7 +362,7 @@ class ResourceController extends Controller {
         if ( method_exists($this, 'saveRelationFields') )$this->saveRelationFields($data['relations']);
         
         //Сохраняем медиафайлы
-        if ( isset($this->config['uploads']) ) $this->saveMediaRelations( Request::input('files', []) );
+        if ( $this->config['upload']['enable'] ) $this->saveMediaRelations( Request::input('files', []) );
 
         //Обработка редиректов
         if ( isset($this->config['store-redirect']) ) {
@@ -418,7 +413,7 @@ class ResourceController extends Controller {
         
         if ( Request::ajax() ) return $this->dataReturn;
 
-        return view($this->editTemplate, $this->dataReturn );
+        return view($this->config['edit']['template'], $this->dataReturn );
     }
 
     //Обновляем запись
@@ -454,7 +449,7 @@ class ResourceController extends Controller {
         }
         
         //Сохраняем медиафайлы
-        if ( isset($this->config['uploads']) ) $this->saveMediaRelations( Request::input('files', []) );
+        if ($this->config['upload']['enable']) $this->saveMediaRelations( Request::input('files', []) );
 
         //Редиректы
         if ( isset($this->config['update-redirect']) ) {
@@ -520,10 +515,10 @@ class ResourceController extends Controller {
     //Получаем url для загрузки
     private function _getUploadUrls ()
     {
-    	if ( isset ($this->config['uploads']) && $this->config['uploads'] === true )
+    	if ( $this->config['upload']['enable'] )
     		return [
-    			'uploadUrl' => action($this->config['baseNamespace'].'\\Controllers\\'.$this->uploadController.'@index', $this->post['id']),
-    			'editUrl' => action($this->config['baseNamespace'].'\\Controllers\\'.$this->uploadController.'@edit')
+    			'uploadUrl' => action($this->config['baseNamespace'].'\\Controllers\\'.$this->config['upload']['controller'].'@index', $this->post['id']),
+    			'editUrl' => action($this->config['baseNamespace'].'\\Controllers\\'.$this->config['upload']['controller'].'@edit')
     		];
     	else return false;
     }

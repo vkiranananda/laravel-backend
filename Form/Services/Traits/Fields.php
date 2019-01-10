@@ -413,6 +413,8 @@ trait Fields {
 
                 }, $value);
             }
+        } elseif ($field['type'] == 'date') {
+        	if ($value == '') $value = null;
         }
 
         //Правила валидации

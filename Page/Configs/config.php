@@ -6,5 +6,5 @@
 		// 	'create-title' => 'Создать страницу',
 		// 	'edit-title' => 'Редактирование страницы',
 		// ],
-        'uploads' => true
+        'upload' => ['enable' => true],
 	];

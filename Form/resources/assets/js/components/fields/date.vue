@@ -1,6 +1,6 @@
 <template>
     <div>
-    	<date-picker  :input-class="inputClass" v-model="date" :first-day-of-week="1" :format="format" lang="ru"></date-picker>
+    	<date-picker :type="type" :input-class="inputClass" v-model="date" :first-day-of-week="1" :format="format" lang="ru" :minute-step="field['minute-step'] ? field['minute-step'] : 1"></date-picker>
 	</div>
 </template>
 
@@ -21,12 +21,19 @@ export default {
   				return this.getDate(this.field.value)
     		},
     		set: function (newDate) {
-				let date = (newDate != null) ? fecha.format(newDate, this.inputFormat) : '' 
-				this.$emit('change', date);
-			}
+				  let date = (newDate != null) ? fecha.format(newDate, this.inputFormat) : '' 
+				  this.$emit('change', date);
+			 }
   		},
 
-  		format: function () { return this.field.format != undefined ? this.field.format : 'DD.MM.YYYY' },
+  		format: function () { 
+        let format = this.field.format != undefined ? this.field.format : 'DD.MM.YYYY'
+        if (this.field.time != undefined) format += ' HH:mm'
+        return format
+      },
+      type: function () {
+          return this.field.time != undefined ? 'datetime' : 'date'
+      },
    		// Генерим классы
    		inputClass: function () { 
    			let objClass = 'mx-input form-control';
@@ -39,7 +46,7 @@ export default {
    			return objClass;
    		},
    		//Возвращаем дату с нужным форматированем
-  		inputFormat: function () {return this.field['input-format'] != undefined ? this.field['input-format'] : 'YYYY-MM-DD'},
+  		inputFormat: function () {return this.field['input-format'] != undefined ? this.field['input-format'] : 'YYYY-MM-DD HH:mm:ss'},
 	},
 	methods: {
 		getDate: function(date) {

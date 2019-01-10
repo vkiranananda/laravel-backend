@@ -19,7 +19,7 @@
 							</div>
 							<span v-else>{{ field.label }}</span>
 						</th>
-		        		<th scope="col" class="menu-td"></th>
+		        		<th scope="col" class="menu-td" v-if="itemMenu"></th>
 		         	</tr>
 		      	</thead>
 		     	<tbody>
@@ -30,12 +30,25 @@
 		              		<span v-else>{{ item[field.name] }}</span>
 		          		</td>
 
-		          		<td class="menu-td">
+		          		<td class="menu-td" v-if="itemMenu">
 		            		<div class="dropdown">
 		              			<button class="btn btn-secondary button-grabber" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
 		              			<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-		                			<a class="dropdown-item" :href="item._links.edit"><span class="icons-pencil"></span>&nbsp;Править</a>
-		                			<a class="dropdown-item" @click="deleteItem(item._links.destroy)"><span class="icons-trash"></span>&nbsp;Удалить</a>
+		                			<template v-for="elMenu in itemMenu">
+		                				<a 
+		                					v-if="elMenu.link == 'destroy'" 
+		                					class="dropdown-item" :class="elMenu.icon ? 'octicon octicon-'+elMenu.icon : ''" 
+		                					v-on:click.stop.prevent="deleteItem(item._links[elMenu.link])">
+		                						{{ elMenu.label }}
+		                				</a>
+		                				<a 
+		                					v-else 
+		                					class="dropdown-item" 
+		                					:class="elMenu.icon ? 'octicon octicon-'+elMenu.icon : ''"
+		                					:href="item._links[elMenu.link]">
+		                						{{ elMenu.label }}
+		                				</a>
+		                			</template>
 		              			</div>
 		            		</div>
 		          		</td>
@@ -57,7 +70,7 @@
 <script>
     import paginate from './paginate.vue'
     export default {
-        props: [ 'items', 'fields' ],
+        props: [ 'items', 'fields', 'itemMenu' ],
         components: {
             'list-paginate': paginate
         },

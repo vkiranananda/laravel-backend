@@ -5,6 +5,6 @@
 			'create-title' => 'Создать "ключ-значение"',
 			'edit-title' => 'Редактирование "ключ-значение"',
 		],
-		'uploads' => true,
+		'upload' => ['enable' => true],
 
 	];

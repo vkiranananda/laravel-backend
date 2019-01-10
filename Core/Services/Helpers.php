@@ -134,20 +134,20 @@ class Helpers {
     }
 
 
-    //Выводим данные поля, если данных нет выводим false
-    static public function dataIsSetValue(&$data, $id){
+    // Выводим данные поля, если данных нет выводим возвращаем заничение  3 параметра, по умолчанию false
+    static public function dataIsSetValue(&$data, $id, $res = false) {
         if ( isset($data[$id]) ) return $data[$id];
 
         if ( isset($data['array_data']['fields'][$id] ) ) return $data['array_data']['fields'][$id];
  
-        return false;
+        return $res;
     }
 
     //То же самое что предыдущее но выводим false если значиение пустое.
     static public function dataIsSet(&$data, $id){
         $value = Helpers::dataIsSetValue($data, $id);
 
-        if($value != '' && $value !== false)return $value;
+        if($value != '' && $value !== false) return $value;
       
         return false;
     }

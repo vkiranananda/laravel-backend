@@ -18,7 +18,7 @@
 				
 				<center class="py-2">
 				    <small class="text-center mt-4">
-						<?php printf('Скрипт выполнялся %.4F сек.', (microtime(true) - $GLOBALS['START-TIME'])) ?>
+						<?php printf('Скрипт выполнялся %.4F сек.', (microtime(true) - LARAVEL_START)) ?>
 					</small>
 				</center>
 			</div>

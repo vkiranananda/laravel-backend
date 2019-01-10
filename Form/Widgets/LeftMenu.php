@@ -8,9 +8,11 @@ class LeftMenu
 	
 	public static function show($args = '')
 	{
+		$cats = ( isset(GetConfig::backend("backend")['category-disable']) ) ? [] : \Backend\Root\Category\Services\Menu::getCats();
+
 		return view('Form::widgets.left-menu', [
 			'menu' 		=> GetConfig::backend("left-menu"), 
-			'cats' 		=> \Backend\Root\Category\Services\Menu::getCats()
+			'cats' 		=> $cats
 		]);
 	}
 }

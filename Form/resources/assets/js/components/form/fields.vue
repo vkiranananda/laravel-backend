@@ -27,7 +27,7 @@
 
     export default {
         created() {
-            console.log(this.fields)
+            console.log('fields:', this.fields)
         },
         components: {
             'repeated-field': repeatedField, 

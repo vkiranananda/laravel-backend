@@ -5,5 +5,5 @@
 			'edit-title' => 'Редактирование раздела',
 			'list-title' => 'Список разделов'
 		],
-		'uploads' => true,
+		'upload' => ['enable' => true],
 	];

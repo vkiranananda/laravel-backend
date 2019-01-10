@@ -24,7 +24,9 @@
     import showUploadsButton from '../uploads/show-uploads-button'
 
     export default {
-        created () { this.$bus.$on('UploadFilesDeleteFile', this.delById) },
+        created () { 
+            this.$bus.$on('UploadFilesDeleteFile', this.delById) 
+        },
         beforeDestroy() { this.$bus.$off('UploadFilesDeleteFile') },
         components: {
             draggable,

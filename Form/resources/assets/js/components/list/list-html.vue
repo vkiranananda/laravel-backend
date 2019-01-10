@@ -4,7 +4,7 @@
         <the-loading :loading="loading"></the-loading>
         <the-menu :menu="myData.config.menu"></the-menu>
         <the-search v-if="myData.search != undefined" :fields="myData.search" @change="searchChange"></the-search>
-        <the-list :fields="myData.fields" :items="myData.items" @change="listChange"></the-list>
+        <the-list :fields="myData.fields" :items="myData.items" :itemMenu="myData.itemMenu" @change="listChange"></the-list>
 
 	<!--       	@if (isset($params['conf']['breadcrumb']) && $params['conf']['breadcrumb'] == true )
 	        	@component('Form::components.breadcrumb', ['params' => $params ]) @endcomponent

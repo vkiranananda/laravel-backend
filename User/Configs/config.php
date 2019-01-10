@@ -5,5 +5,5 @@
 			'create-title' => 'Создать пользователя',
 			'edit-title' => 'Редактирование пользователя',
 		],
-		'uploads' => true
+		'upload' => ['enable' => true],
 	];

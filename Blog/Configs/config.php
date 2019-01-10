@@ -2,5 +2,5 @@
 	return  [
     	// 'use-category' => true,
 		// 'breadcrumb' => true,
-		'uploads' => true,
+		'upload' => ['enable' => true],
 	];
