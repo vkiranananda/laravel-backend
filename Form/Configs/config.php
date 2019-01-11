@@ -5,13 +5,16 @@
 			// Количество записей на странице
 			'count-items' => 30,
 			// Меню элемента
-			'menu-item' =>[
-				[ 'label' => 'Править',	'link' => 'edit', 'icon' => 'pencil' ],
-				[ 'label' => 'Удалить',	'link' => 'destroy', 'icon' => 'trashcan' ]
+			'item-menu-default' => [
+				'edit' => [ 'label' => 'Править',	'link' => 'edit', 'icon' => 'pencil' ],
+				'destroy' => [ 'label' => 'Удалить',	'link' => 'destroy', 'icon' => 'trashcan' ]
 			],
 		],
 		'edit' => [
 			'template' => 'Form::edit',
+		],
+		'show' => [
+			'template' => 'Form::show',
 		],
 		'upload' => [
 			// Контролер для работы с загрузкой файлов, лучше не менять, там много что на это завязано

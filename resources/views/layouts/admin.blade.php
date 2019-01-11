@@ -8,7 +8,7 @@
 	<link href="{{ mix('/backend/css/backend.css') }}" rel="stylesheet">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
-<body class="bg-light1">
+<body>
 	<div class="container-fluid" id="backend-body">
 		<div class="row py-0">
 			{!! Content::getWidget('form::left-menu', '', ['tags' => 'category']) !!}

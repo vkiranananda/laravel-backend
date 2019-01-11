@@ -138,7 +138,7 @@ class ResourceController extends Controller {
         $optionFields = []; //Поля имеющие option
      
      	// Меню для элемента списка
-        $this->dataReturn['itemMenu'] = $this->config['list']['menu-item'];
+        $this->dataReturn['itemMenu'] = $this->indexItemMenu();
 
         foreach ($this->fields['list'] as $field) {
         
@@ -211,13 +211,27 @@ class ResourceController extends Controller {
     	//Хук
     	$this->resourceCombineAfter ('index');
         
-        // dd($this->dataReturn);
-        
         if ( Request::ajax() ) return $this->dataReturn;
 
         return view($templite, [ 'data' => $this->dataReturn ]);
     }
     
+    // Получаем пункты меню для конкртеной строки списка
+    protected function indexItemMenu() {
+    	if (isset($this->config['list']['item-menu'])) {
+    		$res = [];
+    		foreach ($this->config['list']['item-menu'] as $item) {
+    			// Если есть опция default, то берем значения из дефолтного меню
+    			if (isset($item['default'])) {
+    				$res[] = $this->config['list']['item-menu-default'][$item['default']];
+    			}
+    			else $res[] = $item;
+    		}
+    		return $res;
+    	}
+    	return $this->config['list']['item-menu-default'];
+    }
+
     // Обрабатываем ссылки в списке
     protected function indexLinks($post) {
     	return [
@@ -468,19 +482,17 @@ class ResourceController extends Controller {
     //!Показываем запись
     public function show($id)
     {
-        if(!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
+        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
+
         $this->resourceCombine('show');
     
-        $this->config['url'] = action($this->config['controllerName'].'@edit', $id);
-        $this->config['lang']['title'] = $this->config['lang']['show-title'];
-        $template = (isset($this->config['conf']['show-template'])) ? $this->config['conf']['show-template'] : 'Form::show' ;
-
-        //Подготавливаем поля
-        $this->fields['fields'] = Helpers::changeFieldsOptions($this->fields['fields']);
-
         $this->resourceCombineAfter('show');
         
-        return view($template,[ 'config' => $this->config, 'data' => $this->post ]  );
+        return view($this->config['show']['template'] , [ 
+        	'config' => $this->config, 
+        	'fields' => $this->fields,
+        	'data' => $this->post 
+        ]);
     }
 
     //Удаляем запись

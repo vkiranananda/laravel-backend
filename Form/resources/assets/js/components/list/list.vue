@@ -44,6 +44,7 @@
 		                				<a 
 		                					v-else 
 		                					class="dropdown-item" 
+		                					:target="elMenu.target"
 		                					:class="elMenu.icon ? 'octicon octicon-'+elMenu.icon : ''"
 		                					:href="item._links[elMenu.link]">
 		                						{{ elMenu.label }}
