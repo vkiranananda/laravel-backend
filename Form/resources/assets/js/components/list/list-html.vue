@@ -18,6 +18,11 @@
     import loading from '../loading.vue'
     import search from './search.vue'
     export default {
+        created() {
+            window.onpopstate = (event) => {
+                this.axiosSend( event.state == null ? this.startUrl : event.state, false )
+            };
+        },
         props: [ 'data' ],
         components: {
             'the-list': list, 
@@ -27,15 +32,14 @@
         },        
         data() {
             return {
+                startUrl: window.location.href,
                 myData: this.data,
                 loading: false
             }
         },
         methods: {
             // Отправляем запрос
-            send() {
-                this.loading = true;
-
+            send(changeType) {
                 //Параметры к урлу по умолчанию
                 let params = this.myData.config.urlPostfix;
 
@@ -61,24 +65,31 @@
                     }
                 }
 
-                let url = this.myData.config.indexUrl + params;
+                this.axiosSend(this.myData.config.indexUrl + params)
+
+            },
+            axiosSend(url, pushState = true) {
+                this.loading = true
 
                 axios.get(url)
                 .then( (response) => {
-                    this.myData = response.data;
-                    //push
-                    history.replaceState('data', '', url);
-                    this.loading = false;
+                    this.myData = response.data
+                    if(pushState) history.pushState(url, '', url)
                 })
-                .catch( (error) => { console.log(error.response); this.loading = false; }); 
-
+                .catch( (error) => { console.log(error.response) })
+                .then( () => {  this.loading = false } )
             },
             //Добавляем параметр к урлу
             genUrl (url, key, value ) { return ( (url == '') ? '?' : url + '&') + key + '=' + value },
             
             // Измения в списке
             listChange (data) {
-                if (data.currentPage != undefined) this.myData.items.currentPage = data.currentPage
+                let changeType = ''
+
+                if (data.currentPage != undefined) {
+                    this.myData.items.currentPage = data.currentPage
+                    changeType = 'nextPage'
+                }
                 //Выставляем значени сортировки
                 else if (data.sortable != undefined) {
                     //Очищаем предыдущие значения
@@ -98,7 +109,7 @@
                     } 
                 }
 
-                this.send();
+                this.send(changeType);
             },
             searchChange (data) { 
                 //Выставляем значния

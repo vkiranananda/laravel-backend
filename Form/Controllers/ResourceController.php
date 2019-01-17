@@ -196,6 +196,12 @@ class ResourceController extends Controller {
         		
         		$name = $field['name'];
 
+        		if (isset($field['func'])) {
+        			$func = $field['func'];
+        			$res[$name] = $this->$func($post, $field);
+        			continue;
+        		}
+
         		//Выставляем значние
         		$value = Helpers::dataIsSetValue($post, $name, '');
 
@@ -239,7 +245,6 @@ class ResourceController extends Controller {
     		'destroy' 	=> action($this->config['controllerName'].'@destroy', $post['id'])
     	];
     }
-
 
 
     //Функция для сортировки списка

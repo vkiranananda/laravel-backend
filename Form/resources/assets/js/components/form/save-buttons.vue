@@ -13,13 +13,13 @@
             <span class="error" v-if='currentStatus == "errorAny"'>Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.</span>
             <span class="error" v-if='currentStatus == "errorFields"'>Проверьте правильность заполнения данных</span>
             <span class="success" v-if='currentStatus == "saved"'>Сохранено</span>
+            <span class="text-warning" v-else-if='currentStatus == "saveing"'>Сохраняю...</span>
         </div>
         <div class="mr-4">
-            <button class="btn btn-secondary mr-3" v-on:click="close" role="button" :disabled="diableCloseButton">{{closeLabel}}</button>
-            <button type="button" class="btn btn-primary" v-on:click="$emit('submit')" :disabled="currentStatus == 'saveing' ? true : false">
-                <span v-if='currentStatus == "saveing"'>Сохраняю...</span>
-                <span v-else>Сохранить</span>
-            </button>
+            <button v-if="this.modal" class="btn btn-secondary mr-3" v-on:click="close" role="button" :disabled="diableCloseButton">{{closeLabel}}</button>
+
+            <button v-if="! this.modal" type="button" class="btn btn-secondary mr-2" v-on:click="submit(true)" :disabled="currentStatus == 'saveing' ? true : false">Сохранить и выйти</button>
+            <button type="button" class="btn btn-primary" v-on:click="submit()" :disabled="currentStatus == 'saveing' ? true : false">Сохранить</button>
         </div>
     </div>
 </template>
@@ -32,16 +32,25 @@
             modal: { default: false },
             closeUrl: { default: false }
         },
-        data() { return { currentStatus: '' } },
+        data() { return { 
+            currentStatus: '',
+            saveExit: false
+        } },
         
         watch: {
             status: function (val) {
                 this.currentStatus = this.status;
 
                 //Если статус окей, скрываем текст через 3 секунды                
-                if (val == 'saved') setTimeout(() => {
-                    if (this.currentStatus == 'saved') this.currentStatus = ''
-                }, 3000);
+                if (val == 'saved') {
+                    setTimeout(() => {
+                        this.currentStatus = ''
+                    }, 3000);
+                    
+                    if (this.modal) $(this.modal).modal('hide')
+                    if (this.saveExit) window.location = document.referrer
+                }
+
             }
         },
         computed: {
@@ -52,13 +61,12 @@
             }
         },
         methods: {
+            submit(close = false) {
+                this.saveExit = close
+                this.$emit('submit')
+            },
             close() {
-                if(this.closeUrl) window.location = this.closeUrl;
-                else {
-                    if(this.modal) $(this.modal).modal('hide')
-                    else window.location = document.referrer
-                }
-                return false;
+                if (this.modal) $(this.modal).modal('hide')
             },
         }
                     

@@ -90,7 +90,7 @@
                     method: 'put',
                     data: res
                 })
-                .then( (response) => { this.status = 'saved'; this.closeForm()  })
+                .then( (response) => { this.status = 'saved' })
                 .catch( (error) => {
                     if(error.response.status == 422){
                         //Пока вроде нет нужды в таких ошибках, оставим на потом

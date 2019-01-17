@@ -27,7 +27,10 @@
 		          		<td v-for="field in fields" v-bind="field.attr">
 		              		<span v-if="field.icon" :class="'icons-'+field.icon">&nbsp;</span>
 		              		<a v-if="field.link" :href="item._links[field.link]">{{ item[field.name] }}</a>
-		              		<span v-else>{{ item[field.name] }}</span>
+		              		<template v-else>
+		              			<span v-if="field.html === true" v-html="item[field.name]"></span>
+		              			<template v-else>{{ item[field.name] }}</template>
+		              		</template>
 		          		</td>
 
 		          		<td class="menu-td" v-if="itemMenu">

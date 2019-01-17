@@ -51,7 +51,7 @@
                     if (result.redirect != undefined) {
                         if (result.redirect == 'back') history.back()
                         else window.location = result.redirect;
-                    } 
+                    }
 
                     //Инитим конфиг
                     if (result.config != undefined) {
