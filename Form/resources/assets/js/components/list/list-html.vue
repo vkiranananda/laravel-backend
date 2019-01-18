@@ -19,9 +19,15 @@
     import search from './search.vue'
     export default {
         created() {
+
+            history.replaceState(window.location.href, '', window.location.href)
+           
             window.onpopstate = (event) => {
-                this.axiosSend( event.state == null ? this.startUrl : event.state, false )
+                this.axiosSend(event.state, false )
             };
+        },
+        destroyed() {
+            window.onpopstate = null
         },
         props: [ 'data' ],
         components: {
@@ -32,7 +38,7 @@
         },        
         data() {
             return {
-                startUrl: window.location.href,
+                lastUrl: '',
                 myData: this.data,
                 loading: false
             }
@@ -69,15 +75,25 @@
 
             },
             axiosSend(url, pushState = true) {
-                this.loading = true
 
-                axios.get(url)
+                if (this.lastUrl == url) return
+
+                this.loading = true
+                this.lastUrl = url
+
+                axios.get(url, { 
+                    params: {
+                        _ajax: true
+                    }
+                })
                 .then( (response) => {
+                    console.log(response.data)
                     this.myData = response.data
                     if(pushState) history.pushState(url, '', url)
                 })
                 .catch( (error) => { console.log(error.response) })
-                .then( () => {  this.loading = false } )
+                .then( () => { this.loading = false }  )
+
             },
             //Добавляем параметр к урлу
             genUrl (url, key, value ) { return ( (url == '') ? '?' : url + '&') + key + '=' + value },

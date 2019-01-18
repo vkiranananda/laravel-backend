@@ -216,7 +216,7 @@ class ResourceController extends Controller {
 
     	//Хук
     	$this->resourceCombineAfter ('index');
-        
+
         if ( Request::ajax() ) return $this->dataReturn;
 
         return view($templite, [ 'data' => $this->dataReturn ]);
