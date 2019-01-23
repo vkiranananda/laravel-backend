@@ -10,6 +10,7 @@
     import files from './files.vue'
     import radio from './radio.vue'
     import select from './select.vue'
+    import MaskField from './mask.vue'
 
     var myComponents = {
             'input-field': input, 
@@ -19,6 +20,7 @@
             'radio-field': radio, 
             'select-field': select, 
             'files-field': files,
+            'mask-field': MaskField,
     }
 
     export default {

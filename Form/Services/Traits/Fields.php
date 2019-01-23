@@ -38,7 +38,7 @@ trait Fields {
 		return $fields;
     }
 
-	//Подготавливаем скрытые поля для отображения. 
+	// Подготавливаем скрытые поля для отображения. 
     protected function prepHiddenFields()
     {
     	//Возвращаем пустой массив если значение не установлено
@@ -220,7 +220,7 @@ trait Fields {
 
 		$arrayDataFields = [];
 		
-		//Получаем все поля в табах которые не скрыты 
+		// Получаем все поля в табах которые не скрыты 
 		foreach ($this->fields['edit'] as $tab) {
 			// не скрытый
 			if ( !isset($tab ['show']) || $this->showCheck($tab['show'], $request) !== false) {
@@ -266,7 +266,7 @@ trait Fields {
 		];
 	}
 
-	//Обходит массив полей и сохраняет данные. Рекурсивная функция
+	// Обходит массив полей и сохраняет данные. Рекурсивная функция
 	private function _saveFieldsList (
 		$fields, //Список полей
 		$request, //Данные формы
@@ -302,7 +302,7 @@ trait Fields {
 		return ( count($errors) > 0 ) ? $errors : true; 
 	}
 
-	//Обработка конечного поля
+	// Обработка конечного поля
 	private function _saveFieldData ($field, &$post, &$arrayData, &$relationData) 
 	{
 
@@ -417,6 +417,8 @@ trait Fields {
         	if ($value == '') $value = null;
         }
 
+        $value = $this->preSaveFieldValue($field, $value);
+
         //Правила валидации
         if ( isset($field['validate']) ) {
         	
@@ -463,4 +465,7 @@ trait Fields {
 
 	    return $res;
 	}
+
+	// Хук обработки полей перед сохранением
+	protected function preSaveFieldValue ($field, $value) { return $value; }
 }
