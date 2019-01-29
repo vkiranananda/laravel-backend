@@ -4,6 +4,8 @@
 		'list' => [
 			// Количество записей на странице
 			'count-items' => 30,
+			// Создание записей из списка
+			'create' => true,
 			// Меню элемента
 			'item-menu-default' => [
 				'edit' => [ 'label' => 'Править',	'link' => 'edit', 'icon' => 'pencil' ],

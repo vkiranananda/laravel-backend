@@ -62,7 +62,11 @@ export default {
         //Устанавливаем value
         setFieldProp ({ commit, state }, data) {
             // console.log(data);
-            var field = data.fields[data.name];
+            var field = data.fields[data.name]
+
+            // Старое значение
+            let oldValue = field[data.property]
+
             //Устанавливаем значение в поле.
             commit('setFieldProp', { field, property: data.property, value: data.value });
             //For value
@@ -73,8 +77,23 @@ export default {
                     else setVShowData(commit, data.fields); 
                 }
 
+                // Добавляем первоначальное значение при изменении...
+                if (field._changed == undefined && data.changed === true) {
+                    commit('setFieldProp', { field, property: '_changed', value: oldValue })
+                } else {
+                    if (field.value == field._changed) {
+                        commit('setFieldProp', { field, property: '_changed', value: undefined })
+                    }
+                }
                 beforeClose();
             }
+        },
+
+        // Возвращаем первоначальное значение
+        setFieldBack ({ commit, state }, data) {
+            var field = data.fields[data.name]
+            commit('setFieldProp', { field, property: 'value', value: field['_changed'] })
+            commit('setFieldProp', { field, property: '_changed', value: undefined })
         },
 
         //Инитим данные

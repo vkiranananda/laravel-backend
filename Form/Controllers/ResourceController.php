@@ -118,16 +118,21 @@ class ResourceController extends Controller {
         //------------------------------Кнопка Создать----------------------------------------
 
     	$menu = [];
-
-		//Создать
-		$menu[0]['label'] = isset($this->config['lang']['create-title']) ? $this->config['lang']['create-title'] : 'Создать';
-		$menu[0]['link'] = action($this->config['controllerName'].'@create').$urlPostfix;
+    	
+    	// Если нужно создавать запись
+    	if ($this->config['list']['create']) {
+			//Создать
+			$menu[0]['label'] = isset($this->config['lang']['create-title']) ? $this->config['lang']['create-title'] : 'Создать';
+			$menu[0]['link'] = action($this->config['controllerName'].'@create').$urlPostfix;
+		}
 
 		//Для ручной сортировки
 		if ( isset($this->config['list']['sortable']) ) {
-			$menu[1]['label'] = 'Сортировка';
-			$menu[1]['link'] = isset($this->config['list']['url-sortable']) ? $this->config['list']['url-sortable'] : action($this->config['controllerName'].'@listSortable').$urlPostfix;
-			$menu[1]['type'] = 'sortable';
+			$menu[] = [
+				'label' => 'Сортировка',
+				'link'	=> isset($this->config['list']['url-sortable']) ? $this->config['list']['url-sortable'] : action($this->config['controllerName'].'@listSortable').$urlPostfix,
+				'type'	=> 'sortable'
+			];
 		}
 
 		$this->dataReturn['config']['menu'] = $menu;
@@ -135,7 +140,7 @@ class ResourceController extends Controller {
         //-------------------------------Подготавливаем поля----------------------------------
      
         $fields = [];
-        $optionFields = []; //Поля имеющие option
+        $optionFields = []; // Поля имеющие option
      
      	// Меню для элемента списка
         $this->dataReturn['itemMenu'] = $this->indexItemMenu();
@@ -279,7 +284,9 @@ class ResourceController extends Controller {
         if ( isset($this->fields['search']) ) {
       	 	//Перебираем
       	 	foreach ($this->fields['search'] as &$field) {
-      	 		
+      	 		// Тип выборки, по умолчанию like
+      	 		$typeComparison = (isset($field['type-comparison'])) ? $field['type-comparison'] : 'like';
+
       	 		//Копируем данные поля из основных полей
       	 		if ( isset($field['field-from']) ) {
       	 			$field = array_replace_recursive($this->fields['fields'][$field['field-from']], $field);
@@ -291,24 +298,25 @@ class ResourceController extends Controller {
       	 		}
       	 		
       	 		//Создаем выборку
-  	 			if ( isset($field['name']) && isset($field['fields']) && is_array($field['fields']) ) {
+  	 			if (isset($field['name']) && isset($field['fields']) && is_array($field['fields']) ){
  				  	
  				  	$field['value'] = Request::input($field['name'], '');
  				  	
  				  	if ( $field['value'] == '' ) continue;
 
- 					$req = '%'.$field['value'].'%';
+ 				  	// По умолчанию добавляем %% для запроса
+ 				  	$req = (isset($field['exact-match'])) ? $field['value'] : '%'.$field['value'].'%';
 
  					$searchReq = true;
 
  					//Выборка по группе полей, если в каком то поле есть то данные выедутся
 		  	 		$this->post = $this->post->where(function ($query)
-		  	 		use (&$field, $req) 
+		  	 		use (&$field, $req, $typeComparison) 
 		  	 		{
 		  	 			$first = true;
   	 					foreach ($field['fields'] as $column) {
-  	 						if ($first) $query = $query->where($column, 'like', $req);
-  	 						else $query = $query->orWhere($column, 'like', $req);
+  	 						if ($first) $query = $query->where($column, $typeComparison, $req);
+  	 						else $query = $query->orWhere($column, $typeComparison, $req);
 
   	 						$first = false;
   	 					}
@@ -475,7 +483,8 @@ class ResourceController extends Controller {
         	 $this->dataReturn[ 'redirect'] = $this->config['update-redirect'];
         } else {
         	//Выставляем урл просмотра
-        	$this->dataReturn['config']['viewUrl'] = $this->getViewUrl();
+        	$this->dataReturn = $this->edit($id);
+        	// $this->dataReturn['config']['viewUrl'] = $this->getViewUrl();
         }
 
         //Вызываем хук

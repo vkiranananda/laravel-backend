@@ -13,7 +13,7 @@
 			</div>
 		</div>
 
-	    <a v-else class="btn btn-primary mb-3" role="button" :href="props.menu[0]['link']">
+	    <a v-else-if="props.menu.length > 0" class="btn btn-primary mb-3" role="button" :href="props.menu[0]['link']">
 	      	{{ props.menu[0]['label'] }}
 	    </a>
 	</div>

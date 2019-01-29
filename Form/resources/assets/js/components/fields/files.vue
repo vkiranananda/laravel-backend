@@ -22,6 +22,7 @@
 <script>
     import draggable from 'vuedraggable'
     import showUploadsButton from '../uploads/show-uploads-button'
+    const cloneDeep = require('clone-deep')
 
     export default {
         created () { 
@@ -50,36 +51,34 @@
                     attach: this.attachFiles
                 }
             },
-            files: {
-                get () { return this.field.value },
-                set (files) { this.$emit('change', files) }
-            }
+            files() { return this.field.value },
         },
         methods: {
             // Добавляем файлы
             attachFiles (files) {
-                var newValue = this.field.value.slice();
+                var newValue = this.files.slice();
                 for (var file of files) newValue.unshift(file)
                 this.$emit('change', newValue);
-                console.log(newValue);
             },
+            // Когда файл удаляется полностью
             delById (id) {
                 var exist = false;
                 var res = [];
                 
                 for (var file of this.files) {
                     if (id == file.id) {
-                        exist = true;
-                        continue;
+                        exist = true
+                        continue
                     }
-                    res.push(file);
+                    res.push(file)
                 }
-                //Если элемент был делам событие change
-                if (exist) this.$emit('change', res);
+                //Если элемент был делаем событие change
+                if (exist) this.$emit('change', {value: res, changed: false})
             },
             del(file) {
-                this.$delete(this.files, this.files.indexOf(file));
-                window.onbeforeunload = $(document).formUnloadPage;
+                var res = this.files.slice()
+                this.$delete(res, this.files.indexOf(file))
+                this.$emit('change', res)
             },
             edit(file) { 
                 this.$bus.$emit( 'UploadFilesEditModalShow', Object.assign({ 

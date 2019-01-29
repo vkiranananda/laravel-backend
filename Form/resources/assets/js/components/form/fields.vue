@@ -13,7 +13,7 @@
             </div>
             <group-field v-else-if="field.type == 'group'" :field='field' :store-name='storeName' :error='currentErrors[field.name]'></group-field>
             
-            <field-wrapper v-else :error="currentErrors[field.name]" :field="field">
+            <field-wrapper v-else :error="currentErrors[field.name]" :field="field" @back="onBack(field.name)">
                 <print-field :field='field' :error='currentErrors[field.name]' v-on:change="onChange($event, field.name)"></print-field>
             </field-wrapper>                   
         </div>
@@ -57,14 +57,30 @@
             onChange: function (value, name) {
                 if (this.storeName == '') this.$emit ('change', value, name)
                 else {
+                    let changed = true
+
+                    // Возвращается более сложный объект
+                    if (value.value != undefined) {
+                        // Не сохраняем это изменение
+                        if (value.changed === false) changed = false
+                        value = value.value
+                    }
+
                     this.store.dispatch(this.storeName + '/setFieldProp', { 
                         name, 
                         value, 
+                        changed,
                         fields: this.fields, 
                         property: 'value', 
-                        fieldsType: this.fieldsType
+                        fieldsType: this.fieldsType,
                     });
                 }
+            },
+            onBack: function (name) {
+                this.store.dispatch(this.storeName + '/setFieldBack', { 
+                    name, 
+                    fields: this.fields, 
+                });
             }
         }
     }
