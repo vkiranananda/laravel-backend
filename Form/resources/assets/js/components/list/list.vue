@@ -156,9 +156,6 @@
 			width: 30px;
 			height: 30px;
 		}
-		tr td:last-child, tr th:last-child{
-			width: 30px;
-		}
 		.file-directory {
 		    font-size: 22px;
 		    margin-right: 10px;
@@ -176,9 +173,9 @@
 		}
 		.menu-td {
 			vertical-align: middle;
-			min-width: 60px;
 			padding-top: 0px;
 			padding-bottom: 0px;
+			width: 60px;
 		}
 	}
 </style>
