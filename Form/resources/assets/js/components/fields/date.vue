@@ -1,6 +1,6 @@
 <template>
     <div>
-    	<date-picker :type="type" :input-class="inputClass" v-model="date" :first-day-of-week="1" :format="format" lang="ru" :minute-step="field['minute-step'] ? field['minute-step'] : 1"></date-picker>
+    	<date-picker :type="type" :input-class="inputClass" v-model="date" :first-day-of-week="1" :format="format" lang="ru" :minute-step="field['minute-step'] ? field['minute-step'] : 1" v-bind="field.attr"></date-picker>
 	</div>
 </template>
 
