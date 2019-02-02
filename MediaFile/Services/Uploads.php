@@ -21,7 +21,7 @@ class Uploads {
         $mediaFile->url = $conf['url'];        
         $mediaFile->user_id = ( isset($conf['user-id']) ) ? $conf['user-id'] : Auth::user()->id;
         $mediaFile->orig_name = $file->getClientOriginalName();
-        $mediaFile->imageable_type = $conf['module'];
+        $mediaFile->imageable_type = (isset($conf['module'])) ? $conf['module'] : '';
 
         $array_data['mime'] = $file->getClientMimeType();
 
