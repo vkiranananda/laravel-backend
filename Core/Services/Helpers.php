@@ -134,7 +134,7 @@ class Helpers {
     }
 
 
-    // Выводим данные поля, если данных нет выводим возвращаем заничение  3 параметра, по умолчанию false
+    // Выводим данные поля, если данных нет выводим возвращаем заничение 3 параметр, по умолчанию false
     static public function getDataField(&$data, $id, $res = false) {
         if ( isset($data[$id]) ) return $data[$id];
 
