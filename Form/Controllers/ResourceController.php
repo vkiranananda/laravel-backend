@@ -315,6 +315,9 @@ class ResourceController extends Controller {
       	 					unset($option[$key]);
       	 				}
       	 			}
+
+      	 			if (!isset($field['exact-match']))$field['exact-match'] = true;
+      	 			if (!isset($field['type-comparison']))$field['type-comparison'] = '=';
       	 		}
 
 
