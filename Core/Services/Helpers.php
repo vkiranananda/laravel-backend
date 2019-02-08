@@ -63,10 +63,10 @@ class Helpers {
     }
 
     //Поиск в массиве по ключу и значению
-    static public function searchArray(&$arr, $key, $val)
+    static public function searchArray($arr, $key, $val)
     {
         foreach ($arr as $vArr) {
-            if(isset($vArr[$key]) && $vArr[$key] == $val)return $vArr;
+            if(isset($vArr[$key]) && $vArr[$key] == $val) return $vArr;
         }
         return false;
     }
