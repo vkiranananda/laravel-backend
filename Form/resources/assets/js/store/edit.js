@@ -102,12 +102,23 @@ export default {
             setVShowDataRoot(commit, state, true);
 
             //set active tab
-            for (let key in state.tabs) {
-                if( state.tabs[key]['v-show'] !== false ) {
-                    commit('setTabActive', key);
-                    break;
+            let tabActive = false;
+            if (state.tabActive != '') {
+                // Если активная таба есть, ничего не меняем.
+                if (state.tabs[state.tabActive] != undefined && state.tabs[state.tabActive]['v-show'] !== false) {
+                    tabActive = state.tabActive;
                 }
             }
+            // Если таба еще не выбрана выбираем первую
+            if (!tabActive) {
+                for (let key in state.tabs) {
+                    if( state.tabs[key]['v-show'] !== false ) {
+                        commit('setTabActive', key);                
+                        break;
+                    }
+                }                
+            }
+
         }
     }
 };
