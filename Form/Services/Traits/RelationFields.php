@@ -1,12 +1,13 @@
 <?php
 
 namespace Backend\Root\Form\Services\Traits;
-
+use Log;
 trait RelationFields {
 
 	//Добавляет новую связь
     protected function saveRelationFields($post, $relationFields)
     {
+    	// Log::debug(print_r($relationFields, true));
         if ( count ($relationFields) == 0 ) return;
 
         //Перебираем все поля для сохранения

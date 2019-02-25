@@ -93,16 +93,16 @@ class UploadedFiles {
     // }
 
     // Получаем все картинки в списке записей оптом, что бы не плодить запросы
-    // Например нужно для списка элементов
-    public function getImgUrlList($list, $field)
+    // Например нужно для списка элементов. Если $first == true, выбираем только первые картинки
+    public function getImgUrlList($list, $field, $first = true)
     {
         $req = [];
         foreach ($list as $post) {
             if( ($gal = Helpers::dataIsSetValue($post, $field)) ){
                 if (is_array($gal)) {
-                	foreach ($gal as $id) {
-                		$req[] = $id;
-                	}
+                	// Только первые картинки
+                	if ($first) $req[] = reset($gal);
+                	else foreach ($gal as $id) $req[] = $id;
                 }
             }
         }

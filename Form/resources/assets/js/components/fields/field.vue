@@ -15,6 +15,8 @@
     import files from './files.vue'
     import radio from './radio.vue'
     import select from './select.vue'
+    import checkbox from './checkbox.vue'
+    import MultiSelect from './multiselect.vue'
     import MaskField from './mask.vue'
 
     const cloneDeep = require('clone-deep')
@@ -26,7 +28,9 @@
             'textarea-field': textarea, 
             'radio-field': radio, 
             'select-field': select, 
+            'checkbox-field': checkbox, 
             'files-field': files,
+            'multiselect-field': MultiSelect,
             'mask-field': MaskField,
     }
 
@@ -50,7 +54,7 @@
                 if ( [ 'gallery', 'files' ].indexOf(this.field.type) != -1 ) return 'files';
 
                 if (myComponents[this.field.type + '-field'] == undefined) {
-                    console.log('Field type '+ this.field.type + 'not found')
+                    console.log('Field type '+ this.field.type + ' not found')
                     return false
                 }
                 return this.field.type;

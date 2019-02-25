@@ -358,12 +358,10 @@ trait Fields {
             
 
         //---------------------Проверки на select radio checkbox---------------------
-        if ( array_search($field['type'], ['select', 'radio', 'checkbox']) ) {
-           
-            if ( ! Helpers::optionsSearch( $field['options'], $value ) ) { 
+        if ( array_search($field['type'], ['select', 'radio', 'checkbox', 'multiselect']) ) {
+            if ($value != '' && ! Helpers::optionsSearch( $field['options'], $value ) ) { 
                 abort(403, 'saveFields has error in '.$field['type'].':'.$field['name'].':'.$field['value']);
             }
-            
         } 
         //-----------------------------Gallery Files----------------------------------
         elseif ($field['type'] == 'gallery' || $field['type'] == 'files') {
@@ -431,7 +429,9 @@ trait Fields {
         if ( ($field['field-save'] == 'array' || $field['field-save'] == 'relation') ) {
             $arrayData[ $field['name'] ] = $value;
             //Добавляем в связи
-            if ($field['field-save'] == 'relation') $relationData[ $field['name'] ] = $value;
+            if ($field['field-save'] == 'relation') { 
+            	$relationData[ $field['name'] ] = $value;
+            }
         } else {
         	$post[ $field['name'] ] = $value;
         }

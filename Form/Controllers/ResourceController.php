@@ -209,8 +209,20 @@ class ResourceController extends Controller {
 
         		//Выставляем значние
         		$value = Helpers::dataIsSetValue($post, $name, '');
-
-        		if ( isset($optionFields[$name][$value]) ) $res[$name] = $optionFields[$name][$value];
+        		if ( isset($optionFields[$name]) ) {
+        			// Мультиселект
+        			if (is_array($value)) {
+        				// dd($value);
+        				foreach ($value as $end_value) {
+        					$end_value = (isset($optionFields[$name][$end_value])) ? $optionFields[$name][$end_value] : $end_value;
+        					if (isset($res[$name])) $res[$name] .= ', '.$end_value;
+        					else $res[$name] = $end_value;
+        				}
+        			} 
+        			else {
+        				$res[$name] = (isset($optionFields[$name][$value])) ? $optionFields[$name][$value] : $value;
+        			}
+        		}
         		else $res[$name] = $value;
         	}
         	$this->dataReturn['items']['data'][] = $res;
@@ -288,11 +300,22 @@ class ResourceController extends Controller {
   	 			if (!isset($field['name']) || !isset($field['fields']) || !is_array($field['fields']) ) continue;
  				  	
 
+      	 		//Копируем данные поля из основных полей
+      	 		if ( isset($field['field-from']) ) {
+      	 			$field = array_replace_recursive($this->fields['fields'][$field['field-from']], $field);
+      	 			unset($field['field-from']);
+      	 		}
+
  				$field['value'] = Request::input($field['name'], '');
 
- 				$req = $field['value'];
+      	 		//Добавляем пустой элемент в начало.
+      	 		if ( isset($field['options-empty'] ) ){
+      	 			array_unshift($field['options'], ['value' => '', 'label' => $field['options-empty']]);
+      	 		}
 
- 				if ( $field['value'] == '' ) continue;
+				if ( $field['value'] == '' ) continue;
+
+ 				$req = $field['value'];
 
       	 		// Проверяем значения и добавляем дополнительные опции из options
       	 		if ($field['type'] == 'select') {
@@ -320,25 +343,11 @@ class ResourceController extends Controller {
       	 			if (!isset($field['type-comparison']))$field['type-comparison'] = '=';
       	 		}
 
-
-
       	 		// Тип выборки, по умолчанию like
       	 		$typeComparison = 'like';
       	 		if (isset($field['type-comparison'])) {
       	 			$typeComparison = $field['type-comparison'];
       	 			unset($field['type-comparison']);
-      	 		}
-
- 
-      	 		//Копируем данные поля из основных полей
-      	 		if ( isset($field['field-from']) ) {
-      	 			$field = array_replace_recursive($this->fields['fields'][$field['field-from']], $field);
-      	 			unset($field['field-from']);
-      	 		}
-      	 		
-      	 		//Добавляем пустой элемент в начало.
-      	 		if ( isset($field['options-empty'] ) ){
-      	 			array_unshift($field['options'], ['value' => '', 'label' => $field['options-empty']]);
       	 		}
 
 			  	// По умолчанию добавляем %% для запроса
@@ -351,16 +360,24 @@ class ResourceController extends Controller {
 		 		$this->post = $this->post->where(function ($query)
 		 		use (&$field, $req, $typeComparison) 
 		 		{
-		 			$first = true;
-						foreach ($field['fields'] as $column) {
-						//	print_r([ $column, $typeComparison, $req]);
-							if ($first) $query = $query->where($column, $typeComparison, $req);
-							else $query = $query->orWhere($column, $typeComparison, $req);
+					$first = true;
 
-							$first = false;
-						}
-			});
-	  	 		
+					foreach ($field['fields'] as $column) {
+						// Выборка для релатед полей
+						$func = ($first) ? 'where' : 'orWhere';
+					
+						if (isset($field['field-save']) && $field['field-save'] == 'relation'){
+							$func .= 'Has';
+							$query = $query->$func('relationFields', function ($query) 
+							use ($column, $req, $typeComparison, $first) 
+							{
+								$query->where('value', $typeComparison, $req)->where('field_name', $column);
+							});
+						} else $query = $query->$func($column, $typeComparison, $req);
+
+						$first = false;
+					}
+				});
 	        }
     	}
     	return $searchReq;
@@ -425,7 +442,7 @@ class ResourceController extends Controller {
         $this->post->save();
 
         //Сохраяняем связи
-        if ( method_exists($this, 'saveRelationFields') )$this->saveRelationFields($data['relations']);
+        if ( method_exists($this, 'saveRelationFields') )$this->saveRelationFields($this->post, $data['relations']);
         
         //Сохраняем медиафайлы
         if ( $this->config['upload']['enable'] ) $this->saveMediaRelations( Request::input('files', []) );

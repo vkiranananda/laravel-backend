@@ -98,7 +98,7 @@ class Helpers {
     //Ищем по опциям (value) можно передать и простой массив,тогда будет искаться по значению. Первый параметр список опиций, второ искомая строка или массив значний
     static public function optionsSearch($arr, $str)
     {
-        if(!is_array($arr))return false;
+        if (!is_array($arr)) return false;
 
         $count = 0;
 
@@ -106,14 +106,13 @@ class Helpers {
             if(is_array($el)) {if(!isset($el['value'])) {$el['value'] = '';}}
             else $el = ['value' => $el];
             
-            if(is_array($str)){
+            if (is_array($str)) {
                 foreach ($str as $lastStr) {
-                    
                     if($el['value'] == $lastStr) {
                         $count++;
                     }
                 }
-            }elseif($el['value'] == $str) return true;
+            } elseif($el['value'] == $str) return true;
         }
         
         if(is_array($str) && count($str) == $count)return true;
