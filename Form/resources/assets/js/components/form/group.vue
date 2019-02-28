@@ -1,5 +1,5 @@
 <template>
-    <fields-list  :fields='field.fields' :errors="errors" :store-name='storeName'></fields-list>
+    <fields-list  :fields='field.fields' :errors="errors" :store-name='storeName' v-bind="field.attr"></fields-list>
 </template>
 
 <script>

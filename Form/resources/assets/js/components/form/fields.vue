@@ -3,9 +3,9 @@
     <div>
         <div v-for="(field, key) in fields" :key="key" v-if="field['v-show'] !== false">
             <div v-if="field.type == 'html'" v-html="field.html"></div>
-            <div v-else-if="field.type == 'html-title'">
-                <h5 v-html="field.title" class="key == 0 ? 'mt-4' : '' "></h5><hr>
-            </div>
+            <template v-else-if="field.type == 'html-title'">
+                <h5 v-html="field.title+fieldsType" :class="key == 0  ? 'mt-4' : '' "></h5><hr>
+            </template>
             <div v-else-if="field.type == 'repeated'"  class="form-group">
                 <label v-if="field.label" v-html="field.label"></label>
                 <repeated-field :field='field' :store-name='storeName' :error='currentErrors[field.name]' v-on:change="onChange($event, field.name)"></repeated-field>

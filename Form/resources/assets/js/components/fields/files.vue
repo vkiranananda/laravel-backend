@@ -51,18 +51,21 @@
                     attach: this.attachFiles
                 }
             },
-            files() { return this.field.value },
+            files: { 
+                get: function () { return this.field.value },
+                set: function (newValue) { this.$emit('change', newValue) }
+            },
         },
         methods: {
             // Добавляем файлы
             attachFiles (files) {
-                var newValue = this.files.slice();
+                var newValue = this.files.slice()
                 for (var file of files) newValue.unshift(file)
-                this.$emit('change', newValue);
+                this.$emit('change', newValue)
             },
             // Когда файл удаляется полностью
             delById (id) {
-                var exist = false;
+                var exist = false
                 var res = [];
                 
                 for (var file of this.files) {
@@ -93,7 +96,6 @@
 
 <style lang='scss'>
     .attached-files {
-        margin-bottom: 15px;
         .conteiner {
           display: inline;
         }

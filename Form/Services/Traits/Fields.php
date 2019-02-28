@@ -162,7 +162,7 @@ trait Fields {
 	    	//Что бы лишний раз не искался value.
 	    	foreach ($field['fields'] as &$baseField) {
     			
-    			//Если поле не имеет name и type пропускаем
+    			// Если поле не имеет name и type пропускаем
 				if( !isset($baseField['name']) || !isset($baseField['type']) ) continue;
 
 				$baseField['value'] = '';
