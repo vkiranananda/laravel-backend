@@ -1,6 +1,6 @@
 <template>
     <div class="attached-files" >
-        <div class="mb-3" v-if="сountAgain != 0">
+        <div  v-if="сountAgain != 0">
             <show-uploads-button :config="uploadConf"></show-uploads-button>
         </div>
         <div class="conteiner">

@@ -18,6 +18,7 @@ export default {
   	computed: {
   		date: {
   			get: function () {
+          // Обрабатываем timestamp, он идет объектом с тайм зоной.
   				return this.getDate(this.field.value)
     		},
     		set: function (newDate) {

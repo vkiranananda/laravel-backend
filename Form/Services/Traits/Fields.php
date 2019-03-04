@@ -192,6 +192,12 @@ trait Fields {
                 }
             }
        
+        }elseif ($field['type'] == 'date') {
+        	$field['value'] = $this->_getFieldValue($field, $post, $arrayData, $none);
+        	// Если дата в объекте Carbon
+        	if (is_object($field['value'])) {
+        		$field['value'] = (isset($field['time'])) ? $field['value']->toDateTimeString() : $field['value']->toDateString();
+        	}
         } else {
         	//Все остальные поля
         	$field['value'] = $this->_getFieldValue($field, $post, $arrayData, $none);
