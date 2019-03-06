@@ -135,10 +135,20 @@ class Helpers {
 
     // Выводим данные поля, если данных нет выводим возвращаем заничение 3 параметр, по умолчанию false
     static public function getDataField(&$data, $id, $res = false) {
-        if ( isset($data[$id]) ) return $data[$id];
-
-        if ( isset($data['array_data']['fields'][$id] ) ) return $data['array_data']['fields'][$id];
- 
+    	foreach ( explode (".", $id) as $i => $key ) {
+    		if ($i == 0) {
+    			// Ищем в корне записи
+    			if ( isset($data[$key]) ) $res = $data[$key];
+    			// Ищем в массиве array_data
+    			elseif ( isset($data['array_data']['fields'][$key] ) )
+    				$res = $data['array_data']['fields'][$key];
+    			// Ничего не найдено
+    			else break; 
+    		} else {
+    			if ( isset($res[$key]) ) $res = $res[$key];
+    			else break; 
+    		}
+    	}
         return $res;
     }
 

@@ -164,7 +164,7 @@ class Uploads {
         	//Удаляем основной файл
             Storage::disk( $file['disk'] )->delete($file['path'].$file['file']);
 
-            if(! is_array($file['sizes']))continue;
+            if (! is_array($file['sizes'])) continue;
             // Удаляем миниатюры
             foreach ($file['sizes'] as $fileSizes) {
                 Storage::disk( $file['disk'] )->delete($file['path'].$fileSizes['path'].$fileSizes['file']);

@@ -102,7 +102,7 @@
         .media-file{
             padding-right: 12px;
             margin-right: 6px;
-            margin-bottom: 13px;
+            margin-top: 13px;
             float: left;
             position: relative;
             .file-body {

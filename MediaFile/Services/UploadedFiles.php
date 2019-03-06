@@ -1,9 +1,10 @@
 <?php
 namespace Backend\Root\MediaFile\Services;
 use \Backend\Root\MediaFile\Models\MediaFile;
+use \Backend\Root\MediaFile\Services\Uploads;
 use Content;
 use Helpers;
-
+use Log;
 class UploadedFiles {
 
     private $images = [];
@@ -14,7 +15,7 @@ class UploadedFiles {
     // Геренрим линки на файл
     public function genFileLink($file, $sizes = [])
     {  
-        $size = \Backend\Root\MediaFile\Services\Uploads::sizesToStr($sizes);
+        $size = Uploads::sizesToStr($sizes);
 
         $res['orig'] = $file['url'].$file['path'].urlencode($file['file'] );
 
@@ -25,7 +26,7 @@ class UploadedFiles {
 	            if (! isset($file['sizes'][$size])){
 	                if (!is_array($file['sizes']))$file['sizes'] = [];
 	                
-	                $file['sizes'] = array_merge($file['sizes'], \Backend\Root\MediaFile\Services\Uploads::genSizes($file, [ $sizes ]));
+	                $file['sizes'] = array_merge($file['sizes'], Uploads::genSizes($file, [ $sizes ]));
 	                
 	                $file->save();
 	            }
@@ -162,7 +163,7 @@ class UploadedFiles {
     // Инитим данные из поля, для выборки массива
     public function getByField($post, $field, $first = false)
     {
-    	$this->get( Helpers::dataIsSetValue($post, $field), $first );
+    	$this->get( Helpers::getDataField($post, $field), $first );
 
         return $this;
     }
@@ -204,7 +205,7 @@ class UploadedFiles {
 					//Генерим srcset если функция size была вызвана более одного раза
 					if($countImgSize > 1) {
 						//Далее получаем текстовый размер
-						$strSize = \Backend\Root\MediaFile\Services\Uploads::sizesToStr($size);
+						$strSize = Uploads::sizesToStr($size);
 						//Тут нужно получить ширину для srcset, если нет миниатюры не добавляем srcset 
 						if(isset($this->images[$id]['sizes'][$strSize])){
 							$srcset .= $thumb." ".$this->images[$id]['sizes'][$strSize]['size'][0]."w, ";
@@ -273,4 +274,13 @@ class UploadedFiles {
 		return [];
     }
 
+    // Удаляет  файл, если передан массив, удалит массив файлов
+    public function deleteFiles($files)
+    {
+    	if (!is_array($files)) $files = [ $files ];
+
+    	if (count($files) == 0) return;
+
+    	Uploads::deleteFiles( MediaFile::whereIn('id', $files)->get() );
+    }
 }
