@@ -57,10 +57,14 @@ class Categories
 		return $this->moduleControllers[$mod];
 	}
 
-	//Устанавливаем роуты
-	public function installRoutes()
+	//Устанавливаем роуты, передаем либо конкретный метод, либо массив методов
+	public function installRoutes($method = 'get')
 	{
-		Route::get('{url}', '\Backend\Root\Category\Controllers\RouteController@index')->where('url', '.+');
+		if (!is_array($method)) $method = [$method];
+
+		foreach ($method as $m) {
+			Route::$m('{url}', '\Backend\Root\Category\Controllers\RouteController@index')->where('url', '.+');
+		}
 	}
 
 	//Количество категорий
