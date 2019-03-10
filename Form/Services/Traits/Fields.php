@@ -191,7 +191,7 @@ trait Fields {
 	    	}
 	    }
 
-		$field['value'] = initField($field)->edit($this->_getFieldValue($field, $post, $arrayData, $none));
+		$field['value'] = $this->initField($field)->edit($this->_getFieldValue($field, $post, $arrayData, $none));
 
         //Убираем лишние поля
         unset( $field['field-save'] );
@@ -352,7 +352,7 @@ trait Fields {
 
 		}
             
-		$value = initField($field)->save($value);
+		$value = $this->initField($field)->save($value);
 
 		// Хук обработки полей перед сохранением
         $value = $this->preSaveFieldValue($field, $value);
