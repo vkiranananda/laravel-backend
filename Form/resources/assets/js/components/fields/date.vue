@@ -22,6 +22,7 @@ export default {
   				return this.getDate(this.field.value)
     		},
     		set: function (newDate) {
+          console.log('ddd', this.inputFormat)
 				  let date = (newDate != null) ? fecha.format(newDate, this.inputFormat) : '' 
 				  this.$emit('change', date);
 			 }
@@ -47,7 +48,11 @@ export default {
    			return objClass;
    		},
    		//Возвращаем дату с нужным форматированем
-  		inputFormat: function () {return this.field['input-format'] != undefined ? this.field['input-format'] : 'YYYY-MM-DD HH:mm:ss'},
+  		inputFormat: function () {
+        if (this.field['input-format'] != undefined) return this.field['input-format']
+        if (this.field.time != undefined) return 'YYYY-MM-DD HH:mm:ss'
+        return 'YYYY-MM-DD'
+      }
 	},
 	methods: {
 		getDate: function(date) {

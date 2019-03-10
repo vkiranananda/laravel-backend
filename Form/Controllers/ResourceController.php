@@ -140,28 +140,25 @@ class ResourceController extends Controller {
         //-------------------------------Подготавливаем поля----------------------------------
      
         $fields = [];
+        $fields_prep = []; // Методы доп обработки values
         $optionFields = []; // Поля имеющие option
      
      	// Меню для элемента списка
         $this->dataReturn['itemMenu'] = $this->indexItemMenu();
+
 
         foreach ($this->fields['list'] as $field) {
         
         	//Получаем базовое поле. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
         	$mainField = ( isset ($this->fields['fields'][ $field['name'] ]) ) ? $this->fields['fields'][ $field['name'] ] : [];
 
-        	//Выставляем имя если на задано
+        	//Выставляем метку если на задано
         	if ( !isset($field['label']) && isset($mainField['label']) ) {
         		$field['label'] = $mainField['label'];
         	}
 
-        	//Подготавливаем опции в нужный формат, что бы подставлять верное значение
-        	if ( isset( $mainField['options']) && is_array($mainField['options']) ) {
-        		$optionFields[ $field['name'] ] = Helpers::optionsToArr($mainField['options']);
-        	}
-
         	$fields [] = $field;
-
+        	$fields_prep [] = $this->initField(array_replace($mainField, $field));
         }
 
         // Делаем выборку
@@ -197,7 +194,7 @@ class ResourceController extends Controller {
         	
         	$res['_links'] = $this->indexLinks($post);
 
-        	foreach ($fields as $field) {
+        	foreach ($fields as $key => $field) {
         		
         		$name = $field['name'];
 
@@ -207,23 +204,9 @@ class ResourceController extends Controller {
         			continue;
         		}
 
-        		//Выставляем значние
-        		$value = Helpers::dataIsSetValue($post, $name, '');
-        		if ( isset($optionFields[$name]) ) {
-        			// Мультиселект
-        			if (is_array($value)) {
-        				// dd($value);
-        				foreach ($value as $end_value) {
-        					$end_value = (isset($optionFields[$name][$end_value])) ? $optionFields[$name][$end_value] : $end_value;
-        					if (isset($res[$name])) $res[$name] .= ', '.$end_value;
-        					else $res[$name] = $end_value;
-        				}
-        			} 
-        			else {
-        				$res[$name] = (isset($optionFields[$name][$value])) ? $optionFields[$name][$value] : $value;
-        			}
-        		}
-        		else $res[$name] = $value;
+        		// Обработчик полей
+        		$res[$name] = 
+        			$fields_prep[$key]->list( Helpers::getDataField($post, $name, '') );
         	}
         	$this->dataReturn['items']['data'][] = $res;
         }

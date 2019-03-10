@@ -3,8 +3,6 @@
 namespace Backend\Root\Form\Services\Traits;
 use Request;
 use Helpers;
-use Content;
-use \Backend\Root\MediaFile\Models\MediaFile;
 use Forms;
 use GetConfig;
 use Log;
@@ -15,6 +13,29 @@ use Illuminate\Support\Facades\DB;
 //Подготовка и сохарнение полей
 
 trait Fields {
+
+	// Базовые поля идущие в комплекте
+	private $_fieldsClasses = [
+		'default'	=>	'\Backend\Root\Form\Fields\Field',
+		'date'		=>	'\Backend\Root\Form\Fields\DateField',
+		'files'		=>	'\Backend\Root\Form\Fields\FilesField',
+		'gallery'	=>	'\Backend\Root\Form\Fields\FilesField',
+		'mce'		=>	'\Backend\Root\Form\Fields\MceField',
+		'select'	=>	'\Backend\Root\Form\Fields\SelectField',
+		'checkbox'	=>	'\Backend\Root\Form\Fields\SelectField',
+		'radio'		=>	'\Backend\Root\Form\Fields\SelectField',
+		'multiselect'=>	'\Backend\Root\Form\Fields\SelectField',
+	];
+
+	// Инитип поле
+	public function initField ($field) 
+	{
+		$type = (isset($field['type'])) ? $field['type'] : 'default';
+		// Подключаем классы обработки полей
+		$type_field = (isset($this->_fieldsClasses[$type])) ? $type : 'default';
+		// Инитим класс обработчик
+		return new $this->_fieldsClasses[$type_field]($field);
+	}
 
 	//Подготавливаем все поля для отображения. 
     protected function prepEditFields()
@@ -84,7 +105,7 @@ trait Fields {
     	return '';
     }
 
-    //Подготавливаем поля для вывода
+    // Подготавливаем поля для вывода
     private function _prepEditField ($field, &$post, $arrayData, $none = false) 
     {
 		//Устанавливае value	
@@ -158,8 +179,8 @@ trait Fields {
 		    	$field['unique-index']++;
 	    	}
 
-	    	//Устанавливаем умолчания для базовых полей ... Выставляем значение перменной $none
-	    	//Что бы лишний раз не искался value.
+	    	// Устанавливаем умолчания для базовых полей ... Выставляем значение перменной $none
+	    	// Что бы лишний раз не искался value.
 	    	foreach ($field['fields'] as &$baseField) {
     			
     			// Если поле не имеет name и type пропускаем
@@ -170,38 +191,7 @@ trait Fields {
 	    	}
 	    }
 
-	    //Gallery, files fields
-        elseif ($field['type'] == 'files' || $field['type'] == 'gallery') {
-           
-            if ( !is_array($value) ) $field['value'] = [];
-
-            elseif ( count($value) > 0 ) { //Получаем миниатюры и полные версии изображений
-            	$files = MediaFile::whereIn('id', $value)->get();
-            	
-            	$filesGoodKey = [];
-            	//Перебираем массив и создаем из свойства id ключ
-                foreach (app('UploadedFiles')->prepGaleryData( $files ) as $file) {
-                	$filesGoodKey[ $file['id'] ] = $file;
-                }
-
-                // Теперь наполняем значние value. Весь этот сыр бор замучен для сортировки и если
-                // в value есть одинаковые файлы.
-                $field['value'] = [];
-                foreach ($value as $fileId) {
-                	if (isset($filesGoodKey[$fileId])) $field['value'][] = $filesGoodKey[$fileId];
-                }
-            }
-       
-        }elseif ($field['type'] == 'date') {
-        	$field['value'] = $this->_getFieldValue($field, $post, $arrayData, $none);
-        	// Если дата в объекте Carbon
-        	if (is_object($field['value'])) {
-        		$field['value'] = (isset($field['time'])) ? $field['value']->toDateTimeString() : $field['value']->toDateString();
-        	}
-        } else {
-        	//Все остальные поля
-        	$field['value'] = $this->_getFieldValue($field, $post, $arrayData, $none);
-        }
+		$field['value'] = initField($field)->edit($this->_getFieldValue($field, $post, $arrayData, $none));
 
         //Убираем лишние поля
         unset( $field['field-save'] );
@@ -362,65 +352,9 @@ trait Fields {
 
 		}
             
+		$value = initField($field)->save($value);
 
-        //---------------------Проверки на select radio checkbox---------------------
-        if ( array_search($field['type'], ['select', 'radio', 'checkbox', 'multiselect']) ) {
-            if ($value != '' && ! Helpers::optionsSearch( $field['options'], $value ) ) { 
-                abort(403, 'saveFields has error in '.$field['type'].':'.$field['name'].':'.$field['value']);
-            }
-        } 
-        //-----------------------------Gallery Files----------------------------------
-        elseif ($field['type'] == 'gallery' || $field['type'] == 'files') {
-            if ( is_array($value) && count($value) > 0 ) {
-
-            	//Получаем уникальные записи 
-                $uniqueValue = array_unique($value);
-
-                //Инитим запрос
-                $imgReq = MediaFile::whereIn('id', $uniqueValue );
-
-                if ($field['type'] == 'gallery' ) $imgReq = $imgReq->where('file_type', 'image');
-
-                //Проверка на валидность, если количество записей не совпадает, значит пользователь мудрит
-                if ( $imgReq->get()->count() != count($uniqueValue) ) {
-                	abort (403, 'saveFields не существуют какие то файлы '.$field['type'].':'.$field['name']);
-                }
-            } else {
-                $value = [];
-            }
-        }
-        //--------------------------------MCE Editor-----------------------------------
-        elseif ($field['type'] == 'mce') {
-            
-            //Создаем миниатюры
-            if ( isset($field['upload']) ) {
-            	//Ищем картинки с тэгом data-id
-                $value = preg_replace_callback("|<img.*?data-id=[\'\"]{1}(\d+)[\'\"]{1}.*?>|", function($matches)
-                {
-                    $img = $matches[0];
-                    $imgId = $matches[1];
-
-                    //Смотрим задана ли им ширина и высота
-                    if ( preg_match('/width=[\'\"]{1}(\d+)[\'\"]{1}/', $img, $width) && preg_match('/height=[\'\"]{1}(\d+)[\'\"]{1}/', $img, $height) ){
-                        $sizes = [ $width[1], $height[1] ];
-                    	
-                    	//Ищем эти картинки в базе и создаем на них миниатюры    
-                        if( ($imgObj = MediaFile::find($imgId)) ){
-                            $imgUrl = Content::uFile()->genFileLink($imgObj, $sizes)['thumb'];
-
-                            //Меняем на новую ссылку на картинку
-                            $img = preg_replace("/src=[\'\"]{1}.*?[\'\"]{1}/", "src=\"".$imgUrl."\"", $img);
-                        }
-                    }
-
-                    return $img;
-
-                }, $value);
-            }
-        } elseif ($field['type'] == 'date') {
-        	if ($value == '') $value = null;
-        }
-
+		// Хук обработки полей перед сохранением
         $value = $this->preSaveFieldValue($field, $value);
 
         //Правила валидации
