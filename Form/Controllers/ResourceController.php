@@ -39,11 +39,14 @@ class ResourceController extends Controller {
     //Генерируемый массив с данными для веб
     protected $dataReturn = [];
 
-    //Инитим данные.
-    public function init(&$post)
-    {
+    public $module = false;
 
-    	$this->post = $post;
+    //Инитим данные.
+    function __construct()
+    {
+    	if (! $this->module) abort(403, 'ResourceController: module not set');
+
+       	$this->post = new $this->module();
 
     	$baseClass = class_basename($this->post);
 
@@ -602,6 +605,7 @@ class ResourceController extends Controller {
     protected function getViewUrl()
     {
         if (method_exists($this, 'setCategoryList')) return Content::getUrl($this->post);
+        
         else return '';
     }
 }

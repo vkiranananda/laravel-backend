@@ -2,7 +2,6 @@
 
 namespace Backend\Root\Category\Controllers;
 
-use Backend\Root\Category\Models\Category;
 use Cache;
 use Content;
 use GetConfig;
@@ -13,10 +12,7 @@ class CategoryRootController extends \Backend\Root\Form\Controllers\ResourceCont
     protected $configPath = "Category::config-root";
     protected $fieldsPath = "Category::fields-root";
 
-    function __construct(Category $post)
-    {
-    	parent::init($post);
-    }
+    public $module = 'Backend\Root\Category\Models\Category';
 
     protected function resourceCombine($type)
     {

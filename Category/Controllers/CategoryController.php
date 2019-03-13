@@ -4,7 +4,6 @@ namespace Backend\Root\Category\Controllers;
 
 use Categories;
 use Session;
-use Backend\Root\Category\Models\Category;
 use Request;
 use Cache;
 use Content;
@@ -13,10 +12,7 @@ class CategoryController extends \Backend\Root\Form\Controllers\ResourceControll
 {
     use \Backend\Root\Category\Services\Traits\Category;
 
-    function __construct(Category $post)
-    {
-       parent::init($post, 'Category::category');
-    }
+    public $module = 'Backend\Root\Category\Models\Category';
 
     public function store()
     {
