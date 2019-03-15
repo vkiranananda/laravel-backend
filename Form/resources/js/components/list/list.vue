@@ -44,14 +44,15 @@
 		                					v-on:click.stop.prevent="deleteItem(item._links[elMenu.link])">
 		                						{{ elMenu.label }}
 		                				</a>
-		                				<a 
-		                					v-else 
-		                					class="dropdown-item" 
-		                					:target="elMenu.target"
-		                					:class="elMenu.icon ? 'octicon octicon-'+elMenu.icon : ''"
-		                					:href="item._links[elMenu.link]">
-		                						{{ elMenu.label }}
-		                				</a>
+		                				<template v-else-if="item._links[elMenu.link] != undefined">
+		          		                	<a 
+			                					class="dropdown-item" 
+			                					:target="elMenu.target"
+			                					:class="elMenu.icon ? 'octicon octicon-'+elMenu.icon : ''"
+			                					:href="item._links[elMenu.link]">
+			                						{{ elMenu.label }}
+			                				</a>      					
+		                				</template>
 		                			</template>
 		              			</div>
 		            		</div>

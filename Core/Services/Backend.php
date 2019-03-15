@@ -48,32 +48,30 @@ class Backend {
 	   //dd($this->data);
 	}
 
-	public function installRoutes($mod = '', $namespace = 'Backend', $ext = [])
+	public function installRoutes($mod = '', $ext = [])
 	{
-		if($namespace == 'Root') $namespace  =  'Backend\Root';
 		$modUrl = mb_strtolower($mod);
 		if(!is_array($ext)){
 			echo $mod;
 			return;
 		}
 		if( array_search('upload', $ext) !== false ){
-			Route::get($modUrl.'/upload/index/{id?}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@index');
-			Route::post($modUrl.'/upload', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@store');
-			Route::delete($modUrl.'/upload/{id}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@destroy');
-			Route::get($modUrl.'/upload/edit/{id?}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@edit');
-			Route::put($modUrl.'/upload/update/{id?}', '\\'.$namespace.'\\'.$mod.'\Controllers\UploadController@update');
+			Route::get($modUrl.'/upload/index/{id?}', '\Backend\\'.$mod.'\Controllers\UploadController@index');
+			Route::post($modUrl.'/upload', '\Backend\\'.$mod.'\Controllers\UploadController@store');
+			Route::delete($modUrl.'/upload/{id}', '\Backend\\'.$mod.'\Controllers\UploadController@destroy');
+			Route::get($modUrl.'/upload/edit/{id?}', '\Backend\\'.$mod.'\Controllers\UploadController@edit');
+			Route::put($modUrl.'/upload/update/{id?}', '\Backend\\'.$mod.'\Controllers\UploadController@update');
 		}
 		if( array_search('sortable', $ext) !== false ){
-			Route::get($modUrl.'/sortable', '\\'.$namespace.'\\'.$mod.'\Controllers\\'.$mod.'Controller@listSortable');
-			Route::put($modUrl.'/sortable', '\\'.$namespace.'\\'.$mod.'\Controllers\\'.$mod.'Controller@listSortableSave');
+			Route::get($modUrl.'/sortable', '\Backend\\'.$mod.'\Controllers\\'.$mod.'Controller@listSortable');
+			Route::put($modUrl.'/sortable', '\Backend\\'.$mod.'\Controllers\\'.$mod.'Controller@listSortableSave');
 		}
 
-		if ( isset($this->data['routes'][$mod][$namespace] ) ){
-			require_once($this->data['routes'][$mod][$namespace]);
-			//echo $this->data['routes'][$mod][$namespace];
+		if ( isset($this->data['routes'][$mod]['Backend'] ) ){
+			require_once($this->data['routes'][$mod]['Backend']);
 		}
 		else {
-			Route::resource($modUrl, '\\'.$namespace.'\\'.$mod.'\\Controllers\\'.$mod.'Controller');
+			Route::resource($modUrl, '\Backend\\'.$mod.'\\Controllers\\'.$mod.'Controller');
 		}
 	}
 

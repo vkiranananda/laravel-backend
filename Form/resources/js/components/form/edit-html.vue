@@ -16,7 +16,7 @@
             <!-- Tabs content -->
             <div class="tab-content pt-3 pb-3">
                 <div v-for="(tab, key) in tabs" class="tab-pane" :class="activeTab == key ? 'active' : ''" :id="'tab-'+key" role="tabpanel" :key="key" v-if="tab['v-show'] !== false">
-                    <fields-list :fields='tab.fields' :errors="errors" store-name='editForm'></fields-list>
+                    <fields-list :fields='tab.fields' :errors="errors" store-name='editForm' fields-type='tab'></fields-list>
                 </div>
             </div>
         </div>

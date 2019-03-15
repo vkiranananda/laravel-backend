@@ -3,9 +3,8 @@
 namespace Backend\Blog\Controllers;
 
 class BlogController extends \Backend\Root\Form\Controllers\ResourceController
+//\Backend\Category\Controllers\CategoryResourceController
 {
-    use \Backend\Root\Category\Services\Traits\Category;
-
     public $module = 'Backend\Blog\Models\Blog';
 
     public function update($id)

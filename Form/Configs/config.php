@@ -23,4 +23,5 @@
 			'controller' => 'UploadController',
 			'enable' => false,
 		],
+		'url-params' => [],
 	];

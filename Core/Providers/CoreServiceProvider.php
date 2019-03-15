@@ -36,9 +36,8 @@ class CoreServiceProvider extends ServiceProvider
         });
 
         AliasLoader::getInstance()->alias('GetConfig', '\Backend\Root\Core\Facades\GetConfigFacade');
-        AliasLoader::getInstance()->alias('Option', '\Backend\Root\Option\Facades\OptionFacade');
+        // AliasLoader::getInstance()->alias('Option', '\Backend\Root\Option\Facades\OptionFacade');
         AliasLoader::getInstance()->alias('Backend', '\Backend\Root\Core\Facades\BackendFacade');
-        AliasLoader::getInstance()->alias('Categories', '\Backend\Root\Category\Facades\CategoriesFacade');
         AliasLoader::getInstance()->alias('Content', '\Backend\Root\Site\Services\Content');
         AliasLoader::getInstance()->alias('Helpers', '\Backend\Root\Core\Services\Helpers');
     }

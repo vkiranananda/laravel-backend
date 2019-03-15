@@ -2,10 +2,9 @@
 
 namespace Backend\News\Controllers;
 
+//\Backend\Category\Controllers\CategoryResourceController
 class NewsController extends \Backend\Root\Form\Controllers\ResourceController
 {
-    use \Backend\Root\Category\Services\Traits\Category;
-
     public $module = "Backend\Root\News\Models\News";
 
     public function update($id)

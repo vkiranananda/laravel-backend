@@ -39,6 +39,7 @@ class ResourceController extends Controller {
     //Генерируемый массив с данными для веб
     protected $dataReturn = [];
 
+    // Модель данных с которой работаем
     public $module = false;
 
     //Инитим данные.
@@ -63,7 +64,6 @@ class ResourceController extends Controller {
         $this->config['controllerName'] = '\\'.get_class($this);
         $this->config['baseClass'] = class_basename($this->post);
         $this->config['baseNamespace'] = (preg_match('/(^.+)\\\.+\\\.+/', get_class($this), $mathces)) ? '\\'.$mathces[1] : '' ;
-
     }
 
     //!Вввод списка записей
@@ -71,40 +71,10 @@ class ResourceController extends Controller {
     {
     	$this->resourceCombine('index');
 
-    	//Добавочные параметры для всех урлов. Устанавливаем значение по умолчанию если нет. 
-    	if ( !isset($this->config['url-params']) ) $this->config['url-params'] = [];
-
         //Поиск
-    	$searchReq = $this->indexSearch();
-
+    	$this->indexSearch();
         //Сортировка
         $this->indexOrder();
-
-        //Если подключен трейт с категориями
-        if ( method_exists($this, 'checkCategory') ) {
-     
-        	$this->config['cat'] = Request::input('cat', false);
-     
-      		// Проверяем категорию
-      		if ( $this->checkCategory($this->config['cat']) ) {
-      			//Локализация
-	        	$this->localize();
-	        	
-	        	// Добавляем параметры для урла
-        		$this->config['url-params'][] = 'cat';
-      			
-      			//Если был произведен поиск, ищем во всех вложенных категориях
-      			if ($searchReq) {
-      				$this->post = $this->post->whereIn(
-      					'category_id', 
-      					Categories::getListIds($this->config['cat'], 
-      					true
-      				));
-      			} else {
-      				$this->post = $this->post->where('category_id', $this->config['cat']);
-      			}
-            }
-        }
 
     	//Параметры к урлу
 		$urlPostfix = "";
@@ -116,7 +86,6 @@ class ResourceController extends Controller {
 		}
 
 		$this->dataReturn['config']['urlPostfix'] = $urlPostfix;
-
 
         //------------------------------Кнопка Создать----------------------------------------
 
@@ -183,15 +152,15 @@ class ResourceController extends Controller {
 
 		$this->dataReturn['items']['data'] = [];
 
-    	//Погдотавливаем поля поиска
+    	// Добавляем поля поиска
     	if ( isset($this->fields['search']) ) {
     		foreach ($this->fields['search'] as $field) {
-    			unset($field['fields']); //удаляем ненужные опции
+    			unset($field['fields']); // удаляем ненужные опции
     			$this->dataReturn['search'][] = $field;
     		}
     	}
 
-        //Подготваливаем все поля
+        // Подготваливаем все поля
         foreach ($query['data'] as $post) {
         	$res = []; //Преобразованные данные
         	
@@ -217,7 +186,7 @@ class ResourceController extends Controller {
         //Получаем шаблон 
     	$templite = (isset($this->config['list']['template'])) ? $this->config['list']['template'] : 'Form::list';
 
-    	//Хук
+    	//Хук перед выходом
     	$this->resourceCombineAfter ('index');
 
         if ( Request::ajax() ) return $this->dataReturn;
@@ -225,7 +194,7 @@ class ResourceController extends Controller {
         return view($templite, [ 'data' => $this->dataReturn ]);
     }
     
-    // Получаем пункты меню для конкртеной строки списка
+    // Получаем пункты меню для строки списка
     protected function indexItemMenu() {
     	if (isset($this->config['list']['item-menu'])) {
     		$res = [];
@@ -250,7 +219,7 @@ class ResourceController extends Controller {
     }
 
 
-    //Функция для сортировки списка
+    // Функция для сортировки списка
     protected function indexOrder() 
     {
  		$order = Request::input('order', false);
@@ -281,13 +250,19 @@ class ResourceController extends Controller {
         //Если есть поля для поиска
         if ( isset($this->fields['search']) ) {
       	 	//Перебираем
-      	 	foreach ($this->fields['search'] as &$field) {
+      	 	foreach ($this->fields['search']  as $key => &$field) {
       	 		//Проверяем на валидность
   	 			if (!isset($field['name']) || !isset($field['fields']) || !is_array($field['fields']) ) continue;
  				  	
 
       	 		//Копируем данные поля из основных полей
-      	 		if ( isset($field['field-from']) ) {
+      	 		if (isset($field['field-from'])) {
+      	 			// Если поле не существует, удаляем текущее поле из поиска
+      	 			if (!isset($this->fields['fields'][$field['field-from']])) {
+      	 				unset($this->fields['search'][$key]);
+      	 				continue;
+      	 			}
+
       	 			$field = array_replace_recursive($this->fields['fields'][$field['field-from']], $field);
       	 			unset($field['field-from']);
       	 		}
@@ -295,7 +270,7 @@ class ResourceController extends Controller {
  				$field['value'] = Request::input($field['name'], '');
 
       	 		//Добавляем пустой элемент в начало.
-      	 		if ( isset($field['options-empty'] ) ){
+      	 		if (isset($field['options-empty']) && isset($field['options']) && is_array($field['options'])){
       	 			array_unshift($field['options'], ['value' => '', 'label' => $field['options-empty']]);
       	 		}
 
@@ -340,18 +315,18 @@ class ResourceController extends Controller {
 			  	if (isset($field['exact-match'])) unset($field['exact-match']);
 			  	else $req = '%'.$req.'%';
 
-				$searchReq = true;
-
 				//Выборка по группе полей, если в каком то поле есть то данные выедутся
 		 		$this->post = $this->post->where(function ($query)
-		 		use (&$field, $req, $typeComparison) 
+		 		use (&$field, $req, $typeComparison, &$searchReq) 
 		 		{
 					$first = true;
 
 					foreach ($field['fields'] as $column) {
 						// Выборка для релатед полей
 						$func = ($first) ? 'where' : 'orWhere';
-					
+						
+						$searchReq[$column] = $req;
+
 						if (isset($field['field-save']) && $field['field-save'] == 'relation'){
 							$func .= 'Has';
 							$query = $query->$func('relationFields', function ($query) 
@@ -366,6 +341,7 @@ class ResourceController extends Controller {
 				});
 	        }
     	}
+
     	return $searchReq;
     }
 
@@ -373,15 +349,7 @@ class ResourceController extends Controller {
     public function create()
     {
         $this->resourceCombine('create');
-        
-        //Если трейт с категориями включен
-        if ( method_exists($this, 'setCategoryList') ) {
-            $this->setCategoryList('create');
-            $this->localize();
-        }
-
-
-
+     
         $this->dataReturn = [ 
         	'config'	=> [
         		'url' 		=> action ($this->config['controllerName'].'@store'),
@@ -407,9 +375,6 @@ class ResourceController extends Controller {
       	//Вызываем хук
         $this->resourceCombine('store');
 
-    	//Обработка категорий
-    	if ( method_exists($this, 'setCategoryList') ) $this->setCategoryList('store');
-      
         //Сохраняем данные в запись
         $data = $this->SaveFields();
 
@@ -456,12 +421,6 @@ class ResourceController extends Controller {
         
         $this->resourceCombine('edit');
         
-        //Если трейт с категориями включен
-        if ( method_exists($this, 'setCategoryList') ) {
-            $this->setCategoryList('edit');
-            $this->localize();
-        }
-
         $this->dataReturn = [ 
         	'config'	=> [
         		'url' 		=> action($this->config['controllerName'].'@update', $id),
@@ -491,9 +450,6 @@ class ResourceController extends Controller {
         if ( !isset($this->post['id']) ) $this->post = $this->post->findOrFail( $id );
         
         $this->resourceCombine('update');
-        
-        //Обработка категорий
-        if ( method_exists($this, 'setCategoryList') ) $this->setCategoryList('update');
         
     	//Сохраняем данные в запись
         $data = $this->SaveFields();
@@ -592,20 +548,17 @@ class ResourceController extends Controller {
     }
     // Функция специально  для перегрузки, когда нужно выполнять различне групповые операции перед
     //Сохранием, обновлением, создание или редактированием
-    protected function resourceCombine($type){ }
+    protected function resourceCombine($type) { }
 
     //Тоже но после сохранения записи. Удобно кэши чистить и прочее..
-    protected function resourceCombineAfter($type){ }
+    protected function resourceCombineAfter($type) { }
 
     // Вызывается перед сохранением данных. Что бы была возможность поменять что то в модели, после всех обработок. В параметре type указывается, store update
-    protected function preSaveData($type){ }
-
+    protected function preSaveData($type) { }
 
     //Функция возвращает урл поста
     protected function getViewUrl()
     {
-        if (method_exists($this, 'setCategoryList')) return Content::getUrl($this->post);
-        
-        else return '';
+        return '';
     }
 }

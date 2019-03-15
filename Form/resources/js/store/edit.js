@@ -126,7 +126,7 @@ export default {
 //-------------------------Код для отбражения скрития элементов----------------------------------
 
 
-//Выставляем значения видимости репитед полей.
+// Выставляем значения видимости репитед полей.
 function setVShowData (commit, fields, all) {
     //Перебираем все поля 
     for (let key in fields ) {
@@ -148,13 +148,14 @@ function setVShowData (commit, fields, all) {
     }
 }
 
-//Выставляем значения видимости таба или поля начиная с корня, если опция all стоит, 
-//то функция пробежиться по всему дереву элементов
+// Выставляем значения видимости таба или поля начиная с корня, если опция all стоит, 
+// то функция пробежиться по всему дереву элементов
 function setVShowDataRoot (commit, state, all) {
     //Начинае обработку с табов
     for ( var tabName in state.tabs) {
-        //Если есть show выставляем значение
-        if (state.tabs[tabName]['show'] != undefined) {            
+        // Если есть show выставляем значение
+        if (state.tabs[tabName]['show'] != undefined) {
+            console.log(tabName)
             commit('setTabVShow', { name: tabName, value: vShowCheck(state.tabs[tabName]['show'], state.fields) });
         }
     }

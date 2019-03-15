@@ -2,10 +2,9 @@
 
 namespace Backend\Page\Controllers;
 
+//\Backend\Category\Controllers\CategoryResourceController
 class PageController extends \Backend\Root\Form\Controllers\ResourceController
 {
-   	use \Backend\Root\Category\Services\Traits\Category;
-    
     public $module  = 'Backend\Page\Models\Page';
 
     public function update($id)
