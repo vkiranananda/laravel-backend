@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends \Backend\Root\Form\Controllers\ResourceController
 {
-	public $module = "App\User";
+	public $model = "App\User";
 
 	public function create() 
 	{

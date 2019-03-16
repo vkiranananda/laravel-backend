@@ -40,20 +40,22 @@ class ResourceController extends Controller {
     protected $dataReturn = [];
 
     // Модель данных с которой работаем
-    public $module = false;
+    public $model = false;
 
     //Инитим данные.
     function __construct()
     {
-    	if (! $this->module) abort(403, 'ResourceController: module not set');
 
-       	$this->post = new $this->module();
+    	// Получаем путь до модуля.
+    	$baseNamespace = strstr(get_class($this), '\\Controllers', true);
+    	// Получаем название модуля
+        $moduleName = substr(strrchr($baseNamespace, '\\'), 1);
 
-    	$baseClass = class_basename($this->post);
+        // Получаем пути до конфигов
+    	if (!$this->configPath) $this->configPath = $moduleName."::config";
+    	if (!$this->fieldsPath) $this->fieldsPath = $moduleName."::fields";
 
-    	if (!$this->configPath) $this->configPath = $baseClass."::config";
-    	if (!$this->fieldsPath) $this->fieldsPath = $baseClass."::fields";
-
+    	// Получаем конфиги
         $this->config = array_replace_recursive(
         	GetConfig::backend('Form::config'),
         	GetConfig::backend($this->configPath)
@@ -61,9 +63,19 @@ class ResourceController extends Controller {
 
         $this->fields = GetConfig::backend($this->fieldsPath);
 
-        $this->config['controllerName'] = '\\'.get_class($this);
-        $this->config['baseClass'] = class_basename($this->post);
-        $this->config['baseNamespace'] = (preg_match('/(^.+)\\\.+\\\.+/', get_class($this), $mathces)) ? '\\'.$mathces[1] : '' ;
+    	// Получаем путь до модуля.
+    	$this->config['base-namespace'] = '\\' . $baseNamespace . '\\';
+ 	  	// Получаем название модуля
+        $this->config['module-name'] = $moduleName;
+        // Текущий контроллер
+  		$this->config['controller-name'] = '\\'.get_class($this);
+        // Проверям, если модель установлена в конфиге берем от туда, если нет то по умолчанию.
+        $model = (isset($this->config['model'])) ? $this->config['model'] : $this->model;
+        
+        // Если модель нигде не установлена, пытемся сгенерить сами из имени модуля
+        if (!$model) $model = $this->config['base-namespace'].'Models\\'.$moduleName;
+        
+        $this->post = new $model();
     }
 
     //!Вввод списка записей
@@ -95,14 +107,14 @@ class ResourceController extends Controller {
     	if ($this->config['list']['create']) {
 			//Создать
 			$menu[0]['label'] = isset($this->config['lang']['create-title']) ? $this->config['lang']['create-title'] : 'Создать';
-			$menu[0]['link'] = action($this->config['controllerName'].'@create').$urlPostfix;
+			$menu[0]['link'] = action($this->config['controller-name'].'@create').$urlPostfix;
 		}
 
 		//Для ручной сортировки
 		if ( isset($this->config['list']['sortable']) ) {
 			$menu[] = [
 				'label' => 'Сортировка',
-				'link'	=> isset($this->config['list']['url-sortable']) ? $this->config['list']['url-sortable'] : action($this->config['controllerName'].'@listSortable').$urlPostfix,
+				'link'	=> isset($this->config['list']['url-sortable']) ? $this->config['list']['url-sortable'] : action($this->config['controller-name'].'@listSortable').$urlPostfix,
 				'type'	=> 'sortable'
 			];
 		}
@@ -213,8 +225,8 @@ class ResourceController extends Controller {
     // Обрабатываем ссылки в списке
     protected function indexLinks($post) {
     	return [
-    		'edit' 		=> action($this->config['controllerName'].'@edit', $post['id']),
-    		'destroy' 	=> action($this->config['controllerName'].'@destroy', $post['id'])
+    		'edit' 		=> action($this->config['controller-name'].'@edit', $post['id']),
+    		'destroy' 	=> action($this->config['controller-name'].'@destroy', $post['id'])
     	];
     }
 
@@ -352,7 +364,7 @@ class ResourceController extends Controller {
      
         $this->dataReturn = [ 
         	'config'	=> [
-        		'url' 		=> action ($this->config['controllerName'].'@store'),
+        		'url' 		=> action ($this->config['controller-name'].'@store'),
         		'title'		=> $this->config['lang']['create-title'],
         		'method'	=> 'post',
         		'upload'	=> $this->_getUploadUrls()
@@ -404,7 +416,7 @@ class ResourceController extends Controller {
         } else {
 	        //Выставляем дополнительные параметры.
 	        $this->dataReturn = $this->edit($this->post['id']);
-	        $this->dataReturn['replaceUrl'] = action($this->config['controllerName'].'@edit', $this->post['id']);
+	        $this->dataReturn['replaceUrl'] = action($this->config['controller-name'].'@edit', $this->post['id']);
 	    }
         
         //Вызываем хук
@@ -423,7 +435,7 @@ class ResourceController extends Controller {
         
         $this->dataReturn = [ 
         	'config'	=> [
-        		'url' 		=> action($this->config['controllerName'].'@update', $id),
+        		'url' 		=> action($this->config['controller-name'].'@update', $id),
         		'title'		=> $this->config['lang']['edit-title'],
         		'method'	=> 'put',
         		'viewUrl'	=> $this->getViewUrl(),
@@ -525,7 +537,7 @@ class ResourceController extends Controller {
         if ( is_array($files) && count($files) > 0 ) {
 
         	//Возможность задать класс для сохранения файла
-            if ( $imageable == false ) $imageable = $this->config['baseClass'];
+            if ( $imageable == false ) $imageable = class_basename($this->post);
             //Возможность задать id
             if ( $id == false ) $id = $this->post->id;
 
@@ -541,8 +553,8 @@ class ResourceController extends Controller {
     {
     	if ( $this->config['upload']['enable'] )
     		return [
-    			'uploadUrl' => action($this->config['baseNamespace'].'\\Controllers\\'.$this->config['upload']['controller'].'@index', $this->post['id']),
-    			'editUrl' => action($this->config['baseNamespace'].'\\Controllers\\'.$this->config['upload']['controller'].'@edit')
+    			'uploadUrl' => action($this->config['base-namespace'].'Controllers\\'.$this->config['upload']['controller'].'@index', $this->post['id']),
+    			'editUrl' => action($this->config['base-namespace'].'Controllers\\'.$this->config['upload']['controller'].'@edit')
     		];
     	else return false;
     }
