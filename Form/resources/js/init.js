@@ -9,8 +9,6 @@ Vue.component('fields-list', require('./components/form/fields.vue').default);
 
 //Модальное окно
 Vue.component('modal', require('./components/modal.vue').default);
-//Меню слева
-Vue.component('the-left-menu', require('./components/left-menu.vue').default);
 
 //Полный вывод формы редактирование
 Vue.component('edit-html-form', require('./components/form/edit-html.vue').default);

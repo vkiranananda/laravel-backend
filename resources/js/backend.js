@@ -21,7 +21,14 @@ Vue.prototype.$bus = new Vue();
 
 Vue.prototype.store = store;
 
-require('../../Form/resources/js/init-components.js');
+// Модуль форм
+require('../../Form/resources/js/init.js');
+// Меню
+require('../../Menu/resources/js/init.js');
+
+// Пользовательский js
+require('../../../../../backend/resources/js/backend.js');
+
 
 const backend = new Vue({
     el: '#backend-body',
