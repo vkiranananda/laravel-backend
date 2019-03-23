@@ -11,6 +11,7 @@
 				'edit' => [ 'label' => 'Править',	'link' => 'edit', 'icon' => 'pencil' ],
 				'destroy' => [ 'label' => 'Удалить',	'link' => 'destroy', 'icon' => 'trashcan' ]
 			],
+			'default-order' => ['col' => 'id', 'type' => 'desc'],
 		],
 		'edit' => [
 			'template' => 'Form::edit',

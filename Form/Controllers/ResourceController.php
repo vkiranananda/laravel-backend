@@ -241,8 +241,8 @@ class ResourceController extends Controller {
         	$orderField = 'sort_num';
         	$orderType = 'asc'; //от меньшего к большему
         } else {
-        	$orderField = 'id'; //Иначе по id
-        	$orderType = 'desc'; //От большего к меньшему
+        	$orderField = $this->config['list']['default-order']['col'];
+        	$orderType = $this->config['list']['default-order']['type'];
         }
 
         if ($order !== false && isset($this->fields['list'][$order]['sortable']) ) {
