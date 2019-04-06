@@ -101,25 +101,7 @@ class ResourceController extends Controller {
 
         //------------------------------Кнопка Создать----------------------------------------
 
-    	$menu = [];
-    	
-    	// Если нужно создавать запись
-    	if ($this->config['list']['create']) {
-			//Создать
-			$menu[0]['label'] = isset($this->config['lang']['create-title']) ? $this->config['lang']['create-title'] : 'Создать';
-			$menu[0]['link'] = action($this->config['controller-name'].'@create').$urlPostfix;
-		}
-
-		//Для ручной сортировки
-		if ( isset($this->config['list']['sortable']) ) {
-			$menu[] = [
-				'label' => 'Сортировка',
-				'link'	=> isset($this->config['list']['url-sortable']) ? $this->config['list']['url-sortable'] : action($this->config['controller-name'].'@listSortable').$urlPostfix,
-				'type'	=> 'sortable'
-			];
-		}
-
-		$this->dataReturn['config']['menu'] = $menu;
+		$this->dataReturn['config']['menu'] = $this->indexListMenu($urlPostfix);
 
         //-------------------------------Подготавливаем поля----------------------------------
      
@@ -206,6 +188,34 @@ class ResourceController extends Controller {
         return view($templite, [ 'data' => $this->dataReturn ]);
     }
     
+
+    // Главное меню в списке. url_postfix добавочная строка у url адресу.
+    protected function indexListMenu($url_postfix = '')
+    {
+
+    	$menu = [];
+    	
+    	// Если нужно создавать запись
+    	if ($this->config['list']['create']) {
+			//Создать
+			$menu[0]['label'] = isset($this->config['lang']['create-title']) ? $this->config['lang']['create-title'] : 'Создать';
+			$menu[0]['link'] = action($this->config['controller-name'].'@create').$url_postfix;
+		}
+
+		//Для ручной сортировки
+		if ( isset($this->config['list']['sortable']) ) {
+			$menu[] = [
+				'label' => 'Сортировка',
+				'link'	=> isset($this->config['list']['url-sortable']) 
+					? $this->config['list']['url-sortable'] 
+					: action($this->config['controller-name'].'@listSortable').$url_postfix,
+				'type'	=> 'sortable'
+			];
+		}
+
+		return $menu;
+    }
+
     // Получаем пункты меню для строки списка
     protected function indexItemMenu() {
     	if (isset($this->config['list']['item-menu'])) {
