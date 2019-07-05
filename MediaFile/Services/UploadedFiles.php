@@ -227,29 +227,39 @@ class UploadedFiles {
     }
 
 
-    // Получить список урлов, если вызван метод size будут сгенерены нужные размеры(только для изображений). Если указано нескольколь размеров, то будет отдан массив с размерами по порядку указания.
-    public function url()
+    // Получить список урлов, если вызван метод size будут сгенерены нужные размеры(только для изображений). 
+    // Если указано нескольколь размеров, то будет отдан массив с размерами по порядку указания.
+    // Парметр $keys добавляет дополнительный опции из массива файла
+    public function url($keys = [])
     {
     	$this->_getFiles($this->reqFiles);
 
     	$res = [];
 
 		foreach ($this->reqFiles as $id) {
+			// Если файла нет игнорим
 			if (!isset($this->images[$id])) continue;
+
+			$file = $this->images[$id];
+    		$data = [];
 
 			if (count($this->reqImgSize) > 0) {
 				$sizes = [];
 				foreach ($this->reqImgSize as $size) {
-					$sizes[] = $this->genFileLink($this->images[$id], $size);
+					$sizes[] = $this->genFileLink($file, $size);
 				}
-				$res[] = (count($sizes) > 1) ? $sizes : $sizes[0];
+				$data = (count($sizes) > 1) ? $sizes : $sizes[0];
 			} else {
-				$res[] = $this->genFileLink($this->images[$id]);
+				$data = $this->genFileLink($file);
 			}
+			foreach ($keys as $key) {
+				if (isset($file[$key])) $data[$key] = $file[$key];
+			}
+			$res[] = $data;
 		}
 
-		if($this->reqResultArray) return $res;
-		elseif(count($res) > 0) return $res[0];
+		if ($this->reqResultArray) return $res;
+		elseif (count($res) > 0) return $res[0];
 
 		return [];
     }
@@ -263,6 +273,7 @@ class UploadedFiles {
     	$res = [];
 
 		foreach ($this->reqFiles as $id) {
+			// Если файла нет игнорим
 			if(!isset($this->images[$id])) continue;
 
 			$res[] = &$this->images[$id];
