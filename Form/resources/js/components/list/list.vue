@@ -38,21 +38,13 @@
 		              			<button class="btn btn-secondary button-grabber" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
 		              			<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
 		                			<template v-for="elMenu in itemMenu">
-		                				<a 
-		                					v-if="elMenu.link == 'destroy'" 
-		                					class="dropdown-item" :class="elMenu.icon ? 'octicon octicon-'+elMenu.icon : ''" 
-		                					v-on:click.stop.prevent="deleteItem(item._links[elMenu.link])">
+	          		                	<a v-if="item._links[elMenu.link] != undefined"
+		                					class="dropdown-item" 
+		                					:target="elMenu.target"
+		                					:class="elMenu.icon ? 'octicon octicon-'+elMenu.icon : ''"
+		                					v-on:click.stop.prevent="itemActionClick(item._links[elMenu.link], elMenu)">
 		                						{{ elMenu.label }}
 		                				</a>
-		                				<template v-else-if="item._links[elMenu.link] != undefined">
-		          		                	<a 
-			                					class="dropdown-item" 
-			                					:target="elMenu.target"
-			                					:class="elMenu.icon ? 'octicon octicon-'+elMenu.icon : ''"
-			                					:href="item._links[elMenu.link]">
-			                						{{ elMenu.label }}
-			                				</a>      					
-		                				</template>
 		                			</template>
 		              			</div>
 		            		</div>
@@ -90,25 +82,32 @@
         		
         		this.$emit('change', { sortable: key, orderType }) 
         	},
+        	itemActionClick: function(url, el) {
+        		if (el.confirm) { if ( confirm(el.confirm) ) this.itemAction(url, el) } 
+        		else this.itemAction(url, el)
+
+        	},
+        	itemAction: function(url, el) {
+        		if (el.link == 'destroy') this.deleteItem(url)
+        		else document.location.href = url
+        	},
+        	// Удаляем элемент
         	deleteItem: function(url) { 
-    			if ( confirm('Вы действительно хотите удалить эту запись?') ) {
 
-    				this.$emit('change', { destroy: 'begin'});
-    				
-    				axios.delete(url)
-                		.then( (response) => { 
-                			this.$emit('change', { destroy: 'finished' });
-
-                	        //Вызываем хуки
-		                    if (response.data.hook != undefined && response.data.hook.name) {
-		                        this.$bus.$emit(response.data.hook.name, response.data.hook.data)
-		                    }
-                		})
-                		.catch( (error) => { 
-                			console.log(error.response); 
-                			this.$emit('change', { destroy: 'error' });
-                		}); 
-    	    	}
+				this.$emit('change', { destroy: 'begin'});
+				
+				axios.delete(url)
+            		.then( (response) => { 
+            			this.$emit('change', { destroy: 'finished' });
+            	        //Вызываем хуки
+	                    if (response.data.hook != undefined && response.data.hook.name) {
+	                        this.$bus.$emit(response.data.hook.name, response.data.hook.data)
+	                    }
+            		})
+            		.catch( (error) => { 
+            			console.log(error.response); 
+            			this.$emit('change', { destroy: 'error' });
+            		}); 
         	}
         }
     }

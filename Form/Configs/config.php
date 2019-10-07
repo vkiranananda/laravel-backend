@@ -8,8 +8,8 @@
 			'create' => true,
 			// Меню элемента
 			'item-menu-default' => [
-				'edit' => [ 'label' => 'Править',	'link' => 'edit', 'icon' => 'pencil' ],
-				'destroy' => [ 'label' => 'Удалить',	'link' => 'destroy', 'icon' => 'trashcan' ]
+				'edit' => [ 'label' => 'Править', 'link' => 'edit', 'icon' => 'pencil' ],
+				'destroy' => [ 'label' => 'Удалить', 'link' => 'destroy', 'icon' => 'trashcan', 'confirm' => 'Вы действительно хотите удалить эту запись?' ]
 			],
 			'default-order' => ['col' => 'id', 'type' => 'desc'],
 		],

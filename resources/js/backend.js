@@ -21,6 +21,7 @@ Vue.prototype.$bus = new Vue();
 
 Vue.prototype.store = store;
 
+
 // Модуль форм
 require('../../Form/resources/js/init.js');
 // Меню
