@@ -38,8 +38,29 @@ class SelectField extends Field {
 				$res .= $end_value;
 			}
 			return $res;
-		} 
+		}
 		return (isset($this->options[$value])) ? $this->options[$value] : $value;
+	}
+
+	// Получаем сырое значние элемента для редактирования
+	public function edit($value)
+	{
+		// Мультиселект, делаем проверки на существование ключей и возвращаем результат 
+		if (is_array($value)) {
+			$res = [];
+			foreach ($value as $key) if (isset($this->options[$key])) $res[] = $key;
+			return $res;
+		} 
+		// Проверяем является ли значение существующим. 
+		if (isset($this->options[$value])) return $value;
+		// Если значение не существует проверяем есть ли значение по умолчанию и существует ли оно
+		if (isset($this->field['value']) && isset($this->options[$this->field['value']]))
+			return $this->field['value'];
+		// Иначе получаем первый элемент если он есть и тип данных select или radio, если нет выводим пустое значение
+		return ( array_search($this->field['type'], ['select', 'radio']) !== false && 
+			     isset($this->field['options'][0]['value'])) 
+					? $this->field['options'][0]['value'] 
+					: '';
 	}
 }
 

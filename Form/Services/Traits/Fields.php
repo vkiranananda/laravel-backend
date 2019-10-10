@@ -50,7 +50,7 @@ trait Fields {
 			//Если нет данных полей пропускаем
 			if( !isset($field['name']) || !isset($field['type']) ) continue;
 
-			$field['value'] = $this->_getFieldValue($field, $post, $arrayData);
+			// $field['value'] = $this->_getFieldValue($field, $post, $arrayData);
 
     		//Обрабатываем конкретное поле устанавливая нужные значния
     		$field = $this->_prepEditField($field, $post, $arrayData);
@@ -79,11 +79,6 @@ trait Fields {
     {
     	if ( $none ) return '';
 
-    	//Если в поле указать field-save = array, тогда все данные будут писатся в массив
-    	//Если его не указать, тогда корневые записи будут писаться хорошо, а вот записи
-    	//в массив будет значение браться из корневого поля в бд, а не из array_data. 
-    	if ( $field['type'] == 'group' ) $field['field-save'] = 'array';
-
     	//Проверяем откуда брать значние. Если условие выполняеся берем из array_data
     	if ( isset($field['field-save']) ) {
     		if ( $field['field-save'] == 'array' || $field['field-save'] == 'relation' ) {
@@ -93,42 +88,42 @@ trait Fields {
     	//Проверяем есть ли значение в корне записи если field-save не установлен
     	if ( isset($post[ $field['name'] ]) ) return $post[ $field['name'] ];
     	 
-    	//Берем значение из value по умолчанию
-    	elseif ( isset($field['value']) ) return $field['value'];
-
-    	//Если нет значения по умолчанию для селектов и радио, ставим первый элемент
-    	elseif ( array_search($field['type'], ['select', 'radio']) !== false ) {
-    		if ( isset ($field['options'][0]['value'])  ) return $field['options'][0]['value'];
-    	}
-
-    	//Если неичего не получилось выводим пустую строку
-    	return '';
+    	// Выводим значение по умолчанию, если нет пустое значение.
+    	return ( isset($field['value']) ) ? $field['value'] : '';
     }
 
     // Подготавливаем поля для вывода
     private function _prepEditField ($field, &$post, $arrayData, $none = false) 
     {
-		//Устанавливае value	
-		$value = $field['value'];
+		// //Устанавливае value	
+		// $value = $field['value'];
 
     	//group fields
     	if ($field['type'] == 'group') {
     		
     		//Подгружаем поля
-    		if ( isset($field['load-from']) ) $field['fields'] = GetConfig::backend($field['load-from']);
+    		if ( isset($field['load-from']) ) 
+    			$field['fields'] = GetConfig::backend($field['load-from']);
 
-    		//Присваиваем верное значение value. В связи с логикой обработки приходится так.
-    // 		if ( !isset($field['field-save']) ) {
-				// $value = ( isset($arrayData[ $field['name'] ] ) ) ? $arrayData[ $field['name'] ] : [];
-    // 		}
+    		unset($field['load-from']);
+
+
+    		// Присваиваем значение value. Бере
+    		if ( isset($field['field-save']) ) {
+				$value = ( isset($arrayData[ $field['name'] ] ) ) ? $arrayData[ $field['name'] ] : [];
+    		} else $value = $arrayData;
     		
     		foreach ($field['fields'] as $groupFieldName => &$groupField) {
     			
-    			//Если поле не имеет name и type пропускаем
+    			// Если поле не имеет name и type пропускаем
 				if( !isset($groupField['name']) || !isset($groupField['type']) ) continue;
 
-				//Выставляем, что дальнейшие поля будут браться из массива если в корневом указана эта опция
-				if ( isset($field['field-save']) && ( $field['field-save'] == 'array' || $field['field-save'] == 'relation' ) ) {
+				// Выставляем, что дальнейшие поля будут браться из массива если в корневом указана эта опция или
+				if ( 
+					(  isset($field['field-save']) && 
+					   ( $field['field-save'] == 'array' || $field['field-save'] == 'relation' )) || 
+					$groupField['type'] == 'group'
+					) {
 					$groupField['field-save'] = 'array'; 
 				}
     			
@@ -310,7 +305,7 @@ trait Fields {
 
 		if ($field['type'] == 'group') {
 
-			//Подгружаем данные если нужно
+			// Подгружаем данные если нужно
 			if ( isset($field['load-from']) ) {
 				$field['fields'] = GetConfig::backend($field['load-from']);
 			}
