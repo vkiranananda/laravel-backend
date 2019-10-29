@@ -2,17 +2,28 @@
 <template>
     <div>
         <div v-for="(field, key) in fields" :key="key" v-if="field['v-show'] !== false">
+            
             <div v-if="field.type == 'html'" v-html="field.html"></div>
+            
             <template v-else-if="field.type == 'html-title'">
                 <h5 v-html="field.title" :class="key == 0  ? 'mt-4' : '' "></h5><hr>
             </template>
+            
             <div v-else-if="field.type == 'repeated'"  class="form-group">
                 <label v-if="field.label" v-html="field.label"></label>
                 <repeated-field :field='field' :store-name='storeName' :error='currentErrors[field.name]' v-on:change="onChange($event, field.name)"></repeated-field>
                 <small class="form-text text-muted" v-if="field.desc != ''" v-html="field.desc"></small>
             </div>
-            <group-field v-else-if="field.type == 'group'" :field='field' :store-name='storeName' :error='currentErrors[field.name]'></group-field>
             
+            <group-field v-else-if="field.type == 'group'" :field='field' :store-name='storeName' :error='currentErrors[field.name]'></group-field>
+
+            <component 
+                v-else-if="field.type == 'component'" 
+                :is="'form-component-'+field.name" 
+                :field="field" 
+                :error="(field.name) ? currentErrors[field.name] : {}">        
+            </component>
+
             <field-wrapper v-else :error="currentErrors[field.name]" :field="field" @back="onBack(field.name)">
                 <print-field :field='field' :error='currentErrors[field.name]' v-on:change="onChange($event, field.name)"></print-field>
             </field-wrapper>                   

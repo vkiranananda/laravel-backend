@@ -188,7 +188,7 @@ trait Fields {
 
 		$field['value'] = $this->initField($field)->edit($this->_getFieldValue($field, $post, $arrayData, $none));
 
-        //Убираем лишние поля
+        //Убираем лишние опции
         unset( $field['field-save'] );
 
         return $field;
