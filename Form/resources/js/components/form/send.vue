@@ -79,7 +79,7 @@
                     }
                 })
                 .catch( (error) => {
-                    if(error.response.status == 422){
+                    if (error.response.status == 422) {
 
                         console.log(error.response.data.errors);
 

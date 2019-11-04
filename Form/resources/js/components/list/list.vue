@@ -40,7 +40,6 @@
 		                			<template v-for="elMenu in itemMenu">
 	          		                	<a v-if="item._links[elMenu.link] != undefined"
 		                					class="dropdown-item" 
-		                					:target="elMenu.target"
 		                					:class="elMenu.icon ? 'octicon octicon-'+elMenu.icon : ''"
 		                					v-on:click.stop.prevent="itemActionClick(item._links[elMenu.link], elMenu)">
 		                						{{ elMenu.label }}
@@ -89,7 +88,10 @@
         	},
         	itemAction: function(url, el) {
         		if (el.link == 'destroy') this.deleteItem(url)
-        		else document.location.href = url
+        		else {
+        			if (el.target) window.open(url, el.target)
+        			else document.location.href = url
+        		}
         	},
         	// Удаляем элемент
         	deleteItem: function(url) { 
@@ -105,7 +107,10 @@
 	                    }
             		})
             		.catch( (error) => { 
-            			console.log(error.response); 
+            			if (error.response.status == 403) {
+            				alert(error.response.data.message);
+            			}
+            			console.log(error.response);
             			this.$emit('change', { destroy: 'error' });
             		}); 
         	}

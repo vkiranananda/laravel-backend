@@ -55,7 +55,7 @@ trait Fields {
     		//Обрабатываем конкретное поле устанавливая нужные значния
     		$field = $this->_prepEditField($field, $post, $arrayData);
 	    }
-
+	    // dd($fields);
 		return $fields;
     }
 
@@ -80,13 +80,13 @@ trait Fields {
     	if ( $none ) return '';
 
     	//Проверяем откуда брать значние. Если условие выполняеся берем из array_data
-    	if ( isset($field['field-save']) ) {
-    		if ( $field['field-save'] == 'array' || $field['field-save'] == 'relation' ) {
+    	if ( isset($field['field-save']) 
+    		&& ( $field['field-save'] == 'array' || $field['field-save'] == 'relation' ) ) {
     			if ( isset($arrayData[ $field['name'] ]) ) return $arrayData[ $field['name'] ];
-    		}
     	} 
+
     	//Проверяем есть ли значение в корне записи если field-save не установлен
-    	if ( isset($post[ $field['name'] ]) ) return $post[ $field['name'] ];
+    	elseif ( isset($post[ $field['name'] ]) ) return $post[ $field['name'] ];
     	 
     	// Выводим значение по умолчанию, если нет пустое значение.
     	return ( isset($field['value']) ) ? $field['value'] : '';
@@ -140,6 +140,9 @@ trait Fields {
 		//для повторителей.
 	    elseif ($field['type'] == 'repeated') {
 	    	
+			$value = $this->_getFieldValue($field, $post, $arrayData, $none);
+
+			// dd($value);
 	    	//Если значение не установлено, создаем первую запись
 	    	if ( !is_array($value) ) $value = [[]];
 
@@ -159,14 +162,14 @@ trait Fields {
 		    	//Перебираем поля которые есть и задаем им value
 		    	foreach ( $field['value'][ $field['unique-index'] ]['fields'] as &$oneRepField ) {
 		    		
-    				//Если поле не имеет name и type пропускаем
+    				// Если поле не имеет name и type пропускаем
 					if( !isset($oneRepField['name']) || !isset($oneRepField['type']) ) continue;
 	    			
 	    			//Полюбому значения в массиве
 	    			$oneRepField['field-save'] = 'array';    						
 					
 					//Выставляем значение 
-					$oneRepField['value'] = $this->_getFieldValue($oneRepField, $post, $valuesBlock, $none);
+					// $oneRepField['value'] = $this->_getFieldValue($oneRepField, $post, $valuesBlock, $none);
 
 		    		//Обрабатываем разные типы и выставляем окончательное значение.
 		    		$oneRepField = $this->_prepEditField($oneRepField, $post, $valuesBlock, $none);
@@ -184,10 +187,9 @@ trait Fields {
 				$baseField['value'] = '';
 	    		$baseField = $this->_prepEditField($baseField, $post, [], true);
 	    	}
-	    }
-
-		$field['value'] = $this->initField($field)->edit($this->_getFieldValue($field, $post, $arrayData, $none));
-
+	    } else {
+			$field['value'] = $this->initField($field)->edit($this->_getFieldValue($field, $post, $arrayData, $none));
+		}
         //Убираем лишние опции
         unset( $field['field-save'] );
 
@@ -259,30 +261,30 @@ trait Fields {
 
 	// Обходит массив полей и сохраняет данные. Рекурсивная функция
 	private function _saveFieldsList (
-		$fields, //Список полей
-		$request, //Данные формы
+		$fields, // Список полей
+		$request, // Данные формы
 		&$post, //  Пост
-		&$arrayData, //Массивные данные
-		&$relationData, //Данные для сохранения в другую таблицу
-		$fieldSave = null //Куда сохраняем поле
+		&$arrayData, // Массивные данные
+		&$relationData, // Данные для сохранения в другую таблицу
+		$fieldSave = null // Куда сохраняем поле
 	){
 		
 		$res = [];
 		$errors = [];
 
 		foreach ($fields as $field) {
-			//Если не установлены нужные параметры не обрабатываем
+			// Если не установлены нужные параметры не обрабатываем
 			if( !isset($field['name']) || !isset($field['type']) || ( isset($field['field-save']) && $field['field-save'] == 'none' ) ) continue;
 		
-			//Если поле скрыто, так же не обрабатываем
+			// Если поле скрыто, так же не обрабатываем
 			if ( isset($field['show']) && $this->showCheck($field['show'], $request) === false) continue;
 
 			$fieldName = $field['name'];
 
-			//Выставляем value
+			// Выставляем value
 			$field['value'] = ( isset($request[$fieldName]) ) ?  $request[$fieldName] : '';
 
-			//Выставляем fieldSave
+			// Выставляем fieldSave
 			if ( isset($fieldSave) ) $field['field-save'] = $fieldSave;
 
 			$error = $this->_saveFieldData($field, $post, $arrayData, $relationData);
@@ -299,7 +301,7 @@ trait Fields {
 
         $value = $field['value'];
 
-        $field['field-save'] = ( isset($field['field-save']) ) ? $field['field-save'] : null;
+        if ( !isset($field['field-save']) ) $field['field-save'] = null;
 
 		//------------------------------Group------------------------------------
 
@@ -323,17 +325,29 @@ trait Fields {
 
 			$indexRepBlock = 0;
 			$errors = [];
-			//Перебираем блоки репитед полей
+			
+			// Log::debug($field);
+			
+			// Перебираем блоки репитед полей
 			foreach ($value as $repData) {
 
-				//Тут важно что переменная с сервера идет не значением, а объектом, где указан ключ
-				//группы репитед, оно надо для отображения ошибок и при сортировке что бы формы не 
-				//рендерились поновой.
-				//Продолжаем обработку полей.
+				// Тут важно что переменная с сервера идет не значением, а объектом, где указан ключ
+				// группы репитед, оно надо для отображения ошибок и при сортировке что бы формы не 
+				// рендерились поновой.
+				// Продолжаем обработку полей.
+				// if (isset())
+
+				// dd( $arrayData[ $field['name'] ][ $indexRepBlock ] );
+
+				if (!isset ($arrayData[ $field['name'] ][ $indexRepBlock ])) {
+					$arrayData[ $field['name'] ][ $indexRepBlock ] = [];
+				}
+
+				Log::debug($repData['value']);
 				$error = $this->_saveFieldsList(
 					$field['fields'], 
+					$repData['value'],
 					$post,
-					$repData['value'], 
 					$arrayData[ $field['name'] ][ $indexRepBlock ], 
 					$relationData, 'array'
 				);
@@ -349,7 +363,8 @@ trait Fields {
             
 		$value = $this->initField($field)->save($value);
 
-		// Хук обработки полей перед сохранением
+		// Хук обработки полей перед сохранением, перед валидацие стоит потом что при ошибке в поле
+		// будет более верная ошибка валидации.
         $value = $this->preSaveFieldValue($field, $value);
 
         //Правила валидации
@@ -360,8 +375,9 @@ trait Fields {
         	if ( $v->fails() ) return implode(' ', $v->errors()->all() );
         }
 
-        //Сохраняем данные в массив
+        // Сохраняем данные в массив
         if ( ($field['field-save'] == 'array' || $field['field-save'] == 'relation') ) {
+        	// Log::debug($value);
             $arrayData[ $field['name'] ] = $value;
             //Добавляем в связи
             if ($field['field-save'] == 'relation') { 
