@@ -1,7 +1,7 @@
 <template>
     <div class="field-block d-flex align-items-center">
         <div class="field">
-            <component v-if="component" :is="component+'-field'" :field="fieldChanged" :error='error' v-on:change="$emit('change', $event)"></component>
+            <component v-if="component" :is="'form-field-'+component" :field="fieldChanged" :error='error' v-on:change="$emit('change', $event)"></component>
         </div>
         <div v-if="field.protected === true && blocked"  class="protected octicon octicon-key" @click="unblock"></div>
     </div>
@@ -22,16 +22,16 @@
     const cloneDeep = require('clone-deep')
 
     var myComponents = {
-            'input-field': input, 
-            'date-field': date, 
-            'mce-field': mce, 
-            'textarea-field': textarea, 
-            'radio-field': radio, 
-            'select-field': select, 
-            'checkbox-field': checkbox, 
-            'files-field': files,
-            'multiselect-field': MultiSelect,
-            'mask-field': MaskField,
+            'form-field-input': input, 
+            'form-field-date': date, 
+            'form-field-mce': mce, 
+            'form-field-textarea': textarea, 
+            'form-field-radio': radio, 
+            'form-field-select': select, 
+            'form-field-checkbox': checkbox, 
+            'form-field-files': files,
+            'form-field-multiselect': MultiSelect,
+            'form-field-mask': MaskField,
     }
 
     export default {
@@ -53,7 +53,7 @@
                 if ( [ 'text', 'email', 'password', 'tel' ].indexOf(this.field.type) != -1 ) return 'input';
                 if ( [ 'gallery', 'files' ].indexOf(this.field.type) != -1 ) return 'files';
 
-                if (myComponents[this.field.type + '-field'] == undefined) {
+                if (myComponents['form-field-' + this.field.type] == undefined) {
                     console.log('Field type '+ this.field.type + ' not found')
                     return false
                 }

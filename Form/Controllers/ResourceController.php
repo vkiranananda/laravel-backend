@@ -244,9 +244,9 @@ class ResourceController extends Controller {
     // Функция для сортировки списка
     protected function indexOrder() 
     {
- 		$order = Request::input('order', false);
+    	$order = Request::input('order', false);
 
-        //Если выставлена опция ручной сортировки, то сортировка по умолчанию будет по sort_num
+        // Если выставлена опция ручной сортировки, то сортировка по умолчанию будет по sort_num
         if ( isset($this->config['list']['sortable']) )  {
         	$orderField = 'sort_num';
         	$orderType = 'asc'; //от меньшего к большему
@@ -260,7 +260,6 @@ class ResourceController extends Controller {
         	$orderField = $this->fields['list'][$order]['name'];
         	$this->fields['list'][$order]['sortable'] = $orderType;
         }
-
         $this->post = $this->post->orderBy($orderField, $orderType);
     }
 
@@ -337,7 +336,7 @@ class ResourceController extends Controller {
 			  	if (isset($field['exact-match'])) unset($field['exact-match']);
 			  	else $req = '%'.$req.'%';
 
-				//Выборка по группе полей, если в каком то поле есть то данные выедутся
+				//Выборка по группе полей, если в каком то поле есть то данные выведутся
 		 		$this->post = $this->post->where(function ($query)
 		 		use (&$field, $req, $typeComparison, &$searchReq) 
 		 		{

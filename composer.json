@@ -17,8 +17,7 @@
         }
     },
     "require": {
-        "intervention/image": "2.*",
-        "laravel/framework": "5.*.*"
+        "intervention/image": "2.*"
     },
     "extra": {
         "laravel": {
