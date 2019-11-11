@@ -76,6 +76,12 @@
           		'type' => 'text',
         		'attr' => [ 'placeholder' => 'Введите текст для поиска' ],
           		'fields' => [ 'name', 'text' ],
+          	],[
+          		'options-empty' => 'Все категории',
+          		'name' => 'parent-cat',
+          		'field-from' => 'category_id',
+          		'label' => '',
+          		'fields' => [ 'category_id'],
           	],
         ]
     ];

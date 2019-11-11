@@ -2,7 +2,7 @@
 
 namespace Backend\Blog\Controllers;
 
-class BlogController extends \Backend\Root\Form\Controllers\ResourceController
+class BlogController extends \Backend\Category\Controllers\CategoryResourceController
 {
     public function update($id)
     {

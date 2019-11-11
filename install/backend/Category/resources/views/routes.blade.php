@@ -21,7 +21,7 @@
        	<tr>
             <td>{{ $url }}</td>
             <td>CategoryController</td>
-            <td></td>
+            <td>{{ implode(', ', reset($cat)) }}</td>
         </tr>
       	@endforeach
       	@foreach( $data as $url => $cat)

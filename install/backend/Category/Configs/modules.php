@@ -12,10 +12,10 @@ return [
 		'categoryController' => '\App\Http\Controllers\PageController',
 		'label' => 'Страницы',
 	],
-	// 'Blog' => [
-	// 	'resourceController' => '\Backend\Blog\Controllers\BlogController',
-	// 	'viewControllerAction' => '\App\Http\Controllers\BlogController',
-	// 	'categoryController' => '\App\Http\Controllers\BlogController',
-	// 	'label' => 'Блог',
-	// ],
+	'Blog' => [
+	 	'resourceController' => '\Backend\Blog\Controllers\BlogController',
+	 	'viewControllerAction' => '\App\Http\Controllers\BlogController',
+	 	'categoryController' => '\App\Http\Controllers\BlogController',
+	 	'label' => 'Блог',
+	 ],
 ];

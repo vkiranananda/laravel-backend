@@ -93,7 +93,7 @@
         			else document.location.href = url
         		}
         	},
-        	// Удаляем элемент
+        	//Удаляем элемент
         	deleteItem: function(url) { 
 
 				this.$emit('change', { destroy: 'begin'});

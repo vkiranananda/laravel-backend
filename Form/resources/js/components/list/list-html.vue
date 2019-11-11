@@ -140,11 +140,11 @@
                 //Удаляем запись
                 else if (data.destroy != undefined) { 
                     if (data.destroy == 'begin') {
-                        this.loading = true;
-                        return;
+                        this.loading = true
+                        return
                     } else {
-                        this.loading = false;
-                        if (data.destroy == 'error') return;
+                        this.pageReload()
+                        return
                     } 
                 }
 

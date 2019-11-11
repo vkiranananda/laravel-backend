@@ -2,7 +2,7 @@
 
 namespace Backend\Page\Controllers;
 
-class PageController extends \Backend\Root\Form\Controllers\ResourceController
+class PageController extends \Backend\Category\Controllers\CategoryResourceController
 {
     public function update($id)
     {
