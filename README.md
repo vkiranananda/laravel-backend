@@ -26,7 +26,8 @@
 
 В файл webpack.mix.js добавляем код
 
-```mix.webpackConfig({
+```
+mix.webpackConfig({
     devtool: "nosources-source-map"
 });
 
