@@ -12,6 +12,8 @@
 				'destroy' => [ 'label' => 'Удалить', 'link' => 'destroy', 'icon' => 'trashcan', 'confirm' => 'Вы действительно хотите удалить эту запись?' ]
 			],
 			'default-order' => ['col' => 'id', 'type' => 'desc'],
+			// Сортировка списка перетаскиванием объектов
+			'sortable' => false,
 		],
 		'edit' => [
 			'template' => 'Form::edit',

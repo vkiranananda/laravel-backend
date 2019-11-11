@@ -16,8 +16,3 @@ Vue.component('edit-html-form', require('./components/form/edit-html.vue').defau
 //
 Vue.component('list-html-posts', require('./components/list/list-html.vue').default);
 
-
-
-//С этим потом надо разбираться...
-Vue.component('the-list-sortable', require('./components/the-list-sortable.vue').default);
-

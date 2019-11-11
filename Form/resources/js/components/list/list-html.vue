@@ -2,24 +2,34 @@
 	<div>
         <h3 class="mb-4">{{ myData.config.title }}</h3>
         <the-loading :loading="loading"></the-loading>
-        <the-menu :menu="myData.config.menu"></the-menu>
+        
+        <!-- buttons -->
+
+        <div class="mb-3">
+            <button v-for="(el, key) in myData.config.menu" class="btn mr-3" :class="el['btn-type'] ? 'btn-' + el['btn-type'] : 'btn-outline-secondary'" role="button" v-on:click.stop.prevent="menuActionClick(el)">
+                {{ el['label'] }}
+            </button>
+        </div>
+        
+        <!-- end buttons -->
+
         <the-search v-if="myData.search != undefined" :fields="myData.search" @change="searchChange"></the-search>
         <the-list :fields="myData.fields" :items="myData.items" :itemMenu="myData.itemMenu" @change="listChange"></the-list>
 
 	<!--       	@if (isset($params['conf']['breadcrumb']) && $params['conf']['breadcrumb'] == true )
 	        	@component('Form::components.breadcrumb', ['params' => $params ]) @endcomponent
 	     	@endif -->
+        <the-sortable @change="pageReload"></the-sortable>
 	</div>	
 </template>
 
 <script>
     import list from './list.vue'
-    import menu from './menu.vue'
     import loading from '../loading.vue'
     import search from './search.vue'
+    import sortable from './sortable.vue'
     export default {
         created() {
-
             history.replaceState(window.location.href, '', window.location.href)
            
             window.onpopstate = (event) => {
@@ -32,9 +42,9 @@
         props: [ 'data' ],
         components: {
             'the-list': list, 
-            'the-menu': menu,
             'the-loading': loading,
             'the-search': search,
+            'the-sortable': sortable, 
         },        
         data() {
             return {
@@ -44,17 +54,30 @@
             }
         },
         methods: {
+            // Меню клик
+            menuActionClick(el) {
+                if (el.type == 'sortable') {
+                    this.$bus.$emit('ListSortableShow', el) 
+                    return
+                }
+
+                if (el.target) window.open(el.url, el.target)
+                else document.location.href = el.url
+            },
+            itemsSortable(url) {
+
+            },
             // Отправляем запрос
-            send(changeType) {
-                //Параметры к урлу по умолчанию
+            send() {
+                // Параметры к урлу по умолчанию
                 let params = this.myData.config.urlPostfix;
 
-                //Для страниц
+                // Для страниц
                 if (this.myData.items.currentPage > 1) {
                     params = this.genUrl(params, 'page', this.myData.items.currentPage);
                 }
 
-                //Для сортировки
+                // Для сортировки
                 for (let index in this.myData.fields) {
                     let field = this.myData.fields[index];
                     if (field.sortable == 'asc' || field.sortable == 'desc') {
@@ -64,7 +87,7 @@
                     }
                 }
 
-                //Для поиска
+                // Для поиска
                 if(this.myData.search != undefined){
                     for (let field of this.myData.search) if (field.value != ''){
                         params = this.genUrl(params, field.name, field.value);
@@ -74,6 +97,7 @@
                 this.axiosSend(this.myData.config.indexUrl + params)
 
             },
+
             axiosSend(url, pushState = true) {
 
                 if (this.lastUrl == url) return
@@ -89,11 +113,10 @@
                 .then( (response) => {
                     console.log(response.data)
                     this.myData = response.data
-                    if(pushState) history.pushState(url, '', url)
+                    if (pushState) history.pushState(url, '', url)
                 })
                 .catch( (error) => { console.log(error.response) })
                 .then( () => { this.loading = false }  )
-
             },
             //Добавляем параметр к урлу
             genUrl (url, key, value ) { return ( (url == '') ? '?' : url + '&') + key + '=' + value },
@@ -133,6 +156,14 @@
                     if (data[ field.name ] != undefined) field.value = data[ field.name ]
                 }
                 this.send();
+            },
+            pageReload() {
+                    this.loading = true
+
+                    axios.get(window.location.href, { params: { _ajax: true } })
+                        .then( (response) => { this.myData = response.data })
+                        .catch( (error) => { console.log(error.response) })
+                        .then( () => { this.loading = false }  )
             }
         }
     }

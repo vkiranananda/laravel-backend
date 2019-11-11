@@ -17,18 +17,20 @@ class Helpers {
 
 
     // Получаем массив полей из массива getFields с объедиенением результатов
-    static public function getFields($allFields, $getFields, $changeOptions = false)
-    {
-    	$res = [];
-    	foreach ($getFields as $field) {
-    		$res[$field['name']] = array_merge($allFields[$field['name']], $field);
+    // static public function getFields($allFields, $getFields, $changeOptions = false)
+    // {
+    // 	$res = [];
+    // 	foreach ($getFields as $field) {
+    // 		$res[$field['name']] = array_merge($allFields[$field['name']], $field);
 
-            if($changeOptions && isset($res[$field['name']]['options']) && is_array($res[$field['name']]['options'])){
-                $res[$field['name']]['options'] = Helpers::optionsToArr($res[$field['name']]['options']);
-            }
-    	}
-    	return $res;
-    }
+    //         if($changeOptions && isset($res[$field['name']]['options']) && is_array($res[$field['name']]['options'])){
+    //             $res[$field['name']]['options'] = Helpers::optionsToArr($res[$field['name']]['options']);
+    //         }
+    // 	}
+    // 	return $res;
+    // }
+
+
 
     // Получаем массив списка записей с нужными полями
     static public function getArrayItems(&$data, $fields, $colums = ['id'])

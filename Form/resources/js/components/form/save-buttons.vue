@@ -25,7 +25,6 @@
 </template>
 
 <script>
-    //import forOwn from 'lodash.forown'
     export default {
         props: {
             status: { default: '' },
@@ -41,7 +40,7 @@
             status: function (val) {
                 this.currentStatus = this.status;
 
-                //Если статус окей, скрываем текст через 3 секунды                
+                // Если статус окей, скрываем текст через 3 секунды                
                 if (val == 'saved') {
                     setTimeout(() => {
                         this.currentStatus = ''

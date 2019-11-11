@@ -3,6 +3,7 @@
 namespace Backend\Root\Form\Services\Traits;
 use Helpers;
 use Request;
+use Log;
 
 trait ListSortable {
 
@@ -10,16 +11,14 @@ trait ListSortable {
     {
         $this->resourceCombine('sortable');
 
-        if( method_exists($this, 'checkCategory') ){
-            $this->params['cat'] = Request::input('cat', false);
-            if( $this->checkCategory($this->params['cat']) ) {
-                $this->post = $this->post->where('category_id', $this->params['cat']);
-            }
-        }
-
       	$this->post = $this->post->orderBy('sort_num');
 
-        $fields = Helpers::getFields($this->params['fields'], $this->params['sortable'], true);
+      	$fields = [];
+
+      	foreach ($this->fields['sortable'] as $name) {
+      		$fields[] = $this->fields['fields'][$name];
+      	}
+
         $data = [];
 
         $this->post->chunk(200, function ($posts) 
@@ -31,18 +30,30 @@ trait ListSortable {
         return [ 'fields' => $fields, 'data' => $data ];
     }
 
+    protected function listSortableButton($url_postfix) 
+    {
+    	return [
+			'label' => 'Сортировка',
+			// Для сохранения использутеся тот же url но метод put
+			'url'	=> isset($this->config['list']['url-sortable']) 
+				? $this->config['list']['url-sortable'] . $url_postfix
+				: action($this->config['controller-name'].'@listSortable') . $url_postfix,
+			'type'	=> 'sortable'
+		];
+    }
+
     protected function listSortableSave()
     {
     	$this->resourceCombine('sortable-save');
     	
-    	$sortArr = Request::input('list-items');
+    	$sortArr = Request::input('items', []);
     	$sortArrRev = array_flip($sortArr);
 
         $this->post->whereIn('id', $sortArr)->chunk(200, function ($posts) 
         use (&$sortArrRev)
         {
         	foreach ($posts as $post) {
-        		if($post['sort_num'] != $sortArrRev[$post['id']]){
+        		if ($post['sort_num'] != $sortArrRev[$post['id']]){
         			$post['sort_num'] = $sortArrRev[$post['id']];
         			$post->save();
         		}
@@ -50,7 +61,7 @@ trait ListSortable {
 		});
 
 		$this->resourceCombineAfter('sortable-save');
-		
-		return ['reload' => true];
+
+		return $this->dataReturn;
     }
 }

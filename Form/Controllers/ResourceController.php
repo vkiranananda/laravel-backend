@@ -20,29 +20,30 @@ use Log;
 class ResourceController extends Controller {
 
     use \Backend\Root\Form\Services\Traits\Fields;
+    use \Backend\Root\Form\Services\Traits\ListSortable;
 
-    //Имя общего конфига, если false берется как config
+    // Имя общего конфига, если false берется как config
     protected $configPath = false;
 
-    //Имя конфига для полей, если false берется как fields
+    // Имя конфига для полей, если false берется как fields
     protected $fieldsPath = false;
 
-    //Конфиг общий
+    // Конфиг общий
     protected $config = [];
 
-    //Конфиг для полей
+    // Конфиг для полей
     protected $fields = [];
 
-    //Переменная где содержатся данные поста 
+    // Переменная где содержатся данные поста 
     protected $post = null;
 
-    //Генерируемый массив с данными для веб
+    // Генерируемый массив с данными для веб
     protected $dataReturn = [];
 
     // Модель данных с которой работаем
     public $model = false;
 
-    //Инитим данные.
+    // Инитим данные.
     function __construct()
     {
 
@@ -76,6 +77,7 @@ class ResourceController extends Controller {
         if (!$model) $model = $this->config['base-namespace'].'Models\\'.$moduleName;
         
         $this->post = new $model();
+
     }
 
     //!Вввод списка записей
@@ -94,7 +96,7 @@ class ResourceController extends Controller {
 		// Получаем все дополнительные параметры.
 		foreach ($this->config['url-params'] as $param) {
 			$urlPostfix .= ($urlPostfix == '') ? '?' : '&' ;
-			$urlPostfix .= $param.'='.Request::input($param, '');
+			$urlPostfix .= $param . '=' . Request::input($param, '');
 		}
 
 		$this->dataReturn['config']['urlPostfix'] = $urlPostfix;
@@ -199,18 +201,13 @@ class ResourceController extends Controller {
     	if ($this->config['list']['create']) {
 			//Создать
 			$menu[0]['label'] = isset($this->config['lang']['create-title']) ? $this->config['lang']['create-title'] : 'Создать';
-			$menu[0]['link'] = action($this->config['controller-name'].'@create').$url_postfix;
+			$menu[0]['url'] = action($this->config['controller-name'].'@create').$url_postfix;
+			$menu[0]['btn-type'] = 'primary';
 		}
 
-		//Для ручной сортировки
-		if ( isset($this->config['list']['sortable']) ) {
-			$menu[] = [
-				'label' => 'Сортировка',
-				'link'	=> isset($this->config['list']['url-sortable']) 
-					? $this->config['list']['url-sortable'] 
-					: action($this->config['controller-name'].'@listSortable').$url_postfix,
-				'type'	=> 'sortable'
-			];
+		// Для ручной сортировки
+		if ( isset($this->config['list']['sortable']) && $this->config['list']['sortable']) {
+			$menu[] = $this->listSortableButton($url_postfix);
 		}
 
 		return $menu;
@@ -247,7 +244,7 @@ class ResourceController extends Controller {
     	$order = Request::input('order', false);
 
         // Если выставлена опция ручной сортировки, то сортировка по умолчанию будет по sort_num
-        if ( isset($this->config['list']['sortable']) )  {
+        if ( isset($this->config['list']['sortable']) && $this->config['list']['sortable'] )  {
         	$orderField = 'sort_num';
         	$orderType = 'asc'; //от меньшего к большему
         } else {
@@ -366,7 +363,7 @@ class ResourceController extends Controller {
     	return $searchReq;
     }
 
-    //Создаем запись вебка
+    // Создаем запись вебка
     public function create()
     {
         $this->resourceCombine('create');

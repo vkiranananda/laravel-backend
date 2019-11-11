@@ -20,7 +20,9 @@ class Widget {
         $tagsCache = ( isset($cache['tags']) ) ? $cache['tags'] : 'widgets';
         $nameCache = ( isset($cache['name']) ) ? $cache['name'] : $name;
 
-        return Cache::tags($tagsCache)->remember($nameCache, $timeCache, function() use ($name, $params)
+
+
+        return  Cache::tags($tagsCache)->remember($nameCache, $timeCache, function() use ($name, $params)
         {
         	// Преобразуем строку если в ней есть - то убираем тире и делаем следующий символ заглвным
         	
@@ -30,7 +32,6 @@ class Widget {
             	$name = $name_arr[1];
             	$mod = $name_arr[0];
             }
-
             // Преобразуем символы
             $name = str_replace("-","", ucwords($name, '-'));
             $name = ucfirst($name);
@@ -44,11 +45,11 @@ class Widget {
             	// Ищем в Backend\Root
             	if (!class_exists($class)) {
             		$class = '\Backend\Root'.$name;
-            		if(! class_exists($class)) return '';
+            		if(! class_exists($class)) return  'Widget ' . $name . ' not found';
             	}
             } else {
             	$class = '\App\Widgets\\'.$name;
-            	if (!class_exists($class)) return '';
+            	if (!class_exists($class)) return 'Widget ' . $name . ' not found';
             }
             
             $class = new $class();
