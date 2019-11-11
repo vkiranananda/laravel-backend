@@ -1,43 +1,46 @@
-# laravel-backend
-Backend for Laravel 5
+# Бэкенд для Laravel 
 
-Модули
+## Установка
 
-Категории
+1. Включаем кэширование memcached (можно и другой но с использованием тэгов)
+2. Создаем доступ к бд.
+3. Если нужно писать сессии в бд то `php artisan session:table`, и правим конфиг с сессиями 
+4. Добавляем в filesystems новый диск
+```
+'uploads' => [
+            'driver' => 'local',
+            'root' => public_path().'/uploads',
+            'visibility' => 'public',
+        ],
+```
+5. Инсталим бэкенд `composer require vkiranananda/backend`
+6. Заходим в каталог `vendor/vkiranananda/backend/install`, копируем каталог `backend` в корень проекта, `migrations` в миграции. Смотрим если какие то модули не нужны то не копируем к ним миграции, каталог `public` так же в корень проекта.
+7. Для того что бы работал редактор в записях нужно получить tinymce, например так: `npm install tinymce   tinymce-i18n` и скопировать их в `public/backend/tinymce`, локализацию в каталог `public/backend/tinymce/langs`. Версия на которой тестировалось tinymce-5.1.1
+8. В файле `backend/routes.php` можно временно отключить `'middleware' => ['auth.basic']` . После того как добавите первого пользователя нужно включить  авторизацию обратно. 
+9. Добавляем в файл с маршрутами `routes/web.php` строку `Backend::installRoutes('Backend');`
+10. Добавляем  в  файл `composer.json` в секцию `autoload -> psr-4` новое пространство имен `"Backend\\": "backend/"`
+11. Инсталим миграции `php artisan migrate`
+12. Добавляем алиас `'Categories' => Backend\Category\Facades\CategoriesFacade::class,`
 
-Для того что бы использовать категории в своем модуле, нужно наследовать класс 
-\Backend\Category\Controllers\CategoryResourceController
+### Сборка админки
 
-Он дополняет базовый класс ResourceController.
+В файл webpack.mix.js добавляем код
 
-Если плинируется использовать древовидную структуру, тогда в нужном модуле, в конфигурации полей нужно добавить поле 
-    'category_id' => [ 
-    	'name' => 'category_id',
-		'type' => 'select', 
-		'label' => 'Категории', 
-		'options' => [],
-	],
-и указать это поле в нужной табе.
-а в полях для поиска добавить
-	[
-		'options-empty' => 'Все категории',
-		'name' => 'parent-cat',
-		'field-from' => 'category_id',
-		'label' => '',
-		'fields' => [ 'category_id'],
-	],
-параметр name в поиске не имеет значеня. 
+```
+mix.webpackConfig({
+    devtool: "nosources-source-map"
+});
 
-Если категория не древовидна, эти поля будут игнорироваться, как в поиске так и списке полей.
+mix.js('vendor/vkiranananda/backend/resources/js/backend.js', 'public/backend/js/admin.js').version();
 
-Массив категорий подставится автоматически.
- Так же есть дополнительне поля в основном файле конфигурации
+mix.sass('vendor/vkiranananda/backend/resources/sass/backend.scss', 'public/backend/css/backend.css').options({
+      processCssUrls: false
+   }).version();
+```
 
-	'list' => [
-		'category-filter' => true,
-	],
+Устанавливаем зависимости.
 
-	Если эта опция выставлена, то по умолчанию будет фильтрация по корневой категории или той что указана в url как cat. Если опция не выставлена, то будут выведены все записи во всех вложеных категориях, точно так же будет работать и поиск, если нужно искать в конкретной категории, ее нужно будет выбрать.
+`npm install jquery popper.js bootstrap lodash.clonedeep lodash.size vue vuex vue-multiselect vue-the-mask vue2-datepicker vuedraggable`
 
- 
 
+Остальное после :).
