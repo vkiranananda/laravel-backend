@@ -1,10 +1,10 @@
 <template>
     <div class="attached-files" >
         <div  v-if="сountAgain != 0">
-            <show-uploads-button :config="uploadConf"></show-uploads-button>
+            <show-uploads-button :config="config"></show-uploads-button>
         </div>
         <div class="conteiner">
-            <draggable v-model="files" :options="{draggable:'.item'}">
+            <draggable v-model="files" handle=".item">
                 <div v-for="(file, key) in files" class="media-file item" :class="field.type == 'gallery' ? 'image' : 'file'" :key="key">
                     <a href='#' v-on:click.prevent="del(file)" class="delete">&times;</a>
                     <div class="file-body" v-on:click.prevent="edit(file)">
@@ -35,20 +35,20 @@
         },
         props: [ 'field' ],
         computed: {
-            //Количество файлов доступное для загрузки
+            // Количество файлов доступное для загрузки
             сountAgain () {
-                var res = undefined; //Унлимитед
+                var res = undefined; // Унлимитед
                 if (this.field['max-files'] != undefined) {
                     res = this.field['max-files'] - this.field.value.length;
                     if (res < 0) res = 0;
                 }
                 return res;
             },
-            uploadConf () {
+            config () {
                 return {
                     type: (this.field['type'] == 'files') ? 'all' : 'image',
                     count: this.сountAgain,
-                    attach: this.attachFiles
+                    return: this.attachFiles
                 }
             },
             files: { 
@@ -75,7 +75,7 @@
                     }
                     res.push(file)
                 }
-                //Если элемент был делаем событие change
+                // Если элемент был делаем событие change
                 if (exist) this.$emit('change', {value: res, changed: false})
             },
             del(file) {

@@ -16,13 +16,20 @@ class CategoryController extends \Backend\Category\Controllers\CategoryResourceC
         return parent::store();
     }
 
-    // Обновляем запись
-    public function update($id)
+    protected function resourceCombine($type)
     {
-		// Игнорим текущую запись в валидации
-    	$this->fields['fields']['url']['validate'] .= ','.$this->post['id'].',id,deleted_at,NULL';
+        parent::resourceCombine($type);
 
-    	return parent::update($id);
+        if (array_search($type, ['create', 'edit', 'index']) !== false ) {  
+        	$rootCat = Categories::getRootCat($this->categoryGetId($type));
+        	// Добавляем информацию о разделе
+        	if ($type == 'index') {
+        		$this->config['lang']['list-title'] = $rootCat['name'] . " - " . $this->config['lang']['list-title'];
+        	} else {
+        		$this->config['lang']['edit-title'] = $rootCat['name'] . " - " . $this->config['lang']['edit-title'];
+        		$this->config['lang']['create-title'] = $rootCat['name'] . " - " . $this->config['lang']['create-title'];
+        	}
+        }
     }
 
     protected function resourceCombineAfter($type)

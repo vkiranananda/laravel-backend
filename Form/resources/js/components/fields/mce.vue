@@ -1,15 +1,31 @@
 <template>
 	<div>
-		<show-uploads-button :config="{type: 'all', fieldType: 'mce'}" v-if="field.upload"></show-uploads-button>
+		<show-uploads-button :config="{type: 'all', showLink: true, return: insertImage}" v-if="field.upload"></show-uploads-button>
     	<textarea :id='mceId'></textarea>
 	</div>
 </template>
 
 <script>
+ 
 	import showUploadsButton from '../uploads/show-uploads-button'
 
     export default {
         components: { 'show-uploads-button': showUploadsButton },
+        methods: {
+        	insertImage: function(files, link) {
+        		var res = ''
+                for ( var file of files) {
+                   if (file.file_type == 'image') {
+                        var img = '<img alt="" src="'+file.orig+'" data-id="'+file.id+'" />'
+                        res += (link) ? '<a href="'+file.orig+'">'+img+'</a>' : img
+                    } else {
+                        res += (link) ? '<a href="'+file.orig+'">'+file.orig_name+'</a> ' : file.orig;
+                    }
+                	res += ' ';
+                }
+                tinymce.activeEditor.insertContent(res);
+        	}
+        },
   		mounted: function () { 
 			tinymce.init({
 	            selector: '#'+this.mceId,
@@ -41,7 +57,7 @@
 	                editor.on('change', () => {
 	                    this.$emit('change', editor.getContent());
 	                });
-	            }
+	            },
 			});
 
   		},

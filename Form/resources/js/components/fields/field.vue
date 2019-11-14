@@ -8,31 +8,19 @@
 </template>
 
 <script>
-    import input from './input.vue'
-    import date from './date.vue'
-    import textarea from './textarea.vue'
-    import mce from './mce.vue'
-    import files from './files.vue'
-    import radio from './radio.vue'
-    import select from './select.vue'
-    import checkbox from './checkbox.vue'
-    import MultiSelect from './multiselect.vue'
-    import MaskField from './mask.vue'
+    import FormFieldInput from './input.vue'
+    import FormFieldDate from './date.vue'
+    import FormFieldTextarea from './textarea.vue'
+    import FormFieldMce from './mce.vue'
+    import FormFieldFiles from './files.vue'
+    import FormFieldRadio from './radio.vue'
+    import FormFieldSelect from './select.vue'
+    import FormFieldCheckbox from './checkbox.vue'
+    import FormFieldMultiSelect from './multiselect.vue'
+    import FormFieldMask from './mask.vue'
+    import FormFieldSmallMce from './small-mce.vue'
 
     const cloneDeep = require('clone-deep')
-
-    var myComponents = {
-            'form-field-input': input, 
-            'form-field-date': date, 
-            'form-field-mce': mce, 
-            'form-field-textarea': textarea, 
-            'form-field-radio': radio, 
-            'form-field-select': select, 
-            'form-field-checkbox': checkbox, 
-            'form-field-files': files,
-            'form-field-multiselect': MultiSelect,
-            'form-field-mask': MaskField,
-    }
 
     export default {
         props: {
@@ -47,16 +35,12 @@
                 blocked: true
             }
         },
-        components: myComponents,
+        components: {FormFieldInput, FormFieldDate, FormFieldTextarea, FormFieldMce, FormFieldFiles, FormFieldRadio, FormFieldSelect, FormFieldCheckbox, FormFieldMultiSelect, FormFieldMask, FormFieldSmallMce},
         computed: {
             component(){
                 if ( [ 'text', 'email', 'password', 'tel' ].indexOf(this.field.type) != -1 ) return 'input';
                 if ( [ 'gallery', 'files' ].indexOf(this.field.type) != -1 ) return 'files';
 
-                if (myComponents['form-field-' + this.field.type] == undefined) {
-                    console.log('Field type '+ this.field.type + ' not found')
-                    return false
-                }
                 return this.field.type;
             },
             fieldChanged() {

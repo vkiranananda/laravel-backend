@@ -33,7 +33,7 @@
             // Получаем все выделенные файлы
             this.store.commit('uploadForm/setMethod', {name: 'getSelectedFiles', method: this.getSelectedFiles});
         },
-        props: [ 'url' ],
+        props: [ 'url', 'config' ],
         data() {
             return {
                 errors: '',
@@ -44,10 +44,6 @@
                 files: [],
                 loadedUrl: '',
             }
-        },
-        computed: {
-            //Получем конфиг
-            config () { return this.store.state.uploadForm.filesUploadConfig }
         },
         watch: {
             //Инитим данные при изменении переменной

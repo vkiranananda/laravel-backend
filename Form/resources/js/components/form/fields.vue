@@ -1,7 +1,7 @@
 <!-- Для использования в других модулях кроме основного, repeated и group поля работать не будут! -->
 <template>
-    <div>
-        <div v-for="(field, key) in fields" :key="key" v-if="field['v-show'] !== false">
+    <div class="row">
+        <div v-for="(field, key) in fields" :key="key" v-if="field['v-show'] !== false" :class="field.row == 'half' ? 'col-6' : 'col-12'" >
             
             <div v-if="field.type == 'html'" v-html="field.html"></div>
             

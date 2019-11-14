@@ -8,7 +8,7 @@
                     </th>
                 </tr>
             </thead>
-            <draggable v-model="list" :element="'tbody'" :options="{forceFallback: true}">
+            <draggable v-model="list" tag="tbody" handle=".item">
                 <tr v-for="el in list" :key="el.id"  class="item">
                     <td v-for="field in fields" :key="field.name">{{el[field.name]}}</td>
                 </tr>

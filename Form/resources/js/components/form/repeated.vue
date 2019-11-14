@@ -1,7 +1,7 @@
 <template>
     <div class="card">
-        <div class="card-body">
-            <draggable :options="{draggable:'.card'}" v-model='repBlocks' class="repeated-field" >
+        <div class="card-body" ref="block">
+            <draggable handle=".card" v-model='repBlocks' class="repeated-field">
                 <div class="card mb-4" v-for="(block, key) in repBlocks" :key="block.key">
                     <div href='#' @click="delBlock(key)" class="delete" v-if="repBlocks.length > 1">&times;</div>
                     <div class="card-body">

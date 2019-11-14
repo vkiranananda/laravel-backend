@@ -12,6 +12,7 @@
           <tr class="table-success">
                 <th>Маршрут</th>
                 <th>Контроллер</th>
+                <th>Назначение</th>
                 <th>Категории</th>
           </tr>
       </thead>
@@ -21,6 +22,12 @@
        	<tr>
             <td>{{ $url }}</td>
             <td>CategoryController</td>
+            <td> 
+            	{{ implode(', ', array_keys($cat) )}} 
+            	@if(count($cat) > 1)
+            		use {{array_key_first($cat)}}
+            	@endif
+        	</td>
             <td>{{ implode(', ', reset($cat)) }}</td>
         </tr>
       	@endforeach
@@ -28,6 +35,12 @@
        	<tr>
             <td>{{ $url }}/{post-name}</td>
             <td>{{ key($cat) }}Controller</td>
+            <td> 
+            	{{ implode(', ', array_keys($cat) )}} 
+            	@if(count($cat) > 1)
+            		use {{array_key_first($cat)}}
+            	@endif
+            </td>
             <td>{{ implode(', ', reset($cat)) }}</td>
         </tr>
       	@endforeach

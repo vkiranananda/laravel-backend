@@ -15,6 +15,10 @@ trait ListSortable {
 
       	$fields = [];
 
+      	if (!isset($this->fields['sortable'])) {
+      		abort('418', 'Sortable error: необходимо задать список полей в конфиге fields для sortable');
+      	}
+
       	foreach ($this->fields['sortable'] as $name) {
       		$fields[] = $this->fields['fields'][$name];
       	}

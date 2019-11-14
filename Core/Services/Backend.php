@@ -10,7 +10,8 @@ class Backend {
 
 	public function init()
 	{
-        $this->data = Cache::tags('backend')->remember('data', 43200, function() 
+		//43200
+        $this->data = Cache::remember('backend-root-data', 43200, function() 
         {
         	$res = [];
         	$path['Backend\Root'] = base_path('vendor/vkiranananda/backend/');
