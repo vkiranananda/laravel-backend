@@ -11,7 +11,7 @@ class Backend {
 	public function init()
 	{
 		//43200
-        $this->data = Cache::remember('backend-root-data', 43200, function() 
+        $this->data = Cache::rememberForever('backendCoreData', function() 
         {
         	$res = [];
         	$path['Backend\Root'] = base_path('vendor/vkiranananda/backend/');
@@ -39,7 +39,6 @@ class Backend {
 	        }
 	        return $res;
 	    });
-
         //Выставляем нейм спейсы. Если модуль наследуюется и в родителе уже есть namespace до дабавляем к наследуюемумо -ext. Если наследуется корневой resources тогда надо копировать его весь в свой каталог...
         if(isset($this->data['views'])){
 	        foreach ($this->data['views'] as $mod => $p) {
@@ -51,29 +50,43 @@ class Backend {
 
 	public function installRoutes($mod = '', $ext = [])
 	{
+		if (!is_array($ext)) abort(418, 'installRoutes: Параметр $ext должен быть массивом');
+		
 		$modUrl = mb_strtolower($mod);
-		if(!is_array($ext)){
-			echo $mod;
-			return;
-		}
-		if( array_search('upload', $ext) !== false ){
-			Route::get($modUrl.'/upload/index/{id?}', '\Backend\\'.$mod.'\Controllers\UploadController@index');
-			Route::post($modUrl.'/upload', '\Backend\\'.$mod.'\Controllers\UploadController@store');
-			Route::delete($modUrl.'/upload/{id}', '\Backend\\'.$mod.'\Controllers\UploadController@destroy');
-			Route::get($modUrl.'/upload/edit/{id?}', '\Backend\\'.$mod.'\Controllers\UploadController@edit');
-			Route::put($modUrl.'/upload/update/{id?}', '\Backend\\'.$mod.'\Controllers\UploadController@update');
-		}
-		if( array_search('sortable', $ext) !== false ){
-			Route::get($modUrl.'/sortable', '\Backend\\'.$mod.'\Controllers\\'.$mod.'Controller@listSortable');
-			Route::put($modUrl.'/sortable', '\Backend\\'.$mod.'\Controllers\\'.$mod.'Controller@listSortableSave');
-		}
+
+		if ( array_search('upload', $ext) !== false ) $this->installUploadRoute($modUrl, $mod);
+		if ( array_search('sortable', $ext) !== false ) $this->installSortableRoute($modUrl, $mod);
 
 		if ( isset($this->data['routes'][$mod]['Backend'] ) ){
 			require_once($this->data['routes'][$mod]['Backend']);
 		}
-		else {
-			Route::resource($modUrl, '\Backend\\'.$mod.'\\Controllers\\'.$mod.'Controller');
-		}
+		else $this->installResourceRoute($modUrl, $mod);
+	}
+
+	public function installResourceRoute($modUrl, $mod, $controller = false) 
+	{
+		if (!$controller) $controller = $mod;
+
+		Route::resource($modUrl, '\Backend\\'.$mod.'\\Controllers\\'.$controller.'Controller');
+	}
+
+	public function installSortableRoute($modUrl, $mod, $controller = false) 
+	{
+		if (!$controller) $controller = $mod;
+
+		Route::get($modUrl.'/sortable', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@listSortable');
+		Route::put($modUrl.'/sortable', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@listSortableSave');		
+	}
+
+	public function installUploadRoute($modUrl, $mod, $controller = false) 
+	{
+		if (!$controller) $controller = 'Upload';
+
+		Route::get($modUrl.'/upload/index/{id?}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@index');
+		Route::post($modUrl.'/upload', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@store');
+		Route::delete($modUrl.'/upload/{id}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@destroy');
+		Route::get($modUrl.'/upload/edit/{id?}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@edit');
+		Route::put($modUrl.'/upload/update/{id?}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@update');	
 	}
 
 	//Подгружает роутинг из модуля
