@@ -4,13 +4,11 @@ window.Vue = require('vue');
 
 import Vuex from 'vuex';
 
-import uploadForm from '../../Form/resources/js/store/upload';
 import editForm from '../../Form/resources/js/store/edit';
 
 const store = new Vuex.Store({
 	modules: {
 		editForm,
-		uploadForm
 	} 
 });
 

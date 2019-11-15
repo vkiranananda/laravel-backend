@@ -66,16 +66,7 @@
                         this.loading = false;
                     })
                     .catch( (error) => { console.log(error.response) });     
-                } else {
-                    //Если тот же самый файл вызван из другой формы, нужно изменить метод удаления
-                    if (file.deleteType != this.file.deleteType) {
-                        this.file.deleteType = file.deleteType;
-                        this.file.deleteMethod = file.deleteMethod;
-                        this.file.deleteValue = file.deleteValue;
-                    }
-                    this.loading = false;
                 }
-
                 // Покзываем окно
                 $('#UploadEditModal').modal('show');
             },

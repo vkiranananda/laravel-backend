@@ -79,7 +79,6 @@ export default {
                       ico: 'insertImage'
                   }
               },
-              
           }  
 
           let image = (this.field.upload) ? 'insertImage' : ''

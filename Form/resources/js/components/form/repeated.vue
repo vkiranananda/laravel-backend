@@ -1,8 +1,9 @@
 <template>
     <div class="card">
         <div class="card-body" ref="block">
-            <draggable handle=".card" v-model='repBlocks' class="repeated-field">
+            <draggable handle=".move" v-model='repBlocks' class="repeated-field">
                 <div class="card mb-4" v-for="(block, key) in repBlocks" :key="block.key">
+                    <div class="move"></div>
                     <div href='#' @click="delBlock(key)" class="delete" v-if="repBlocks.length > 1">&times;</div>
                     <div class="card-body">
                         <fields-list  :fields='block.fields' :errors="errors[block.key]" :store-name='storeName'></fields-list>
@@ -76,6 +77,15 @@
             text-decoration: none;
             display: inline-block;
             cursor: pointer;
+        }
+        .move {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 100%;
+            background-color: rgb(246, 246, 246);
+            cursor: move;
         }
     }
 </style>

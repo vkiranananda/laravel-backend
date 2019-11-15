@@ -2,7 +2,6 @@
 
 namespace Backend\Category\Controllers;
 
-use Cache;
 use GetConfig;
 use Categories;
 use Helpers;
@@ -81,7 +80,7 @@ class CategoryRootController extends \Backend\Root\Form\Controllers\ResourceCont
     {
     	// Очищаем кэши
         if ( array_search($type, ['store', 'update', 'destroy', 'sortable-save']) !== false ) {
-            Cache::tags('category')->flush();
+            Categories::clearAllCache();
 
             // Обновляем данные с категориями.
             Categories::init();

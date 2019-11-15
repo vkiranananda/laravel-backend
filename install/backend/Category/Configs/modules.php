@@ -11,6 +11,8 @@ return [
 		'viewControllerAction' => '\App\Http\Controllers\PageController',
 		'categoryController' => '\App\Http\Controllers\PageController',
 		'label' => 'Страницы',
+		// Если разделы с одинаковыми урлами, то по умолчанию все пойдет по этому
+		'main-route' => true,
 	],
 	'Blog' => [
 	 	'resourceController' => '\Backend\Blog\Controllers\BlogController',

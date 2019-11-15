@@ -24,9 +24,7 @@
                     // Получаем скрытые поля
                     res.hidden = this.store.state[this.storeName].hiddenFields;
                     //Получаем загруженные файлы
-                    if (this.store.state.uploadForm.methods.getUploadedFiles != undefined){
-                        res.files = this.store.state.uploadForm.methods.getUploadedFiles();
-                    }
+                    res.files = this.store.state[this.storeName].uploadFiles;
                 }
 
                 this.status = 'saveing';

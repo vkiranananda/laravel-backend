@@ -25,21 +25,12 @@
 
 <script>
     export default {
-        created () {
-            // Получаем все новые файлы, для сохранения
-            this.store.commit('uploadForm/setMethod', {name: 'getUploadedFiles', method: this.getUploadedFiles});
-            // Отменяем выделение файлов
-            this.store.commit('uploadForm/setMethod', {name: 'unselectFiles', method: this.unselectFiles});
-            // Получаем все выделенные файлы
-            this.store.commit('uploadForm/setMethod', {name: 'getSelectedFiles', method: this.getSelectedFiles});
-        },
         props: [ 'url', 'config' ],
         data() {
             return {
                 errors: '',
                 loading: false,
                 selectedItems: [],
-
                 urls: [],
                 files: [],
                 loadedUrl: '',
@@ -61,27 +52,29 @@
 
                     this.loadedUrl = this.url;
                 }
-            }
+            },
         },
         methods: {
-            //Очищаем все выбраные элементы
-            unselectFiles() { 
-                for (var file of this.files) if (file.selected) file.selected = false;
-                this.selectedItems = [];
-            },
             //Выбираем файлы
             chooseFiles() { this.$refs.upload.click() },
-            // Выводит массив новых файлов
-            getUploadedFiles () {
+            
+            // Комитим загруженные файлы
+            setUploadedFiles () {
                 var res = [];
                 for (var file of this.files) if (file.newFile) res.push (file.id);
-                return res;
+                
+                this.store.commit('editForm/setUploadFiles', res )
             },
-            //Получаем все выбранные файлы
-            getSelectedFiles () {
-                var res = [];
-                for (var file of this.files) if (file.selected) res.push(file);
-                return res;
+            unselectFiles() {
+                for (var file of this.files) if (file.selected) file.selected = false;
+                this.selectedItems = [];
+                this.emitSelect()
+            },
+            emitSelect() {
+                // Создаем событие со списком выбранных файлов
+                let selFiles = [];
+                for (let file of this.files) if (file.selected) selFiles.push(file)
+                this.$emit('select', selFiles)      
             },
             //Загружаем файлы
             uploadFiles() {
@@ -128,10 +121,12 @@
                                 }, 1000);
                             });  
                     })(files[i]);
-                }   
+                }
+                // Комитим новые файлы
+                this.setUploadedFiles()
             },
 
-            //Выбираем файл
+            // Выбираем файл
             selectFile(file) {
                 if( (this.config.type == 'image' && file.file_type == 'image') ||  this.config.type == 'all') {
 
@@ -156,9 +151,10 @@
                             this.$set(file, 'selected', true);
                         }
                     }
+                    this.emitSelect()
                 }
             },
-            //Изменяем элемент
+            // Изменяем элемент
             edit(file) { 
                 this.$bus.$emit( 'UploadFilesEditModalShow', Object.assign({ 
                     deleteMethod: this.del,
@@ -167,7 +163,7 @@
                 }, file))
             },
             
-            //Удаляем файл
+            // Удаляем файл
             del(file) {
                 console.log(file)
                 if (!confirm('Файл "' + file['orig_name'] + '" будет удален безвозвратно. Удалить файл?')) return
@@ -185,10 +181,15 @@
                     .then( (response) => {
                         //Оповестить всех что файл удален
                         this.$bus.$emit('UploadFilesDeleteFile', file.id);
+                        
                         //Удаляем из списка
                         this.$delete(this.files, this.files.indexOf(file));
+                        
+                        // Нужно для того, что если загруженный файл был удален
+                        this.setUploadedFiles()
                     })
                     .catch( (error) => { console.log(error.response) });
+
             }
         }
     }

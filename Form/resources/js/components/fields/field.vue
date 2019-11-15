@@ -18,7 +18,7 @@
     import FormFieldCheckbox from './checkbox.vue'
     import FormFieldMultiSelect from './multiselect.vue'
     import FormFieldMask from './mask.vue'
-    import FormFieldSmallMce from './small-mce.vue'
+    import FormFieldEditor from './editor.vue'
 
     const cloneDeep = require('clone-deep')
 
@@ -35,7 +35,7 @@
                 blocked: true
             }
         },
-        components: {FormFieldInput, FormFieldDate, FormFieldTextarea, FormFieldMce, FormFieldFiles, FormFieldRadio, FormFieldSelect, FormFieldCheckbox, FormFieldMultiSelect, FormFieldMask, FormFieldSmallMce},
+        components: {FormFieldInput, FormFieldDate, FormFieldTextarea, FormFieldMce, FormFieldFiles, FormFieldRadio, FormFieldSelect, FormFieldCheckbox, FormFieldMultiSelect, FormFieldMask, FormFieldEditor},
         computed: {
             component(){
                 if ( [ 'text', 'email', 'password', 'tel' ].indexOf(this.field.type) != -1 ) return 'input';

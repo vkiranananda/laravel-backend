@@ -3,7 +3,6 @@
 namespace Backend\Category\Controllers;
 
 use Request;
-use Cache;
 use Categories;
 
 class CategoryController extends \Backend\Category\Controllers\CategoryResourceController
@@ -35,7 +34,7 @@ class CategoryController extends \Backend\Category\Controllers\CategoryResourceC
     protected function resourceCombineAfter($type)
     {
         if( array_search($type, ['store', 'update', 'destroy', 'sortable-save']) !== false ){
-            Cache::tags('category')->flush();
+            Categories::clearAllCache();
         }
         parent::resourceCombineAfter($type);
     }

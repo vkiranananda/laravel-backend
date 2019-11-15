@@ -21,7 +21,7 @@ class Categories
 	public function init()
 	{
 
-        $this->allCat = Cache::tags('category')->remember('allCat', 43200, function()
+        $this->allCat = Cache::rememberForever('backendCategoryAll', function()
         {
         	$allCat = [];
 
@@ -57,7 +57,7 @@ class Categories
 		return $this->moduleControllers[$mod];
 	}
 
-	//Устанавливаем роуты, передаем либо конкретный метод, либо массив методов
+	// Устанавливаем роуты, передаем либо конкретный метод, либо массив методов
 	public function installRoutes($method = 'get')
 	{
 		if (!is_array($method)) $method = [$method];
@@ -73,12 +73,19 @@ class Categories
 		return count($this->allCat);
 	}
 
-	//Выводим роуты
+	// Очищаем все кэши
+	public function clearAllCache()
+	{
+		Cache::forget('backendCategoryRoutes');
+		Cache::forget('backendCategoryAll');
+	}
+
+	// Выводим роуты
 	public function printRoutes()
 	{
 		$curClass = &$this;
 
-		return Cache::tags('category')->remember('routes', 43200, function() use ($curClass)
+		return Cache::rememberForever('backendCategoryRoutes', function() use ($curClass)
         {	
         	$routes = [];
 			$curClass->getRoutes($routes);
@@ -87,19 +94,28 @@ class Categories
         }); 
 	}
 
-	//Генерим все роуты
+	// Генерим все роуты, рекурсивная функция
 	private function getRoutes( &$res, $category_id = 0, $url = '')
 	{
 		foreach ($this->allCat as $cat) {
 			$newUrl = $url;
-			if($cat['category_id'] == $category_id){
-				if($category_id == 0)	$newUrl = '';
-				if($cat['url'] != '') $newUrl .= '/'.$cat['url'];
+			if ($cat['category_id'] == $category_id) {
+				if ($category_id == 0)	$newUrl = '';
+				if ($cat['url'] != '') $newUrl .= '/'.$cat['url'];
 				
-				$res[$newUrl][$cat['mod']][] = $cat['id'];
+				// Обрабатываем разде с одинаковым урлом, выставляем первым первый
+				// попавшийся или если выставлен параметр 'main-route' в конфиге модулей
+				// То выставляем этот раздел первым.
+				if ($category_id == 0 && isset($res[$newUrl]) 
+					&& isset($this->getModuleControllers($cat['mod'])['main-route'])) {
+					$res[$newUrl] = array_merge([$cat['mod'] => [$cat['id']]], $res[$newUrl]);
+				} else { 
+					$res[$newUrl][$cat['mod']][] = $cat['id'];
+				}
 				$this->getRoutes($res, $cat['id'], $newUrl);
 			}
 		}
+
 	}
 
 
@@ -110,7 +126,7 @@ class Categories
 
         $res = '';
 
-        $url = ( isset($post['url']) ) ? $post['url'] : $post['id'] ;
+        $url = ( isset($post['url']) && $post['url'] != '' ) ? $post['url'] : $post['id'] ;
 
         foreach ($this->getPath($post['category_id']) as $cat) {
             if ($cat['url'] != '') $res .= '/'.$cat['url'];
@@ -137,7 +153,7 @@ class Categories
 		}	
 	}
 
-	//Получаем ID корневой записи для catID
+	// Получаем ID корневой записи для catID
 	public function getRootCat($catID)
 	{
 		if ( !isset($this->allCat[$catID]) ) abort(403, 'Categories::getRootCat() категории не существует');

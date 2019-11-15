@@ -7,6 +7,7 @@ export default {
         fields: {},
         tabs: {},
         hiddenFields: {},
+        uploadFiles: [],
         tabActive: '',
         errors: {},
         config: {},
@@ -49,7 +50,8 @@ export default {
             field['unique-index']++;
         },
         //Удаляем репитед блок 
-        delRepeatedBlock (state, data) { data.block.splice(data.index, 1); }
+        delRepeatedBlock (state, data) { data.block.splice(data.index, 1); },
+        setUploadFiles (state, files) { state.uploadFiles = files },
      },
     actions: {
         // Добавляем новый репитед блок

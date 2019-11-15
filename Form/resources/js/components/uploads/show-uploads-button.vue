@@ -8,17 +8,7 @@
     export default {
         props: [ 'config' ],
 
-        watch: {
-            // //Если в конфиге произошли изменения 
-            // config: function (conf) { 
-            //     // Проверяем, если в хранилище наш конфиг, меняем, если нет не трогаем.
-            //     // Нужно для ограничений выделения элементов для полей files
-            //     if (this.store.state.uploadForm.filesUploadConfig.fieldKey == this.fieldKey)
-            //         this.saveConfig (conf);
-            // }
-        },
         methods: {
-            //Открываем окно аплоадинга файлов.
             show() { 
                 this.$bus.$emit('UploadFilesModalShow', this.config) 
             },
