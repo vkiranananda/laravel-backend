@@ -37,6 +37,23 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
         return parent::listSortable();
     }
 
+
+    protected function indexListMenu($url_postfix = '')
+    {
+
+    	$menu = parent::indexListMenu($url_postfix);
+
+    	if ($this->config['module-name'] != 'Category') {
+			array_splice( $menu, 1, 0, [[
+				'label' => 'Категории',
+				'url' => action('\Backend\Category\Controllers\CategoryController@index').$url_postfix,
+				'btn-type' => 'success',
+			]]);
+	   	}
+
+		return $menu;
+    }
+
     protected function listSortableButton($url_postfix) 
     {
     	// Добавляем фильтрацию по категории
@@ -82,16 +99,15 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
         // Проверки на валидность данных
     	if ($catID === false) abort(403, 'CategoryResourceController: Категория не указана');
 
+    	$cat = Categories::getCat($catID);
         // Существование категории
-        if (Categories::getCat($catID) === false) {
+        if ($cat === false) {
         	abort(403, 'CategoryResourceController: Категории "'.$catID.'" не существует');
         }
         
-        // Проверяем на класс родителя
-        $baseClass = class_basename($this->post);
-
-        if ($baseClass != 'Category') { // Эта проверка тоже должна как то быть венесенеа 
-            if ($baseClass != $cat['mod'])
+        // Эта проверка тоже должна как то быть венесенеа 
+        if ($this->config['module-name'] != 'Category') { 
+            if ($this->config['module-name'] != $cat['mod'])
                 abort(403, 'CategoryResourceController: Модуль категории не соответсвует модулю данных');
         }
     }
@@ -124,8 +140,12 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
 
         	// Локализация
         	if (array_search($type, ['create', 'edit', 'index']) !== false ) {  
-        		$this->config['lang'] = Categories::getRootCat($catID)['lang'];
+        		// Локализуем из модуля категории если нет своей локализации
+        		if (!isset( $this->config['lang'])) {
+        			$this->config['lang'] = Categories::getRootCat($catID)['lang'];
+        		}
         	}
+
     	}
     }
 
