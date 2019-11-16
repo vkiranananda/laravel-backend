@@ -117,7 +117,7 @@ class ResourceController extends Controller {
 
         foreach ($this->fields['list'] as $field) {
         
-        	//Получаем базовое поле. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
+        	// Получаем базовое поле. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
         	$mainField = ( isset ($this->fields['fields'][ $field['name'] ]) ) ? $this->fields['fields'][ $field['name'] ] : [];
 
         	//Выставляем метку если на задано
@@ -191,6 +191,8 @@ class ResourceController extends Controller {
     }
     
 
+
+
     // Главное меню в списке. url_postfix добавочная строка у url адресу.
     protected function indexListMenu($url_postfix = '')
     {
@@ -199,10 +201,7 @@ class ResourceController extends Controller {
     	
     	// Если нужно создавать запись
     	if ($this->config['list']['create']) {
-			//Создать
-			$menu[0]['label'] = isset($this->config['lang']['create-title']) ? $this->config['lang']['create-title'] : 'Создать';
-			$menu[0]['url'] = action($this->config['controller-name'].'@create').$url_postfix;
-			$menu[0]['btn-type'] = 'primary';
+    		$menu[] = $this->indexListMenuCreateButton($url_postfix);
 		}
 
 		// Для ручной сортировки
@@ -212,6 +211,18 @@ class ResourceController extends Controller {
 
 		return $menu;
     }
+
+
+    // Кнопка создать
+	protected function indexListMenuCreateButton($url_postfix)
+	{
+		return [
+			'label' => isset($this->config['lang']['create-title']) 
+				? $this->config['lang']['create-title'] : 'Создать',
+			'url' => action($this->config['controller-name'].'@create').$url_postfix,
+			'btn-type' => 'primary'
+		];
+	}
 
     // Получаем пункты меню для строки списка
     protected function indexItemMenu() {

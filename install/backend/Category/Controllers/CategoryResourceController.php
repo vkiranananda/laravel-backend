@@ -10,16 +10,17 @@ use Categories;
 // ResourceController для работы с категориями
 class CategoryResourceController extends \Backend\Root\Form\Controllers\ResourceController
 {
-	// Для того что бы задать фильтрацию по категории
-	private $categorySortableUrlCat = false;
+	// parent_cat.
+	private $categoryParentCatUrl = false;
 
     public function create()
     {
     	// Выставляем значение из параметра.
-        $this->post['category_id'] = Request::input('cat', false);
+        $this->post['category_id'] = Request::input('__parent_category_id', false);
         return parent::create();
     }
 
+    // Добавляем параметр с корневой категорией
     public function index()
     {
     	// Добавляем параметр к урлу
@@ -27,9 +28,9 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
         return parent::index();
     }
 
+    // Добавляем фильтр по категориям в ортировку
     protected function listSortable()
     {
-    	// Добавляем фильтр по категориям
 	    $catID = Request::input('__parent_category_id', false);
 	    $this->categoryCheck($catID);
 	    $this->post = $this->post->where('category_id', $catID);
@@ -37,7 +38,7 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
         return parent::listSortable();
     }
 
-
+    // Добавляем кнопку перехода в категории
     protected function indexListMenu($url_postfix = '')
     {
 
@@ -54,16 +55,28 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
 		return $menu;
     }
 
+    // Добавляем префикс у урл
     protected function listSortableButton($url_postfix) 
     {
     	// Добавляем фильтрацию по категории
-    	if ($this->categorySortableUrlCat) {
+    	if ($this->categoryParentCatUrl) {
     		$url_postfix .= ($url_postfix != '') ? '&' : '?';
-    		$url_postfix .= "__parent_category_id=" . $this->categorySortableUrlCat;
+    		$url_postfix .= "__parent_category_id=" . $this->categoryParentCatUrl;
     	}
 
     	return parent::listSortableButton($url_postfix);
     }
+
+    // Добавляем префикс у урл
+    protected function indexListMenuCreateButton($url_postfix)
+	{
+		if ($this->categoryParentCatUrl) {
+			$url_postfix .= ($url_postfix != '') ? '&' : '?';
+			$url_postfix .= "__parent_category_id=" . $this->categoryParentCatUrl; 
+		}
+
+		return parent::indexListMenuCreateButton($url_postfix);
+	}
 
     // Если был произведен поиск, ищем во всех категориях
     protected function indexSearch() {
@@ -83,12 +96,11 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
 			} else {	
 				$this->post = $this->post->whereIn('category_id', Categories::getListIds($catID, true));
 			}
+			// Запрещаем сортировку, так как выведены все категории раздела
+			$this->config['list']['sortable'] = false;
 		} else {
-			$this->categorySortableUrlCat = $res['category_id'];
+			$this->categoryParentCatUrl = $res['category_id'];
 		}
-
-		// Запрещаем сортировку, так как выведены все категории раздела
-		if (!$this->categorySortableUrlCat) $this->config['list']['sortable'] = false;
 
     	return $res;
     }

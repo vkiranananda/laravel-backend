@@ -15,7 +15,7 @@ class Categories
 
 	function __construct()
 	{
-		$this->init();
+	    if (!app()->runningInConsole()) $this->init();
 	}
 
 	public function init()

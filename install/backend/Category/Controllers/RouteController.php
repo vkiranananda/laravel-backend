@@ -25,5 +25,6 @@ class RouteController
 				return $c->show(reset($cat), $urlExt[2]);
 			}
 		}
+		abort(404);
     }
 }
