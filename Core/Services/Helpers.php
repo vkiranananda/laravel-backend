@@ -30,7 +30,13 @@ class Helpers {
     // 	return $res;
     // }
 
+    // Обьединям параметры урл
+    static public function mergeUrlParams($url, $param, $value)
+    {
+    	$url .= ($url != '') ? '&' : '?';
 
+    	return $url . $param . '=' . $value;
+    }
 
     // Получаем массив списка записей с нужными полями
     static public function getArrayItems(&$data, $fields, $colums = ['id'])

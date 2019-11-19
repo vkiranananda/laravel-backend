@@ -95,8 +95,7 @@ class ResourceController extends Controller {
 
 		// Получаем все дополнительные параметры.
 		foreach ($this->config['url-params'] as $param) {
-			$urlPostfix .= ($urlPostfix == '') ? '?' : '&' ;
-			$urlPostfix .= $param . '=' . Request::input($param, '');
+			$urlPostfix = Helpers::mergeUrlParams($urlPostfix, $param, Request::input($param, ''));
 		}
 
 		$this->dataReturn['config']['urlPostfix'] = $urlPostfix;
@@ -104,6 +103,10 @@ class ResourceController extends Controller {
         //------------------------------Кнопка Создать----------------------------------------
 
 		$this->dataReturn['config']['menu'] = $this->indexListMenu($urlPostfix);
+
+		// -----------------------------Хлебные крошки----------------------------------------
+
+		$this->dataReturn['breadcrumbs'] = $this->indexBreadcrumbs($urlPostfix);
 
         //-------------------------------Подготавливаем поля----------------------------------
      
@@ -190,8 +193,11 @@ class ResourceController extends Controller {
         return view($templite, [ 'data' => $this->dataReturn ]);
     }
     
-
-
+    // Выводим хлебные крошки.
+    protected function indexBreadcrumbs($url_postfix = '')
+    {
+    	return false;
+    }
 
     // Главное меню в списке. url_postfix добавочная строка у url адресу.
     protected function indexListMenu($url_postfix = '')

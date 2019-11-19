@@ -38,7 +38,7 @@ class CategoryRootController extends \Backend\Root\Form\Controllers\ResourceCont
     protected function indexLinks($post) {
     	$res = parent::indexLinks($post);
     	if (Helpers::getDataField($post, 'conf-type', false) == 'hierarchical'){
-    		$res['category'] = action($this->config['base-namespace'].'Controllers\CategoryController@index').'?cat='.$post['id'];
+    		$res['category'] = action($this->config['base-namespace'].'Controllers\CategoryController@index').'?cat='.$post['id'].'&parent_cat='.$post['id'];
     	}
 
     	return $res;
@@ -59,11 +59,6 @@ class CategoryRootController extends \Backend\Root\Form\Controllers\ResourceCont
         	$this->fields['fields']['mod']['options'] = $modules;
         } 
 
-        if ($type == 'update') { 
-    		// Игнорим текущую запись в валидации
-        	$this->fields['fields']['url']['validate'] .= ','.$this->post['id'].',id,deleted_at,NULL';
-        }
-
         // Делаем поле неактивным, так как модуль нельзя поменять
         if ( $type == 'edit') { 
         	$this->fields['fields']['mod']['attr'] = ['disabled' => true];
@@ -80,6 +75,7 @@ class CategoryRootController extends \Backend\Root\Form\Controllers\ResourceCont
     {
     	// Очищаем кэши
         if ( array_search($type, ['store', 'update', 'destroy', 'sortable-save']) !== false ) {
+        	// Удаляем кэши
             Categories::clearAllCache();
 
             // Обновляем данные с категориями.

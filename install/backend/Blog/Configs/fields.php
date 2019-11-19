@@ -92,7 +92,7 @@
           		'fields' => [ 'name', 'text' ],
           	],[
           		'options-empty' => 'Все категории',
-          		'name' => 'parent-cat',
+          		'name' => 'parent_cat',
           		'field-from' => 'category_id',
           		'label' => '',
           		'fields' => [ 'category_id'],

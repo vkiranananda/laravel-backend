@@ -30,6 +30,10 @@ return [
 		'icon' => 'key', 
 		'url' => action('\Backend\Option\Controllers\OptionController@index')
 	],[
+		'label' => 'Конструктор меню', 
+		'icon' => 'list-unordered', 
+		'url' => action('\Backend\MenuBuilder\Controllers\MenuBuilderController@index')
+	],[
 		'label' => 'Пользователи', 
 		'icon' => 'organization', 
 		'url' => action('\Backend\User\Controllers\UserController@index')

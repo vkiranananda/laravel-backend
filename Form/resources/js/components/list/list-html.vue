@@ -14,6 +14,7 @@
         <!-- end buttons -->
 
         <the-search v-if="myData.search != undefined" :fields="myData.search" @change="searchChange"></the-search>
+        <the-breadcrumbs v-if="myData.breadcrumbs" :data="myData.breadcrumbs"></the-breadcrumbs>
         <the-list :fields="myData.fields" :items="myData.items" :itemMenu="myData.itemMenu" @change="listChange"></the-list>
 
 	<!--       	@if (isset($params['conf']['breadcrumb']) && $params['conf']['breadcrumb'] == true )
@@ -24,10 +25,11 @@
 </template>
 
 <script>
-    import list from './list.vue'
-    import loading from '../loading.vue'
-    import search from './search.vue'
-    import sortable from './sortable.vue'
+    import theList from './list.vue'
+    import theLoading from '../loading.vue'
+    import theSearch from './search.vue'
+    import theSortable from './sortable.vue'
+    import theBreadcrumbs from './breadcrumbs.vue'
     export default {
         created() {
             history.replaceState(window.location.href, '', window.location.href)
@@ -40,12 +42,7 @@
             window.onpopstate = null
         },
         props: [ 'data' ],
-        components: {
-            'the-list': list, 
-            'the-loading': loading,
-            'the-search': search,
-            'the-sortable': sortable, 
-        },        
+        components: { theList, theLoading, theSearch, theSortable, theBreadcrumbs },        
         data() {
             return {
                 lastUrl: '',

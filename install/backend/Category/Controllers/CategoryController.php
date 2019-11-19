@@ -4,6 +4,7 @@ namespace Backend\Category\Controllers;
 
 use Request;
 use Categories;
+use Helpers;
 
 class CategoryController extends \Backend\Category\Controllers\CategoryResourceController
 {
@@ -29,6 +30,12 @@ class CategoryController extends \Backend\Category\Controllers\CategoryResourceC
         		$this->config['lang']['create-title'] = $rootCat['name'] . " - " . $this->config['lang']['create-title'];
         	}
         }
+    }
+
+    // Кнопка перехода в категорию, в данном случае в раздел
+    protected function categoryButton($url_postfix) 
+    {
+    	return false;
     }
 
     protected function resourceCombineAfter($type)

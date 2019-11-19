@@ -17,7 +17,7 @@ class UploadedFiles {
     {  
         $size = Uploads::sizesToStr($sizes);
 
-        $res['orig'] = $file['url'].$file['path'].urlencode($file['file'] );
+        $res['orig'] = $this->getOrigPath($file);
 
         if ($file['file_type'] == 'image') {
 			if (pathinfo($file['file'])['extension'] == 'gif' || $size == '') {
@@ -35,6 +35,10 @@ class UploadedFiles {
 	        }
         } 
         return $res;
+    }
+
+    private function getOrigPath($file) {
+    	return $file['url'].$file['path'].urlencode($file['file'] );
     }
 
     //Получаем и Сохраняем файлы в массив
@@ -178,54 +182,87 @@ class UploadedFiles {
     }
 
 
+    // Приватная функция создает из файла тэг img, если картинкой не является выводит пустую строку.
+    private function _htmlImg($file, $attr = [])
+    {
+		if ($file['file_type'] != 'image' ) return '';
+
+		$attrNew = $attr;
+
+		if (!isset($attr['title'])) 
+    		$attrNew['title'] = Helpers::dataIsSetValue($file, 'img_title');
+    	if (!isset($attr['alt'])) 
+    		$attrNew['alt'] =  Helpers::dataIsSetValue($file, 'img_alt');
+
+		$title = Helpers::getDataField($file, 'img_title');
+		$alt = Helpers::getDataField($file, 'img_alt');
+
+    	$countImgSize = count($this->reqImgSize);
+		if ($countImgSize > 0) {
+			$srcset = '';
+			foreach ($this->reqImgSize as $key => $size) {
+				// Получаем урлы миниатюры и если нету генерим ее
+				$thumb = $this->genFileLink($file, $size)['thumb'];
+				
+				// Генерим srcset если функция size была вызвана более одного раза
+				if($countImgSize > 1) {
+					// Далее получаем текстовый размер
+					$strSize = Uploads::sizesToStr($size);
+					// Тут нужно получить ширину для srcset, если нет миниатюры не добавляем srcset 
+					if(isset($file['sizes'][$strSize])){
+						$srcset .= $thumb." ".$file['sizes'][$strSize]['size'][0]."w, ";
+					}
+				}
+				if($key == 0)$src = $thumb;
+			}
+		} else {
+			$src = $this->genFileLink($file)['thumb'];
+		}
+		if ($srcset != '') $srcset = 'srcset="'.mb_substr($srcset, 0, -2).'"';
+
+		return '<img src="'.$src.'" '.$srcset.' '.Helpers::getAttrs($attrNew).'>';
+    }
+
+
     // Получаем готовый тэг html img, только для картинок, если вызван метод size будут сгенереный нужные размеры, если метод size вызван несколько раз, будет сгенерирован тег srcset. src будет первый вызваный size
-    public function htmlImg($attr = [])
+  //   public function htmlImg($attr = [])
+  //   {
+  //   	$this->_getFiles($this->reqFiles);
+
+  //   	$res = [];
+		// foreach ($this->reqFiles as $id) {
+		// 	if (!isset($this->images[$id]) || $this->images[$id]['file_type'] != 'image' ) continue;
+
+		// 	$res[] = $this->_htmlImg($this->images[$id], $attr);
+		// }
+
+		// if($this->reqResultArray) return $res;
+		// elseif(count($res) > 0) return $res[0];
+
+		// return '';
+
+  //   }
+
+    // Получаем готовый тэг html img, только для картинок, если вызван метод size будут сгенереный нужные размеры, если метод size вызван несколько раз, будет сгенерирован тег srcset. src будет первый вызваный size, если $link = true будет создана ссылка с атрибутами linkAttr
+    public function htmlImg($link = false, $attr = [], $linkAttr = [])
     {
     	$this->_getFiles($this->reqFiles);
 
     	$res = [];
 		foreach ($this->reqFiles as $id) {
-			if(!isset($this->images[$id]) || $this->images[$id]['file_type'] != 'image' ) continue;
+			if (!isset($this->images[$id]) || $this->images[$id]['file_type'] != 'image' ) continue;
 
-			$attrNew = $attr;
-
-			if (!isset($attr['title'])) 
-	    		$attrNew['title'] = Helpers::dataIsSetValue($this->images[$id], 'img_title');
-	    	if (!isset($attr['alt'])) 
-	    		$attrNew['alt'] =  Helpers::dataIsSetValue($this->images[$id], 'img_alt');
-
-			
-	    	$countImgSize = count($this->reqImgSize);
-			if ($countImgSize > 0) {
-				$srcset = '';
-				foreach ($this->reqImgSize as $key => $size) {
-					//Сначала получаем урл миниатюры и если нету генерим ее
-					$thumb = $this->genFileLink($this->images[$id], $size)['thumb'];
-					
-					//Генерим srcset если функция size была вызвана более одного раза
-					if($countImgSize > 1) {
-						//Далее получаем текстовый размер
-						$strSize = Uploads::sizesToStr($size);
-						//Тут нужно получить ширину для srcset, если нет миниатюры не добавляем srcset 
-						if(isset($this->images[$id]['sizes'][$strSize])){
-							$srcset .= $thumb." ".$this->images[$id]['sizes'][$strSize]['size'][0]."w, ";
-						}
-					}
-					if($key == 0)$src = $thumb;
-				}
-			} else {
-				$src = $this->genFileLink($this->images[$id])['thumb'];
-			}
-			if($srcset != '')$srcset = 'srcset="'.mb_substr($srcset, 0, -2).'"';
-			$res[] = '<img src="'.$src.'" '.$srcset.' '.Helpers::getAttrs($attrNew).'>';
+			$res[] = ($link)
+				? "<a href=\"" 
+					. $this->getOrigPath($this->images[$id]) . "\" " 
+					. Helpers::getAttrs($linkAttr) . ">" 
+					. $this->_htmlImg($this->images[$id], $attr) . "</a>"
+				: $this->_htmlImg($this->images[$id], $attr).'ffff';
 		}
-		if($this->reqResultArray) return $res;
-		elseif(count($res) > 0) return $res[0];
 
-		return '';
-
+		if ($this->reqResultArray) return $res; 
+		elseif (count($res) > 0) return $res[0];
     }
-
 
     // Получить список урлов, если вызван метод size будут сгенерены нужные размеры(только для изображений). 
     // Если указано нескольколь размеров, то будет отдан массив с размерами по порядку указания.

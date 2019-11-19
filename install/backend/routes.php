@@ -9,6 +9,7 @@ Route::group(['prefix' => 'content', 'middleware' => ['auth.basic'] ], function(
 	Backend::installRoutes('Blog', ['upload']);
 	Backend::installRoutes('User', ['upload']);
 	Backend::installRoutes('Option', ['upload']);
+	Backend::installRoutes('MenuBuilder');
 });
 
 

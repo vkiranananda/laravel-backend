@@ -22,7 +22,6 @@ export default {
   				return this.getDate(this.field.value)
     		},
     		set: function (newDate) {
-          console.log('ddd', this.inputFormat)
 				  let date = (newDate != null) ? fecha.format(newDate, this.inputFormat) : '' 
 				  this.$emit('change', date);
 			 }
