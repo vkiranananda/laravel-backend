@@ -55,14 +55,16 @@
             },
         },
         methods: {
-            //Выбираем файлы
+            // Выбираем файлы
             chooseFiles() { this.$refs.upload.click() },
             
             // Комитим загруженные файлы
             setUploadedFiles () {
                 var res = [];
-                for (var file of this.files) if (file.newFile) res.push (file.id);
-                
+                for (var file of this.files) if (file.newFile == true) res.push (file.id)
+            
+                console.log('sett', res, )
+
                 this.store.commit('editForm/setUploadFiles', res )
             },
             unselectFiles() {
@@ -105,7 +107,10 @@
                                 //Копируем нужные атрибуты
                                 for (var key in response.data) fileInArr[key] = response.data[key];
                                 fileInArr.newFile = true; //Файл новый
-                                this.selectFile(fileInArr);
+                                this.selectFile(fileInArr)
+                                
+                                // Комитим новые файлы
+                                this.setUploadedFiles()
                             })
                             .catch( (error) => {
                                 console.log(error.response);
@@ -122,8 +127,6 @@
                             });  
                     })(files[i]);
                 }
-                // Комитим новые файлы
-                this.setUploadedFiles()
             },
 
             // Выбираем файл

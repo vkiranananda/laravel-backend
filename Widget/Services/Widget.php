@@ -17,12 +17,12 @@ class Widget {
     static public function print($name, $params = '', $cache = [])
     {
         $timeCache = ( isset($cache['time']) ) ? $cache['time'] : 0; //43200;//30 days
-        $tagsCache = ( isset($cache['tags']) ) ? $cache['tags'] : 'widgets';
+        // $tagsCache = ( isset($cache['tags']) ) ? $cache['tags'] : 'widgets';
         $nameCache = ( isset($cache['name']) ) ? $cache['name'] : $name;
 
 
 
-        return  Cache::tags($tagsCache)->remember($nameCache, $timeCache, function() use ($name, $params)
+        return  Cache::remember($nameCache, $timeCache, function() use ($name, $params)
         {
         	// Преобразуем строку если в ней есть - то убираем тире и делаем следующий символ заглвным
         	
@@ -35,7 +35,6 @@ class Widget {
             // Преобразуем символы
             $name = str_replace("-","", ucwords($name, '-'));
             $name = ucfirst($name);
-
 
             // Если в бэкенде  category::category-tree
             if (count($name_arr) > 1) {

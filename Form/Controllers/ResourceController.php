@@ -163,7 +163,7 @@ class ResourceController extends Controller {
         foreach ($query['data'] as $post) {
         	$res = []; //Преобразованные данные
         	
-        	$res['_links'] = $this->indexLinks($post);
+        	$res['_links'] = $this->indexLinks($post, $urlPostfix);
 
         	foreach ($fields as $key => $field) {
         		
@@ -171,7 +171,7 @@ class ResourceController extends Controller {
 
         		if (isset($field['func'])) {
         			$func = $field['func'];
-        			$res[$name] = $this->$func($post, $field);
+        			$res[$name] = $this->$func($post, $field, $urlPostfix);
         			continue;
         		}
 
@@ -247,7 +247,7 @@ class ResourceController extends Controller {
     }
 
     // Обрабатываем ссылки в списке
-    protected function indexLinks($post) {
+    protected function indexLinks($post, $urlPostfix) {
     	return [
     		'edit' 		=> action($this->config['controller-name'].'@edit', $post['id']),
     		'destroy' 	=> action($this->config['controller-name'].'@destroy', $post['id'])

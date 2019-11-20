@@ -160,17 +160,19 @@ class Helpers {
         return $res;
     }
 
-    static public function dataIsSetValue(&$data, $id, $res = false) {
+    static public function dataIsSetValue(&$data, $id, $res = false) 
+    {
         return Helpers::getDataField($data, $id, $res);
     }
 
-    //То же самое что предыдущее но выводим false если значиение пустое.
-    static public function getDataFieldEmpty(&$data, $id){
+    //То же самое что предыдущее но выводим res если значиение пустое.
+    static public function getDataFieldEmpty(&$data, $id, $res = false)
+    {
         $value = Helpers::getDataField($data, $id);
 
         if($value != '' && $value !== false) return $value;
       
-        return false;
+        return $res;
     }
 
     //Генерит список атрибутов для хтмл поля из массива key=value
