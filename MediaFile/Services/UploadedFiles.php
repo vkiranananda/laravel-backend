@@ -257,7 +257,7 @@ class UploadedFiles {
 					. $this->getOrigPath($this->images[$id]) . "\" " 
 					. Helpers::getAttrs($linkAttr) . ">" 
 					. $this->_htmlImg($this->images[$id], $attr) . "</a>"
-				: $this->_htmlImg($this->images[$id], $attr).'ffff';
+				: $this->_htmlImg($this->images[$id], $attr);
 		}
 
 		if ($this->reqResultArray) return $res; 

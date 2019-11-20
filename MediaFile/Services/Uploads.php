@@ -125,11 +125,11 @@ class Uploads {
 
             $res[$sizeStr ]['size'] = [ $img->width(), $img->height() ];
 
-            //Сохраняем только в png формате
+            // Сохраняем только в jpg формате
             $res[$sizeStr ]['path'] = 'sizes/'.$sizeStr.'/';
-            $res[$sizeStr ]['file'] = pathinfo($file['file'])['filename'].'.png';
+            $res[$sizeStr ]['file'] = pathinfo($file['file'])['filename'].'.jpg';
 
-            $disk->put($file['path'].$res[$sizeStr ]['path'].$res[$sizeStr ]['file'], $img->encode('png') );
+            $disk->put($file['path'].$res[$sizeStr ]['path'].$res[$sizeStr ]['file'], $img->encode('jpg') );
         }
 
         return $res;
