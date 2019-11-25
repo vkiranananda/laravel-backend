@@ -2,7 +2,8 @@
 namespace Backend\Root\Core\Services;
 
 class Helpers {
-    //Получаем все поля где есть массив options, передается параметр табов
+
+    // Получаем все поля где есть массив options, передается параметр табов
     static public function changeFieldsOptions($fields)
     {
         $res = [];
@@ -14,21 +15,6 @@ class Helpers {
         }
         return $fields;
     }
-
-
-    // Получаем массив полей из массива getFields с объедиенением результатов
-    // static public function getFields($allFields, $getFields, $changeOptions = false)
-    // {
-    // 	$res = [];
-    // 	foreach ($getFields as $field) {
-    // 		$res[$field['name']] = array_merge($allFields[$field['name']], $field);
-
-    //         if($changeOptions && isset($res[$field['name']]['options']) && is_array($res[$field['name']]['options'])){
-    //             $res[$field['name']]['options'] = Helpers::optionsToArr($res[$field['name']]['options']);
-    //         }
-    // 	}
-    // 	return $res;
-    // }
 
     // Обьединям параметры урл
     static public function mergeUrlParams($url, $param, $value)
@@ -60,7 +46,7 @@ class Helpers {
     	return $res;
     }
 
-    //Заполняем массив значиениями keys
+    // Заполняем массив значиениями keys
     static public function setArray(&$from, $keys)
     {
     	$res = [];
@@ -70,7 +56,7 @@ class Helpers {
     	return $res;
     }
 
-    //Поиск в массиве по ключу и значению
+    // Поиск в массиве по ключу и значению
     static public function searchArray($arr, $key, $val)
     {
         foreach ($arr as $vArr) {
@@ -79,7 +65,7 @@ class Helpers {
         return false;
     }
 
-    //Генерит список value label для селектов и прочего из списка данных
+    // Генерит список value label для селектов и прочего из списка данных
     static public function getHtmlOptions(&$from)
     {
     	$res = [];
@@ -93,7 +79,7 @@ class Helpers {
     	return $res;
     }
 
-    //Фукнция генерит из списка опций ассиотивный массив
+    // Фукнция генерит из списка опций ассиотивный массив
     static public function optionsToArr($options)
     {
         $res = [];
@@ -128,7 +114,7 @@ class Helpers {
         return false;
     }
     
-    //Получает список айдишников из списка записей
+    // Получает список айдишников из списка записей
     static public function getListIds(&$from)
     {
     	$res = [];
@@ -165,7 +151,7 @@ class Helpers {
         return Helpers::getDataField($data, $id, $res);
     }
 
-    //То же самое что предыдущее но выводим res если значиение пустое.
+    // То же самое что предыдущее но выводим res если значиение пустое.
     static public function getDataFieldEmpty(&$data, $id, $res = false)
     {
         $value = Helpers::getDataField($data, $id);
@@ -175,7 +161,7 @@ class Helpers {
         return $res;
     }
 
-    //Генерит список атрибутов для хтмл поля из массива key=value
+    // Генерит список атрибутов для хтмл поля из массива key=value
     static public function getAttrs($attr = [])
     {
     	$res = '';

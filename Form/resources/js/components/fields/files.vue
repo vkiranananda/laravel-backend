@@ -60,7 +60,7 @@
             // Добавляем файлы
             attachFiles (files) {
                 var newValue = this.files.slice()
-                for (var file of files) newValue.unshift(file)
+                for (var file of files) newValue.push(file)
                 this.$emit('change', newValue)
             },
             // Когда файл удаляется полностью

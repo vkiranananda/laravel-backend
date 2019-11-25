@@ -7,10 +7,17 @@ use Helpers;
 use Log;
 class UploadedFiles {
 
+	// Массив с изображениями
     private $images = [];
+    // Запрошенные файлы в текущем запросе
     private $reqFiles = [];
+    // Запрошенные размеры в текущем запросе
     private $reqImgSize = [];
+    // Тип возвращаемого значения.
     private $reqResultArray = true; 
+
+    // Прелоадинг файлов
+    private $loadFiles = [];
 
     // Геренрим линки на файл
     public function genFileLink($file, $sizes = [])
@@ -23,8 +30,8 @@ class UploadedFiles {
 			if (pathinfo($file['file'])['extension'] == 'gif' || $size == '') {
             	$res['thumb'] = $res['orig'];
             } else {
-	            if (! isset($file['sizes'][$size])){
-	                if (!is_array($file['sizes']))$file['sizes'] = [];
+	            if (! isset($file['sizes'][$size])) {
+	                if (!is_array($file['sizes'])) $file['sizes'] = [];
 	                
 	                $file['sizes'] = array_merge($file['sizes'], Uploads::genSizes($file, [ $sizes ]));
 	                
@@ -41,65 +48,26 @@ class UploadedFiles {
     	return $file['url'].$file['path'].urlencode($file['file'] );
     }
 
-    //Получаем и Сохраняем файлы в массив
-    private function _getFiles($ids)
+    // Получаем ранее иниченные файл и Сохраняем в массив картинок
+    public function getFiles()
     {
-        if (is_array($ids)) {
-
-        	//Формируем новый массив на выборку, если файла нет в общем массиве
-        	$idsReq = [];
-        	foreach ($ids as $id) {
-        		if( ! isset($this->images[$id]) ) $idsReq[] = $id;
-        	}
-        	if (count($idsReq) > 0){
-	            foreach (MediaFile::whereIn('id', $idsReq)->get() as $img) {
-	                $this->images[$img['id']] = $img;
-	            }
-	        }
+    	//Формируем новый массив на выборку, если файла нет в общем массиве
+    	$idsReq = [];
+    	foreach ($this->loadFiles as $id) {
+    		if( ! isset($this->images[$id]) ) $idsReq[] = $id;
+    	}
+    	if (count($idsReq) > 0){
+            foreach (MediaFile::whereIn('id', $idsReq)->get() as $img) {
+                $this->images[$img['id']] = $img;
+            }
         }
+        $this->loadFiles = [];
     }
 
-    //Получить урл миниатюры
-    // public function getImgUrl(&$post, &$field, $sizes = [])
-    // {
-    //     if( isset($post['array_data']['fields'][$field]) ){
-    //         $gal = $post['array_data']['fields'][$field];
-    //         if(is_array($gal) && count($gal) > 0){
-    //             $imgId = reset($gal);
-
-    //             if(! isset($this->images[$imgId])){
-    //                 if( ($img = MediaFile::find($imgId)) ){
-    //                     $this->images[$imgId] = $img;
-    //                     // $this->queryId[] = $imgId;
-    //                 }else {
-    //                     return '';
-    //                 }
-    //             }
-    //             // $this->queryId[] = $imgId;
-    //             return $this->genImgLink($this->images[$imgId], $sizes)['thumb'];
-    //         }
-    //     }
-    //     return '';
-    // }
-    //Получить урлы по массиву
-    // public function getImgUrlArr(&$post, &$field, $sizes = [])
-    // {
-    //     if( isset($post['array_data']['fields'][$field]) ){
-    //         $gal = $post['array_data']['fields'][$field];
-    //         if($this->_getFiles($gal)){
-    //             $res = [];
-    //             foreach ($gal as $imgId) {
-    //                 if(isset($this->images[$imgId]))$res[] = $this->genImgLink($this->images[$imgId],$sizes);
-    //             }   
-    //             return $res;
-    //         }
-    //     }
-    //     return [];
-    // }
 
     // Получаем все картинки в списке записей оптом, что бы не плодить запросы
     // Например нужно для списка элементов. Если $first == true, выбираем только первые картинки
-    public function getImgUrlList($list, $field, $first = true)
+    public function loadByList($list, $field, $first = true)
     {
         $req = [];
         foreach ($list as $post) {
@@ -107,11 +75,36 @@ class UploadedFiles {
                 if (is_array($gal)) {
                 	// Только первые картинки
                 	if ($first) $req[] = reset($gal);
-                	else foreach ($gal as $id) $req[] = $id;
+                	else $req = array_merge($req, $gal); 
                 }
             }
         }
-        $this->_getFiles($req);
+
+        $this->loadByArray($req);
+    }
+
+    // Добавляет данные для автоматической загрузки всех изображений, что бы не плодить запросы
+    // указвается массив данных
+    public function loadByArray($data) 
+    {
+    	if (is_array($data)) {
+    		$this->loadFiles = array_merge($this->loadFiles, $data);
+    	}
+
+    	return $this;
+    }
+
+    // Добавляет данные для автоматической загрузки всех изображений, что бы не плодить запросы
+    // Можно указать как название поля, так и массив из названий поля
+    public function loadByField($post, $field) 
+    {
+    	$fields = (!is_array($field)) ? [$field] : $field;
+
+    	foreach ($fields as $field) {
+    		$this->loadByArray(Helpers::dataIsSetValue($post, $field)); 
+    	}
+
+    	return $this;
     }
 
     // Формируем вывод для галерей
@@ -183,7 +176,7 @@ class UploadedFiles {
 
 
     // Приватная функция создает из файла тэг img, если картинкой не является выводит пустую строку.
-    private function _htmlImg($file, $attr = [])
+    private function _htmlImg(&$file, $attr = [])
     {
 		if ($file['file_type'] != 'image' ) return '';
 
@@ -223,30 +216,11 @@ class UploadedFiles {
 		return '<img src="'.$src.'" '.$srcset.' '.Helpers::getAttrs($attrNew).'>';
     }
 
-
-    // Получаем готовый тэг html img, только для картинок, если вызван метод size будут сгенереный нужные размеры, если метод size вызван несколько раз, будет сгенерирован тег srcset. src будет первый вызваный size
-  //   public function htmlImg($attr = [])
-  //   {
-  //   	$this->_getFiles($this->reqFiles);
-
-  //   	$res = [];
-		// foreach ($this->reqFiles as $id) {
-		// 	if (!isset($this->images[$id]) || $this->images[$id]['file_type'] != 'image' ) continue;
-
-		// 	$res[] = $this->_htmlImg($this->images[$id], $attr);
-		// }
-
-		// if($this->reqResultArray) return $res;
-		// elseif(count($res) > 0) return $res[0];
-
-		// return '';
-
-  //   }
-
     // Получаем готовый тэг html img, только для картинок, если вызван метод size будут сгенереный нужные размеры, если метод size вызван несколько раз, будет сгенерирован тег srcset. src будет первый вызваный size, если $link = true будет создана ссылка с атрибутами linkAttr
     public function htmlImg($link = false, $attr = [], $linkAttr = [])
     {
-    	$this->_getFiles($this->reqFiles);
+    	$this->loadByArray($this->reqFiles);
+    	$this->getFiles();
 
     	$res = [];
 		foreach ($this->reqFiles as $id) {
@@ -269,7 +243,8 @@ class UploadedFiles {
     // Парметр $keys добавляет дополнительный опции из массива файла
     public function url($keys = [])
     {
-    	$this->_getFiles($this->reqFiles);
+    	$this->loadByArray($this->reqFiles);
+    	$this->getFiles();
 
     	$res = [];
 
@@ -302,10 +277,11 @@ class UploadedFiles {
     }
 
 
-    //Получить массив файлов
+    // Получить массив файлов
     public function files()
     {
-    	$this->_getFiles($this->reqFiles);
+    	$this->loadByArray($this->reqFiles);
+    	$this->getFiles();
 
     	$res = [];
 
