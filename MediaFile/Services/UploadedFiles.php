@@ -241,7 +241,9 @@ class UploadedFiles {
     // Получить список урлов, если вызван метод size будут сгенерены нужные размеры(только для изображений). 
     // Если указано нескольколь размеров, то будет отдан массив с размерами по порядку указания.
     // Парметр $keys добавляет дополнительный опции из массива файла
-    public function url($keys = [])
+    // arrayKey возвращает только запрошеный ключ или пустую строку, работает только если запрошен
+    // первый элемент
+    public function url($arrayKey = false, $keys = [])
     {
     	$this->loadByArray($this->reqFiles);
     	$this->getFiles();
@@ -271,9 +273,8 @@ class UploadedFiles {
 		}
 
 		if ($this->reqResultArray) return $res;
-		elseif (count($res) > 0) return $res[0];
-
-		return [];
+		if ($arrayKey) return (isset($res[0][$arrayKey])) ? $res[0][$arrayKey] : '';
+		return (count($res) > 0) ? $res[0] : [];
     }
 
 

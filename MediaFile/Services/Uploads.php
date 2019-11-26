@@ -96,7 +96,7 @@ class Uploads {
                 if( !isset( $file['sizes']['orig'] ) ){
                     $res['orig']['size'] = [ $img->width(), $img->height()];
                     $res['orig']['file'] = $file['file'];
-                    $res['orig']['path'] = '/';
+                    $res['orig']['path'] = '';
                     $orig = $res['orig'];
                 }else {
                     $orig = $file['sizes']['orig'];
@@ -118,7 +118,7 @@ class Uploads {
             }
 
             //Если файл не был изменен не сохраяем его...
-            if(($img->width() == $orig['size'][0] ) && ($img->height() == $orig['size'][1]) ){
+            if (($img->width() == $orig['size'][0] ) && ($img->height() == $orig['size'][1]) ){
                 $res[$sizeStr] = $orig;
                 continue;
             }

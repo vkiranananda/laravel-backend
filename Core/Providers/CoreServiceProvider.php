@@ -39,5 +39,6 @@ class CoreServiceProvider extends ServiceProvider
         AliasLoader::getInstance()->alias('Backend', '\Backend\Root\Core\Facades\BackendFacade');
         AliasLoader::getInstance()->alias('Widget', '\Backend\Root\Widget\Services\Widget');
         AliasLoader::getInstance()->alias('Helpers', '\Backend\Root\Core\Services\Helpers');
+        AliasLoader::getInstance()->alias('UploadedFiles', '\Backend\Root\MediaFile\Facades\UploadedFilesFacade');
     }
 }
