@@ -146,11 +146,6 @@ class Helpers {
         return $res;
     }
 
-    static public function dataIsSetValue(&$data, $id, $res = false) 
-    {
-        return Helpers::getDataField($data, $id, $res);
-    }
-
     // То же самое что предыдущее но выводим res если значиение пустое.
     static public function getDataFieldEmpty(&$data, $id, $res = false)
     {
