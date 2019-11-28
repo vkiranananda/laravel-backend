@@ -68,7 +68,7 @@ trait Fields {
     	$res = [];
 
 		foreach ($this->fields['hidden'] as $field) {
-			$res[ $field['name'] ] = Helpers::dataIsSetValue($this->post, $field['name'] );
+			$res[ $field['name'] ] = Helpers::getDataField($this->post, $field['name'] );
 	    }
 
 		return $res;

@@ -31,7 +31,7 @@ class Helpers {
     	foreach ($data as $el) {
     		$item = [];
     		foreach ($fields as $field) {
-    			$item[$field['name']] = Helpers::dataIsSetValue($el, $field['name']);
+    			$item[$field['name']] = Helpers::getDataField($el, $field['name']);
     			if(isset($field['options']) 
     				&& is_array($field['options']) 
     				&& isset($field['options'][$item[$field['name']]])){
@@ -39,7 +39,7 @@ class Helpers {
     			}
     		}
     		foreach ($colums as $col) {
-    			$item[$col] = Helpers::dataIsSetValue($el, $col);
+    			$item[$col] = Helpers::getDataField($el, $col);
     		}
     		$res[] = $item;
     	}
@@ -125,7 +125,6 @@ class Helpers {
     	}
     	return $res;    	
     }
-
 
     // Выводим данные поля, если данных нет выводим возвращаем заничение 3 параметр, по умолчанию false
     static public function getDataField(&$data, $id, $res = false) {
