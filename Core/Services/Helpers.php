@@ -127,7 +127,7 @@ class Helpers {
     }
 
     // Выводим данные поля, если данных нет выводим возвращаем заничение 3 параметр, по умолчанию false
-    static public function getDataField(&$data, $id, $res = false) {
+    static public function getDataField($data, $id, $res = false) {
     	foreach ( explode (".", $id) as $i => $key ) {
     		if ($i == 0) {
     			// Ищем в корне записи

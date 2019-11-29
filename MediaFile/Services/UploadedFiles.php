@@ -144,7 +144,7 @@ class UploadedFiles {
 
     	if (is_array($id)) { // Если массив
     		if (count($id) > 0) {
-    			if ($first) $this->reqFiles	= [$id[0]];
+    			if ($first) $this->reqFiles	= [reset($id)];
     			else $this->reqFiles = $id;
     		}
     		else $this->reqFiles = [];
@@ -279,7 +279,7 @@ class UploadedFiles {
     	$this->reqResultArray = false;
     	$res = $this->url($attr);
     	
-    	return (is_array($res) && isset($res[$key])) ? $res[$key] : $defValue;
+    	return Helpers::getDataField($res, $key, $defValue);
     }
 
 
