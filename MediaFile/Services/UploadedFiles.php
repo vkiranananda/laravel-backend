@@ -105,6 +105,21 @@ class UploadedFiles {
     	return $this;
     }
 
+    // Добавляет данные для автоматической загрузки всех изображений, что бы не плодить запросы
+    // указывается модель данных. Запрашиваются все файлы пренадлежашие этой модели.
+    public function loadByModel($model) 
+    {
+    	$className = class_basename($model);
+    	if (isset($model['id']) && $className != '') {
+	        foreach (MediaFile::where('imageable_id', $model->id)
+	        	->where('imageable_type', $className)
+	        	->get() as $img) {
+	            $this->images[$img['id']] = $img;
+	        }
+	    }
+    	return $this;
+    }
+
     // Формируем вывод для галерей(Для админки)
     public function prepGaleryData(&$list)
     {
@@ -273,10 +288,8 @@ class UploadedFiles {
     }
 
     // Выведет нужный ключ или значение второго параметра defValue.
-    // !!!Только для выбора 1 файла!!!.
     public function urlOrEmpty($key, $defValue = '', $attr = [])
     {
-    	$this->reqResultArray = false;
     	$res = $this->url($attr);
     	
     	return Helpers::getDataField($res, $key, $defValue);
