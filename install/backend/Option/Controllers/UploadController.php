@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Root\Option\Controllers;
+namespace Backend\Option\Controllers;
 
 class UploadController extends \Backend\Root\MediaFile\Controllers\UploadController
 {

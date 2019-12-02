@@ -38,7 +38,7 @@ class CategoryRootController extends \Backend\Root\Form\Controllers\ResourceCont
     protected function indexLinks($post) {
     	$res = parent::indexLinks($post);
     	if (Helpers::getDataField($post, 'conf-type', false) == 'hierarchical'){
-    		$res['category'] = action($this->config['base-namespace'].'Controllers\CategoryController@index').'?cat='.$post['id'].'&parent_cat='.$post['id'];
+    		$res['category'] = action($this->config['base-namespace'].'Controllers\CategoryController@index').'?cat='.$post['id'];
     	}
 
     	return $res;

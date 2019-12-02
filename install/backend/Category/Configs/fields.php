@@ -2,7 +2,8 @@
 	return [
 		'list' => [
         	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true ],
-        	[ 'name' => 'url', 'attr' => [ 'width' => '50px' ] ],
+         	[ 'name' => 'category', 'label' => 'Категория', 'attr' => [ 'width' => '20%' ], 'func' => 'indexCategoryField', 'link' => 'category' ],
+        	[ 'name' => 'url', 'attr' => [ 'width' => '10%' ] ],
         	[ 'name' => 'updated_at', 'label' => 'Дата модификации', 'attr' => [ 'width' => '190px' ], 'sortable' => true ]
         ],
 		'fields' => [
@@ -74,6 +75,7 @@
           		'field-from' => 'category_id',
           		'label' => '',
           		'fields' => [ 'category_id'],
+          		'search-type' => 'filter',
           	],
         ],
 	];

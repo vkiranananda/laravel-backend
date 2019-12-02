@@ -15,7 +15,7 @@
 	            'type' => 'text', 
 	            'name' => 'name', 
 	            'label' => 'Ключ',
-	            'validate' => 'required|not_in:general|unique:options,name',
+	            'validate' => 'required|unique:options,name,NULL,id,deleted_at,NULL',
 	        ],
 	        'type' => [	
 	            'type' => 'select', 
@@ -23,20 +23,18 @@
 	            'label' => 'Тип',
 	            'options' => [
 	            	['label' => 'Текст', 'value' => 'text'],
-	            	['label' => 'Редактор', 'value' => 'mce'],
-	            	['label' => 'Меню', 'value' => 'menu'],
+	            	['label' => 'Редактор', 'value' => 'editor'],
 	            	['label' => 'Галерея', 'value' => 'gallery'],
 	            	['label' => 'Загрузить файлы', 'value' => 'files'],
 	            ],
+	            'field-save' => 'array',
 	            'value' => 'gallery'
 	        ],
-
 			'gallery' => [		
 	            'type' => 'gallery', 
 	            'name' => 'gallery', 
 	            'label' => 'Галерея',
 	            'field-save' => 'array',
-	            // 'max-files' => 2,
 	     		'show' => [
 					['field' => 'type', 'value' => 'gallery', 'type' => '=='],
 				],
@@ -46,34 +44,20 @@
 	            'name' => 'files', 
 	            'label' => 'Файлы',
 	            'field-save' => 'array',
-	            // 'max-files' => 2,
 	     		'show' => [
 					['field' => 'type', 'value' => 'files', 'type' => '=='],
 				],
 			],
-			'mce' => [	
-		        'type' => 'mce', 
-		        'name' => 'mce', 
+			'editor' => [	
+		        'type' => 'editor', 
+		        'name' => 'editor', 
 		        'label' => 'Текст',
-		        'height' => 300,
 		        'upload' => true,
 		        'field-save' => 'array',
 	     		'show' => [
-					['field' => 'type', 'value' => 'mce', 'type' => '=='],
+					['field' => 'type', 'value' => 'editor', 'type' => '=='],
 				],
 	        ],
-
-			'menu' => [	
-		        'type' => 'mce', 
-		        'name' => 'menu', 
-		        'label' => 'Текст',
-		        'height' => 300,
-		        'field-save' => 'array',
-	     		'show' => [
-					['field' => 'type', 'value' => 'menu', 'type' => '=='],
-				],
-	        ],
-
 			'text' => [	
 		        'type' => 'textarea', 
 		        'name' => 'text', 
@@ -84,7 +68,6 @@
 					['field' => 'type', 'value' => 'text', 'type' => '=='],
 				],
 	        ],
-
 	        'autoload' => [
 	            'type' => 'radio', 
 	            'name' => 'autoload', 
@@ -102,7 +85,7 @@
 			'default' => [
 				'label' => 'Основные',
 				'name' => 'main',
-				'fields' => [ 'name', 'type', 'gallery','files', 'mce', 'text', 'menu', 'autoload' ],
+				'fields' => [ 'name', 'type', 'gallery','files', 'editor', 'text', 'autoload' ],
 			],
 		],
 	];

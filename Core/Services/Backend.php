@@ -40,7 +40,7 @@ class Backend {
 	        return $res;
 	    });
         //Выставляем нейм спейсы. Если модуль наследуюется и в родителе уже есть namespace до дабавляем к наследуюемумо -ext. Если наследуется корневой resources тогда надо копировать его весь в свой каталог...
-        if(isset($this->data['views'])){
+        if (isset($this->data['views'])){
 	        foreach ($this->data['views'] as $mod => $p) {
 	        	View::addNamespace($mod, $p);
 	        }
@@ -50,6 +50,9 @@ class Backend {
 
 	public function installRoutes($mod = '', $ext = [])
 	{
+		// Если в консоли запущено не генерим маршруты.
+		if (app()->runningInConsole()) return;
+		
 		if (!is_array($ext)) abort(418, 'installRoutes: Параметр $ext должен быть массивом');
 		
 		$modUrl = mb_strtolower($mod);

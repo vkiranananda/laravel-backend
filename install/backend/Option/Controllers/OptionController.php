@@ -9,31 +9,11 @@ use GetConfig;
 
 class OptionController extends \Backend\Root\Form\Controllers\ResourceController
 {
-    function __construct(Option $post )
-    {
-        parent::init($post);
-    }
-
-    public function index()
-    {
-    	//Для скрытых полей, типа general, не показывать их в списке.
-        $this->post = $this->post->where('hidden', '0');
-        
-        return parent::index();
-    }
-
-    protected function resourceCombineAfter($type)
-    {
-    	//Удаляем кэши в виджетах
-        if ( array_search($type, ['store', 'update', 'destroy']) !== false ) {
-            Cache::tags('option-widgets')->flush();
-        }
-    }
-
     public function update($id)
     {
-    	//Игнорим текущую запись в валидации
-        $this->fields['fields']['name']['validate'] .= ','.$id.',id,deleted_at,NULL';
+    	// Игнорим текущую запись в валидации
+    	$this->fields['fields']['name']['validate'] = 
+    		str_replace ('NULL,id', $id . ',id', $this->fields['fields']['name']['validate']); 
         
         return parent::update($id);
     }

@@ -28,6 +28,22 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
         return parent::index();
     }
 
+    // Резолвим имя категории
+    protected function indexCategoryField($post, $field, $urlPostfix)
+    {
+    	$cat = Categories::getCat($post['category_id']);
+    	if ($cat) return $cat['name'];
+    }
+
+    // Обрабатываем ссылки в списке
+    protected function indexLinks($post, $urlPostfix) {
+    	$res = parent::indexLinks($post, $urlPostfix);
+    	$res['category'] = action($this->config['controller-name'].'@index')
+    		. Helpers::mergeUrlParams($urlPostfix, 'parent_cat', $post['category_id']);
+
+    	return $res;
+    }
+
     // Добавляем фильтр по категориям в cортировку
     protected function listSortable()
     {
@@ -51,11 +67,13 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     }
 
     // Кнопка перехода в категорию
-    protected function categoryButton($url_postfix) 
+    protected function categoryButton($urlPostfix) 
     {
+    	$cat = Categories::getCat(Request::input('cat', false));
+    	if ($cat['conf']['type'] != 'hierarchical' ) return '';
 		return [
 			'label' => 'Категории',
-			'url' => action('\Backend\Category\Controllers\CategoryController@index').Helpers::mergeUrlParams($url_postfix, 'parent_cat', Request::input('cat') ),
+			'url' => action('\Backend\Category\Controllers\CategoryController@index').$urlPostfix,
 			'btn-type' => 'success',
 		];
     }

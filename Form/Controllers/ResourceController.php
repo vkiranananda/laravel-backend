@@ -123,13 +123,13 @@ class ResourceController extends Controller {
         	// Получаем базовое поле. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
         	$mainField = ( isset ($this->fields['fields'][ $field['name'] ]) ) ? $this->fields['fields'][ $field['name'] ] : [];
 
-        	//Выставляем метку если на задано
+        	// Выставляем метку если на задано
         	if ( !isset($field['label']) && isset($mainField['label']) ) {
         		$field['label'] = $mainField['label'];
         	}
 
-        	$fields [] = $field;
-        	$fields_prep [] = $this->initField(array_replace($mainField, $field));
+        	$fields[] = $field;
+        	$fields_prep[] = $this->initField(array_replace($mainField, $field));
         }
 
         // Делаем выборку

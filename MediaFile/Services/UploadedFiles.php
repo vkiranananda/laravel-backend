@@ -221,7 +221,7 @@ class UploadedFiles {
 						$srcset .= $thumb." ".$file['sizes'][$strSize]['size'][0]."w, ";
 					}
 				}
-				if($key == 0)$src = $thumb;
+				if($key == 0) $src = $thumb;
 			}
 		} else $src = $this->getOrigPath($file); // Получаем оригинал
 		
