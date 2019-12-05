@@ -26,7 +26,7 @@ return [
 		'icon' => 'list-unordered', 
 		'url' => action('\Backend\Category\Controllers\CategoryRootController@index')
 	],[
-		'label' => 'Ключ-значение', 
+		'label' => 'Опции', 
 		'icon' => 'key', 
 		'url' => action('\Backend\Option\Controllers\OptionController@index')
 	],[

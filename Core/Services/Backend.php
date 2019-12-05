@@ -87,7 +87,7 @@ class Backend {
 
 		Route::get($modUrl.'/upload/index/{id?}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@index');
 		Route::post($modUrl.'/upload', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@store');
-		Route::delete($modUrl.'/upload/{id}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@destroy');
+		Route::delete($modUrl.'/upload/{postId}/{fileId}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@destroy');
 		Route::get($modUrl.'/upload/edit/{id?}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@edit');
 		Route::put($modUrl.'/upload/update/{id?}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@update');	
 	}

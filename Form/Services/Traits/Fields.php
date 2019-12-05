@@ -62,7 +62,7 @@ trait Fields {
 	// Подготавливаем скрытые поля для отображения. 
     protected function prepHiddenFields()
     {
-    	//Возвращаем пустой массив если значение не установлено
+    	// Возвращаем пустой массив если значение не установлено
     	if (! isset ($this->fields['hidden']) || ! is_array($this->fields['hidden'])) return [];
 
     	$res = [];

@@ -16,6 +16,13 @@ class CoreServiceProvider extends ServiceProvider
     public function boot()
     {
         Backend::init();
+
+        // Инитим консольные команды
+        if ($this->app->runningInConsole()) {
+	        $this->commands([
+	            Backend\Root\Core\Console\Commands\FixMediaFileRelations::class,
+	        ]);
+	    }
     }
 
     /**

@@ -44,9 +44,23 @@
                     this.loading = true;
                     axios.get(this.url)
                     .then( (response) => {
-                        this.urls = response.data.urls;
-                        this.files = response.data.files;
-                        this.loading = false;
+                        this.urls = response.data.urls
+                        this.files = response.data.files
+                        this.loading = false
+
+                        // Если запись клонируется...
+                        if (response.data.clone) {
+                            // Помечаем файлы как новые
+                            for (let file of this.files) {
+                                // Узаываем что это не наш файл, удаление будет происходить 
+                                // только локально
+                                file.clone = true
+                                // Помечаем файл как новый.
+                                file.newFile = true
+                            }
+                            // Комитим файлы
+                            this.setUploadedFiles()
+                        }
                     })
                     .catch( (error) => { console.log(error.response) });     
 
@@ -62,8 +76,6 @@
             setUploadedFiles () {
                 var res = [];
                 for (var file of this.files) if (file.newFile == true) res.push (file.id)
-            
-                console.log('sett', res, )
 
                 this.store.commit('editForm/setUploadFiles', res )
             },
@@ -168,31 +180,39 @@
             
             // Удаляем файл
             del(file) {
-                console.log(file)
-                if (!confirm('Файл "' + file['orig_name'] + '" будет удален безвозвратно. Удалить файл?')) return
 
-                //Снимаем выделение если было.
+                if (!confirm('Вы уверены что хотите удалить файл: "' + file['orig_name'] + '"?')) return
+
+                // Снимаем выделение если было.
                 if (file['selected']) this.selectFile(file);
 
                 // Очищаем ошибки
                 this.errors = "";
-                //Подсвечиваем удаляемый файл
+
+                // Подсвечиваем удаляемый файл
                 this.$set(file, 'haveErrors', true);
 
-                // Удаляем
-                axios.delete(this.urls.destroy + '/' + file['id'])
-                    .then( (response) => {
-                        //Оповестить всех что файл удален
-                        this.$bus.$emit('UploadFilesDeleteFile', file.id);
-                        
-                        //Удаляем из списка
-                        this.$delete(this.files, this.files.indexOf(file));
-                        
-                        // Нужно для того, что если загруженный файл был удален
-                        this.setUploadedFiles()
-                    })
-                    .catch( (error) => { console.log(error.response) });
+                var deleteFile = () => {
+                    // Оповестить всех что файл удален
+                    this.$bus.$emit('UploadFilesDeleteFile', file.id);
+                    
+                    // Удаляем из списка
+                    this.$delete(this.files, this.files.indexOf(file));
+                    
+                    // Нужно для того, что если загруженный файл был удален
+                    this.setUploadedFiles()
+                }
 
+                if (file.clone) deleteFile()
+
+                else {
+                    // Удаляем
+                    axios.delete(this.urls.destroy + '/' + file['id'])
+                        .then( (response) => {
+                            deleteFile()
+                        })
+                        .catch( (error) => { console.log(error.response) })
+                }
             }
         }
     }

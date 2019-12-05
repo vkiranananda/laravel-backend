@@ -21,13 +21,9 @@ class CreateMediaFilesTable extends Migration
             $table->string('file')->default('');
             $table->text('orig_name')->nullable();
             $table->text('sizes')->nullable();
-            $table->integer('type')->default(1, 1);
             $table->string('file_type')->default('');
             $table->text('array_data')->nullable();
-            //Id записи куда прикреплен
-            $table->integer('imageable_id')->unsigned()->nullable();
-            //Название модели для связи
-            $table->string('imageable_type')->nullable();
+            $table->string('md5', 32)->default('');
             $table->integer('user_id')->unsigned();
             $table->timestamps();
         });

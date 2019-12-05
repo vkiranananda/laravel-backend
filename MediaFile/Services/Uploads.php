@@ -17,11 +17,10 @@ class Uploads {
         $mediaFile = new MediaFile;
       
         $mediaFile->disk = $conf['disk'];
-        $mediaFile->type = $conf['store-type'];
+
         $mediaFile->url = $conf['url'];        
         $mediaFile->user_id = ( isset($conf['user-id']) ) ? $conf['user-id'] : Auth::user()->id;
         $mediaFile->orig_name = $file->getClientOriginalName();
-        $mediaFile->imageable_type = (isset($conf['module'])) ? $conf['module'] : '';
 
         $array_data['mime'] = $file->getClientMimeType();
 

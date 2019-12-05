@@ -111,10 +111,13 @@ class UploadedFiles {
     {
     	$className = class_basename($model);
     	if (isset($model['id']) && $className != '') {
-	        foreach (MediaFile::where('imageable_id', $model->id)
-	        	->where('imageable_type', $className)
-	        	->get() as $img) {
-	            $this->images[$img['id']] = $img;
+	        foreach (MediaFile::
+	        	join('media_file_relations as rel', 'rel.file_id', '=', 'media_files.id')
+        		->where('rel.post_id', '=', $model->id)
+        		->where('rel.post_type', '=', $className)
+      			->orderBy('id', 'desc')->get() as $img) {
+	            
+	            	$this->images[$img['id']] = $img;
 	        }
 	    }
     	return $this;

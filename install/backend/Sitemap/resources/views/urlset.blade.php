@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	@foreach($data as $url)
+		@if (!$url['url']) @continue @endif
 		<url>
 			<loc>
 				{!!$url['url']!!}
 			</loc>
 
-			@if($url['changefreq'] != '')
-	  			<changefreq>{{$url['changefreq']}}</changefreq>
+			@if($url['freq'] != '')
+	  			<changefreq>{{$url['freq']}}</changefreq>
 	  		@endif
 
 			@if($url['priority'] != '')
@@ -18,4 +19,9 @@
 			@endif
   		</url> 		
 	@endforeach
+	@auth
+		<worktime>
+			<?php printf('Скрипт выполнялся %.4F сек.', (microtime(true) - LARAVEL_START)) ?>
+		</worktime>
+	@endauth
 </urlset>

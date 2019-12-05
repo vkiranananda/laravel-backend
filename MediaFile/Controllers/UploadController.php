@@ -6,10 +6,12 @@ use Backend\Root\Core\Services\Helpers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Backend\Root\MediaFile\Models\MediaFile;
+use Backend\Root\MediaFile\Models\MediaFileRelation;
 use Backend\Root\MediaFile\Services\Uploads;
 use Content;
 use GetConfig;
-//type 0 deleted, 1 good, 2 hidden(for only field)
+
+use Log;
 
 class UploadController extends Controller
 {
@@ -31,19 +33,25 @@ class UploadController extends Controller
        	if ($this->moduleName == '') abort(403, 'UploadController: moduleName не установлена');
     }
 
-    //Получаем список всех файлов для записи
-    public function index($id = false)
+    // Получаем список всех файлов для записи
+    public function index(Request $request, $id = 0)
     {
     	$thisClass = '\\'.get_class($this);
 
-        $list = ($id) ? MediaFile::where('imageable_type', $this->moduleName)->where('imageable_id', $id)->orderBy('id', 'desc')->get() : [];
+		$list = ($id != 0) ? MediaFile
+			::join('media_file_relations as rel', 'rel.file_id', '=', 'media_files.id')
+        	->where('rel.post_id', '=', $id)
+        	->where('rel.post_type', '=', $this->moduleName)
+        	->select('*')
+      		->orderBy('id', 'desc')->get() : [];
 
         return [
         	'urls' => [
         		'upload' => action($thisClass.'@store'),
-        		'destroy' => action($thisClass.'@destroy', ''),
+        		'destroy' => action($thisClass.'@destroy', [$id, '']),
         	],
-        	'files' => app('UploadedFiles')->prepGaleryData($list)
+        	'files' => app('UploadedFiles')->prepGaleryData($list),
+        	'clone' => $request->input('clone', false)
         ];
     }
 
@@ -66,15 +74,26 @@ class UploadController extends Controller
         return app('UploadedFiles')->prepGaleryData( $savedFile )[0];
     }
 
-    public function destroy($id)
+    public function destroy($postId, $fileId)
     {
-        Uploads::deleteFiles( [ MediaFile::findOrFail($id) ] );
+
+    	if ($postId != 0) {
+    		// Удаляем связь
+    		MediaFileRelation::where('file_id', $fileId)
+    			->where('post_type', $this->moduleName)
+    			->where('post_id', $postId)->delete();
+    	}
+
+    	if (MediaFileRelation::where('file_id', $fileId)->count() == 0) {
+    		// Удаляем сам файл если нет связей.
+    		Uploads::deleteFiles( [ MediaFile::findOrFail($fileId) ] );
+    	}
     }
 
-	//Получаем данные о картинке
+	// Получаем данные о картинке
     public function edit($id)
     {
-    	$file = MediaFile::where('imageable_type', $this->moduleName)->findOrFail($id);
+    	$file = MediaFile::findOrFail($id);
 
     	$size = ($file['file_type'] == 'image') ? $file['sizes']['orig']['size'][0].' x '.$file['sizes']['orig']['size'][1] : '';
 
