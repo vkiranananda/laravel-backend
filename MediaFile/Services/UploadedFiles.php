@@ -136,7 +136,9 @@ class UploadedFiles {
         	} else {
         		$item['thumb'] = '/backend/images/file.png';
         	}
-			
+        	
+        	$item['orig'] = $this->getOrigPath($file);
+
 			foreach (['id', 'orig_name', 'file_type'] as $key) {
 				$item[$key] = Helpers::getDataField($file, $key);
 			}

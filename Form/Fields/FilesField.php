@@ -3,6 +3,7 @@
 namespace Backend\Root\Form\Fields;
 
 use \Backend\Root\MediaFile\Models\MediaFile;
+use UploadedFiles;
 
 class FilesField extends Field {
 
@@ -36,10 +37,10 @@ class FilesField extends Field {
 
         //Получаем миниатюры и полные версии изображений
     	$files = MediaFile::whereIn('id', $value)->get();
-    	
+
     	$filesGoodKey = [];
     	//Перебираем массив и создаем из свойства id ключ
-        foreach (app('UploadedFiles')->prepGaleryData( $files ) as $file) {
+        foreach (UploadedFiles::prepGaleryData( $files ) as $file) {
         	$filesGoodKey[ $file['id'] ] = $file;
         }
 

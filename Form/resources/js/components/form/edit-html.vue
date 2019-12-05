@@ -50,7 +50,7 @@
         },
         props: {
             fields: {},
-            config: {}
+            config: {},
         },        
         created: function () {
             this.store.dispatch('editForm/initData', { fields: this.fields, config: this.config } );

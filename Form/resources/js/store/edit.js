@@ -16,10 +16,12 @@ export default {
 
   	mutations: {
         initData (state, {fields, config}) {
-            state.fields = fields.fields;
-            state.hiddenFields = fields.hidden;
-            state.tabs = fields.tabs;
-            state.config = config;
+            state.fields = fields.fields
+            state.hiddenFields = fields.hidden
+            state.tabs = fields.tabs
+            state.config = config
+
+            if (config['clone-files']) state.uploadFiles = config['clone-files']
 
             //Наполняем табы реальными полями
             for (var name in state.tabs) {

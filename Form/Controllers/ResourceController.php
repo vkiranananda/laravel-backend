@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Helpers;
 use Auth;
 use \Backend\Root\MediaFile\Models\MediaFileRelation;
+use \Backend\Root\MediaFile\Models\MediaFile;
 use GetConfig;
 use Response;
 use Log;
@@ -90,19 +91,22 @@ class ResourceController extends Controller {
         		'url' 		=> action ($this->config['controller-name'].'@store'),
         		'title'		=> $this->config['lang']['create-title'],
         		'method'	=> 'post',
-        		'upload'	=> $this->uploadUrls($clone)
+        		'upload'	=> $this->uploadUrls($clone),
+        		'clone-files' => ($this->cloneGetFiles($clone))
         	], 
         	'fields'	=>	[
         		'fields'	=> $this->prepEditFields(),
         		'hidden'	=> $this->prepHiddenFields(),
         		'tabs'		=> $this->fields['edit']
-        	]
+        	],
         ];
 
         $this->resourceCombineAfter ('create');
    
         return view ($this->config['edit']['template'], $this->dataReturn);
     }
+
+
 
     //Сохраняем запись
     public function store()
@@ -252,6 +256,23 @@ class ResourceController extends Controller {
         $this->resourceCombineAfter ('destroy');
 
         return $this->dataReturn;
+    }
+
+    // Получаем список файлов для клонирования
+    protected function cloneGetFiles ($id)
+    {
+    	$list = ($id) ? MediaFile
+			::join('media_file_relations as rel', 'rel.file_id', '=', 'media_files.id')
+        	->where('rel.post_id', '=', $id)
+        	->where('rel.post_type', '=', class_basename($this->post))
+        	->select('media_files.id')
+      		->get() : [];
+
+      	$res = [];
+
+      	foreach ($list as $file) $res[] = $file['id'];
+
+      	return $res;
     }
 
     // Сахраняем загруженные данные.
