@@ -128,7 +128,10 @@ class Uploads {
             $res[$sizeStr ]['path'] = 'sizes/'.$sizeStr.'/';
             $res[$sizeStr ]['file'] = pathinfo($file['file'])['filename'].'.jpg';
 
-            $disk->put($file['path'].$res[$sizeStr ]['path'].$res[$sizeStr ]['file'], $img->encode('jpg') );
+            $disk->put(
+            	$file['path'] . $res[$sizeStr ]['path'] . $res[$sizeStr ]['file'], 
+            	$img->encode('jpg', 100) 
+            );
         }
 
         return $res;
