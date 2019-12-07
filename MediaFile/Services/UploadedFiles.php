@@ -211,8 +211,8 @@ class UploadedFiles {
 		$alt = Helpers::getDataField($file, 'img_alt');
 
     	$countImgSize = count($this->reqImgSize);
+    	$srcset = '';
 		if ($countImgSize > 0) {
-			$srcset = '';
 			foreach ($this->reqImgSize as $key => $size) {
 				// Получаем урлы миниатюры и если нету генерим ее
 				$thumb = $this->genFileLink($file, $size);
