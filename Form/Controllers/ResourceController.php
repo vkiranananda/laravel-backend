@@ -286,6 +286,7 @@ class ResourceController extends Controller {
             if ( $id == false ) $id = $this->post->id;
 
             foreach ($files as $fileId) {
+            	// Проверит есть ли запись firstOrCreate
             	MediaFileRelation::create([
 	        		'file_id' => $fileId,
 	        		'post_id' => $id,

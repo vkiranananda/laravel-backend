@@ -37,9 +37,9 @@
             }
         },
         watch: {
-            //Инитим данные при изменении переменной
+            // Инитим данные при изменении переменной
             config: function (config) { 
-                //Если данные не загружались, загружаем
+                // Если данные не загружались, загружаем
                 if (this.loadedUrl != this.url) {
                     this.loading = true;
                     axios.get(this.url)
@@ -50,16 +50,8 @@
 
                         // Если запись клонируется...
                         if (response.data.clone) {
-                            // Помечаем файлы как новые
-                            for (let file of this.files) {
-                                // Узаываем что это не наш файл, удаление будет происходить 
-                                // только локально
-                                file.clone = true
-                                // Помечаем файл как новый.
-                                file.newFile = true
-                            }
-                            // Комитим файлы
-                            this.setUploadedFiles()
+                            // Узаываем что это не наш файл, удаление будет происходить только локально
+                            for (let file of this.files) file.clone = true 
                         }
                     })
                     .catch( (error) => { console.log(error.response) });     
@@ -73,12 +65,9 @@
             chooseFiles() { this.$refs.upload.click() },
             
             // Комитим загруженные файлы
-            setUploadedFiles () {
-                var res = [];
-                for (var file of this.files) if (file.newFile == true) res.push (file.id)
+            addUploadedFile(id) { this.store.commit('editForm/addUploadFile', id ) },
+            delUploadedFile(id) { this.store.commit('editForm/delUploadFile', id ) },
 
-                this.store.commit('editForm/setUploadFiles', res )
-            },
             unselectFiles() {
                 for (var file of this.files) if (file.selected) file.selected = false;
                 this.selectedItems = [];
@@ -118,11 +107,10 @@
                             .then( (response) => {
                                 //Копируем нужные атрибуты
                                 for (var key in response.data) fileInArr[key] = response.data[key];
-                                fileInArr.newFile = true; //Файл новый
                                 this.selectFile(fileInArr)
                                 
                                 // Комитим новые файлы
-                                this.setUploadedFiles()
+                                this.addUploadedFile(fileInArr.id)
                             })
                             .catch( (error) => {
                                 console.log(error.response);
@@ -196,11 +184,11 @@
                     // Оповестить всех что файл удален
                     this.$bus.$emit('UploadFilesDeleteFile', file.id);
                     
+                    // Удаляем из новозагруженных файлов
+                    this.delUploadedFile(file.id)
+                    
                     // Удаляем из списка
                     this.$delete(this.files, this.files.indexOf(file));
-                    
-                    // Нужно для того, что если загруженный файл был удален
-                    this.setUploadedFiles()
                 }
 
                 if (file.clone) deleteFile()

@@ -45,13 +45,13 @@
                     //Отменяе предупреждающее окно при закрытии страницы
                     window.onbeforeunload = null;
 
-                    //Если нужно редиректим
+                    // Если нужно редиректим
                     if (result.redirect != undefined) {
                         if (result.redirect == 'back') history.back()
                         else window.location = result.redirect;
                     }
 
-                    //Инитим конфиг
+                    // Инитим конфиг
                     if (result.config != undefined) {
                         if (result.fields != undefined ) {//Полный инит
                             this.store.dispatch('editForm/initData', { 
@@ -59,11 +59,11 @@
                                 fields: result.fields
                             });
                         } 
-                        //Инитим элементы конфига
+                        // Инитим элементы конфига
                         else this.store.commit('editForm/initCustomConfig', result.config)
                     }
                     
-                    //Меняем урл если задано
+                    // Меняем урл если задано
                     if (result.replaceUrl != undefined) {
                         history.replaceState('data', '', result.replaceUrl);
                     }
@@ -71,7 +71,11 @@
                     this.status = 'saved';
                     this.store.commit('editForm/setErrors', {});
                    
-                    //Вызываем хуки
+                    // Вызываем хуки
+
+                    // Общий хук сохранения
+                    this.$bus.$emit('FormSaved')
+
                     if (result.hook != undefined && result.hook.name) {
                         this.$bus.$emit(result.hook.name, result.hook.data)
                     }
@@ -96,7 +100,7 @@
     }
 
 
-//Начинаем получать данные с табов
+// Начинаем получать данные с табов
 function getValuesFromTabs(tabs)
 {
     var allFields = {}; 
@@ -110,7 +114,7 @@ function getValuesFromTabs(tabs)
     }
     return getValuesFromFields(allFields);
 }
-//Получаем данные со списка полей
+// Получаем данные со списка полей
 function getValuesFromFields (fields)
 {
     var res = {};

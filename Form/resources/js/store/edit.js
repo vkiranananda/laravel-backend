@@ -53,7 +53,12 @@ export default {
         },
         // Удаляем репитед блок 
         delRepeatedBlock (state, data) { data.block.splice(data.index, 1); },
-        setUploadFiles (state, files) { state.uploadFiles = files },
+        // Добавляем удаляем вновь загруженные файлы.
+        addUploadFile (state, id) { state.uploadFiles.push(id) },
+        delUploadFile (state, id) { 
+            let elId = state.uploadFiles.indexOf(id)
+            if (elId != -1) state.uploadFiles.splice(elId, 1) 
+        },
      },
     actions: {
         // Добавляем новый репитед блок
