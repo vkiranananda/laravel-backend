@@ -21,7 +21,7 @@ export default {
             state.tabs = fields.tabs
             state.config = config
 
-            if (config['clone-files']) state.uploadFiles = config['clone-files']
+            state.uploadFiles = (config['clone-files']) ? config['clone-files'] : []
 
             //Наполняем табы реальными полями
             for (var name in state.tabs) {
@@ -51,7 +51,7 @@ export default {
             field.value.push({fields: cloneDeep(field['fields']), key: field['unique-index'] });
             field['unique-index']++;
         },
-        //Удаляем репитед блок 
+        // Удаляем репитед блок 
         delRepeatedBlock (state, data) { data.block.splice(data.index, 1); },
         setUploadFiles (state, files) { state.uploadFiles = files },
      },

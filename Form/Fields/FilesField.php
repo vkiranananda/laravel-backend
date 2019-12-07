@@ -2,6 +2,7 @@
 
 namespace Backend\Root\Form\Fields;
 
+use \Backend\Root\MediaFile\Models\MediaFileRelation;
 use \Backend\Root\MediaFile\Models\MediaFile;
 use UploadedFiles;
 
@@ -14,15 +15,15 @@ class FilesField extends Field {
         	//Получаем уникальные записи 
             $uniqueValue = array_unique($value);
 
-            //Инитим запрос
-            $imgReq = MediaFile::whereIn('id', $uniqueValue );
+            // Инитим запрос
+            $imgReq = MediaFile::whereIn('id', $uniqueValue);
 
             if ($this->field['type'] == 'gallery' ) 
             	$imgReq = $imgReq->where('file_type', 'image');
 
-            //Проверка на валидность, если количество записей не совпадает, значит пользователь мудрит
+            // Проверка на валидность, если количество записей не совпадает, значит пользователь мудрит
             if ( $imgReq->get()->count() != count($uniqueValue) ) {
-            	abort (403, 'DateField не существуют какие то файлы '.$this->field['type'].':'.$this->field['name']);
+            	abort (403, 'DateField не существуют какие то файлы ' . $this->field['type'].':'.$this->field['name']);
             }
         } else {
             $value = [];
