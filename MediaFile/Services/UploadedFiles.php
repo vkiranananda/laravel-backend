@@ -20,28 +20,28 @@ class UploadedFiles {
     private $loadFiles = [];
 
     // Генерим миниатюрку к файлу пример: [100, 100, 'fit'], [100, 'auto']
-    public function genFileLink($file, $sizes = [])
+    public function genFileLink($file, $size)
     {  
-        if (count($sizes) > 0 && $file['file_type'] == 'image') {
+        if (count($size) > 0 && $file['file_type'] == 'image') {
 			if (pathinfo($file['file'])['extension'] == 'gif') {
-            	return $this->getOrigPath($file);
+            	return $this->getOrigUrl($file);
             } else {
-            	$size = Uploads::sizesToStr($sizes);
+            	$sizeStr = Uploads::sizesToStr($size);
 	          
 	          	// Если миниатюрки нет.
-	            if (! isset($file['sizes'][$size])) {
+	            if (! isset($file['sizes'][$sizeStr])) {
 	                if (!is_array($file['sizes'])) $file['sizes'] = [];
 	                
-	                $file['sizes'] = array_merge($file['sizes'], Uploads::genSizes($file, [ $sizes ]));
+	                $file['sizes'] = array_merge($file['sizes'], Uploads::genSizes($file, [ $size ]));
 	                $file->save();
 	            }
-	            return $file['url'].$file['path'].$file['sizes'][$size]['path'].urlencode($file['sizes'][$size]['file']);
+	            return $file['url'].$file['path'].$file['sizes'][$sizeStr]['path'].urlencode($file['sizes'][$sizeStr]['file']);
 	        }
         } 
         return false;
     }
 
-    private function getOrigPath($file) {
+    public function getOrigUrl($file) {
     	return $file['url'].$file['path'].urlencode($file['file'] );
     }
 
@@ -81,10 +81,10 @@ class UploadedFiles {
 
     // Добавляет данные для автоматической загрузки всех изображений, что бы не плодить запросы
     // указвается массив данных
-    public function loadByArray($data) 
+    public function loadByArray($array) 
     {
-    	if (is_array($data)) {
-    		foreach ($data as $id) {
+    	if (is_array($array)) {
+    		foreach ($array as $id) {
     			$this->loadFiles[$id] = $id;
     		}
     	}
@@ -107,13 +107,13 @@ class UploadedFiles {
 
     // Добавляет данные для автоматической загрузки всех изображений, что бы не плодить запросы
     // указывается модель данных. Запрашиваются все файлы пренадлежашие этой модели.
-    public function loadByModel($model) 
+    public function loadByPost($post) 
     {
-    	$className = class_basename($model);
-    	if (isset($model['id']) && $className != '') {
+    	$className = class_basename($post);
+    	if (isset($post['id']) && $className != '') {
 	        foreach (MediaFile::
 	        	join('media_file_relations as rel', 'rel.file_id', '=', 'media_files.id')
-        		->where('rel.post_id', '=', $model->id)
+        		->where('rel.post_id', '=', $post->id)
         		->where('rel.post_type', '=', $className)
       			->orderBy('id', 'desc')->get() as $img) {
 	            
@@ -129,7 +129,7 @@ class UploadedFiles {
     	$res = [];
 
         foreach ($list as $key => $file) {
-        	$item = ['orig' => $this->genFileLink($file)['orig']];
+        	$item = ['orig' => $this->getOrigUrl($file)];
         	
         	if ($file['file_type'] == 'image') {
         		$item['thumb'] = $this->genFileLink($file, [128, 128, 'fit']);
@@ -137,7 +137,7 @@ class UploadedFiles {
         		$item['thumb'] = '/backend/images/file.png';
         	}
         	
-        	$item['orig'] = $this->getOrigPath($file);
+        	$item['orig'] = $this->getOrigUrl($file);
 
 			foreach (['id', 'orig_name', 'file_type'] as $key) {
 				$item[$key] = Helpers::getDataField($file, $key);
@@ -228,7 +228,7 @@ class UploadedFiles {
 				}
 				if($key == 0) $src = $thumb;
 			}
-		} else $src = $this->getOrigPath($file); // Получаем оригинал
+		} else $src = $this->getOrigUrl($file); // Получаем оригинал
 		
 		if ($srcset != '') $srcset = 'srcset="'.mb_substr($srcset, 0, -2).'"';
 
@@ -248,7 +248,7 @@ class UploadedFiles {
 
 			$res[] = ($link)
 				? "<a href=\"" 
-					. $this->getOrigPath($this->images[$id]) . "\" " 
+					. $this->getOrigUrl($this->images[$id]) . "\" " 
 					. Helpers::getAttrs($linkAttr) . ">" 
 					. $this->_htmlImg($this->images[$id], $attr) . "</a>"
 				: $this->_htmlImg($this->images[$id], $attr);
@@ -272,7 +272,7 @@ class UploadedFiles {
 			// Если файла нет игнорим
 			if (!isset($this->images[$id])) continue;
 
-    		$file = [ 'orig' => $this->getOrigPath($this->images[$id]) ];
+    		$file = [ 'orig' => $this->getOrigUrl($this->images[$id]) ];
 
 			if (count($this->reqImgSize) > 0) {
 				foreach ($this->reqImgSize as $size) {
@@ -321,6 +321,7 @@ class UploadedFiles {
 
 		return [];
     }
+
 
     // Удаляет  файл, если передан массив, удалит массив файлов
     public function deleteFiles($files)

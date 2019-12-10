@@ -5,6 +5,7 @@ use Storage;
 use Request;
 use Auth;
 use Backend\Root\MediaFile\Models\MediaFile;
+use Backend\Root\MediaFile\Models\MediaFileRelation;
 use Intervention\Image\Facades\Image as Image;
 
 class Uploads {
@@ -161,7 +162,11 @@ class Uploads {
     }
 
     //Удаляет массив файлов
-    public static function deleteFiles($files){
+    public static function deleteFiles($files) {
+    	
+    	// Удаляем все связи
+    	MediaFileRelation::whereIn('file_id', $files)->delete();
+
         foreach ($files as $file) {
         	//Удаляем основной файл
             Storage::disk( $file['disk'] )->delete($file['path'].$file['file']);

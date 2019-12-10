@@ -1,7 +1,7 @@
 <!-- Для использования в других модулях кроме основного, repeated и group поля работать не будут! -->
 <template>
     <div class="row">
-        <div v-for="(field, key) in fields" :key="key" v-if="field['v-show'] !== false" :class="field.row == 'half' ? 'col-6' : 'col-12'" >
+        <div v-for="(field, key) in fields" :key="key" v-if="field['v-show'] !== false" :class="colWidth(field.row)" >
             
             <div v-if="field.type == 'html'" v-html="field.html"></div>
             
@@ -65,6 +65,11 @@
             }
         },
         methods: {
+            colWidth: function (size) {
+                if (size == 'half') return 'col-6'
+                if (size == 'third') return 'col-4'
+                return 'col-12'
+            },
             onChange: function (value, name) {
                 if (this.storeName == '') this.$emit ('change', value, name)
                 else {
