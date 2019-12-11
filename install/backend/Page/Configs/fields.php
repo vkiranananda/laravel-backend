@@ -16,13 +16,14 @@
 	            'label' => 'Заголовок',
 	            'validate' => 'required',
 	        ],
-	       	'text' => [	
+	        'text' => [
 	        	'name' => 'text',
-	            'type' => 'mce', 
+	            'type' => 'editor', 
 	            'label' => 'Текст',
+	            'format' => 'fool',
+	            'size' => 'normal',
 	            'upload' => true,
 	        ],
-
     		'seo' => [
     			'name' => 'seo',
     			'type' => 'group',

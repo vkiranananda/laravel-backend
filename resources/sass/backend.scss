@@ -21,4 +21,20 @@ a.disabled {
 }
 
 
+.text-success {
+	fill: #28a745 !important;
+}
+
+.text-light {
+	fill: #f8f9fa !important;
+}
+
+.text-primary {
+	fill: #007bff !important;	
+}
+
+.text-danger {
+	fill: #dc3545 !important;	
+}
+
 @import "backend/resources/sass/backend.scss";

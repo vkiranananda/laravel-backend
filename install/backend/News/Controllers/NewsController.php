@@ -2,7 +2,7 @@
 
 namespace Backend\News\Controllers;
 
-class NewsController extends \Backend\Category\Controllers\CategoryResourceController
+class NewsController extends \Backend\Root\Category\Controllers\CategoryResourceController
 {
     public function update($id)
     {

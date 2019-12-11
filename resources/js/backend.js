@@ -19,6 +19,8 @@ Vue.prototype.$bus = new Vue();
 
 Vue.prototype.store = store;
 
+// Подключаем иконки они должы быть доступны всем.
+Vue.component('v-icon', require('./components/octicons.vue').default)
 
 // Модуль форм
 require('../../Form/resources/js/init.js');

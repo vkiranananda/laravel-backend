@@ -6,4 +6,4 @@
 	Backend::installResourceRoute('cat-root', 'Category', 'CategoryRoot');
 	Backend::installSortableRoute('sortable-root', 'Category', 'CategoryRoot');
 	
-	Route::get('routes', '\Backend\Category\Controllers\InfoController@routes');
+	Route::get('routes', '\Backend\Root\Category\Controllers\InfoController@routes');

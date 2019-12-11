@@ -18,7 +18,7 @@ return [
 	],[
 		'type' => 'method',
 		'name' => 'category',
-		'method' => '\Backend\Category\Services\Menu::getCats',
+		'method' => '\Backend\Root\Category\Services\Menu::getCats',
 	],[
 		'separator' => true,
 	],[
@@ -41,6 +41,6 @@ return [
 		'label' => 'Роутинг', 
 		'icon' => 'terminal', 
 		'space-top' => 2,
-		'url' => action('\Backend\Category\Controllers\InfoController@routes')
+		'url' => action('\Backend\Root\Category\Controllers\InfoController@routes')
 	],
 ];

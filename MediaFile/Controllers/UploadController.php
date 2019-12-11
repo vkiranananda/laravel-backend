@@ -10,6 +10,8 @@ use Backend\Root\MediaFile\Models\MediaFileRelation;
 use Backend\Root\MediaFile\Services\Uploads;
 use Content;
 use GetConfig;
+use UploadedFiles;
+
 
 use Log;
 
@@ -50,7 +52,7 @@ class UploadController extends Controller
         		'upload' => action($thisClass.'@store'),
         		'destroy' => action($thisClass.'@destroy', [$id, '']),
         	],
-        	'files' => app('UploadedFiles')->prepGaleryData($list),
+        	'files' => UploadedFiles::prepGaleryData($list),
         	'clone' => $request->input('clone', false)
         ];
     }
@@ -71,7 +73,7 @@ class UploadController extends Controller
 
         $savedFile[] = Uploads::saveFile($config);
 
-        return app('UploadedFiles')->prepGaleryData( $savedFile )[0];
+        return UploadedFiles::prepGaleryData( $savedFile )[0];
     }
 
     public function destroy($postId, $fileId)

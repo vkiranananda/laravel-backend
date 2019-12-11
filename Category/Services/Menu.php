@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Category\Services;
+namespace Backend\Root\Category\Services;
 
 use Categories;
 

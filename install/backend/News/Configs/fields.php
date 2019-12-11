@@ -22,11 +22,12 @@
 	        ],
 	        'text' => [
 	        	'name' => 'text',
-	            'type' => 'mce', 
-	            'label' => 'Текст новости',
+	            'type' => 'editor', 
+	            'label' => 'Текст',
+	            'format' => 'fool',
+	            'size' => 'normal',
 	            'upload' => true,
-	            'height' => 500
-			],
+	        ],
 			'url' => [
 	            'name' => 'url',
 	            'type' => 'text', 

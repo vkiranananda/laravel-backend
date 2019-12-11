@@ -3,7 +3,7 @@
         <div class="field">
             <component v-if="component" :is="'form-field-'+component" :field="fieldChanged" :error='error' v-on:change="$emit('change', $event)"></component>
         </div>
-        <div v-if="field.protected === true && blocked"  class="protected octicon octicon-key" @click="unblock"></div>
+        <v-icon v-if="field.protected === true && blocked" name="key" class="back" @click="unblock" />
     </div>
 </template>
 

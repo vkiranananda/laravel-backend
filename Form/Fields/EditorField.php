@@ -3,9 +3,9 @@
 namespace Backend\Root\Form\Fields;
 
 use \Backend\Root\MediaFile\Models\MediaFile;
+use UploadedFiles;
 
-
-class MceField extends Field {
+class EditorField extends Field {
 
 	// Получаем значение для сохраниения
 	public function save($value)
@@ -24,7 +24,7 @@ class MceField extends Field {
                 	
                 	//Ищем эти картинки в базе и создаем на них миниатюры    
                     if ( ($imgObj = MediaFile::find($imgId)) ){
-                        $imgUrl = app('UploadedFiles')->genFileLink($imgObj, $sizes)['thumb'];
+                        $imgUrl = UploadedFiles::genFileLink($imgObj, $sizes);
 
                         //Меняем на новую ссылку на картинку
                         $img = preg_replace("/src=[\'\"]{1}.*?[\'\"]{1}/", "src=\"".$imgUrl."\"", $img);

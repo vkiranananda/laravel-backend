@@ -5,7 +5,7 @@
         <slot></slot>
         <div class="invalid-feedback d-block" v-show="props.error">{{ props.error }}</div>
         <small class="form-text text-muted" v-if="props.field.desc != ''" v-html="props.field.desc"></small>
-        <div class="back octicon octicon-reply text-success" v-if="props.field._changed != undefined" @click="listeners.back"></div>
+        <v-icon v-if='props.field._changed != undefined' name="reply" class="back text-success" @click="listeners.back" />
     </div>                   
 </template>
 

@@ -1,6 +1,5 @@
 <template>
 	<div class="list">
-		
 		<div v-if="items.data.length > 0">
 		    <div class="row mb-3">
 		    	<div class="col-auto mr-auto"></div>
@@ -14,8 +13,8 @@
 						<th v-for="(field, key) in fields" :key="field.name" class="align-middle" scope="col" v-bind="field.attr">
 							<div v-if="field.sortable != undefined" class="sortable" :class="field.sortable === true ? 'none' : field.sortable" @click="sortable(key)">
 								{{ field.label }}
-								<div class="octicon icons-chevron-down down"></div>
-								<div class="octicon icons-chevron-up up"></div>
+								<v-icon name="chevron-down" class="down" />
+								<v-icon name="chevron-up" class="up" />
 							</div>
 							<span v-else>{{ field.label }}</span>
 						</th>
@@ -25,7 +24,7 @@
 		     	<tbody>
 		       		<tr v-for="item in items.data">
 		          		<td v-for="field in fields" v-bind="field.attr">
-		              		<span v-if="field.icon" :class="'icons-'+field.icon">&nbsp;</span>
+		              		<v-icon :name="field.icon" class="mr-2" v-if="field.icon" />
 		              		<a v-if="field.link" :href="item._links[field.link]">{{ item[field.name] }}</a>
 		              		<template v-else>
 		              			<span v-if="field.html === true" v-html="item[field.name]"></span>
@@ -35,13 +34,13 @@
 
 		          		<td class="menu-td" v-if="itemMenu">
 		            		<div class="dropdown">
-		              			<button class="btn btn-secondary button-grabber" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+		              			<button class="btn btn-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><v-icon name="grabber" width="10" /></button>
 		              			<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
 		                			<template v-for="elMenu in itemMenu">
 	          		                	<a v-if="item._links[elMenu.link] != undefined"
 		                					class="dropdown-item" 
-		                					:class="elMenu.icon ? 'octicon octicon-'+elMenu.icon : ''"
 		                					v-on:click.stop.prevent="itemActionClick(item._links[elMenu.link], elMenu)">
+		                						<v-icon :name="elMenu.icon" class="mr-2" v-if="elMenu.icon" />
 		                						{{ elMenu.label }}
 		                				</a>
 		                			</template>
@@ -128,7 +127,7 @@
 				display: none;
 				position: absolute;
 				margin-left: 5px;
-				top: 1px;
+				top: 5px;
 			}
 			&.none {
 				&:hover {
@@ -149,17 +148,6 @@
 					.up { display: none; }
 				}		
 			}
-		}
-		.button-grabber:before { 
-			content:"\f103"; 
-			font-family: Octicons;
-		    position: relative;
-		    top: -3px;
-		    left: -2px;
-		}
-		.button-grabber{
-			width: 30px;
-			height: 30px;
 		}
 		.file-directory {
 		    font-size: 22px;

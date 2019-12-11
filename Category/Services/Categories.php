@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Category\Services;
+namespace Backend\Root\Category\Services;
 
 use Backend\Category\Models\Category;
 use Helpers;
@@ -63,7 +63,7 @@ class Categories
 		if (!is_array($method)) $method = [$method];
 
 		foreach ($method as $m) {
-			Route::$m('{url}', '\Backend\Category\Controllers\RouteController@index')->where('url', '.+');
+			Route::$m('{url}', '\Backend\Root\Category\Controllers\RouteController@index')->where('url', '.+');
 		}
 	}
 

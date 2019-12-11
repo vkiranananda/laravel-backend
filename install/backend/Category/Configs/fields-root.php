@@ -81,10 +81,11 @@
 	        ],
 	        'post_text' => [
 	        	'name' => 'post_text',
-	            'type' => 'mce', 
+	            'type' => 'editor', 
 	            'label' => 'Текст',
+	            'format' => 'fool',
+	            'size' => 'normal',
 	            'upload' => true,
-	            'height' => '500'
 	        ],
 			'url' => [
 	            'name' => 'url',

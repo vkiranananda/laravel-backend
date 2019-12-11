@@ -1,6 +1,6 @@
 <?php
 
-namespace Backend\Category\Controllers;
+namespace Backend\Root\Category\Controllers;
 use Categories;
 
 class RouteController

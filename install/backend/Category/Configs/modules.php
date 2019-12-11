@@ -13,11 +13,5 @@ return [
 		'label' => 'Страницы',
 		// Если разделы с одинаковыми урлами, то по умолчанию все пойдет по этому
 		'main-route' => true,
-	],
-	'Blog' => [
-	 	'resourceController' => '\Backend\Blog\Controllers\BlogController',
-	 	'viewControllerAction' => '\App\Http\Controllers\BlogController',
-	 	'categoryController' => '\App\Http\Controllers\BlogController',
-	 	'label' => 'Блог',
-	 ],
+	]
 ];

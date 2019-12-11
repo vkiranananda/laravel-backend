@@ -4,7 +4,6 @@
 	<meta charset="UTF-8">
 	<title>Администрирование - @yield('title')</title>
 	
-	<link href="/backend/css/octicons.css" rel="stylesheet">
 	<link href="{{ mix('/backend/css/backend.css') }}" rel="stylesheet">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
@@ -24,7 +23,7 @@
 			</div>
 		</div>
 	</div>	
-	<script src="/backend/tinymce/tinymce.min.js"></script>
+	<!-- <script src="/backend/tinymce/tinymce.min.js"></script> -->
     <script src="{{ mix('/backend/js/admin.js') }}"></script>
 </body>
 </html>

@@ -15,17 +15,6 @@
 	            'label' => 'Имя пользователя',
 	            'validate' => 'required',
 	       	],
-	       	'role' => [
-	            'type' => 'select', 
-	            'name' => 'role', 
-	            'label' => 'Роль',
-	            'value' => 'user',
-	            'desc' => 'Администратор - полные привелегии, Редактор - только редактирование, Пользователь - все то что для регистрированных пользователей.',
-	            'options' => [
-	            	['value' => 'user', 'label' => 'Пользователь'],
-	            	['value' => 'admin', 'label' => 'Администратор'],
-	            ],
-	        ],
 	        'email' => [
 	            'type' => 'text', 
 	            'name' => 'email', 
@@ -58,7 +47,7 @@
 			'main' => [
 				'label' => 'Основные',
 				'name' => 'main',
-				'fields' => [ 'name', 'role', 'email', 'password', 'send_mail' ],
+				'fields' => [ 'name', 'email', 'password', 'send_mail' ],
 			],
 		],
 	];

@@ -1,4 +1,5 @@
 
+
 // Vue.component('fields-list', require('./components/fields-list.vue'));
 
 //Компоненты для фиелдсов

@@ -13,8 +13,8 @@
           <a :href="el.url" target="_blank">{{el.label}}</a>
         </div>
         <div class="p-2 flex-shrink-1 bd-highlight text-nowrap">
-          <div class="octicon octicon-file text-primary" @click="edit(el)"></div>
-          <div class="octicon octicon-x text-danger" @click="del(key)"></div>
+          <v-icon name="file" class="text-primary pr-3" @click="edit(el)" />
+          <v-icon name="x" class="text-danger" @click="del(key)" />
         </div>
       </div>
       <nested-item class="item-sub" :list="el.elements" @edit="edit" />
@@ -75,10 +75,6 @@ export default {
 
 
 <style scoped>
-  .item-container {
-    /*max-width: 30rem;*/
-    margin: 0;
-  }
   .item {
     cursor: move;
     padding: 0.5rem;
@@ -88,7 +84,7 @@ export default {
   .item-sub {
     margin: 0 0 0 1rem;
   }
-  .octicon {
-    cursor: pointer;
+  .octicon-wrapper {
+      cursor: pointer;
   }
 </style>

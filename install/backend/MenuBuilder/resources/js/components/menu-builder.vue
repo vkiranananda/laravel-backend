@@ -109,13 +109,5 @@ export default {
 			max-width: 20rem;
 			margin: 0;
 		}
-		.item {
-			padding: 1rem;
-			border: solid black 1px;
-			background-color: #fefefe;
-		}
-		.item-sub {
-			margin: 0 0 0 1rem;
-		}
 	}
 </style>
