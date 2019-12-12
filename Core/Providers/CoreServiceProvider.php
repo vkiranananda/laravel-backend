@@ -20,7 +20,7 @@ class CoreServiceProvider extends ServiceProvider
         // Инитим консольные команды
         if ($this->app->runningInConsole()) {
 	        $this->commands([
-	            Backend\Root\Core\Console\Commands\FixMediaFileRelations::class,
+	            Backend\Root\Core\Console\Commands\BackendInstall::class,
 	        ]);
 	    }
     }
