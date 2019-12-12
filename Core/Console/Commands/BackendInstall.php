@@ -77,6 +77,14 @@ class BackendInstall extends Command
     	echo "Все миграции были скопированы в $migrationsPath, наберите \n";
     	echo "php artisan migrate\n";
 
+    	echo "\nДобавляем в ". base_path('config/filesystems.php') . " новый диск, он необходим для загрузки файлов\n";
+
+		echo "'uploads' => [\n"
+        	."\t'driver' => 'local',\n"
+        	."\t'root' => public_path().'/uploads',\n"
+            ."\t'visibility' => 'public',\n"
+        	."],\n\n";
+
     	echo "\nФАЙЛОВАЯ СТРУКТУРА БЭКЕНДА КЭШИРУЕТСЯ, ЕСЛИ ВЫ СДЕЛАЛИ ТАМ КАКИЕ ТО ИЗМЕНЕНИЯ, ОБЯЗАТЕЛЬНО ОЧИСТИТЕ КЭШ\n";
     	echo "php artisan cache:clear\n\n";
 
