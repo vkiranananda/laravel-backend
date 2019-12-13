@@ -10,6 +10,10 @@ class Backend {
 
 	public function init()
 	{
+		if (app()->runningInConsole()) {
+			$this->data = [];
+			return;
+		}
 		//43200
         $this->data = Cache::rememberForever('backendCoreData', function() 
         {
@@ -51,7 +55,7 @@ class Backend {
 	public function installRoutes($mod = '', $ext = [])
 	{
 		// Если в консоли запущено не генерим маршруты.
-		if (app()->runningInConsole()) return;
+		// if (app()->runningInConsole()) return;
 		
 		if (!is_array($ext)) abort(418, 'installRoutes: Параметр $ext должен быть массивом');
 		

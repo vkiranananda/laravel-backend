@@ -16,22 +16,24 @@ class EditorField extends Field {
             $value = preg_replace_callback("|<img.*?data-id=[\'\"]{1}(\d+)[\'\"]{1}.*?>|", function($matches)
             {
                 $img = $matches[0];
-                $imgId = $matches[1];
+                $fileId = $matches[1];
 
-                //Смотрим задана ли им ширина и высота
-                if ( preg_match('/width=[\'\"]{1}(\d+)[\'\"]{1}/', $img, $width) && preg_match('/height=[\'\"]{1}(\d+)[\'\"]{1}/', $img, $height) ){
-                    $sizes = [ $width[1], $height[1] ];
-                	
-                	//Ищем эти картинки в базе и создаем на них миниатюры    
-                    if ( ($imgObj = MediaFile::find($imgId)) ){
-                        $imgUrl = UploadedFiles::genFileLink($imgObj, $sizes);
+                // Если не найден файл.
+                if (! ($file = MediaFile::find($fileId)) ) return $img;
 
-                        //Меняем на новую ссылку на картинку
-                        $img = preg_replace("/src=[\'\"]{1}.*?[\'\"]{1}/", "src=\"".$imgUrl."\"", $img);
-                    }
-                }
+                // Получаем размеры
+                $sizes[0] = (preg_match('/width=[\'\"]{1}(\d+)px[\'\"]{1}/i', $img, $width)) 
+                	? $width[1] : 'auto';
+                $sizes[1] = (preg_match('/height=[\'\"]{1}(\d+)px[\'\"]{1}/i', $img, $height))
+                	? $height[1] : 'auto';
 
-                return $img;
+                // Если какой то из размеров задан. Иначе берем оригинал. (Если были сделаны правки ранее, надо вернуть оригинал)
+                $imgUrl = ( $sizes[0] != 'auto' ||  $sizes[1] != 'auto') 
+                	? UploadedFiles::genFileLink($file, $sizes)
+                	: UploadedFiles::getOrigUrl($file);
+
+                // Меняем на новую ссылку на картинку
+                return preg_replace("/src=[\'\"]{1}.*?[\'\"]{1}/", "src=\"".$imgUrl."\"", $img);
 
             }, $value);
         }

@@ -15,7 +15,9 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     public function create()
     {
     	// Выставляем значение из параметра.
-        $this->post['category_id'] = Request::input('__parent_category_id', false);
+        $this->post['category_id'] = Request::input('__parent_category_id', 
+        	Request::input('cat', false)
+    	);
         return parent::create();
     }
 
@@ -54,12 +56,12 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     }
 
     // Добавляем кнопку перехода в категории
-    protected function indexListMenu($url_postfix = '')
+    protected function indexListMenu($urlPostfix = '')
     {
 
-    	$menu = parent::indexListMenu($url_postfix);
+    	$menu = parent::indexListMenu($urlPostfix);
 
-    	if (($catButton = $this->categoryButton($url_postfix)))
+    	if (($catButton = $this->categoryButton($urlPostfix)))
 			array_splice( $menu, 1, 0, [$catButton]);
 
 		return $menu;
@@ -78,28 +80,28 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     }
 
     // Добавляем префикс у урл
-    protected function listSortableButton($url_postfix) 
+    protected function listSortableButton($urlPostfix) 
     {
     	// Добавляем фильтрацию по категории
     	if ($this->categoryParentCat) {
-    		$url_postfix = Helpers::mergeUrlParams($url_postfix, '__parent_category_id', $this->categoryParentCat);
+    		$urlPostfix = Helpers::mergeUrlParams($urlPostfix, '__parent_category_id', $this->categoryParentCat);
     	}
 
-    	return parent::listSortableButton($url_postfix);
+    	return parent::listSortableButton($urlPostfix);
     }
 
     // Добавляем префикс у урл
-    protected function indexListMenuCreateButton($url_postfix)
+    protected function indexListMenuCreateButton($urlPostfix)
 	{
 		if ($this->categoryParentCat) {
-			$url_postfix = Helpers::mergeUrlParams($url_postfix, '__parent_category_id', $this->categoryParentCat);
+			$urlPostfix = Helpers::mergeUrlParams($urlPostfix, '__parent_category_id', $this->categoryParentCat);
 		}
 
-		return parent::indexListMenuCreateButton($url_postfix);
+		return parent::indexListMenuCreateButton($urlPostfix);
 	}
 
     // Выводим хлебные крошки.
-    protected function indexBreadcrumbs($url_postfix = '')
+    protected function indexBreadcrumbs($urlPostfix = '')
     {
     	// Если фильруется по категории.
     	if ($this->categoryParentCat) {
@@ -113,7 +115,7 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
 
     			$currentUrl = ($this->categoryParentCat == $catID) 
     				? false 
-    				: $url . Helpers::mergeUrlParams($url_postfix, 'parent_cat', $catID);
+    				: $url . Helpers::mergeUrlParams($urlPostfix, 'parent_cat', $catID);
 
     			array_unshift($res, [ 'url' => $currentUrl, 'label' => $cat['name']]);
 

@@ -25,7 +25,7 @@ trait Fields {
 		'select'	=>	'\Backend\Root\Form\Fields\SelectField',
 		'checkbox'	=>	'\Backend\Root\Form\Fields\SelectField',
 		'radio'		=>	'\Backend\Root\Form\Fields\SelectField',
-		'multiselect'=>	'\Backend\Root\Form\Fields\SelectField',
+		'multiselect' =>	'\Backend\Root\Form\Fields\SelectField',
 	];
 
 	// Инитип поле
@@ -69,7 +69,8 @@ trait Fields {
     	$res = [];
 
 		foreach ($this->fields['hidden'] as $field) {
-			$res[ $field['name'] ] = Helpers::getDataField($this->post, $field['name'] );
+			$value = (isset($field['value'])) ? $field['value'] : '';
+			$res[ $field['name'] ] = Helpers::getDataField($this->post, $field['name'], $value );
 	    }
 
 		return $res;

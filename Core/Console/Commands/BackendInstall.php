@@ -3,7 +3,9 @@
 namespace Backend\Root\Core\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Hash;
 use File;
+use App\User;
 
 class BackendInstall extends Command
 {
@@ -66,14 +68,29 @@ class BackendInstall extends Command
     		} else {
     			File::copyDirectory($installPath . 'public/backend', $publicBackend);
     		}
+
+	        User::firstOrCreate([
+	            'name' => 'Admin',
+	            'email' => 'admin@laravelbackend.ru',
+	        	],[
+	        		'password' => Hash::make('admin')
+	        ]);
+
+    		echo "\n\nБэкенд удачно установлен!\n\n";
     	}
+
+
 
     	echo "\nДальнейшие инструкции\n\n";
 
     	echo "Добавляем в файл с маршрутами routes/web.php строку\n";
     	echo "Backend::installRoutes('Backend');\n\n";
+    	
     	echo "Добавляем в файл composer.json в секцию autoload -> psr-4 новое пространство имен\n";
-    	echo "\"Backend\\\": \"backend/\"\n\n";
+    	echo "\"Backend\\\\\": \"backend/\"\n";
+        echo "и выполните команду:\n";
+        echo "composer dumpautoload\n\n";
+
     	echo "Все миграции были скопированы в $migrationsPath, наберите \n";
     	echo "php artisan migrate\n";
 
@@ -85,10 +102,22 @@ class BackendInstall extends Command
             ."\t'visibility' => 'public',\n"
         	."],\n\n";
 
+
+        echo "Сборка фронтенда:\n\n";
+        echo "npm install jquery popper.js bootstrap trumbowyg vue-trumbowyg lodash.clonedeep lodash.size vue vuex vue-multiselect vue-the-mask vue2-datepicker vuedraggable fecha @primer/octicons octicons\n\n";
+        echo "В файл webpack.mix.js добавялем строки:\n";
+        echo "mix.js('vendor/vkiranananda/backend/resources/js/backend.js', 'public/backend/js/admin.js').version();\n"
+        	."mix.sass('vendor/vkiranananda/backend/resources/sass/backend.scss', 'public/backend/css/backend.css').options({processCssUrls: false}).version();\n\n";
+   		echo "Далее запускаем компиляцию:\n";
+        echo "npm run production\n\n";
+
     	echo "\nФАЙЛОВАЯ СТРУКТУРА БЭКЕНДА КЭШИРУЕТСЯ, ЕСЛИ ВЫ СДЕЛАЛИ ТАМ КАКИЕ ТО ИЗМЕНЕНИЯ, ОБЯЗАТЕЛЬНО ОЧИСТИТЕ КЭШ\n";
     	echo "php artisan cache:clear\n\n";
 
     	echo "Каталог с модулями $backendPath\n\n";
+
+    	echo "URL админки ". url('content')
+    		.", login: 'admin@laravelbackend.ru', password: 'admin'. Не забудьте изменить эти данные.\n\n";
 
     	echo "Удачной работы :)\n\n";
     }
