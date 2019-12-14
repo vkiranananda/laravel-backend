@@ -35,7 +35,7 @@ class UploadController extends Controller
        	if ($this->moduleName == '') abort(403, 'UploadController: moduleName не установлена');
     }
 
-    // Получаем список всех файлов для записи
+    // Получаем список всех файлов для записи, id = 0 новая запись
     public function index(Request $request, $id = 0)
     {
     	$thisClass = '\\'.get_class($this);
@@ -78,18 +78,9 @@ class UploadController extends Controller
 
     public function destroy($postId, $fileId)
     {
-
-    	if ($postId != 0) {
-    		// Удаляем связь
-    		MediaFileRelation::where('file_id', $fileId)
-    			->where('post_type', $this->moduleName)
-    			->where('post_id', $postId)->delete();
-    	}
-
-    	if (MediaFileRelation::where('file_id', $fileId)->count() == 0) {
-    		// Удаляем сам файл если нет связей.
-    		Uploads::deleteFiles( [ MediaFile::findOrFail($fileId) ] );
-    	}
+    	// Если свзяей нет функция просто попытается их удалить, далее попытается удалить
+    	// реальный файл, если у него нет других связей.
+    	UploadedFiles::deleteFilesByRelation($fileId, $this->moduleName, $postId);
     }
 
 	// Получаем данные о картинке
