@@ -6,7 +6,7 @@
         <div class="row">
   		    <div v-for="field in fieldsNew.fields" class="form-group col-4">
   		    	<label v-if="field.label">{{ field.label }}</label>
-  		    	<print-field :field='field' v-on:change="onChange($event, field.name)"></print-field>
+  		    	<print-field :field='field' v-on:change="onChange($event, field)"></print-field>
   		    </div>
 
           <div class="col-auto">
