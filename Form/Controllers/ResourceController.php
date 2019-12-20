@@ -206,9 +206,9 @@ class ResourceController extends Controller {
 
         //Сохраяняем связи
         if ( method_exists($this, 'saveRelationFields') ) {
-        	//Удаялем все записи
+        	// Удаялем все записи
         	$this->destroyRelationFields ($this->post);
-        	//Добавляем новые
+        	// Добавляем новые
         	$this->saveRelationFields ($this->post, $data['relations']);
         }
         

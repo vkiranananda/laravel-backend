@@ -163,10 +163,6 @@ class Uploads {
 
     //Удаляет массив файлов
     public static function deleteFiles($files) {
-    	
-    	// Удаляем все связи
-    	MediaFileRelation::whereIn('file_id', $files)->delete();
-
         foreach ($files as $file) {
         	//Удаляем основной файл
             Storage::disk( $file['disk'] )->delete($file['path'].$file['file']);

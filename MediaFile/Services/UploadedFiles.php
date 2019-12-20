@@ -1,6 +1,7 @@
 <?php
 namespace Backend\Root\MediaFile\Services;
 use \Backend\Root\MediaFile\Models\MediaFile;
+use \Backend\Root\MediaFile\Models\MediaFileRelation;
 use \Backend\Root\MediaFile\Services\Uploads;
 use Content;
 use Helpers;
@@ -321,13 +322,53 @@ class UploadedFiles {
     }
 
 
-    // Удаляет  файл, если передан массив, удалит массив файлов
-    public function deleteFiles($files)
+
+    // Просто удаляем файл. Если связи есть, файл не трогается. Нужно удалить сначала связи.
+    // Если передан массив, удалит массив файлов.
+    private function deleteFiles($files)
     {
     	if (!is_array($files)) $files = [ $files ];
 
     	if (count($files) == 0) return;
 
-    	Uploads::deleteFiles( MediaFile::whereIn('id', $files)->get() );
+    	// Меням ключи со значениями местами
+    	$delFiles = array_flip($files);
+
+    	// Смотрим, если для какой то записи есть связь, не удаляем файл, убирая его из массива.
+    	foreach (MediaFileRelation::whereIn('file_id', $files)->get(['file_id']) as $rel) {
+    		if (isset($delFiles[$rel['file_id']])) unset($delFiles[$rel['file_id']]);
+    	}
+
+    	// Закидываем ключи обратно в массив
+    	$delFiles = array_keys($delFiles);
+		
+		// Если файлов на удаление больше 0, то удаляем.
+		if (count($delFiles) > 0) Uploads::deleteFiles(MediaFile::whereIn('id', $delFiles)->get());
+    }
+
+
+    // Удаляет  файл, с переданными связями postType и postId, 
+    // если передан массив, удалит массив файлов. 
+    // если останутся еще какие то связи то файл не удалится.
+    // Если передан четвертый параметр как true. То удалятся только связи, а файл остенется.
+    public function deleteFilesByRelation($files, $postType, $postId, $soft = false)
+    {
+    	
+    	if (!is_array($files)) $files = [ $files ];
+
+    	if (count($files) == 0) return;
+
+    	// Удаляем связи
+    	$relations = MediaFileRelation::
+    		whereIn('file_id', $files)
+    		->where('post_type', $postType)
+    		->where('post_id', $postId)
+    		->delete();
+
+    	// Если удаление мягкое, то файлы не трогаем.
+    	if ($soft) return;
+
+    	// Иначе пытаемся грохнуть файлы физически
+    	$this->deleteFiles($files);
     }
 }
