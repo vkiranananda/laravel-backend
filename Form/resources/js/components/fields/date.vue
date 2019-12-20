@@ -6,7 +6,9 @@
 
 <script>
 import DatePicker from 'vue2-datepicker'
+import 'vue2-datepicker/index.css';
 import fecha from 'fecha'
+
 
 export default {
 	props: ['field', 'error' ],
