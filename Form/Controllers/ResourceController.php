@@ -54,7 +54,7 @@ class ResourceController extends Controller {
 
     	// Получаем конфиги
         $this->config = array_replace_recursive(
-        	GetConfig::backend('Form::config'),
+        	GetConfig::backend('Form::config', true),
         	GetConfig::backend($this->configPath)
         );
 

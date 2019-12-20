@@ -25,7 +25,7 @@ class UploadController extends Controller
     protected $configPath = false;
 
     // Если малоли хочется изменить поля в форме редактирования файлв.
-    protected $editConfigPath = 'MediaFile::upload-edit';
+    protected $editConfigPath = false;
 
     public function __construct()
     {
@@ -62,9 +62,9 @@ class UploadController extends Controller
     {
     	// Получаем конфиг
     	$config = ($this->configPath === false)
-    		? $this->config = GetConfig::backend("MediaFile::upload")
+    		? $this->config = GetConfig::backend("MediaFile::upload", true)
 	       	: $this->config = array_replace_recursive (
-	       		GetConfig::backend("MediaFile::upload"),
+	       		GetConfig::backend("MediaFile::upload", true),
 	       		GetConfig::backend($this->configPath)
 	       	);
 
@@ -107,10 +107,11 @@ class UploadController extends Controller
     	];
     }
 
-    //Получаем поля
+    // Получаем поля
     private function _getFields(&$file)
     {
-    	$fields = GetConfig::backend($this->editConfigPath);
+    	
+    	$fields = $this->getEditConfig();
 
     	// Удаляем поля если тип file
     	if($file['file_type'] != 'image'){
@@ -132,7 +133,8 @@ class UploadController extends Controller
 
         //Сохраняем данные в запись
         $arrayData = $file['array_data'];
-        foreach (GetConfig::backend($this->editConfigPath) as $name => $field) {
+
+        foreach ($this->getEditConfig() as $name => $field) {
         	if ( ($value = $request->input($name, false)) ) {
         		$arrayData['fields'][$name] = $value;
         	} 
@@ -143,6 +145,11 @@ class UploadController extends Controller
         $file->save();
     }
 
+    protected function getEditConfig ()
+    {
+    	return ($this->editConfigPath === false) ? GetConfig::backend("MediaFile::upload-edit", true) 
+    		: GetConfig::backend($this->editConfigPath);
+    }
 
 
 }

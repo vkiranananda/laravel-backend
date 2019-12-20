@@ -20,19 +20,7 @@ class GetConfig {
 
         $path = (strrpos($config, '::') === false) ? "Configs/".$config.".php" :  str_replace('::', '/Configs/', $config).".php";
 
-        if ($root == true) {
-            $this->loadedConfigs[$type][$conf] = (is_file($pathRoot.$path)) 
-            	? include ($pathRoot.$path) 
-            	: [];
-        }
-        elseif(is_file($pathExt.$path)){
-        	$this->loadedConfigs[$type][$conf] = include ($pathExt.$path);
-        }
-
-        elseif(is_file($pathRoot.$path)){
-        	$this->loadedConfigs[$type][$conf] = include ($pathRoot.$path);
-        }
-        else $this->loadedConfigs[$type][$conf] = [];
+        $this->loadedConfigs[$type][$conf] = ($root == true) ? include ($pathRoot.$path) : include ($pathExt.$path);
 
         return $this->loadedConfigs[$type][$conf];
     }

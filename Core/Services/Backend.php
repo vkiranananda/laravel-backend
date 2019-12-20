@@ -34,7 +34,7 @@ class Backend {
 	               }
 	            }
 	        }
-	        //Fix core resources
+	        // Fix core resources
 	        foreach (['views', 'routes'] as $key) {
 		        if(isset($res[$key]['.'])){
 		        	$res[$key]['Backend'] = $res[$key]['.'];
