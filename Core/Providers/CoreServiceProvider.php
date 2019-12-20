@@ -21,6 +21,7 @@ class CoreServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
 	        $this->commands([
 	            Backend\Root\Core\Console\Commands\BackendInstall::class,
+	            Backend\Root\Core\Console\Commands\UserCreate::class,
 	        ]);
 	    }
     }

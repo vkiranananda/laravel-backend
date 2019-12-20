@@ -3,9 +3,7 @@
 namespace Backend\Root\Core\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Hash;
 use File;
-use App\User;
 
 class BackendInstall extends Command
 {
@@ -40,15 +38,16 @@ class BackendInstall extends Command
      */
     public function handle()
     {
-    	$backendName = 'backend';
+    	$backendName = 'backend2';
     	$installPath = __DIR__ . "/../../../install/";
     	$backendPath = base_path($backendName);
     	$migrationsPath = database_path('migrations/');
     	$publicBackend = public_path($backendName);
 
     	if (File::exists($backendPath)) {
-    		echo "Бэкенд уже установлен.\n";
+    		$this->info("Бэкенд уже установлен.\n");
     	} else {
+    		$this->info("Копирую файлы...");
     		// Копируем каталог с модулями
     		File::copyDirectory($installPath . 'backend', $backendPath);
 
@@ -57,68 +56,62 @@ class BackendInstall extends Command
     			$fileName = basename($file);
     		
     			if (File::exists($migrationsPath . $fileName)) {
-    				echo "Миграция $fileName уже существует, пропускаю.\n";
+    				$this->line("Миграция $fileName уже существует, пропускаю.");
     			} else {
     				File::copy($file ,$migrationsPath . $fileName);
     			}
     		}
 
     		if (File::exists($publicBackend)) {
-    			echo "Каталог $publicBackend уже сущетвует, пропускаю.\n";
+    			$this->line("Каталог $publicBackend уже сущетвует, пропускаю.");
     		} else {
     			File::copyDirectory($installPath . 'public/backend', $publicBackend);
     		}
 
-	        User::firstOrCreate([
-	            'name' => 'Admin',
-	            'email' => 'admin@laravelbackend.ru',
-	        	],[
-	        		'password' => Hash::make('admin')
-	        ]);
-
-    		echo "\n\nБэкенд удачно установлен!\n\n";
+    		$this->info("\nБэкенд удачно установлен!\n");
     	}
 
 
+    	$this->info("Дальнейшие инструкции\n");
 
-    	echo "\nДальнейшие инструкции\n\n";
-
-    	echo "Добавляем в файл с маршрутами routes/web.php строку\n";
-    	echo "Backend::installRoutes('Backend');\n\n";
+    	$this->info("Добавляем в файл с маршрутами routes/web.php строку");
+    	$this->line("Backend::installRoutes('Backend');\n");
     	
-    	echo "Добавляем в файл composer.json в секцию autoload -> psr-4 новое пространство имен\n";
-    	echo "\"Backend\\\\\": \"backend/\"\n";
-        echo "и выполните команду:\n";
-        echo "composer dumpautoload\n\n";
+    	$this->info("Добавляем в файл composer.json в секцию autoload -> psr-4 новое пространство имен");
+    	$this->line("\"Backend\\\\\": \"backend/\"");
+        $this->info("и выполните команду:");
+        $this->line("composer dumpautoload\n");
 
-    	echo "Все миграции были скопированы в $migrationsPath, наберите \n";
-    	echo "php artisan migrate\n";
+    	$this->info("Все миграции были скопированы в $migrationsPath, наберите");
+    	$this->line("php artisan migrate");
 
-    	echo "\nДобавляем в ". base_path('config/filesystems.php') . " новый диск, он необходим для загрузки файлов\n";
+    	$this->info("\nДобавляем в ". base_path('config/filesystems.php') . " новый диск, он необходим для загрузки файлов");
 
-		echo "'uploads' => [\n"
+		$this->line("'uploads' => [\n"
         	."\t'driver' => 'local',\n"
         	."\t'root' => public_path().'/uploads',\n"
             ."\t'visibility' => 'public',\n"
-        	."],\n\n";
+        	."],\n");
 
 
-        echo "Сборка фронтенда:\n\n";
-        echo "npm install jquery popper.js bootstrap trumbowyg vue-trumbowyg lodash.clonedeep lodash.size vue vuex vue-multiselect vue-the-mask vue2-datepicker vuedraggable fecha @primer/octicons octicons\n\n";
-        echo "В файл webpack.mix.js добавялем строки:\n";
-        echo "mix.js('vendor/vkiranananda/backend/resources/js/backend.js', 'public/backend/js/admin.js').version();\n"
-        	."mix.sass('vendor/vkiranananda/backend/resources/sass/backend.scss', 'public/backend/css/backend.css').options({processCssUrls: false}).version();\n\n";
-   		echo "Далее запускаем компиляцию:\n";
-        echo "npm run production\n\n";
+        $this->info("Сборка фронтенда:");
+        $this->line("npm install jquery popper.js bootstrap trumbowyg vue-trumbowyg lodash.clonedeep lodash.size vue vuex vue-multiselect vue-the-mask vue2-datepicker vuedraggable fecha @primer/octicons octicons");
+        $this->info("В файл webpack.mix.js добавялем строки:");
+        $this->line("mix.js('vendor/vkiranananda/backend/resources/js/backend.js', 'public/backend/js/admin.js').version();"
+        	."mix.sass('vendor/vkiranananda/backend/resources/sass/backend.scss', 'public/backend/css/backend.css').options({processCssUrls: false}).version();");
+   		$this->info("Далее запускаем компиляцию:");
+        $this->line("npm run production\n");
 
-    	echo "\nФАЙЛОВАЯ СТРУКТУРА БЭКЕНДА КЭШИРУЕТСЯ, ЕСЛИ ВЫ СДЕЛАЛИ ТАМ КАКИЕ ТО ИЗМЕНЕНИЯ, ОБЯЗАТЕЛЬНО ОЧИСТИТЕ КЭШ\n";
-    	echo "php artisan cache:clear\n\n";
+        $this->info("ФАЙЛОВАЯ СТРУКТУРА БЭКЕНДА КЭШИРУЕТСЯ, ЕСЛИ ВЫ СДЕЛАЛИ ТАМ КАКИЕ ТО ИЗМЕНЕНИЯ, ОБЯЗАТЕЛЬНО ОЧИСТИТЕ КЭШ");
+        $this->line("php artisan cache:clear\n");
 
-    	echo "Каталог с модулями $backendPath\n\n";
+    	$this->info("Каталог с модулями $backendPath\n");
 
-    	echo "URL админки ". url('content')
-    		.", login: 'admin@laravelbackend.ru', password: 'admin'. Не забудьте изменить эти данные.\n\n";
+    	$this->info("Для добавления нового пользователя используйте команду:");
+    	$this->line("php artisan backend:user_create\n");
+    	
+    	$this->info("URL админки ". url('content'). "\n");
+    	$this->info("Удачной работы :)\n");
 
-    	echo "Удачной работы :)\n\n";
     }
 }
