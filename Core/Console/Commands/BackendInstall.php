@@ -38,7 +38,7 @@ class BackendInstall extends Command
      */
     public function handle()
     {
-    	$backendName = 'backend2';
+    	$backendName = 'backend';
     	$installPath = __DIR__ . "/../../../install/";
     	$backendPath = base_path($backendName);
     	$migrationsPath = database_path('migrations/');
