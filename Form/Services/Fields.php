@@ -10,6 +10,7 @@ use Validator;
 
 // Подготовка и сохарнение полей
 
+
 class Fields {
 
 	// Базовые поля идущие в комплекте
@@ -26,11 +27,12 @@ class Fields {
 		'multiselect' =>	'\Backend\Root\Form\Fields\SelectField',
 	];
 
-	// Хуки
-	private $hooks = [
-		// Хук обработки полей перед сохранением, перед валидацией
-		'preSaveFieldValue' => null
-	];
+	public $request = [];
+
+	function __construct()
+	{
+		$this->request = Request::all();
+	}
 
 	// Инитим поле
 	public function initField ($field) 
@@ -202,7 +204,7 @@ class Fields {
     // Сохраяняем данные. Возвращаем изменненый объект post, fields - полный масси со всеми полями и табами
 	public function saveFields($post, $fields) 
 	{
-
+		$request = $this->request['fields'] ?? [];
 		$newFields = [];
 		$relationData = [];
 		$arrayData = $post['array_data'] ?? [];
@@ -223,10 +225,10 @@ class Fields {
 			} 
 		}
 
-		$errors = $this->saveFieldsList($newFields, Request::input('fields', []), $post, $arrayDataFields, $relationData);
+		$errors = $this->saveFieldsList($newFields, $this->request['fields'] ?? [], $post, $arrayDataFields, $relationData);
 
 		// Сохраняем скрытые поля
-    	if ( isset ($fields['hidden']) && is_array($fields['hidden'])){
+    	if ( isset ($fields['hidden']) && is_array($fields['hidden'])) {
     		// Проставляем всем полям тип
     		$hiddenFields = [];
     		foreach ($fields['hidden'] as $field) {
@@ -235,7 +237,7 @@ class Fields {
     		}
     		$this->saveFieldsList(
     			$hiddenFields,	
-    			Request::input('hidden', []), 
+    			$this->request['hidden'] ?? [], 
     			$post,
     			$arrayData,
     			$relationData
@@ -359,10 +361,6 @@ class Fields {
             
 		$value = $this->initField($field)->save($value);
 
-		// Хук обработки полей перед сохранением, перед валидацией что при ошибке в поле,
-		// будет более верная ошибка валидации.
-        $value = $this->execHook('preSaveFieldValue', $field, $value);
-
         //Правила валидации
         if ( isset($field['validate']) ) {
         	
@@ -400,7 +398,7 @@ class Fields {
 	            if($showBlock['operator'] == '||' && $res == true) return $res;    
 	        }
 	  
-	        //Проверяем соответсвия условиям
+	        // Проверяем соответсвия условиям
 	        if ($showBlock['type'] == '==') {
 	            if ( $data[ $showBlock['field'] ] == $showBlock['value']) $res = true;
 	            else $res = false;  
@@ -412,25 +410,4 @@ class Fields {
 
 	    return $res;
 	}
-
-	// ------------------------------ХУКИ-------------------------------------
-
-	// Регистрация хука, первый парамер название, второк колбэк функция
-	public function registerHook($name, $func)
-	{
-		if (isset($this->hooks[$name])) $this->hooks[$name] = $func;
-	}
-	
-	// Хук обработки полей перед сохранением
-	private function execHook ($name, ...$args) 
-	{ 
-		return ($this->hooks[$name] === null) ? $this->$name(...$args) : $this->hooks[$name](...$args);
-	}
-
-	// preSaveFieldValue
-	private function preSaveFieldValue($field, $value) 
-	{ 
-		return $value;
-	}
-
 }
