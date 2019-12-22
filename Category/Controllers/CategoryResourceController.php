@@ -238,9 +238,6 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
         // Получаем корневую категорию (раздел)
         $rootCat = Categories::getRootCat($catID);
 
-        // Если не древовидная структура, удалем поле
-        if ($rootCat['conf']['type'] != 'hierarchical')	unset($this->fields['fields']['category_id']);
-
         // Если поле категории не установлено добавляем его в скрытые поля и завершаем
         if (!isset($this->fields['fields']['category_id'])) {
 	        $this->fields['hidden'][] = [ 'name' => 'category_id' ];

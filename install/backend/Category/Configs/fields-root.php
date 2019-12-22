@@ -100,6 +100,13 @@
     			'load-from' => 'seo-fields',
     			'field-save' => 'array' 
     		],
+    		'sitemap' => [
+    			'name' => 'sitemap',
+    			'type' => 'group',
+    			'load-from' => 'Sitemap::category',
+    			'field-save' => 'array',
+    			'label' => 'Карта сайта' 
+    		],
 		],
 		'sortable' => ['name'],
 		'edit' => [
@@ -119,7 +126,10 @@
 				'label' => 'SEO',
 				'name' => 'seo',
 				'fields' => [ 'url', 'seo' ],
-			],
+			],'sitemap' => [
+				'label' => 'Карта сайта',
+				'name' => 'sitemap',
+				'fields' => [ 'sitemap' ],
+			]
 		],
 	];
-// GetConfig::backend('Sitemap::fields')

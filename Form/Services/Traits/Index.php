@@ -55,7 +55,7 @@ trait Index {
         	}
 
         	$fields[] = $field;
-        	$fields_prep[] = $this->initField(array_replace($mainField, $field));
+        	$fields_prep[] = $this->fieldsPrep->initField(array_replace($mainField, $field));
         }
 
         // Делаем выборку

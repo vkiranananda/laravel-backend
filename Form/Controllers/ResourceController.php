@@ -15,7 +15,6 @@ use Log;
 class ResourceController extends Controller {
 
 	use \Backend\Root\Form\Services\Traits\Index;
-    use \Backend\Root\Form\Services\Traits\Fields;
     use \Backend\Root\Form\Services\Traits\ListSortable;
 
     // Имя общего конфига, если false берется как config
@@ -36,8 +35,12 @@ class ResourceController extends Controller {
     // Генерируемый массив с данными для веб
     protected $dataReturn = [];
 
+    // Класс для работы с полями
+    protected $fieldsPrep;
+
     // Модель данных с которой работаем
     public $model = false;
+
 
     // Инитим данные.
     function __construct()
@@ -67,12 +70,14 @@ class ResourceController extends Controller {
         // Текущий контроллер
   		$this->config['controller-name'] = '\\'.get_class($this);
         // Проверям, если модель установлена в конфиге берем от туда, если нет то по умолчанию.
-        $model = (isset($this->config['model'])) ? $this->config['model'] : $this->model;
+        $model = $this->config['model'] ?? $this->model;
         
         // Если модель нигде не установлена, пытемся сгенерить сами из имени модуля
         if (!$model) $model = $this->config['base-namespace'].'Models\\'.$moduleName;
         
         $this->post = new $model();
+
+        $this->fieldsPrep = new \Backend\Root\Form\Services\Fields();
 
     }
 
@@ -95,8 +100,8 @@ class ResourceController extends Controller {
         		'clone-files' => ($this->cloneGetFiles($clone))
         	], 
         	'fields'	=>	[
-        		'fields'	=> $this->prepEditFields(),
-        		'hidden'	=> $this->prepHiddenFields(),
+        		'fields'	=> $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
+        		'hidden'	=> $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
         		'tabs'		=> $this->fields['edit']
         	],
         ];
@@ -115,7 +120,7 @@ class ResourceController extends Controller {
         $this->resourceCombine('store');
 
         // Сохраняем данные в запись
-        $data = $this->SaveFields();
+        $data = $this->fieldsPrep->saveFields($this->post, $this->fields);
 
         // Если ошибка валидации
         if ( $data['errors'] !== true ) return Response::json([ 'errors' => $data['errors'] ], 422);
@@ -132,10 +137,14 @@ class ResourceController extends Controller {
         $this->post->save();
 
         // Сохраяняем связи
-        if ( method_exists($this, 'saveRelationFields') )$this->saveRelationFields($this->post, $data['relations']);
+        if ( method_exists($this, 'saveRelationFields') ) {
+        	$this->saveRelationFields($this->post, $data['relations']);
+        }
         
         // Сохраняем медиафайлы
-        if ( $this->config['upload']['enable'] ) $this->saveMediaRelations( Request::input('files', []) );
+        if ( $this->config['upload']['enable'] ) {
+        	$this->saveMediaRelations( Request::input('files', []) );
+        }
 
         // Обработка редиректов
         if ( isset($this->config['store-redirect']) ) {
@@ -170,8 +179,8 @@ class ResourceController extends Controller {
         		'postId'	=> $this->post['id'],
         	], 
         	'fields'	=>	[
-        		'fields'	=> $this->prepEditFields(),
-        		'hidden'	=> $this->prepHiddenFields(),
+        		'fields'	=> $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
+        		'hidden'	=> $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
         		'tabs'		=> $this->fields['edit']
         	]
         ];
@@ -190,16 +199,16 @@ class ResourceController extends Controller {
         
         $this->resourceCombine('update');
         
-    	//Сохраняем данные в запись
-        $data = $this->SaveFields();
+    	// Сохраняем данные в запись
+        $data = $this->fieldsPrep->saveFields($this->post, $this->fields);
 
-        //Если ошибка валидации
+        // Если ошибка валидации
         if ( $data['errors'] !== true ) return Response::json([ 'errors' => $data['errors'] ], 422);
 
         // Устанавливаем новое значние поста
         $this->post = $data['post'];
 
-        //Хук перед сохранением
+        // Хук перед сохранением
         $this->preSaveData('update');
 
         $this->post->save();

@@ -13,7 +13,7 @@ class UserCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'backend:user_create';
+    protected $signature = 'backend:user';
 
     /**
      * The console command description.
@@ -32,29 +32,52 @@ class UserCreate extends Command
     {
         $name     = $this->ask('Имя пользователя', null);
         $email    = $this->askUniqueEmail('Email адрес');
-        $password = $this->askPassword('Пароль');
+        $password = $this->askPassword('Пароль', 'Подтверждение пароля');
 
-        if ( $this->confirm("Создаю пользователя {$name} <{$email}>?", true) ){
-            $user = User::forceCreate(['name' => $name, 'email' => $email, 'password' => Hash::make($password)]);
+        $user = User::forceCreate(['name' => $name, 'email' => $email, 'password' => Hash::make($password)]);
 
-        	$this->info("Пользователь создан");    	
-        }
+       	$this->info("Пользователь создан\n");
     }
 
-    protected function askPassword($message)
+
+    // Запрашиваем пароль
+    protected function askPassword($message, $message2)
     {
         do {
-            $password = $this->secret($message, null);
+            $password = $this->secret($message);
 
-            if (strlen($password) > 5) break;
-            
-            $this->error('Пароль должен быть не менее 6 символов');
+            if (!$this->checkPasswordValid($password)) continue;
+
+            $password2 = $this->secret($message2);
+
+            if ($this->checkPasswordConfurm($password, $password2)) return $password;
 
         } while (true);
-
-        return $password;
     }
 
+    // Проверяем валидность пароля
+    protected function checkPasswordValid($password)
+    {
+        if (strlen($password) < 6) {
+        	$this->error('Пароль должен быть не менее 6 символов');
+        	return false;
+        }
+
+        return true;
+    }
+
+    // Проверяем совпадение паролей
+    protected function checkPasswordConfurm($password, $password2)
+    {
+        if ($password != $password2) {
+        	$this->error('Пароли не совпадают');
+        	return false;
+        }
+
+        return true;
+    }
+
+    // Запрашиваем уникальный емаил
     protected function askUniqueEmail($message)
     {
         do {
@@ -64,10 +87,7 @@ class UserCreate extends Command
         return $email;
     }
 
-	/**
-	 * @param $email
-	 * @return bool
-	 */
+	// Проверяем валидность емаила
     protected function checkEmailIsValid($email)
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -78,13 +98,10 @@ class UserCreate extends Command
         return true;
     }
 
-	/**
-	 * @param $email
-	 * @return bool
-	 */
+    // Проверяем уникальность емаил
     public function checkEmailIsUnique($email)
     {
-        if (User::whereEmail($email)->first()) {
+        if (User::whereEmail($email)->exists()) {
             $this->error('Пользователь с адресом "'.$email.'" уже существует');
             return false;
         }

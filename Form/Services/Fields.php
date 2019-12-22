@@ -1,21 +1,19 @@
 <?php
 
-namespace Backend\Root\Form\Services\Traits;
+namespace Backend\Root\Form\Services;
+
 use Request;
 use Helpers;
-use Forms;
 use GetConfig;
 use Log;
 use Validator;
-use Response;
-use Illuminate\Support\Facades\DB;
 
-//Подготовка и сохарнение полей
+// Подготовка и сохарнение полей
 
-trait Fields {
+class Fields {
 
 	// Базовые поля идущие в комплекте
-	private $_fieldsClasses = [
+	private $fieldsClasses = [
 		'default'	=>	'\Backend\Root\Form\Fields\Field',
 		'date'		=>	'\Backend\Root\Form\Fields\DateField',
 		'files'		=>	'\Backend\Root\Form\Fields\FilesField',
@@ -28,56 +26,61 @@ trait Fields {
 		'multiselect' =>	'\Backend\Root\Form\Fields\SelectField',
 	];
 
-	// Инитип поле
+	// Хуки
+	private $hooks = [
+		// Хук обработки полей перед сохранением, перед валидацией
+		'preSaveFieldValue' => null
+	];
+
+	// Инитим поле
 	public function initField ($field) 
 	{
-		$type = (isset($field['type'])) ? $field['type'] : 'default';
+		$type = $field['type'] ?? 'default';
+
 		// Подключаем классы обработки полей
-		$type_field = (isset($this->_fieldsClasses[$type])) ? $type : 'default';
+		$type_field = (isset($this->fieldsClasses[$type])) ? $type : 'default';
+
 		// Инитим класс обработчик
-		return new $this->_fieldsClasses[$type_field]($field);
+		return new $this->fieldsClasses[$type_field]($field);
 	}
 
-	//Подготавливаем все поля для отображения. 
-    protected function prepEditFields()
-    {
-    	$arrayData = ( isset($this->post['array_data']['fields']) ) ? $this->post['array_data']['fields'] : [];
 
-    	$fields = $this->fields['fields'];
-    	$post = $this->post;
-    	//Перебираем корневые поля и устанавлтваем значение по умолчанию
+	// Подготавливаем все поля для отображения. fields корневой список
+    public function editFields($post, $fields)
+    {
+    	$arrayData = $post['array_data']['fields'] ?? [];
+
+    	// Перебираем корневые поля и устанавлтваем значение по умолчанию
 		foreach ($fields as &$field) {
 			
 			//Если нет данных полей пропускаем
-			if( !isset($field['name']) || !isset($field['type']) ) continue;
-
-			// $field['value'] = $this->_getFieldValue($field, $post, $arrayData);
+			if (!isset($field['name']) || !isset($field['type'])) continue;
 
     		//Обрабатываем конкретное поле устанавливая нужные значния
-    		$field = $this->_prepEditField($field, $post, $arrayData);
+    		$field = $this->prepEditField($field, $post, $arrayData);
 	    }
-	    // dd($fields);
+
 		return $fields;
     }
 
-	// Подготавливаем скрытые поля для отображения. 
-    protected function prepHiddenFields()
+	// Подготавливаем скрытые поля для отображения. fields только скрытые поля
+    public function editHiddenFields($post, $fields)
     {
-    	// Возвращаем пустой массив если значение не установлено
-    	if (! isset ($this->fields['hidden']) || ! is_array($this->fields['hidden'])) return [];
+    	// Если не массив или он пуст, возвращаем пустой массив
+    	if (!is_array($fields) || count($fields) == 0) return [];
 
     	$res = [];
 
-		foreach ($this->fields['hidden'] as $field) {
+		foreach ($fields as $field) {
 			$value = (isset($field['value'])) ? $field['value'] : '';
-			$res[ $field['name'] ] = Helpers::getDataField($this->post, $field['name'], $value );
+			$res[ $field['name'] ] = Helpers::getDataField($post, $field['name'], $value );
 	    }
 
 		return $res;
     }
 
-    //Получаем значение для поля, none - если значение
-    private function _getFieldValue ($field, &$post, $arrayData, $none = false)
+    // Получаем значение для поля, none - если значение
+    private function getFieldValue ($field, &$post, $arrayData, $none = false)
     {
     	if ( $none ) return '';
 
@@ -95,11 +98,8 @@ trait Fields {
     }
 
     // Подготавливаем поля для вывода
-    private function _prepEditField ($field, &$post, $arrayData, $none = false) 
+    private function prepEditField ($field, &$post, $arrayData, $none = false) 
     {
-		// //Устанавливае value	
-		// $value = $field['value'];
-
     	//group fields
     	if ($field['type'] == 'group') {
     		
@@ -130,10 +130,10 @@ trait Fields {
 				}
     			
     			//Выставляем значние, берем из value текущего поля
-		    	$groupField['value'] = $this->_getFieldValue($groupField, $post, $value, $none);
+		    	$groupField['value'] = $this->getFieldValue($groupField, $post, $value, $none);
     		
     			//Делаем дополнительные обработки по полям.
-    			$groupField = $this->_prepEditField($groupField, $post, $value, $none);
+    			$groupField = $this->prepEditField($groupField, $post, $value, $none);
     		}
 
     		unset($field['value']);
@@ -142,7 +142,7 @@ trait Fields {
 		//для повторителей.
 	    elseif ($field['type'] == 'repeated') {
 	    	
-			$value = $this->_getFieldValue($field, $post, $arrayData, $none);
+			$value = $this->getFieldValue($field, $post, $arrayData, $none);
 
 			// dd($value);
 	    	//Если значение не установлено, создаем первую запись
@@ -169,12 +169,9 @@ trait Fields {
 	    			
 	    			//Полюбому значения в массиве
 	    			$oneRepField['field-save'] = 'array';    						
-					
-					//Выставляем значение 
-					// $oneRepField['value'] = $this->_getFieldValue($oneRepField, $post, $valuesBlock, $none);
 
 		    		//Обрабатываем разные типы и выставляем окончательное значение.
-		    		$oneRepField = $this->_prepEditField($oneRepField, $post, $valuesBlock, $none);
+		    		$oneRepField = $this->prepEditField($oneRepField, $post, $valuesBlock, $none);
 		    	}
 		    	$field['unique-index']++;
 	    	}
@@ -187,10 +184,10 @@ trait Fields {
 				if( !isset($baseField['name']) || !isset($baseField['type']) ) continue;
 
 				$baseField['value'] = '';
-	    		$baseField = $this->_prepEditField($baseField, $post, [], true);
+	    		$baseField = $this->prepEditField($baseField, $post, [], true);
 	    	}
 	    } else {
-			$field['value'] = $this->initField($field)->edit($this->_getFieldValue($field, $post, $arrayData, $none));
+			$field['value'] = $this->initField($field)->edit($this->getFieldValue($field, $post, $arrayData, $none));
 		}
         //Убираем лишние опции
         unset( $field['field-save'] );
@@ -202,44 +199,41 @@ trait Fields {
 
 ///////---------------------------------------Saving-----------------------------------------------
 
-
-	protected function saveFields() 
+    // Сохраяняем данные. Возвращаем изменненый объект post, fields - полный масси со всеми полями и табами
+	public function saveFields($post, $fields) 
 	{
-
-		$request = Request::input('fields', []);
 
 		$newFields = [];
 		$relationData = [];
-		$post = $this->post;
-		$arrayData = ( isset($post['array_data']) ) ? $post['array_data'] : [];
+		$arrayData = $post['array_data'] ?? [];
 
 		$arrayDataFields = [];
 		
 		// Получаем все поля в табах которые не скрыты 
-		foreach ($this->fields['edit'] as $tab) {
+		foreach ($fields['edit'] as $tab) {
 			// не скрытый
 			if ( !isset($tab ['show']) || $this->showCheck($tab['show'], $request) !== false) {
 				
 				foreach ($tab['fields'] as $fieldName) { //Массив из доступных полей
 					//Если поля нет в общем списке, например его удалили, то пропускаем обработку
-					if (! isset ($this->fields['fields'][$fieldName]) ) continue; 
+					if (! isset ($fields['fields'][$fieldName]) ) continue; 
 
-					$newFields[$fieldName] = $this->fields['fields'][$fieldName];
+					$newFields[$fieldName] = $fields['fields'][$fieldName];
 				}
 			} 
 		}
 
-		$errors = $this->_saveFieldsList($newFields, $request, $post, $arrayDataFields, $relationData);
+		$errors = $this->saveFieldsList($newFields, Request::input('fields', []), $post, $arrayDataFields, $relationData);
 
 		// Сохраняем скрытые поля
-    	if ( isset ($this->fields['hidden']) && is_array($this->fields['hidden'])){
+    	if ( isset ($fields['hidden']) && is_array($fields['hidden'])){
     		// Проставляем всем полям тип
     		$hiddenFields = [];
-    		foreach ($this->fields['hidden'] as $field) {
+    		foreach ($fields['hidden'] as $field) {
     			$field['type'] = 'hidden';
     			$hiddenFields[] = $field;
     		}
-    		$this->_saveFieldsList(
+    		$this->saveFieldsList(
     			$hiddenFields,	
     			Request::input('hidden', []), 
     			$post,
@@ -262,7 +256,7 @@ trait Fields {
 	}
 
 	// Обходит массив полей и сохраняет данные. Рекурсивная функция
-	private function _saveFieldsList (
+	private function saveFieldsList (
 		$fields, // Список полей
 		$request, // Данные формы
 		&$post, //  Пост
@@ -289,7 +283,7 @@ trait Fields {
 			// Выставляем fieldSave
 			if ( isset($fieldSave) ) $field['field-save'] = $fieldSave;
 
-			$error = $this->_saveFieldData($field, $post, $arrayData, $relationData);
+			$error = $this->saveFieldData($field, $post, $arrayData, $relationData);
 
 			if ($error !== true) $errors [ $field['name'] ] = $error; 
 		}
@@ -298,7 +292,7 @@ trait Fields {
 	}
 
 	// Обработка конечного поля
-	private function _saveFieldData ($field, &$post, &$arrayData, &$relationData) 
+	private function saveFieldData ($field, &$post, &$arrayData, &$relationData) 
 	{
 
         $value = $field['value'];
@@ -314,7 +308,7 @@ trait Fields {
 				$field['fields'] = GetConfig::backend($field['load-from']);
 			}
 
-			$error = $this->_saveFieldsList($field['fields'], $value, $post, $arrayData[ $field['name'] ], $relationData, $field['field-save']);
+			$error = $this->saveFieldsList($field['fields'], $value, $post, $arrayData[ $field['name'] ], $relationData, $field['field-save']);
 		
 			return $error;
 		}	
@@ -346,7 +340,7 @@ trait Fields {
 				}
 
 				Log::debug($repData['value']);
-				$error = $this->_saveFieldsList(
+				$error = $this->saveFieldsList(
 					$field['fields'], 
 					$repData['value'],
 					$post,
@@ -365,9 +359,9 @@ trait Fields {
             
 		$value = $this->initField($field)->save($value);
 
-		// Хук обработки полей перед сохранением, перед валидацие стоит потом что при ошибке в поле
+		// Хук обработки полей перед сохранением, перед валидацией что при ошибке в поле,
 		// будет более верная ошибка валидации.
-        $value = $this->preSaveFieldValue($field, $value);
+        $value = $this->execHook('preSaveFieldValue', $field, $value);
 
         //Правила валидации
         if ( isset($field['validate']) ) {
@@ -419,6 +413,24 @@ trait Fields {
 	    return $res;
 	}
 
+	// ------------------------------ХУКИ-------------------------------------
+
+	// Регистрация хука, первый парамер название, второк колбэк функция
+	public function registerHook($name, $func)
+	{
+		if (isset($this->hooks[$name])) $this->hooks[$name] = $func;
+	}
+	
 	// Хук обработки полей перед сохранением
-	protected function preSaveFieldValue ($field, $value) { return $value; }
+	private function execHook ($name, ...$args) 
+	{ 
+		return ($this->hooks[$name] === null) ? $this->$name(...$args) : $this->hooks[$name](...$args);
+	}
+
+	// preSaveFieldValue
+	private function preSaveFieldValue($field, $value) 
+	{ 
+		return $value;
+	}
+
 }

@@ -22,6 +22,7 @@ class CoreServiceProvider extends ServiceProvider
 	        $this->commands([
 	            Backend\Root\Core\Console\Commands\BackendInstall::class,
 	            Backend\Root\Core\Console\Commands\UserCreate::class,
+	            Backend\Root\Core\Console\Commands\ModuleCreate::class,
 	        ]);
 	    }
     }
