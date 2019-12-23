@@ -5,6 +5,6 @@
 			'create-title' => 'Добавить новую запись',
 			'edit-title' => 'Редактирование записи',
 		],
-        'upload' => ['enable' => true],
-		'list' => ['sortable' => true],
+        {upload}'upload' => ['enable' => true],
+		{sort}'list' => ['sortable' => true],
 	];
