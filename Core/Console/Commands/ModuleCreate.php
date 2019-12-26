@@ -192,6 +192,7 @@ class ModuleCreate extends Command
                 $module
         );
 
+        // Вывод справки о маршрутах
         $routeArr = [];
         if ($upload) $routeArr[] = "'upload'";
         if ($sort) $routeArr[] = "'sortable'";
