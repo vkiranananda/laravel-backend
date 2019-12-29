@@ -4,7 +4,7 @@
         'list' => [
         	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true ],
         	[ 'name' => 'category', 'label' => 'Категория', 'attr' => [ 'width' => '20%' ], 'func' => 'indexCategoryField', 'link' => 'category' ],
-        	[ 'name' => 'url', 'attr' => [ 'width' => '10%' ] ],
+        	{url}[ 'name' => 'url', 'attr' => [ 'width' => '10%' ] ],
         	[ 'name' => 'updated_at', 'label' => 'Дата модификации', 'attr' => [ 'width' => '190px' ], 'sortable' => true ]
         ],
 
@@ -23,26 +23,26 @@
 	            'size' => 'normal',
 	            'upload' => true,
 	        ],
-    		'seo' => [
-    			'name' => 'seo',
-    			'type' => 'group',
-    			'load-from' => 'seo-fields',
-    			'field-save' => 'array' 
-    		],
     		'category_id' => [ 
 	        	'name' => 'category_id',
         		'type' => 'select', 
         		'name' => 'category_id', 
         		'label' => 'Категория', 
     		],
-			'url' => [
-	            'name' => 'url',
-	            'type' => 'text', 
-	            'label' => 'URL',
-	            'validate' => 'nullable|alpha_dash',
-	        ], 
+    		{seo}'seo' => [
+    			{seo}'name' => 'seo',
+    			{seo}'type' => 'group',
+    			{seo}'load-from' => 'seo-fields',
+    			{seo}'field-save' => 'array' 
+    		{seo}],
+			{url}'url' => [
+	            {url}'name' => 'url',
+	            {url}'type' => 'text', 
+	            {url}'label' => 'URL',
+	            {url}'validate' => 'nullable|alpha_dash',
+	        {url}], 
 	    ],
-
+	    {sort}'sortable' => ['name'],
 		'edit' => [
 			'default' => [
 				'label' => 'Основные',
@@ -54,11 +54,14 @@
 				'name' => 'attr',
 				'fields' => [ 'category_id' ],
 			],
-			'seo' => [
-				'label' => 'SEO',
-				'name' => 'seo',
-				'fields' => [ 'url', 'seo' ],
-			]
+			{urlseo}'seo' => [
+				{urlseo}'label' => 'SEO',
+				{urlseo}'name' => 'seo',
+				{urlseo}'fields' => [ 
+					{urlseo}{url}'url', 
+					{urlseo}{seo}'seo' 
+				{urlseo}],
+			{urlseo}]
 		],
 		'search' => [
           	[
