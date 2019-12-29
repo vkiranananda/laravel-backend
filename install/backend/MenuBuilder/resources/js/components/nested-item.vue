@@ -13,7 +13,7 @@
           <a :href="el.url" target="_blank">{{el.label}}</a>
         </div>
         <div class="p-2 flex-shrink-1 bd-highlight text-nowrap">
-          <v-icon name="file" class="text-primary pr-3" @click="edit(el)" />
+          <v-icon name="file" class="text-primary mr-1" @click="edit(el)" />
           <v-icon name="x" class="text-danger" @click="del(key)" />
         </div>
       </div>
