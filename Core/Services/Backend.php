@@ -10,26 +10,28 @@ class Backend {
 
 	public function init()
 	{
-		if (app()->runningInConsole()) {
-			$this->data = [];
-			return;
-		}
+		// if (app()->runningInConsole()) {
+		// 	$this->data = [];
+		// 	return;
+		// }
 		//43200
         $this->data = Cache::rememberForever('backendCoreData', function() 
         {
         	$res = [];
         	$path['Backend\Root'] = base_path('vendor/vkiranananda/backend/');
         	$path['Backend'] = base_path('backend/');
+
+        	if (!is_dir($path['Backend'])) return [];
 		
 	        foreach ($path as $namespace => $p) {
 	        	$dir = opendir($p);
 	        	while(false !==  ($file = readdir($dir)) ) {
-	               if ($file == '..')continue;
-	               if(is_dir($p.$file.'/resources') && is_dir($p.$file.'/resources/views') ) {
+	               if ($file == '..') continue;
+	               if (is_dir($p.$file.'/resources') && is_dir($p.$file.'/resources/views') ) {
 	               		$ext = (isset($res['views'][$file]) && $file != '.') ? '-ext' : '' ;
 						$res['views'][$file.$ext] = $p.$file.'/resources/views';
 	               }
-	               if(is_file($p.$file.'/routes.php')){
+	               if (is_file($p.$file.'/routes.php')){
 	               		$res['routes'][$file][$namespace] = $p.$file.'/routes.php';
 	               }
 	            }

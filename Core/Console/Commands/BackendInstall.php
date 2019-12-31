@@ -116,6 +116,9 @@ class BackendInstall extends Command
     			File::copyDirectory($this->installPath . 'public/backend', $this->publicBackendPath);
     		}
 
+    		// Очищаем кэши
+    		$this->call('cache:clear');
+
     		$this->info("\nБэкенд удачно установлен!\n");
     	}
     	$this->printHelp();
