@@ -74,6 +74,7 @@ class Backend {
 
 	public function installResourceRoute($modUrl, $mod, $controller = false) 
 	{
+
 		if (!$controller) $controller = $mod;
 
 		Route::resource($modUrl, '\Backend\\'.$mod.'\\Controllers\\'.$controller.'Controller');

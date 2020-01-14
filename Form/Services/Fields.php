@@ -201,7 +201,7 @@ class Fields {
 
 ///////---------------------------------------Saving-----------------------------------------------
 
-    // Сохраяняем данные. Возвращаем изменненый объект post, fields - полный масси со всеми полями и табами
+    // Сохраяняем данные. Возвращаем изменненый объект post, fields - полный массив со всеми полями и табами
 	public function saveFields($post, $fields) 
 	{
 		$request = $this->request['fields'] ?? [];
@@ -272,7 +272,7 @@ class Fields {
 
 		foreach ($fields as $field) {
 			// Если не установлены нужные параметры не обрабатываем
-			if( !isset($field['name']) || !isset($field['type']) || ( isset($field['field-save']) && $field['field-save'] == 'none' ) ) continue;
+			if (!isset($field['name']) || !isset($field['type'])) continue;
 		
 			// Если поле скрыто, так же не обрабатываем
 			if ( isset($field['show']) && $this->showCheck($field['show'], $request) === false) continue;
@@ -369,6 +369,8 @@ class Fields {
         	if ( $v->fails() ) return implode(' ', $v->errors()->all() );
         }
 
+
+
         // Сохраняем данные в массив
         if ( ($field['field-save'] == 'array' || $field['field-save'] == 'relation') ) {
         	// Log::debug($value);
@@ -377,7 +379,7 @@ class Fields {
             if ($field['field-save'] == 'relation') { 
             	$relationData[ $field['name'] ] = $value;
             }
-        } else {
+        } elseif($field['field-save'] != 'none') {
         	$post[ $field['name'] ] = $value;
         }
 
