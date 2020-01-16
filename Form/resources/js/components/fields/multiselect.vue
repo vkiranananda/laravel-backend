@@ -1,5 +1,5 @@
 <template>
-	<vue-multiselect :class='error ? "is-invalid" : "" ' v-model="value" :options="field.options"  :multiple="field.multiple" track-by="value" label="label" :placeholder="placeholder" :showLabels="false"></vue-multiselect>
+	<vue-multiselect :class='error ? "is-invalid" : "" ' v-model="value" :options="field.options"  :multiple="field.multiple"  track-by="value" label="label" :placeholder="placeholder" :showLabels="false"></vue-multiselect>
 </template>
 
 <script>
@@ -56,6 +56,9 @@
 
 <style lang='scss'>
   .multiselect {
+  	.multiselect__option--selected.multiselect__option--highlight,.multiselect__option--highlight {
+  		background: #41b883;
+  	}
     box-sizing: border-box;
     &.form-control {
       padding: 0px;

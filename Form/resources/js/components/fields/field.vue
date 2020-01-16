@@ -16,7 +16,7 @@
     import FormFieldRadio from './radio.vue'
     import FormFieldSelect from './select.vue'
     import FormFieldCheckbox from './checkbox.vue'
-    import FormFieldMultiSelect from './multiselect.vue'
+    import FormFieldMultiselect from './multiselect.vue'
     import FormFieldMask from './mask.vue'
     import FormFieldEditor from './editor.vue'
 
@@ -35,7 +35,7 @@
                 blocked: true
             }
         },
-        components: {FormFieldInput, FormFieldDate, FormFieldTextarea, FormFieldMce, FormFieldFiles, FormFieldRadio, FormFieldSelect, FormFieldCheckbox, FormFieldMultiSelect, FormFieldMask, FormFieldEditor},
+        components: {FormFieldInput, FormFieldDate, FormFieldTextarea, FormFieldMce, FormFieldFiles, FormFieldRadio, FormFieldSelect, FormFieldCheckbox, FormFieldMultiselect, FormFieldMask, FormFieldEditor},
         computed: {
             component(){
                 if ( [ 'text', 'email', 'password', 'tel' ].indexOf(this.field.type) != -1 ) return 'input';

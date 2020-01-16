@@ -37,7 +37,6 @@ class BaseModController extends Controller
 
     	if (!$page) abort(404);
 
-    	dd($page);
-    	// return view( 'pages.page', [ 'page' => $page ] );
+    	return view( 'pages.page', [ 'page' => $page ] );
     }
 }
