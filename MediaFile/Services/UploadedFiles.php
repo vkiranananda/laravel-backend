@@ -292,7 +292,7 @@ class UploadedFiles {
     }
 
     // Выведет нужный ключ или значение второго параметра defValue.
-    public function urlOrEmpty($key, $defValue = '', $attr = [])
+    public function keyOrEmpty($key, $defValue = '', $attr = [])
     {
     	$res = $this->url($attr);
     	
