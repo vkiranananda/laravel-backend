@@ -154,9 +154,12 @@
 		    margin-right: 10px;
 		    vertical-align: middle;
 		}
-		tr{
+		tr {
 			.dropdown{
 				display: none;
+				a {
+					cursor: pointer;
+				}
 			}
 			&:hover{
 				.dropdown {

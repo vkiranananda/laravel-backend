@@ -133,7 +133,7 @@ trait Index {
     	
     	// Если нужно создавать запись
     	if ($this->config['list']['create']) {
-    		$menu[] = $this->indexListMenuCreateButton($url_postfix);
+    		$menu[] = $this->indexMenuCreateButton($url_postfix);
 		}
 
 		// Для ручной сортировки
@@ -146,7 +146,7 @@ trait Index {
 
 
     // Кнопка создать
-	protected function indexListMenuCreateButton($url_postfix)
+	protected function indexMenuCreateButton($url_postfix)
 	{
 		return [
 			'label' => isset($this->config['lang']['create-title']) 
