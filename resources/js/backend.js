@@ -13,6 +13,8 @@ const store = new Vuex.Store({
 });
 
 
+import localize from './libs/localize';
+
 //module.exports = {store: store}
 
 Vue.prototype.$bus = new Vue();

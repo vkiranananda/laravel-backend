@@ -4,7 +4,7 @@
 		    <div class="row mb-3">
 		    	<div class="col-auto mr-auto"></div>
 	            <div class="col-auto">
-	                <list-paginate v-if="items.lastPage > 1" :data="items" @change="pageChange"></list-paginate>
+	                <list-paginate :data="items" @change="pageChange"></list-paginate>
 	            </div>
 	        </div>
 			<table  class="table table-hover" id="table-list">
@@ -54,7 +54,7 @@
 		    <div class="row">
 		    	<div class="col-auto mr-auto"></div>
 	            <div class="col-auto">
-	                <list-paginate v-if="items.lastPage > 1" :data="items" @change="pageChange"></list-paginate>
+	                <list-paginate :data="items" @change="pageChange"></list-paginate>
 	            </div>
 	        </div>
 		</div>

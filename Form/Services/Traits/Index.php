@@ -67,6 +67,7 @@ trait Index {
         // Для пагинации
         $this->dataReturn['items']['currentPage'] = $query['current_page'];
         $this->dataReturn['items']['lastPage'] = $query['last_page'];
+        $this->dataReturn['items']['total'] = $query['total'];
         
         //урл страницы списка.
         $this->dataReturn['config']['indexUrl'] = $query['path'];
