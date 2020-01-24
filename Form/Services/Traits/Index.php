@@ -141,7 +141,6 @@ trait Index {
 		if ( isset($this->config['list']['sortable']) && $this->config['list']['sortable']) {
 			$menu[] = $this->listSortableButton($url_postfix);
 		}
-
 		return $menu;
     }
 

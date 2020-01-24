@@ -105,7 +105,6 @@ class ResourceController extends Controller {
         		'tabs'		=> $this->fields['edit']
         	],
         ];
-
         $this->resourceCombineAfter ('create');
    
         return view ($this->config['edit']['template'], $this->dataReturn);

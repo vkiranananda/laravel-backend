@@ -18,6 +18,7 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
         $this->post['category_id'] = Request::input('__parent_category_id', 
         	Request::input('cat', false)
     	);
+
         return parent::create();
     }
 
@@ -91,13 +92,13 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     }
 
     // Добавляем префикс у урл
-    protected function indexListMenuCreateButton($urlPostfix)
+    protected function indexMenuCreateButton($urlPostfix)
 	{
 		if ($this->categoryParentCat) {
 			$urlPostfix = Helpers::mergeUrlParams($urlPostfix, '__parent_category_id', $this->categoryParentCat);
 		}
 
-		return parent::indexListMenuCreateButton($urlPostfix);
+		return parent::indexMenuCreateButton($urlPostfix);
 	}
 
     // Выводим хлебные крошки.
