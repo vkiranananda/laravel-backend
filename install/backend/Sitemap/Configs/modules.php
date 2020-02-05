@@ -12,8 +12,4 @@
 			'controller' => '\Backend\News\Controllers\SitemapController',
 			'category-mod' => 'News',
 		],
-		'blog' => [
-			'controller' => '\Backend\Blog\Controllers\SitemapController',
-			'category-mod' => 'Blog',
-		],
 	];
