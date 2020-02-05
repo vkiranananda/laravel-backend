@@ -3,7 +3,7 @@
 		<div class="col-7">
 			<div class="card">
 				<div class="card-body">
-					<nested-item :value="tree" @input="change" @edit="edit" />
+					<nested-item :list="tree" @change="change" @edit="edit" />
 				</div>
 			</div>
 		</div>
@@ -43,10 +43,7 @@
 import nestedItem from "./nested-item"
 import cloneDeep from "lodash.clonedeep"
 export default {
-	methods: {
-		emitter(value) {
-			this.$emit("input", value);
-		},
+	methods: {		
 		clear() {
 			this.element.url = ''
 			this.element.label = ''
@@ -66,9 +63,7 @@ export default {
 			this.clear()
 			this.$emit('change', this.tree)
 		},
-		change(val) {
-			this.$emit('change', val)
-		},
+		change(val) { this.$emit('change', this.tree) },
 		edit(el) {
 			this.create = false
 			this.element.url = el.url
@@ -85,14 +80,15 @@ export default {
 				url: '',
 				label: '',
 			},
+			// клон value
 			tree: []
 		}
 	},
 	watch: {
+		// Просто клонируем валуе в элемент tree
 	    'field.value': {
 			handler: function (val, oldVal) {
 				this.tree = (Array.isArray(val)) ? cloneDeep(val) : []
-				console.log('watch', this.tree)
 			},
 	      	immediate: true
 	    },
