@@ -62,9 +62,9 @@ export default {
               // Ширина картинки
               imageWidthModalEdit: true,
               // Очищаем цсс, изолируем от сайта
-              // resetCss: true,
+              resetCss: true,
               // Очищаем форматирование при вставке
-              // removeformatPasted: true,
+              removeformatPasted: true,
               // Автовысота
               autogrow: true,
               // Редктор масштабируется при клике
