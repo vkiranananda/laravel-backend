@@ -66,7 +66,7 @@ class BackendInstall extends Command
 
 
         $this->info("Сборка фронтенда:");
-        $this->line("npm install jquery popper.js bootstrap trumbowyg vue-trumbowyg lodash.clonedeep lodash.size vue vuex vue-multiselect vue-the-mask vue2-datepicker vuedraggable fecha @primer/octicons octicons\n");
+        $this->line("npm install jquery popper.js bootstrap trumbowyg vue-trumbowyg lodash.clonedeep lodash.size vue vuex vue-multiselect vue-the-mask vue2-datepicker vuedraggable fecha @primer/octicons vue-simplemde\n");
         $this->info("В файл webpack.mix.js добавялем строки:");
         $this->line("mix.js('vendor/vkiranananda/backend/resources/js/backend.js', 'public/backend/js/admin.js').version();"
         	."mix.sass('vendor/vkiranananda/backend/resources/sass/backend.scss', 'public/backend/css/backend.css').options({processCssUrls: false}).version();\n");
@@ -81,6 +81,9 @@ class BackendInstall extends Command
     	$this->info("Для добавления нового пользователя используйте команду:");
     	$this->line("php artisan backend:user\n");
     	
+    	$this->info("Для добавления нового модуля используйте команду:");
+    	$this->line("php artisan backend:module\n");
+
     	$this->info("URL админки ". url('content'). "\n");
     	$this->info("Удачной работы :)\n");    	
     }
