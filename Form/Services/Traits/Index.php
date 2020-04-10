@@ -88,7 +88,7 @@ trait Index {
 
         // Подготваливаем все поля
         foreach ($query['data'] as $post) {
-        	$res = []; //Преобразованные данные
+        	$res = []; // Преобразованные данные
         	
         	$res['_links'] = $this->indexLinks($post, $urlPostfix);
 
@@ -100,8 +100,7 @@ trait Index {
         			$func = $field['func'];
         			$res[$name] = $this->$func($post, $field, $urlPostfix);
         			continue;
-        		}
-
+        		}	
         		// Обработчик полей
         		$res[$name] = 
         			$fields_prep[$key]->list( Helpers::getDataField($post, $name, '') );
