@@ -4,7 +4,7 @@
         	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true ],
          	[ 'name' => 'category', 'label' => 'Категория', 'attr' => [ 'width' => '20%' ], 'func' => 'indexCategoryField', 'link' => 'category' ],
         	[ 'name' => 'url', 'attr' => [ 'width' => '10%' ] ],
-        	[ 'name' => 'updated_at', 'label' => 'Дата модификации', 'attr' => [ 'width' => '190px' ], 'sortable' => true ]
+        	[ 'name' => 'updated_at', 'label' => 'Дата модификации', 'type' => 'date', 'time' => true, 'attr' => [ 'width' => '190px' ], 'sortable' => true ]
         ],
 		'fields' => [
 	        'name' => [
