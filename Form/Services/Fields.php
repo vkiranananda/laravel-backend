@@ -46,7 +46,6 @@ class Fields {
 		return new $this->fieldsClasses[$type_field]($field);
 	}
 
-
 	// Подготавливаем все поля для отображения. fields корневой список
     public function editFields($post, $fields)
     {
@@ -141,29 +140,29 @@ class Fields {
     		unset($field['value']);
     	}
 
-		//для повторителей.
+		// для повторителей.
 	    elseif ($field['type'] == 'repeated') {
 	    	
 			$value = $this->getFieldValue($field, $post, $arrayData, $none);
 
 			// dd($value);
 	    	//Если значение не установлено, создаем первую запись
-	    	if ( !is_array($value) ) $value = [[]];
+	    	if ( !is_array($value) ) $value = [];
 
-			//Уникальный индекc
+			// Уникальный индекc
 	    	$field['unique-index'] = 0;
 			
-			//Обнуляем value для новых значений.
+			// Обнуляем value для новых значений.
 			$field['value'] = [];
 	    	
-	    	//Перебираем массив с value-s
+	    	// Перебираем массив с value-s
 	    	foreach ($value as $valuesBlock) {
 
-	    		//Копируем базовые поля
+	    		// Копируем базовые поля
 		    	$field['value'][ $field['unique-index'] ]['fields'] = $field['fields']; 
 		    	$field['value'][ $field['unique-index'] ]['key'] = $field['unique-index'];
 
-		    	//Перебираем поля которые есть и задаем им value
+		    	// Перебираем поля которые есть и задаем им value
 		    	foreach ( $field['value'][ $field['unique-index'] ]['fields'] as &$oneRepField ) {
 		    		
     				// Если поле не имеет name и type пропускаем
@@ -319,7 +318,8 @@ class Fields {
 
 		elseif ($field['type'] == 'repeated') {
 			
-			if ( !is_array($value) ) return;  //Если данных нет выходим
+			// Если данных нет выходим
+			if ( !is_array($value) ) return;
 
 			$indexRepBlock = 0;
 			$errors = [];
@@ -351,7 +351,7 @@ class Fields {
 				);
 
 				$indexRepBlock ++;
-				//Обрабатываем ошибки
+				// Обрабатываем ошибки
 				if ($error !== true) $errors [ $repData['key'] ] = $error; 
 			}
 			
