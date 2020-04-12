@@ -67,7 +67,7 @@ class Categories
 		}
 	}
 
-	//Количество категорий
+	// Количество категорий
 	public function count()
 	{
 		return count($this->allCat);
@@ -162,7 +162,7 @@ class Categories
 		else return $this->getRootCat($this->allCat[$catID]['category_id']);
 	}
 
-	//Получаем категорию, если $id = false выводим все
+	// Получаем категорию, если $id = false выводим все
 	public function getCat($id = false)
 	{
 		//Выводим все категории
@@ -189,8 +189,8 @@ class Categories
 		return $res;
 	}
 
-	//получаем список id шников вложенной в указанную категорию 
-	//resCur == true вывод c текущей категорией
+	// получаем список id шников вложенной в указанную категорию 
+	// resCur == true вывод c текущей категорией
 	// Можно пихать любые данные, есть проверка
 	public function getListIds($rootCat = 0, $resCur = false)
 	{
@@ -208,7 +208,7 @@ class Categories
 		return  $res;
 	}
 
-	//Рекурсивная функция генерит дерево.
+	// Рекурсивная функция генерит дерево.
 	private function genTree(&$res, &$pref, $parentId = 0, $offset = '')
 	{
 		//Вычисляем смещение если запись не корневая
