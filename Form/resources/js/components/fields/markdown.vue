@@ -44,7 +44,15 @@ export default {
         },      
         config() {
           var config = {
-             showIcons: ["code", "table"],
+            renderingConfig: {
+              singleLineBreaks: true
+            },
+  parsingConfig: {
+    allowAtxHeaderWithoutSpace: true,
+    strikethrough: false,
+    underscoresBreakWords: true,
+  },            
+            showIcons: ["code", "table"],
               toolbar: [
               'bold', 'italic', 'strikethrough', '|', 'code', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 
               {
