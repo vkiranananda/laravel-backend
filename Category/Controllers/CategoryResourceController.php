@@ -149,7 +149,7 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
 			} else {	
 				$this->post = $this->post->whereIn('category_id', Categories::getListIds($catID, true));
 			}
-			// Запрещаем сортировку, так как выведены все категории раздела
+			// Запрещаем сортировку, так как выведены не все категории раздела
 			$this->config['list']['sortable'] = false;
 		} else {
 			$this->categoryParentCat = $res['category_id'];

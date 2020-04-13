@@ -6,5 +6,5 @@
 			'edit-title' => 'Редактирование записи',
 		],
         {upload}'upload' => ['enable' => true],
-		{list}'list' => ['sortable' => true],
+		{sort}'list' => ['sortable' => true],
 	];
