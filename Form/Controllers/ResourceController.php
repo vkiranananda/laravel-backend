@@ -16,6 +16,7 @@ class ResourceController extends Controller {
 
 	use \Backend\Root\Form\Services\Traits\Index;
     use \Backend\Root\Form\Services\Traits\ListSortable;
+    use \Backend\Root\Form\Services\Traits\RelationFields;
 
     // Имя общего конфига, если false берется как config
     protected $configPath = false;
@@ -29,7 +30,7 @@ class ResourceController extends Controller {
     // Конфиг для полей
     protected $fields = [];
 
-    // Переменная где содержатся данные поста 
+    // Переменная где содержатся данные поста
     protected $post = null;
 
     // Генерируемый массив с данными для веб
@@ -71,10 +72,10 @@ class ResourceController extends Controller {
   		$this->config['controller-name'] = '\\'.get_class($this);
         // Проверям, если модель установлена в конфиге берем от туда, если нет то по умолчанию.
         $model = $this->config['model'] ?? $this->model;
-        
+
         // Если модель нигде не установлена, пытемся сгенерить сами из имени модуля
         if (!$model) $model = $this->config['base-namespace'].'Models\\'.$moduleName;
-        
+
         $this->post = new $model();
 
         $this->fieldsPrep = new \Backend\Root\Form\Services\Fields();
@@ -91,14 +92,14 @@ class ResourceController extends Controller {
         	$this->post = $this->post->findOrFail($clone);
         }
 
-        $this->dataReturn = [ 
+        $this->dataReturn = [
         	'config'	=> [
         		'url' 		=> action ($this->config['controller-name'].'@store'),
         		'title'		=> $this->config['lang']['create-title'],
         		'method'	=> 'post',
         		'upload'	=> $this->uploadUrls($clone),
         		'clone-files' => ($this->cloneGetFiles($clone))
-        	], 
+        	],
         	'fields'	=>	[
         		'fields'	=> $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
         		'hidden'	=> $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
@@ -106,7 +107,7 @@ class ResourceController extends Controller {
         	],
         ];
         $this->resourceCombineAfter ('create');
-   
+
         return view ($this->config['edit']['template'], $this->dataReturn);
     }
 
@@ -129,7 +130,7 @@ class ResourceController extends Controller {
 
         // Сохрням юзер id
         if ( isset($this->config['user-id']) ) $this->post->user_id = Auth::user()->id;
-        
+
         // Хук перед сохранением
         $this->preSaveData('store');
 
@@ -139,7 +140,7 @@ class ResourceController extends Controller {
         if ( method_exists($this, 'saveRelationFields') ) {
         	$this->saveRelationFields($this->post, $data['relations']);
         }
-        
+
         // Сохраняем медиафайлы
         if ( $this->config['upload']['enable'] ) {
         	$this->saveMediaRelations( Request::input('files', []) );
@@ -153,7 +154,7 @@ class ResourceController extends Controller {
 	        $this->dataReturn = $this->edit($this->post['id']);
 	        $this->dataReturn['replaceUrl'] = action($this->config['controller-name'].'@edit', $this->post['id']);
 	    }
-        
+
         // Вызываем хук
         $this->resourceCombineAfter('store');
 
@@ -165,10 +166,10 @@ class ResourceController extends Controller {
     {
     	//Если пост еще не получен, получаем его
         if( !isset($this->post['id']) ) $this->post = $this->post->findOrFail($id);
-        
+
         $this->resourceCombine('edit');
-        
-        $this->dataReturn = [ 
+
+        $this->dataReturn = [
         	'config'	=> [
         		'url' 		=> action($this->config['controller-name'].'@update', $id),
         		'title'		=> $this->config['lang']['edit-title'],
@@ -176,7 +177,7 @@ class ResourceController extends Controller {
         		'viewUrl'	=> $this->getViewUrl(),
         		'upload'	=> $this->uploadUrls(),
         		'postId'	=> $this->post['id'],
-        	], 
+        	],
         	'fields'	=>	[
         		'fields'	=> $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
         		'hidden'	=> $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
@@ -185,7 +186,7 @@ class ResourceController extends Controller {
         ];
 
         $this->resourceCombineAfter('edit');
-        
+
         if ( Request::ajax() ) return $this->dataReturn;
 
         return view($this->config['edit']['template'], $this->dataReturn );
@@ -195,9 +196,9 @@ class ResourceController extends Controller {
     public function update($id)
     {
         if ( !isset($this->post['id']) ) $this->post = $this->post->findOrFail( $id );
-        
+
         $this->resourceCombine('update');
-        
+
     	// Сохраняем данные в запись
         $data = $this->fieldsPrep->saveFields($this->post, $this->fields);
 
@@ -219,7 +220,7 @@ class ResourceController extends Controller {
         	// Добавляем новые
         	$this->saveRelationFields ($this->post, $data['relations']);
         }
-        
+
         //Сохраняем медиафайлы
         if ($this->config['upload']['enable']) $this->saveMediaRelations( Request::input('files', []) );
 
@@ -244,13 +245,13 @@ class ResourceController extends Controller {
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
 
         $this->resourceCombine('show');
-    
+
         $this->resourceCombineAfter('show');
-        
-        return view($this->config['show']['template'] , [ 
-        	'config' => $this->config, 
+
+        return view($this->config['show']['template'] , [
+        	'config' => $this->config,
         	'fields' => $this->fields,
-        	'data' => $this->post 
+        	'data' => $this->post
         ]);
     }
 
@@ -305,12 +306,12 @@ class ResourceController extends Controller {
     }
 
     // Получаем url для загрузки, $clone для включения клонирования в урл
-    private function uploadUrls ($clone = false) 
+    private function uploadUrls ($clone = false)
     {
     	if ( $this->config['upload']['enable'] ) {
 
     		$urlPostfix = ($clone == true) ? "?clone=" . $clone : '';
-    		
+
     		return [
     			'uploadUrl' => action($this->config['base-namespace'].'Controllers\\'.$this->config['upload']['controller'].'@index', $this->post['id']).$urlPostfix,
     			'editUrl' => action($this->config['base-namespace'].'Controllers\\'.$this->config['upload']['controller'].'@edit')
