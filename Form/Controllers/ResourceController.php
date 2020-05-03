@@ -2,21 +2,21 @@
 
 namespace Backend\Root\Form\Controllers;
 
-use Request;
 use App\Http\Controllers\Controller;
-use Helpers;
 use Auth;
-use \Backend\Root\MediaFile\Models\MediaFileRelation;
-use \Backend\Root\MediaFile\Models\MediaFile;
+use Backend\Root\MediaFile\Models\MediaFile;
+use Backend\Root\MediaFile\Models\MediaFileRelation;
 use GetConfig;
+use Request;
 use Response;
-use Log;
 
-class ResourceController extends Controller {
+class ResourceController extends Controller
+{
 
-	use \Backend\Root\Form\Services\Traits\Index;
+    use \Backend\Root\Form\Services\Traits\Index;
     use \Backend\Root\Form\Services\Traits\ListSortable;
-    use \Backend\Root\Form\Services\Traits\RelationFields;
+
+    //    use \Backend\Root\Form\Services\Traits\RelationFields;
 
     // Имя общего конфига, если false берется как config
     protected $configPath = false;
@@ -47,34 +47,34 @@ class ResourceController extends Controller {
     function __construct()
     {
 
-    	// Получаем путь до модуля.
-    	$baseNamespace = strstr(get_class($this), '\\Controllers', true);
-    	// Получаем название модуля
+        // Получаем путь до модуля.
+        $baseNamespace = strstr(get_class($this), '\\Controllers', true);
+        // Получаем название модуля
         $moduleName = substr(strrchr($baseNamespace, '\\'), 1);
 
         // Получаем пути до конфигов
-    	if (!$this->configPath) $this->configPath = $moduleName."::config";
-    	if (!$this->fieldsPath) $this->fieldsPath = $moduleName."::fields";
+        if (!$this->configPath) $this->configPath = $moduleName . "::config";
+        if (!$this->fieldsPath) $this->fieldsPath = $moduleName . "::fields";
 
-    	// Получаем конфиги
+        // Получаем конфиги
         $this->config = array_replace_recursive(
-        	GetConfig::backend('Form::config', true),
-        	GetConfig::backend($this->configPath)
+            GetConfig::backend('Form::config', true),
+            GetConfig::backend($this->configPath)
         );
 
         $this->fields = GetConfig::backend($this->fieldsPath);
 
-    	// Получаем путь до модуля.
-    	$this->config['base-namespace'] = '\\' . $baseNamespace . '\\';
- 	  	// Получаем название модуля
+        // Получаем путь до модуля.
+        $this->config['base-namespace'] = '\\' . $baseNamespace . '\\';
+        // Получаем название модуля
         $this->config['module-name'] = $moduleName;
         // Текущий контроллер
-  		$this->config['controller-name'] = '\\'.get_class($this);
+        $this->config['controller-name'] = '\\' . get_class($this);
         // Проверям, если модель установлена в конфиге берем от туда, если нет то по умолчанию.
         $model = $this->config['model'] ?? $this->model;
 
         // Если модель нигде не установлена, пытемся сгенерить сами из имени модуля
-        if (!$model) $model = $this->config['base-namespace'].'Models\\'.$moduleName;
+        if (!$model) $model = $this->config['base-namespace'] . 'Models\\' . $moduleName;
 
         $this->post = new $model();
 
@@ -85,75 +85,49 @@ class ResourceController extends Controller {
     // Создаем запись вебка
     public function create()
     {
-    	$this->resourceCombine('create');
+        $this->resourceCombine('create');
 
-    	// Если стоит опция клонирования получаем запись
-        if ( ($clone = Request::input('clone', false)) ) {
-        	$this->post = $this->post->findOrFail($clone);
+        // Если стоит опция клонирования получаем запись
+        if (($clone = Request::input('clone', false))) {
+            $this->post = $this->post->findOrFail($clone);
         }
 
         $this->dataReturn = [
-        	'config'	=> [
-        		'url' 		=> action ($this->config['controller-name'].'@store'),
-        		'title'		=> $this->config['lang']['create-title'],
-        		'method'	=> 'post',
-        		'upload'	=> $this->uploadUrls($clone),
-        		'clone-files' => ($this->cloneGetFiles($clone))
-        	],
-        	'fields'	=>	[
-        		'fields'	=> $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
-        		'hidden'	=> $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
-        		'tabs'		=> $this->fields['edit']
-        	],
+            'config' => [
+                'url' => action($this->config['controller-name'] . '@store'),
+                'title' => $this->config['lang']['create-title'],
+                'method' => 'post',
+                'upload' => $this->uploadUrls($clone),
+                'clone-files' => ($this->cloneGetFiles($clone))
+            ],
+            'fields' => [
+                'fields' => $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
+                'hidden' => $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
+                'tabs' => $this->fields['edit']
+            ],
         ];
-        $this->resourceCombineAfter ('create');
+        $this->resourceCombineAfter('create');
 
-        return view ($this->config['edit']['template'], $this->dataReturn);
+        return view($this->config['edit']['template'], $this->dataReturn);
     }
-
 
 
     //Сохраняем запись
     public function store()
     {
-      	//Вызываем хук
+        //Вызываем хук
         $this->resourceCombine('store');
 
-        // Сохраняем данные в запись
-        $data = $this->fieldsPrep->saveFields($this->post, $this->fields);
-
-        // Если ошибка валидации
-        if ( $data['errors'] !== true ) return Response::json([ 'errors' => $data['errors'] ], 422);
-
-        // Устанавливаем новое значние поста
-        $this->post = $data['post'];
-
-        // Сохрням юзер id
-        if ( isset($this->config['user-id']) ) $this->post->user_id = Auth::user()->id;
-
-        // Хук перед сохранением
-        $this->preSaveData('store');
-
-        $this->post->save();
-
-        // Сохраяняем связи
-        if ( method_exists($this, 'saveRelationFields') ) {
-        	$this->saveRelationFields($this->post, $data['relations']);
-        }
-
-        // Сохраняем медиафайлы
-        if ( $this->config['upload']['enable'] ) {
-        	$this->saveMediaRelations( Request::input('files', []) );
-        }
+        $this->saveData('store');
 
         // Обработка редиректов
-        if ( isset($this->config['store-redirect']) ) {
+        if (isset($this->config['store-redirect'])) {
             $this->dataReturn['redirect'] = $this->config['store-redirect'];
         } else {
-	        // Выставляем дополнительные параметры.
-	        $this->dataReturn = $this->edit($this->post['id']);
-	        $this->dataReturn['replaceUrl'] = action($this->config['controller-name'].'@edit', $this->post['id']);
-	    }
+            // Выставляем дополнительные параметры.
+            $this->dataReturn = $this->edit($this->post['id']);
+            $this->dataReturn['replaceUrl'] = action($this->config['controller-name'] . '@edit', $this->post['id']);
+        }
 
         // Вызываем хук
         $this->resourceCombineAfter('store');
@@ -164,74 +138,48 @@ class ResourceController extends Controller {
     //Редактируем запись вебка
     public function edit($id)
     {
-    	//Если пост еще не получен, получаем его
-        if( !isset($this->post['id']) ) $this->post = $this->post->findOrFail($id);
+        //Если пост еще не получен, получаем его
+        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
 
         $this->resourceCombine('edit');
 
         $this->dataReturn = [
-        	'config'	=> [
-        		'url' 		=> action($this->config['controller-name'].'@update', $id),
-        		'title'		=> $this->config['lang']['edit-title'],
-        		'method'	=> 'put',
-        		'viewUrl'	=> $this->getViewUrl(),
-        		'upload'	=> $this->uploadUrls(),
-        		'postId'	=> $this->post['id'],
-        	],
-        	'fields'	=>	[
-        		'fields'	=> $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
-        		'hidden'	=> $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
-        		'tabs'		=> $this->fields['edit']
-        	]
+            'config' => [
+                'url' => action($this->config['controller-name'] . '@update', $id),
+                'title' => $this->config['lang']['edit-title'],
+                'method' => 'put',
+                'viewUrl' => $this->getViewUrl(),
+                'upload' => $this->uploadUrls(),
+                'postId' => $this->post['id'],
+            ],
+            'fields' => [
+                'fields' => $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
+                'hidden' => $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
+                'tabs' => $this->fields['edit']
+            ]
         ];
 
         $this->resourceCombineAfter('edit');
 
-        if ( Request::ajax() ) return $this->dataReturn;
+        if (Request::ajax()) return $this->dataReturn;
 
-        return view($this->config['edit']['template'], $this->dataReturn );
+        return view($this->config['edit']['template'], $this->dataReturn);
     }
+
 
     //Обновляем запись
     public function update($id)
     {
-        if ( !isset($this->post['id']) ) $this->post = $this->post->findOrFail( $id );
+        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
 
         $this->resourceCombine('update');
 
-    	// Сохраняем данные в запись
-        $data = $this->fieldsPrep->saveFields($this->post, $this->fields);
-
-        // Если ошибка валидации
-        if ( $data['errors'] !== true ) return Response::json([ 'errors' => $data['errors'] ], 422);
-
-        // Устанавливаем новое значние поста
-        $this->post = $data['post'];
-
-        // Хук перед сохранением
-        $this->preSaveData('update');
-
-        $this->post->save();
-
-        //Сохраяняем связи
-        if ( method_exists($this, 'saveRelationFields') ) {
-        	// Удаялем все записи
-        	$this->destroyRelationFields ($this->post);
-        	// Добавляем новые
-        	$this->saveRelationFields ($this->post, $data['relations']);
-        }
-
-        //Сохраняем медиафайлы
-        if ($this->config['upload']['enable']) $this->saveMediaRelations( Request::input('files', []) );
+        $data = $this->saveData('update');
 
         //Редиректы
-        if ( isset($this->config['update-redirect']) ) {
-        	 $this->dataReturn[ 'redirect'] = $this->config['update-redirect'];
-        } else {
-        	//Выставляем урл просмотра
-        	$this->dataReturn = $this->edit($id);
-        	// $this->dataReturn['config']['viewUrl'] = $this->getViewUrl();
-        }
+        if (isset($this->config['update-redirect'])) $this->dataReturn['redirect'] = $this->config['update-redirect'];
+        else $this->dataReturn = $this->edit($id);
+
 
         //Вызываем хук
         $this->resourceCombineAfter('update');
@@ -248,85 +196,130 @@ class ResourceController extends Controller {
 
         $this->resourceCombineAfter('show');
 
-        return view($this->config['show']['template'] , [
-        	'config' => $this->config,
-        	'fields' => $this->fields,
-        	'data' => $this->post
+        return view($this->config['show']['template'], [
+            'config' => $this->config,
+            'fields' => $this->fields,
+            'data' => $this->post
         ]);
     }
 
     //Удаляем запись
     public function destroy($id)
     {
-        $this->resourceCombine ('destroy');
+        $this->resourceCombine('destroy');
 
-        $this->post->destroy ($id);
+        $this->post->destroy($id);
 
-        $this->resourceCombineAfter ('destroy');
+        $this->resourceCombineAfter('destroy');
 
         return $this->dataReturn;
     }
 
     // Получаем список файлов для клонирования
-    protected function cloneGetFiles ($id)
+    protected function cloneGetFiles($id)
     {
-    	$list = ($id) ? MediaFile
-			::join('media_file_relations as rel', 'rel.file_id', '=', 'media_files.id')
-        	->where('rel.post_id', '=', $id)
-        	->where('rel.post_type', '=', class_basename($this->post))
-        	->select('media_files.id')
-      		->get() : [];
+        $list = ($id) ? MediaFile
+            ::join('media_file_relations as rel', 'rel.file_id', '=', 'media_files.id')
+            ->where('rel.post_id', '=', $id)
+            ->where('rel.post_type', '=', class_basename($this->post))
+            ->select('media_files.id')
+            ->get() : [];
 
-      	$res = [];
+        $res = [];
 
-      	foreach ($list as $file) $res[] = $file['id'];
+        foreach ($list as $file) $res[] = $file['id'];
 
-      	return $res;
+        return $res;
     }
 
     // Сахраняем загруженные данные.
     public function saveMediaRelations($files, $imageable = false, $id = false)
     {
-        if ( is_array($files) && count($files) > 0 ) {
+        if (is_array($files) && count($files) > 0) {
 
-        	// Возможность задать класс для сохранения файла
-            if ( $imageable == false ) $imageable = class_basename($this->post);
+            // Возможность задать класс для сохранения файла
+            if ($imageable == false) $imageable = class_basename($this->post);
             // Возможность задать id
-            if ( $id == false ) $id = $this->post->id;
+            if ($id == false) $id = $this->post->id;
 
             foreach ($files as $fileId) {
-            	// Проверит есть ли запись firstOrCreate
-            	MediaFileRelation::firstOrCreate([
-	        		'file_id' => $fileId,
-	        		'post_id' => $id,
-	        		'post_type' => $imageable,
-	        	]);
+                // Проверит есть ли запись firstOrCreate
+                MediaFileRelation::firstOrCreate([
+                    'file_id' => $fileId,
+                    'post_id' => $id,
+                    'post_type' => $imageable,
+                ]);
             }
         }
     }
 
-    // Получаем url для загрузки, $clone для включения клонирования в урл
-    private function uploadUrls ($clone = false)
+
+    /**
+     * Сохраняем данные
+     * @param string $method store | update
+     */
+    protected function saveData(string $method = 'store')
     {
-    	if ( $this->config['upload']['enable'] ) {
+        // Сохраняем данные в запись
+        $data = $this->fieldsPrep->saveFields($this->post, $this->fields);
 
-    		$urlPostfix = ($clone == true) ? "?clone=" . $clone : '';
+        // Если ошибка валидации
+        if ($data['errors'] !== true) {
+            return Response::json(['errors' => $data['errors']], 422)->send();
+            die();
+        }
 
-    		return [
-    			'uploadUrl' => action($this->config['base-namespace'].'Controllers\\'.$this->config['upload']['controller'].'@index', $this->post['id']).$urlPostfix,
-    			'editUrl' => action($this->config['base-namespace'].'Controllers\\'.$this->config['upload']['controller'].'@edit')
-    		];
-    	} else return false;
+        // Устанавливаем новое значние поста
+        $this->post = $data['post'];
+
+        // Сохрням юзер id если запись новая
+        if (isset($this->config['user-id']) && $method == 'store') $this->post->user_id = Auth::user()->id;
+
+        // Хук перед сохранением
+        $this->preSaveData($method);
+
+        $this->post->save();
+
+        //Сохраняем медиафайлы
+        if ($this->config['upload']['enable']) $this->saveMediaRelations(Request::input('files', []));
+
+        //Сохраяняем связи
+        if (method_exists($this, 'saveRelationFields')) {
+            // Удаялем все записи
+            if ($method != 'store') $this->destroyRelationFields($this->post);
+            // Добавляем новые
+            $this->saveRelationFields($this->post, $data['relations']);
+        }
+    }
+
+    // Получаем url для загрузки, $clone для включения клонирования в урл
+    private function uploadUrls($clone = false)
+    {
+        if ($this->config['upload']['enable']) {
+
+            $urlPostfix = ($clone == true) ? "?clone=" . $clone : '';
+
+            return [
+                'uploadUrl' => action($this->config['base-namespace'] . 'Controllers\\' . $this->config['upload']['controller'] . '@index', $this->post['id']) . $urlPostfix,
+                'editUrl' => action($this->config['base-namespace'] . 'Controllers\\' . $this->config['upload']['controller'] . '@edit')
+            ];
+        } else return false;
     }
     // Функция специально  для перегрузки, когда нужно выполнять различне групповые операции перед
     //Сохранием, обновлением, создание или редактированием
-    protected function resourceCombine($type) { }
+    protected function resourceCombine($type)
+    {
+    }
 
     //Тоже но после сохранения записи. Удобно кэши чистить и прочее..
-    protected function resourceCombineAfter($type) { }
+    protected function resourceCombineAfter($type)
+    {
+    }
 
     // Вызывается перед сохранением данных. Что бы была возможность поменять что то в модели, после всех обработок. В параметре type указывается, store update
-    protected function preSaveData($type) { }
+    protected function preSaveData($type)
+    {
+    }
 
     //Функция возвращает урл поста
     protected function getViewUrl()

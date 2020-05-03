@@ -5,42 +5,42 @@
         	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true ],
         	[ 'name' => 'category', 'label' => 'Категория', 'attr' => [ 'width' => '20%' ], 'func' => 'indexCategoryField', 'link' => 'category' ],
         	{url}[ 'name' => 'url', 'attr' => [ 'width' => '10%' ] ],
-        	[ 'name' => 'updated_at', 'label' => 'Дата модификации', 'attr' => [ 'width' => '190px' ], 'sortable' => true ]
+        	[ 'name' => 'updated_at', 'type' => 'date', 'time' => true, 'label' => 'Дата модификации', 'attr' => [ 'width' => '190px' ], 'sortable' => true ]
         ],
 
 		'fields' => [
   	        'name' => [
 	        	'name' => 'name',
-	            'type' => 'text', 
+	            'type' => 'text',
 	            'label' => 'Заголовок',
 	            'validate' => 'required',
 	        ],
 	        'text' => [
 	        	'name' => 'text',
-	            'type' => 'editor', 
+	            'type' => 'editor',
 	            'label' => 'Текст',
 	            'format' => 'fool',
 	            'size' => 'normal',
 	            'upload' => true,
 	        ],
-    		'category_id' => [ 
+    		'category_id' => [
 	        	'name' => 'category_id',
-        		'type' => 'select', 
-        		'name' => 'category_id', 
-        		'label' => 'Категория', 
+        		'type' => 'select',
+        		'name' => 'category_id',
+        		'label' => 'Категория',
     		],
     		{seo}'seo' => [
     			{seo}'name' => 'seo',
     			{seo}'type' => 'group',
     			{seo}'load-from' => 'seo-fields',
-    			{seo}'field-save' => 'array' 
+    			{seo}'field-save' => 'array'
     		{seo}],
 			{url}'url' => [
 	            {url}'name' => 'url',
-	            {url}'type' => 'text', 
+	            {url}'type' => 'text',
 	            {url}'label' => 'URL',
 	            {url}'validate' => 'nullable|alpha_dash',
-	        {url}], 
+	        {url}],
 	    ],
 	    {sort}'sortable' => ['name'],
 		'edit' => [
@@ -57,9 +57,9 @@
 			{urlseo}'seo' => [
 				{urlseo}'label' => 'SEO',
 				{urlseo}'name' => 'seo',
-				{urlseo}'fields' => [ 
-					{urlseo}{url}'url', 
-					{urlseo}{seo}'seo' 
+				{urlseo}'fields' => [
+					{urlseo}{url}'url',
+					{urlseo}{seo}'seo'
 				{urlseo}],
 			{urlseo}]
 		],

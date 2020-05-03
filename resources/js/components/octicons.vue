@@ -1,10 +1,10 @@
 <script>
 
-import octicons from 'octicons'
+import octicons from '@primer/octicons'
 
 export default {
 	functional: true,
-	
+
 	props: {
 		width: {
 			type: String,
@@ -32,7 +32,7 @@ export default {
 		}
 
 		if (props.width) params.width = props.width
-		if (props.height) params.height = props.height	
+		if (props.height) params.height = props.height
 
 		return createElement('span', {
 			class: 'octicon-wrapper',
