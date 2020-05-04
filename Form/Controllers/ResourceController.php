@@ -7,6 +7,7 @@ use Auth;
 use Backend\Root\MediaFile\Models\MediaFile;
 use Backend\Root\MediaFile\Models\MediaFileRelation;
 use GetConfig;
+use Illuminate\Support\Facades\Log;
 use Request;
 use Response;
 
@@ -265,7 +266,7 @@ class ResourceController extends Controller
 
         // Если ошибка валидации
         if ($data['errors'] !== true) {
-            return Response::json(['errors' => $data['errors']], 422)->send();
+            Response::json(['errors' => $data['errors']], 422)->send();
             die();
         }
 

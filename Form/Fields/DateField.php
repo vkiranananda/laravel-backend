@@ -17,6 +17,8 @@ class DateField extends Field
     // Получаем сырое значние элемента для редактирования
     public function edit($value)
     {
+        if ($value == null) return null;
+        
         $dateConfig = $this->getTimeConfig();
 
         if (!is_object($value)) $value = Carbon::create($value);

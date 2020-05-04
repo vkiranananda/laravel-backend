@@ -48,25 +48,26 @@
                 if (this.field.protected === true && this.blocked) {
                     let res = cloneDeep(this.field)
                     if (res.attr == undefined) res.attr = {}
-                    res.attr.disabled = true
+                    res.readonly = true
                     return res
                 } else return this.field
             }
         },
         methods: {
             unblock: function () {
-                if (confirm('Разблокировать элемент?')) this.blocked = false
+                let msg = (this.field['protected-message'] ) ? this.field['protected-message'] : 'Разблокировать элемент?'
+                if (confirm(msg)) this.blocked = false
             }
         }
     }
 </script>
 
 <style lang='scss'>
-    .field-block { 
+    .field-block {
         .field {
             width: 100%;
         }
-        .protected {  
+        .protected {
             cursor: pointer;
             padding-left: 12px;
         }

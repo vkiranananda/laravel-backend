@@ -1,6 +1,6 @@
-<!-- 
+<!--
     status
-        errorFields -   Ошибки в полях 
+        errorFields -   Ошибки в полях
         errorAny    -   Просто ошибки
         saveing     -   В процессе сохранения
         saved       -   Сохранено
@@ -31,30 +31,30 @@
             modal: { default: false },
             closeUrl: { default: false }
         },
-        data() { return { 
+        data() { return {
             currentStatus: '',
             saveExit: false
         } },
-        
+
         watch: {
             status: function (val) {
                 this.currentStatus = this.status;
 
-                // Если статус окей, скрываем текст через 3 секунды                
+                // Если статус окей, скрываем текст через 3 секунды
                 if (val == 'saved') {
                     setTimeout(() => {
                         this.currentStatus = ''
                     }, 3000);
-                    
+
                     if (this.modal) $(this.modal).modal('hide')
-                    if (this.saveExit) window.location = document.referrer
+                    if (this.saveExit) history.back()
                 }
 
             }
         },
         computed: {
             closeLabel: function() { return (this.modal) ? 'Закрыть' : 'Назад' },
-            diableCloseButton: function() { 
+            diableCloseButton: function() {
                 if (!this.closeUrl && !this.modal && document.referrer == '') return true
                 else false
             }
@@ -68,7 +68,7 @@
                 if (this.modal) $(this.modal).modal('hide')
             },
         }
-                    
+
 
     }
 </script>
