@@ -18,7 +18,7 @@ class DateField extends Field
     public function edit($value)
     {
         if ($value == null) return null;
-        
+
         $dateConfig = $this->getTimeConfig();
 
         if (!is_object($value)) $value = Carbon::create($value);
@@ -30,6 +30,8 @@ class DateField extends Field
     // Получаем готовое значение для списков
     public function list($value)
     {
+        if ($value == null) return null;
+        
         $dateConfig = $this->getTimeConfig();
 
         if (!is_object($value)) $value = Carbon::create($value);
