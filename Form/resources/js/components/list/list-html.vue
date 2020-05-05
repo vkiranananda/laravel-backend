@@ -2,7 +2,7 @@
 	<div>
         <h3 class="mb-4">{{ myData.config.title }}</h3>
         <the-loading :loading="loading"></the-loading>
-        
+
         <!-- buttons -->
 
         <div class="mb-3">
@@ -10,18 +10,15 @@
                 {{ el['label'] }}
             </button>
         </div>
-        
+
         <!-- end buttons -->
 
         <the-search v-if="myData.search != undefined" :fields="myData.search" @change="searchChange"></the-search>
         <the-breadcrumbs v-if="myData.breadcrumbs" :data="myData.breadcrumbs"></the-breadcrumbs>
         <the-list :fields="myData.fields" :items="myData.items" :itemMenu="myData.itemMenu" @change="listChange"></the-list>
 
-	<!--       	@if (isset($params['conf']['breadcrumb']) && $params['conf']['breadcrumb'] == true )
-	        	@component('Form::components.breadcrumb', ['params' => $params ]) @endcomponent
-	     	@endif -->
         <the-sortable @change="pageReload"></the-sortable>
-	</div>	
+	</div>
 </template>
 
 <script>
@@ -33,7 +30,7 @@
     export default {
         created() {
             history.replaceState(window.location.href, '', window.location.href)
-           
+
             window.onpopstate = (event) => {
                 this.axiosSend(event.state, false )
             };
@@ -42,10 +39,9 @@
             window.onpopstate = null
         },
         props: [ 'data' ],
-        components: { theList, theLoading, theSearch, theSortable, theBreadcrumbs },        
+        components: { theList, theLoading, theSearch, theSortable, theBreadcrumbs },
         data() {
             return {
-                lastUrl: '',
                 myData: this.data,
                 loading: false
             }
@@ -54,7 +50,7 @@
             // Меню клик
             menuActionClick(el) {
                 if (el.type == 'sortable') {
-                    this.$bus.$emit('ListSortableShow', el) 
+                    this.$bus.$emit('ListSortableShow', el)
                     return
                 }
 
@@ -96,15 +92,10 @@
             },
 
             axiosSend(url, pushState = true) {
-
-                if (this.lastUrl == url) return
-
                 this.loading = true
-                this.lastUrl = url
-
-                axios.get(url, { 
+                axios.get(url, {
                     params: {
-                        _ajax: true
+                        _ajax: Math.random()
                     }
                 })
                 .then( (response) => {
@@ -117,7 +108,7 @@
             },
             //Добавляем параметр к урлу
             genUrl (url, key, value ) { return ( (url == '') ? '?' : url + '&') + key + '=' + value },
-            
+
             // Измения в списке
             listChange (data) {
                 let changeType = ''
@@ -133,21 +124,21 @@
                         if (field.sortable != undefined) field.sortable = true;
                     }
                     this.myData.fields[data.sortable].sortable = data.orderType
-                } 
+                }
                 //Удаляем запись
-                else if (data.destroy != undefined) { 
+                else if (data.destroy != undefined) {
                     if (data.destroy == 'begin') {
                         this.loading = true
                         return
                     } else {
                         this.pageReload()
                         return
-                    } 
+                    }
                 }
 
                 this.send(changeType);
             },
-            searchChange (data) { 
+            searchChange (data) {
                 //Выставляем значния
                 for (let field of this.myData.search) {
                     if (data[ field.name ] != undefined) field.value = data[ field.name ]
@@ -157,7 +148,7 @@
             pageReload() {
                     this.loading = true
 
-                    axios.get(window.location.href, { params: { _ajax: true } })
+                    axios.get(window.location.href, { params: { _ajax: Math.random() } })
                         .then( (response) => { this.myData = response.data })
                         .catch( (error) => { console.log(error.response) })
                         .then( () => { this.loading = false }  )
