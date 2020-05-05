@@ -2,39 +2,29 @@
 
 
 a.disabled {
-   pointer-events: none;
-   cursor: default;
+    pointer-events: none;
+    cursor: default;
 }
-
 
 .card {
-	border-radius: 0px !important;
+    border-radius: 0px !important;
 }
-.container-fluid {
-	min-height: 100%;
-	height: 100%;
-}
-#backend-body {
-	.content-block {
-		margin-left: 200px;
-	}
-}
-
 
 .text-success {
-	fill: #28a745 !important;
+    fill: #28a745 !important;
 }
 
 .text-light {
-	fill: #f8f9fa !important;
+    fill: #f8f9fa !important;
 }
 
 .text-primary {
-	fill: #007bff !important;	
+    fill: #007bff !important;
 }
 
 .text-danger {
-	fill: #dc3545 !important;	
+    fill: #dc3545 !important;
 }
+
 
 @import "backend/resources/sass/backend.scss";
