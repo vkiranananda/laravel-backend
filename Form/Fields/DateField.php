@@ -10,8 +10,17 @@ class DateField extends Field
     // Получаем значение для сохраниения
     public function save($value)
     {
-        // Надо понять применять ли тайм зоны, тут по идее надо в системную конвернтуть...
-        return ($value == '') ? null : $value;
+        if ($value == '') return null;
+
+        $dateConfig = $this->getTimeConfig();
+
+        // Применяем локальный часовой пояс
+        $date = new Carbon($value, $dateConfig['time-zone']);
+
+        // Делаем смещение до системного.
+        $date->setTimezone(config('app.timezone'));
+
+        return $date;
     }
 
     // Получаем сырое значние элемента для редактирования
@@ -31,7 +40,7 @@ class DateField extends Field
     public function list($value)
     {
         if ($value == null) return null;
-        
+
         $dateConfig = $this->getTimeConfig();
 
         if (!is_object($value)) $value = Carbon::create($value);

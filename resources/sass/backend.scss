@@ -25,6 +25,9 @@ a.disabled {
 .text-danger {
     fill: #dc3545 !important;
 }
-
+img {
+    max-width: 100%;
+    height: auto;
+}
 
 @import "backend/resources/sass/backend.scss";

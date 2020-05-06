@@ -9,7 +9,7 @@ import editForm from '../../Form/resources/js/store/edit';
 const store = new Vuex.Store({
 	modules: {
 		editForm,
-	} 
+	}
 });
 
 
@@ -23,6 +23,8 @@ Vue.prototype.store = store;
 
 // Подключаем иконки они должы быть доступны всем.
 Vue.component('v-icon', require('./components/octicons.vue').default)
+// Модальные окна
+Vue.component('v-modal', require('../../Form/resources/js/components/modal').default)
 
 // Модуль форм
 require('../../Form/resources/js/init.js');
