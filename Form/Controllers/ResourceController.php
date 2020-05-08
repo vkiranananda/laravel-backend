@@ -207,6 +207,8 @@ class ResourceController extends Controller
     //Удаляем запись
     public function destroy($id)
     {
+        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
+        
         $this->resourceCombine('destroy');
 
         $this->post->destroy($id);

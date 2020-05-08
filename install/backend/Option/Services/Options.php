@@ -19,13 +19,13 @@ class Options
 
 		// Получаем все опции у которых стоит автозагрузка
 		if (!$this->options) {
-			$option = $option->orWhere('autoload', '1');
+			$option = $option->orWhere('autoload', true);
 			$this->options = [];
 		}
 		foreach ($option->get() as $opt) {
-			$this->options[$opt['name']] = [ 
+			$this->options[$opt['name']] = [
 				'type' => $opt->type,
-				'data' => Helpers::getDataField($opt, 
+				'data' => Helpers::getDataField($opt,
 					Helpers::getDataField($opt, 'type', ''), '')
 			];
 		}
