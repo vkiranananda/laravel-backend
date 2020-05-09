@@ -65,9 +65,9 @@
             }
         },
         methods: {
-            submit(close = false) {
-                this.saveExit = close
-                this.$emit('submit')
+            submit(saveAndExit = false) {
+                this.saveExit = saveAndExit
+                this.$emit('submit', saveAndExit)
             },
             close() {
                 if (this.modal) $(this.modal).modal('hide')
