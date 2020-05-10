@@ -29,6 +29,7 @@
             <upload-files-modal  :url="conf.upload.uploadUrl"></upload-files-modal>
             <upload-edit-file-modal :url="conf.upload.editUrl"></upload-edit-file-modal>
         </div>
+        <v-alert></v-alert>
     </div>
 </template>
 
@@ -43,7 +44,7 @@
 
     export default {
         components: {
-            'fields-list': fieldsList, 
+            'fields-list': fieldsList,
             'upload-files-modal': uploadFilesModal,
             'upload-edit-file-modal': uploadEditFileModal,
             'send-form': sendForm,
@@ -51,7 +52,7 @@
         props: {
             fields: {},
             config: {},
-        },        
+        },
         created: function () {
             this.store.dispatch('editForm/initData', { fields: this.fields, config: this.config } );
         },

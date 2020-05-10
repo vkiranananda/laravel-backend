@@ -57,13 +57,13 @@
                 this.$emit('change', this.repBlocks);
             },
             delBlock(key) {
-                if (confirm('Подтвердите удаление.')) {
+                vConfirm('Подтвердите удаление.', () => {
                     this.store.commit(this.storeName + '/delRepeatedBlock', {
                         block: this.field.value,
                         index: key
                     });
                     this.$emit('change', this.repBlocks);
-                }
+                })
             }
         }
     }

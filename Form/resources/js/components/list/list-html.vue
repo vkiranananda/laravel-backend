@@ -18,7 +18,8 @@
         <the-list :fields="myData.fields" :items="myData.items" :itemMenu="myData.itemMenu" @change="listChange"></the-list>
 
         <the-sortable @change="pageReload"></the-sortable>
-	</div>
+        <v-alert></v-alert>
+    </div>
 </template>
 
 <script>
