@@ -24,12 +24,12 @@ export default {
   				return this.getDate(this.field.value)
     		},
     		set: function (newDate) {
-				  let date = (newDate != null) ? fecha.format(newDate, this.inputFormat) : '' 
+				  let date = (newDate != null) ? fecha.format(newDate, this.inputFormat) : ''
 				  this.$emit('change', date);
 			 }
   		},
 
-  		format: function () { 
+  		format: function () {
         let format = this.field.format != undefined ? this.field.format : 'DD.MM.YYYY'
         if (this.field.time != undefined) format += ' HH:mm'
         return format
@@ -38,14 +38,14 @@ export default {
           return this.field.time != undefined ? 'datetime' : 'date'
       },
    		// Генерим классы
-   		inputClass: function () { 
+   		inputClass: function () {
    			let objClass = 'mx-input form-control';
    			let attr = this.field.attr;
 
    			if (this.error) objClass += ' is-invalid';
 
    			if (attr != undefined && attr.class != undefined) objClass += ' ' + attr.class;
-   		
+
    			return objClass;
    		},
    		//Возвращаем дату с нужным форматированем
@@ -63,4 +63,14 @@ export default {
 		}
 	}
 }
-</script> 
+</script>
+
+
+<style lang='scss'>
+    .mx-datepicker {
+        .mx-input {
+            font-size: 1rem;
+        }
+    }
+</style>
+

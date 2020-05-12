@@ -1,9 +1,10 @@
 <template>
     <div class="field-block d-flex align-items-center">
         <div class="field">
-            <component v-if="component" :is="'form-field-'+component" :field="fieldChanged" :error='error' v-on:change="$emit('change', $event)"></component>
+            <component v-if="component" :is="'form-field-'+component" :field="fieldChanged" :error='error'
+                       v-on:change="$emit('change', $event)"></component>
         </div>
-        <v-icon v-if="field.protected === true && blocked" name="key" class="back" @click="unblock" />
+        <v-icon v-if="field.protected === true && blocked" name="key" class="back" @click="unblock"/>
     </div>
 </template>
 
@@ -31,16 +32,29 @@
                 type: String
             }
         },
-        data(){
+        data() {
             return {
                 blocked: true
             }
         },
-        components: {FormFieldInput, FormFieldDate, FormFieldTextarea, FormFieldMce, FormFieldFiles, FormFieldRadio, FormFieldSelect, FormFieldCheckbox, FormFieldMultiselect, FormFieldMask, FormFieldEditor, FormFieldMarkdown},
+        components: {
+            FormFieldInput,
+            FormFieldDate,
+            FormFieldTextarea,
+            FormFieldMce,
+            FormFieldFiles,
+            FormFieldRadio,
+            FormFieldSelect,
+            FormFieldCheckbox,
+            FormFieldMultiselect,
+            FormFieldMask,
+            FormFieldEditor,
+            FormFieldMarkdown
+        },
         computed: {
-            component(){
-                if ( [ 'text', 'email', 'password', 'tel' ].indexOf(this.field.type) != -1 ) return 'input';
-                if ( [ 'gallery', 'files' ].indexOf(this.field.type) != -1 ) return 'files';
+            component() {
+                if (['text', 'email', 'password', 'tel'].indexOf(this.field.type) != -1) return 'input';
+                if (['gallery', 'files'].indexOf(this.field.type) != -1) return 'files';
 
                 return this.field.type;
             },
@@ -48,25 +62,29 @@
                 if (this.field.protected === true && this.blocked) {
                     let res = cloneDeep(this.field)
                     if (res.attr == undefined) res.attr = {}
-                    res.attr.disabled = true
+                    res.readonly = true
                     return res
                 } else return this.field
             }
         },
         methods: {
             unblock: function () {
-                if (confirm('Разблокировать элемент?')) this.blocked = false
+                let msg = (this.field['protected-message']) ? this.field['protected-message'] : 'Разблокировать элемент?'
+                vConfirm(msg, () => {
+                    this.blocked = false
+                })
             }
         }
     }
 </script>
 
 <style lang='scss'>
-    .field-block { 
+    .field-block {
         .field {
             width: 100%;
         }
-        .protected {  
+
+        .protected {
             cursor: pointer;
             padding-left: 12px;
         }

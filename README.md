@@ -7,3 +7,5 @@
 
 [UploadedFiles - загруженные файлы](https://github.com/vkiranananda/laravel-backend/wiki/UploadedFiles)
 
+[Роутинг - встроенные функции](https://github.com/vkiranananda/laravel-backend/wiki/Роутинг)
+

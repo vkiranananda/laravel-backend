@@ -51,7 +51,7 @@
     }
 </script>
 
-<style lang='scss'>
+<style scoped lang='scss'>
     .modal {
         overflow: auto !important;
     }

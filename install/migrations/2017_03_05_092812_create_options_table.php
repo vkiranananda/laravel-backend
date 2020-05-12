@@ -16,7 +16,8 @@ class CreateOptionsTable extends Migration
         Schema::create('options', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique();
-            $table->string('autoload', 1)->default('0');
+            $table->boolean('_hidden')->default(false);
+            $table->boolean('autoload', 1)->default(false);
             $table->text('array_data')->nullable();
             $table->softDeletes();
             $table->timestamps();

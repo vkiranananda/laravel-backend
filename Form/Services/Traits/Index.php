@@ -2,11 +2,14 @@
 
 namespace Backend\Root\Form\Services\Traits;
 use Helpers;
+use Illuminate\Database\Eloquent\Model;
+use PhpParser\Node\Scalar\String_;
+use Psy\Util\Str;
 use Request;
 
 trait Index {
 
-	// !Вввод списка записей
+	// !Ввод списка записей
     public function index()
     {
     	$this->resourceCombine('index');
@@ -35,17 +38,17 @@ trait Index {
 		$this->dataReturn['breadcrumbs'] = $this->indexBreadcrumbs($urlPostfix);
 
         //-------------------------------Подготавливаем поля----------------------------------
-     
+
         $fields = [];
         $fields_prep = []; // Методы доп обработки values
         $optionFields = []; // Поля имеющие option
-     
+
      	// Меню для элемента списка
         $this->dataReturn['itemMenu'] = $this->indexItemMenu();
 
 
         foreach ($this->fields['list'] as $field) {
-        
+
         	// Получаем базовое поле. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
         	$mainField = ( isset ($this->fields['fields'][ $field['name'] ]) ) ? $this->fields['fields'][ $field['name'] ] : [];
 
@@ -68,7 +71,7 @@ trait Index {
         $this->dataReturn['items']['currentPage'] = $query['current_page'];
         $this->dataReturn['items']['lastPage'] = $query['last_page'];
         $this->dataReturn['items']['total'] = $query['total'];
-        
+
         //урл страницы списка.
         $this->dataReturn['config']['indexUrl'] = $query['path'];
 
@@ -89,26 +92,26 @@ trait Index {
         // Подготваливаем все поля
         foreach ($query['data'] as $post) {
         	$res = []; // Преобразованные данные
-        	
+
         	$res['_links'] = $this->indexLinks($post, $urlPostfix);
 
         	foreach ($fields as $key => $field) {
-        		
+
         		$name = $field['name'];
 
         		if (isset($field['func'])) {
         			$func = $field['func'];
         			$res[$name] = $this->$func($post, $field, $urlPostfix);
         			continue;
-        		}	
+        		}
         		// Обработчик полей
-        		$res[$name] = 
+        		$res[$name] =
         			$fields_prep[$key]->list( Helpers::getDataField($post, $name, '') );
         	}
         	$this->dataReturn['items']['data'][] = $res;
         }
 
-        //Получаем шаблон 
+        //Получаем шаблон
     	$templite = (isset($this->config['list']['template'])) ? $this->config['list']['template'] : 'Form::list';
 
     	//Хук перед выходом
@@ -118,39 +121,39 @@ trait Index {
 
         return view($templite, [ 'data' => $this->dataReturn ]);
     }
-    
+
     // Выводим хлебные крошки.
-    protected function indexBreadcrumbs($url_postfix = '')
+    protected function indexBreadcrumbs($urlPostfix = '')
     {
     	return false;
     }
 
-    // Главное меню в списке. url_postfix добавочная строка у url адресу.
-    protected function indexListMenu($url_postfix = '')
+    // Главное меню в списке. urlPostfix добавочная строка к url адресу.
+    protected function indexListMenu($urlPostfix = '')
     {
 
     	$menu = [];
-    	
+
     	// Если нужно создавать запись
     	if ($this->config['list']['create']) {
-    		$menu[] = $this->indexMenuCreateButton($url_postfix);
+    		$menu[] = $this->indexMenuCreateButton($urlPostfix);
 		}
 
 		// Для ручной сортировки
 		if ( isset($this->config['list']['sortable']) && $this->config['list']['sortable']) {
-			$menu[] = $this->listSortableButton($url_postfix);
+			$menu[] = $this->listSortableButton($urlPostfix);
 		}
 		return $menu;
     }
 
 
     // Кнопка создать
-	protected function indexMenuCreateButton($url_postfix)
+	protected function indexMenuCreateButton($urlPostfix)
 	{
 		return [
-			'label' => isset($this->config['lang']['create-title']) 
+			'label' => isset($this->config['lang']['create-title'])
 				? $this->config['lang']['create-title'] : 'Создать',
-			'url' => action($this->config['controller-name'].'@create').$url_postfix,
+			'url' => action($this->config['controller-name'].'@create').$urlPostfix,
 			'btn-type' => 'primary'
 		];
 	}
@@ -172,6 +175,13 @@ trait Index {
     }
 
     // Обрабатываем ссылки в списке
+
+    /**
+     * Генерирует ссылки в списке для каждой записи. edit,destroy,clone
+     * @param Model $post текущая запись
+     * @param string $urlPostfix добавочный урл
+     * @return array массив ссылок
+     */
     protected function indexLinks($post, $urlPostfix) {
     	$res = [];
 
@@ -194,7 +204,7 @@ trait Index {
 
 
     // Функция для сортировки списка
-    protected function indexOrder() 
+    protected function indexOrder()
     {
     	$order = Request::input('order', false);
 
@@ -217,16 +227,16 @@ trait Index {
 
     //Функция поиска для списка, возвращает true если есть что искать.
     protected function indexSearch() {
-    	
+
     	$searchReq = false;
-        
+
         //Если есть поля для поиска
         if ( isset($this->fields['search']) ) {
       	 	//Перебираем
       	 	foreach ($this->fields['search']  as $key => &$field) {
       	 		//Проверяем на валидность
   	 			if (!isset($field['name']) || !isset($field['fields']) || !is_array($field['fields']) ) continue;
- 				  	
+
 
       	 		//Копируем данные поля из основных полей
       	 		if (isset($field['field-from'])) {
@@ -290,20 +300,20 @@ trait Index {
 
 				//Выборка по группе полей, если в каком то поле есть то данные выведутся
 		 		$this->post = $this->post->where(function ($query)
-		 		use (&$field, $req, $typeComparison, &$searchReq) 
+		 		use (&$field, $req, $typeComparison, &$searchReq)
 		 		{
 					$first = true;
 
 					foreach ($field['fields'] as $column) {
 						// Выборка для релатед полей
 						$func = ($first) ? 'where' : 'orWhere';
-						
+
 						$searchReq[$column] = $req;
 
 						if (isset($field['field-save']) && $field['field-save'] == 'relation'){
 							$func .= 'Has';
-							$query = $query->$func('relationFields', function ($query) 
-							use ($column, $req, $typeComparison, $first) 
+							$query = $query->$func('relationFields', function ($query)
+							use ($column, $req, $typeComparison, $first)
 							{
 								$query->where('value', $typeComparison, $req)->where('field_name', $column);
 							});
