@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" ref="modal">
+    <div class="alert modal fade" ref="modal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-body p-4" v-html="params.msg"></div>
@@ -69,6 +69,12 @@
 </script>
 
 <style scoped lang='scss'>
+    .alert {
+        z-index: 2050;
+    }
+    .modal-backdrop {
+        z-index: 2000 !important;
+    }
     .modal {
         overflow: auto !important;
     }
