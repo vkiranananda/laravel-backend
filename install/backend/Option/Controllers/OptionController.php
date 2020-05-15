@@ -16,7 +16,7 @@ class OptionController extends \Backend\Root\Form\Controllers\ResourceController
     public function index()
     {
         // Делаем полный запрет на выборку скрытых записей
-        $this->post = $this->post->where('_hidden', false);
+        $this->post = $this->post->where('hidden', false);
         return parent::index();
     }
 
@@ -24,7 +24,7 @@ class OptionController extends \Backend\Root\Form\Controllers\ResourceController
     {
         // Делаем запрет на изменение записей если она скрыта
         if (array_search($type, ['store', 'update', 'edit', 'destroy']) !== false) {
-            if ($this->post['_hidden'] == true) abort(403, 'Access deny');
+            if ($this->post['hidden'] == true) abort(403, 'Access deny');
         }
 
         parent::resourceCombine($type);
