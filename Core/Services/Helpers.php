@@ -32,8 +32,8 @@ class Helpers {
     		$item = [];
     		foreach ($fields as $field) {
     			$item[$field['name']] = Helpers::getDataField($el, $field['name']);
-    			if(isset($field['options']) 
-    				&& is_array($field['options']) 
+    			if(isset($field['options'])
+    				&& is_array($field['options'])
     				&& isset($field['options'][$item[$field['name']]])){
     				$item[$field['name']] = $field['options'][$item[$field['name']]];
     			}
@@ -99,7 +99,7 @@ class Helpers {
         foreach ($arr as $el) {
             if(is_array($el)) {if(!isset($el['value'])) {$el['value'] = '';}}
             else $el = ['value' => $el];
-            
+
             if (is_array($str)) {
                 foreach ($str as $lastStr) {
                     if($el['value'] == $lastStr) {
@@ -108,12 +108,12 @@ class Helpers {
                 }
             } elseif($el['value'] == $str) return true;
         }
-        
+
         if(is_array($str) && count($str) == $count)return true;
 
         return false;
     }
-    
+
     // Получает список айдишников из списка записей
     static public function getListIds(&$from)
     {
@@ -123,7 +123,27 @@ class Helpers {
 				$res[] = $el['id'];
     		}
     	}
-    	return $res;    	
+    	return $res;
+    }
+
+
+    /**
+     *
+     * Выводим данные массива, если данных нет  возвращаем заничение $res, по умолчанию false
+     *
+     * @param $array
+     * @param string $key
+     * @param mixed $default
+     * @return bool|mixed
+     */
+    static public function getDataArray($array, $key, $default = false)
+    {
+        $result = $default;
+        foreach (explode(".", $key) as $k) {
+            if (isset($array[$key])) $result = $array[$key];
+            else return $default;
+        }
+        return $result;
     }
 
     // Выводим данные поля, если данных нет выводим возвращаем заничение 3 параметр, по умолчанию false
@@ -137,10 +157,10 @@ class Helpers {
     			elseif ( isset($data['array_data']['fields'][$key] ) )
     				$result = $data['array_data']['fields'][$key];
     			// Ничего не найдено
-    			else return $res; 
+    			else return $res;
     		} else {
     			if ( isset($result[$key]) ) $result = $result[$key];
-    			else return $res; 
+    			else return $res;
     		}
     	}
         return $result ;
@@ -152,7 +172,7 @@ class Helpers {
         $value = Helpers::getDataField($data, $id);
 
         if($value != '' && $value !== false) return $value;
-      
+
         return $res;
     }
 
