@@ -13,13 +13,18 @@ class Options
      *
      * Возвращает указанну запись, если указан ключ, то вернется значение этого поля.
      *
-     * @param string $name название опции
+     * @param string $name название опции :: значение ключа, массива если есть
+     * вложенность задается через точку config::site.name
      * @param string|false $key если ключ установлен и опция является элементом массива, то вернет ее значение
      * @param string $default если ключа не найдено, вернет это знчние
      * @return mixed
      */
-    public function get($name, $key = false, $default = '')
+    public function get($name, $default = '')
     {
+
+        $parseName = explode("::", $name, 2);
+        $key = (count($parseName) == 2) ? $parseName[1] : false;
+        $name = $parseName[0];
 
         // Если опции нет.
         if (!isset($this->options[$name])) {

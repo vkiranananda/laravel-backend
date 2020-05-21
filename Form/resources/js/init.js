@@ -2,7 +2,7 @@
 
 // Vue.component('fields-list', require('./components/fields-list.vue'));
 
-//Компоненты для фиелдсов
+// Компоненты для фиелдсов
 Vue.component('print-field', require('./components/fields/field.vue').default);
 
 

@@ -1,7 +1,9 @@
 <?php
+
 namespace Backend\Root\Core\Services;
 
-class Helpers {
+class Helpers
+{
 
     // Получаем все поля где есть массив options, передается параметр табов
     static public function changeFieldsOptions($fields)
@@ -9,7 +11,7 @@ class Helpers {
         $res = [];
 
         foreach ($fields as $key => &$field) {
-            if(isset($field['options']) && is_array($field['options'])){
+            if (isset($field['options']) && is_array($field['options'])) {
                 $field['options'] = Helpers::optionsToArr($field['options']);
             }
         }
@@ -19,48 +21,48 @@ class Helpers {
     // Обьединям параметры урл
     static public function mergeUrlParams($url, $param, $value)
     {
-    	$url .= ($url != '') ? '&' : '?';
+        $url .= ($url != '') ? '&' : '?';
 
-    	return $url . $param . '=' . $value;
+        return $url . $param . '=' . $value;
     }
 
     // Получаем массив списка записей с нужными полями
     static public function getArrayItems(&$data, $fields, $colums = ['id'])
     {
-    	$res = [];
-    	foreach ($data as $el) {
-    		$item = [];
-    		foreach ($fields as $field) {
-    			$item[$field['name']] = Helpers::getDataField($el, $field['name']);
-    			if(isset($field['options'])
-    				&& is_array($field['options'])
-    				&& isset($field['options'][$item[$field['name']]])){
-    				$item[$field['name']] = $field['options'][$item[$field['name']]];
-    			}
-    		}
-    		foreach ($colums as $col) {
-    			$item[$col] = Helpers::getDataField($el, $col);
-    		}
-    		$res[] = $item;
-    	}
-    	return $res;
+        $res = [];
+        foreach ($data as $el) {
+            $item = [];
+            foreach ($fields as $field) {
+                $item[$field['name']] = Helpers::getDataField($el, $field['name']);
+                if (isset($field['options'])
+                    && is_array($field['options'])
+                    && isset($field['options'][$item[$field['name']]])) {
+                    $item[$field['name']] = $field['options'][$item[$field['name']]];
+                }
+            }
+            foreach ($colums as $col) {
+                $item[$col] = Helpers::getDataField($el, $col);
+            }
+            $res[] = $item;
+        }
+        return $res;
     }
 
     // Заполняем массив значиениями keys
     static public function setArray(&$from, $keys)
     {
-    	$res = [];
-    	foreach ($keys as $key) {
-    		$res[$key] = (isset($from[$key])) ? $from[$key] : '' ;
-    	}
-    	return $res;
+        $res = [];
+        foreach ($keys as $key) {
+            $res[$key] = (isset($from[$key])) ? $from[$key] : '';
+        }
+        return $res;
     }
 
     // Поиск в массиве по ключу и значению
     static public function searchArray($arr, $key, $val)
     {
         foreach ($arr as $vArr) {
-            if(isset($vArr[$key]) && $vArr[$key] == $val) return $vArr;
+            if (isset($vArr[$key]) && $vArr[$key] == $val) return $vArr;
         }
         return false;
     }
@@ -68,15 +70,15 @@ class Helpers {
     // Генерит список value label для селектов и прочего из списка данных
     static public function getHtmlOptions(&$from)
     {
-    	$res = [];
-    	if (is_array($from)) {
-    		foreach ($from as $el) {
-    			$r['value'] = $el['id'];
-				$r['label'] = $el['name'];
-				$res[] = $r;
-    		}
-    	}
-    	return $res;
+        $res = [];
+        if (is_array($from)) {
+            foreach ($from as $el) {
+                $r['value'] = $el['id'];
+                $r['label'] = $el['name'];
+                $res[] = $r;
+            }
+        }
+        return $res;
     }
 
     // Фукнция генерит из списка опций ассиотивный массив
@@ -97,19 +99,22 @@ class Helpers {
         $count = 0;
 
         foreach ($arr as $el) {
-            if(is_array($el)) {if(!isset($el['value'])) {$el['value'] = '';}}
-            else $el = ['value' => $el];
+            if (is_array($el)) {
+                if (!isset($el['value'])) {
+                    $el['value'] = '';
+                }
+            } else $el = ['value' => $el];
 
             if (is_array($str)) {
                 foreach ($str as $lastStr) {
-                    if($el['value'] == $lastStr) {
+                    if ($el['value'] == $lastStr) {
                         $count++;
                     }
                 }
-            } elseif($el['value'] == $str) return true;
+            } elseif ($el['value'] == $str) return true;
         }
 
-        if(is_array($str) && count($str) == $count)return true;
+        if (is_array($str) && count($str) == $count) return true;
 
         return false;
     }
@@ -117,53 +122,34 @@ class Helpers {
     // Получает список айдишников из списка записей
     static public function getListIds(&$from)
     {
-    	$res = [];
-    	if (is_array($from)) {
-    		foreach ($from as $el) {
-				$res[] = $el['id'];
-    		}
-    	}
-    	return $res;
-    }
-
-
-    /**
-     *
-     * Выводим данные массива, если данных нет  возвращаем заничение $res, по умолчанию false
-     *
-     * @param $array
-     * @param string $key
-     * @param mixed $default
-     * @return bool|mixed
-     */
-    static public function getDataArray($array, $key, $default = false)
-    {
-        $result = $default;
-        foreach (explode(".", $key) as $k) {
-            if (isset($array[$key])) $result = $array[$key];
-            else return $default;
+        $res = [];
+        if (is_array($from)) {
+            foreach ($from as $el) {
+                $res[] = $el['id'];
+            }
         }
-        return $result;
+        return $res;
     }
 
     // Выводим данные поля, если данных нет выводим возвращаем заничение 3 параметр, по умолчанию false
-    static public function getDataField($data, $id, $res = false) {
-    	$result = $res;
-    	foreach ( explode (".", $id) as $i => $key ) {
-    		if ($i == 0) {
-    			// Ищем в корне записи
-    			if ( isset($data[$key]) ) $result = $data[$key];
-    			// Ищем в массиве array_data
-    			elseif ( isset($data['array_data']['fields'][$key] ) )
-    				$result = $data['array_data']['fields'][$key];
-    			// Ничего не найдено
-    			else return $res;
-    		} else {
-    			if ( isset($result[$key]) ) $result = $result[$key];
-    			else return $res;
-    		}
-    	}
-        return $result ;
+    static public function getDataField($data, $id, $res = false)
+    {
+        $result = $res;
+        foreach (explode(".", $id) as $i => $key) {
+            if ($i == 0) {
+                // Ищем в корне записи
+                if (isset($data[$key])) $result = $data[$key];
+                // Ищем в массиве array_data
+                elseif (isset($data['array_data']['fields'][$key]))
+                    $result = $data['array_data']['fields'][$key];
+                // Ничего не найдено
+                else return $res;
+            } else {
+                if (isset($result[$key])) $result = $result[$key];
+                else return $res;
+            }
+        }
+        return $result;
     }
 
     // То же самое что предыдущее но выводим res если значиение пустое.
@@ -171,7 +157,7 @@ class Helpers {
     {
         $value = Helpers::getDataField($data, $id);
 
-        if($value != '' && $value !== false) return $value;
+        if ($value != '' && $value !== false) return $value;
 
         return $res;
     }
@@ -179,11 +165,11 @@ class Helpers {
     // Генерит список атрибутов для хтмл поля из массива key=value
     static public function getAttrs($attr = [])
     {
-    	$res = '';
-    	foreach ($attr as $key => $value) {
-    		$res .= ' '.$key.'="'.htmlspecialchars($value).'"';
-    	}
-    	return $res;
+        $res = '';
+        foreach ($attr as $key => $value) {
+            $res .= ' ' . $key . '="' . htmlspecialchars($value) . '"';
+        }
+        return $res;
     }
 
 }
