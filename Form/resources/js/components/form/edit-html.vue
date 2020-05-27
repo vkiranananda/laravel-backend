@@ -25,6 +25,8 @@
         </div>
         <send-form store-name='editForm' :url='conf.url' :method='conf.method'></send-form>
 
+
+
         <div v-if="conf.upload !== false && conf.upload != undefined">
             <upload-files-modal  :url="conf.upload.uploadUrl"></upload-files-modal>
             <upload-edit-file-modal :url="conf.upload.editUrl"></upload-edit-file-modal>

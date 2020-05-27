@@ -17,7 +17,6 @@
         </div>
         <div class="mr-4">
             <button v-if="modal" class="btn btn-secondary mr-3" v-on:click="close" role="button" :disabled="disableCloseButton">{{closeLabel}}</button>
-
             <button v-if="showBackButton" type="button" class="btn btn-primary mr-2" v-on:click="submit(true)" :disabled="currentStatus == 'saveing' ? true : false">Сохранить и выйти</button>
             <button type="button" class="btn btn-secondary" v-on:click="submit()" :disabled="currentStatus == 'saveing' ? true : false">Сохранить</button>
         </div>

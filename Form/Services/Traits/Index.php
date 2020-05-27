@@ -164,9 +164,13 @@ trait Index {
     		$res = [];
     		foreach ($this->config['list']['item-menu'] as $item) {
     			// Если есть опция default, то берем значения из дефолтного меню
-    			if (isset($item['default'])) {
-    				$res[] = $this->config['list']['item-menu-default'][$item['default']];
-    			}
+                if (isset($item['default'])) {
+                    // объединяем массивы
+                    $newItem = array_replace($this->config['list']['item-menu-default'][$item['default']], $item);
+                    // Удаляем опцию дефаулт что бы не передавать в админку
+                    unset($newItem['default']);
+                    $res[] = $newItem;
+                }
     			else $res[] = $item;
     		}
     		return $res;

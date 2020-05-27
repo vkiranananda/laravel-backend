@@ -1,13 +1,26 @@
 <template>
-    <save-buttons :modal="modal" :close-url="closeUrl" :status="status" v-on:submit="submit"></save-buttons>
+    <div class="row text-right form-buttons">
+        <div class="col result-area">
+            <span class="error" v-if='status == "errorAny"'>Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.</span>
+            <span class="error" v-if='status == "errorFields"'>Проверьте правильность заполнения данных</span>
+            <span class="success" v-if='status == "saved"'>Сохранено</span>
+            <span class="text-warning" v-else-if='status == "saveing"'>Сохраняю...</span>
+        </div>
+        <div class="mr-4">
+            <button v-for="btn in buttons"
+                    @click="btnClick(btn)"
+                    :disabled="status == 'saveing' ? true : false"
+                    type="button"
+                    class="btn ml-2"
+                    :class="btn.type ? 'btn-'+btn.type : 'btn-primary'">
+                {{btn.label}}
+            </button>
+        </div>
+    </div>
 </template>
 
-
 <script>
-    import saveButtons from './save-buttons'
-
     export default {
-        components: {'save-buttons': saveButtons},
         props: {
             url: {default: ''},
             method: {default: 'POST'},
@@ -15,8 +28,31 @@
             closeUrl: {default: false},
             storeName: {type: String, default: ''}
         },
+        computed: {
+            buttons: function () {
+                return this.store.state.editForm.config.buttons
+            },
+        },
         methods: {
-            submit(saveAndExit) {
+            btnClick(btn) {
+                if (btn.link) window.location = btn.link
+                if (!btn.hook) return
+                switch (btn.hook) {
+                    case 'FormSend':
+                        this.submit()
+                        break
+                    case 'FormSendAndExit':
+                        this.submit(true)
+                        break
+                    case 'FormBack':
+                        window.history.back()
+                        break
+                    default:
+                        this.$bus.$emit(btn.hook, btn)
+                        break
+                }
+            },
+            submit(saveAndExit = false) {
                 var res = {};
                 if (this.storeName != '') {
                     //Получаем все value
@@ -42,7 +78,7 @@
 
                         var result = response.data;
 
-                        //Отменяе предупреждающее окно при закрытии страницы
+                        // Отменяем предупреждающее окно при закрытии страницы
                         window.onbeforeunload = null;
 
                         // Если нажата кнопка "Сохранить и выйти"
@@ -62,6 +98,8 @@
                             return
                         }
 
+                        if (saveAndExit) window.history.back();
+
                         // Инитим конфиг
                         if (result.config != undefined) {
                             if (result.fields != undefined) {//Полный инит
@@ -79,10 +117,12 @@
                             history.replaceState('data', '', result.replaceUrl);
                         }
 
-                        this.status = 'saved';
-                        this.store.commit('editForm/setErrors', {});
+                        this.status = 'saved'
+                        setTimeout(() => {
+                            this.status = ''
+                        }, 3000);
 
-                        // Вызываем хуки
+                        this.store.commit('editForm/setErrors', {});
 
                         // Общий хук сохранения
                         this.$bus.$emit('FormSaved')
@@ -92,7 +132,7 @@
                         }
                     })
                     .catch((error) => {
-                        if (error.response.status == 422) {
+                        if (error.response && error.response.status == 422) {
 
                             console.log(error.response.data.errors);
 
@@ -108,7 +148,9 @@
             }
         },
         data() {
-            return {status: ''}
+            return {
+                status: ''
+            }
         }
     }
 

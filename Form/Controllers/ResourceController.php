@@ -99,6 +99,7 @@ class ResourceController extends Controller
                 'title' => $this->config['lang']['create-title'],
                 'method' => 'post',
                 'upload' => $this->uploadUrls($clone),
+                'buttons' => $this->formEditButtons(),
                 'clone-files' => ($this->cloneGetFiles($clone))
             ],
             'fields' => [
@@ -152,6 +153,7 @@ class ResourceController extends Controller
                 'viewUrl' => $this->getViewUrl(),
                 'upload' => $this->uploadUrls(),
                 'postId' => $this->post['id'],
+                'buttons' => $this->formEditButtons(),
             ],
             'fields' => [
                 'fields' => $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
@@ -208,7 +210,7 @@ class ResourceController extends Controller
     public function destroy($id)
     {
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
-        
+
         $this->resourceCombine('destroy');
 
         $this->post->destroy($id);
@@ -308,6 +310,30 @@ class ResourceController extends Controller
             ];
         } else return false;
     }
+
+    /**
+     * Генерируем кнопки внизу форму
+     * @return array Массив кнопок
+     */
+    protected function formEditButtons() {
+        if (isset($this->config['edit']['buttons'])) {
+            $res = [];
+            foreach ($this->config['edit']['buttons'] as $item) {
+                // Если есть опция default, то берем значения из дефолтного
+                if (isset($item['default'])) {
+                    // объединяем массивы
+                    $newItem = array_replace($this->config['edit']['buttons-default'][$item['default']], $item);
+                    // Удаляем опцию дефаулт что бы не передавать в админку
+                    unset($newItem['default']);
+                    $res[] = $newItem;
+                }
+                else $res[] = $item;
+            }
+            return $res;
+        }
+        return $this->config['edit']['buttons-default'];
+    }
+
     // Функция специально  для перегрузки, когда нужно выполнять различне групповые операции перед
     //Сохранием, обновлением, создание или редактированием
     protected function resourceCombine($type)
