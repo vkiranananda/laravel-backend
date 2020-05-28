@@ -380,8 +380,7 @@ class Fields
 
         //Правила валидации
         if (isset($field['validate'])) {
-
-            $v = Validator::make(['value' => $value], ['value' => $field['validate']]);
+            $v = Validator::make([$field['name'] => $value], [$field['name'] => $field['validate']]);
 
             if ($v->fails()) return implode(' ', $v->errors()->all());
         }

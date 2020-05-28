@@ -1,5 +1,7 @@
 <?php
 
+// if (app()->runningInConsole()) return;
+
 Route::group(['prefix' => 'content', 'middleware' => ['auth.basic'] ], function()
 {
 	Route::get('/', '\Backend\Home\Controllers\HomeController@index');
@@ -10,6 +12,3 @@ Route::group(['prefix' => 'content', 'middleware' => ['auth.basic'] ], function(
 	Backend::installRoutes('Option', ['upload']);
 	Backend::installRoutes('MenuBuilder');
 });
-
-
-

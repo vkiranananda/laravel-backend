@@ -8,3 +8,9 @@
 		<slot></slot>
 	</li>
 </template>
+<style scoped>
+    .octicon-wrapper {
+        width: 20px;
+        display: inline-block;
+    }
+</style>
