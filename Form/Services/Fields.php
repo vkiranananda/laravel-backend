@@ -4,7 +4,6 @@ namespace Backend\Root\Form\Services;
 
 use GetConfig;
 use Helpers;
-use Log;
 use Request;
 use Validator;
 
@@ -224,7 +223,7 @@ class Fields
         $relationData = [];
         $arrayData = $post['array_data'] ?? [];
 
-        $arrayDataFields = [];
+        $arrayDataFields = $arrayData['fields'] ?? [];
 
         // Получаем все поля в табах которые не скрыты
         foreach ($fields['edit'] as $tab) {
@@ -338,6 +337,9 @@ class Fields
             // Если данных нет выходим
             if (!is_array($value)) return;
 
+            // Обнуляем предыдущие данные.
+            $arrayData[$field['name']] = [];
+
             $indexRepBlock = 0;
             $errors = [];
 
@@ -350,15 +352,10 @@ class Fields
                 // группы репитед, оно надо для отображения ошибок и при сортировке что бы формы не
                 // рендерились поновой.
                 // Продолжаем обработку полей.
-                // if (isset())
 
-                // dd( $arrayData[ $field['name'] ][ $indexRepBlock ] );
+                $arrayData[$field['name']][$indexRepBlock] = [];
 
-                if (!isset ($arrayData[$field['name']][$indexRepBlock])) {
-                    $arrayData[$field['name']][$indexRepBlock] = [];
-                }
-
-                Log::debug($repData['value']);
+                // Log::debug($repData['value']);
                 $error = $this->saveFieldsList(
                     $field['fields'],
                     $repData['value'],

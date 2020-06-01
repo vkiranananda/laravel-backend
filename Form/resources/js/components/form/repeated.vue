@@ -12,7 +12,7 @@
                 </div>
                 <div class="text-right" v-if="!field.readonly">
                     <button slot="footer" type="button" class="btn btn-success" v-on:click.stop.prevent="addNew">
-                        <span>Добавить</span>
+                        <span>{{field['add-label'] ? field['add-label'] : 'Добавить'}}</span>
                     </button>
                 </div>
             </draggable>

@@ -148,7 +148,7 @@ class ResourceController extends Controller
         $this->dataReturn = [
             'config' => [
                 'url' => action($this->config['controller-name'] . '@update', $id),
-                'title' => $this->config['lang']['edit-title'],
+                'title' => $this->config['lang']['edit-title'] ?? null,
                 'method' => 'put',
                 'viewUrl' => $this->getViewUrl(),
                 'upload' => $this->uploadUrls(),
