@@ -21,6 +21,8 @@
     import FormFieldMask from './mask.vue'
     import FormFieldEditor from './editor.vue'
     import FormFieldMarkdown from './markdown.vue'
+    import FormFieldAutocomplete from './autocomplete.vue'
+
 
     const cloneDeep = require('clone-deep')
 
@@ -49,7 +51,8 @@
             FormFieldMultiselect,
             FormFieldMask,
             FormFieldEditor,
-            FormFieldMarkdown
+            FormFieldMarkdown,
+            FormFieldAutocomplete
         },
         computed: {
             component() {

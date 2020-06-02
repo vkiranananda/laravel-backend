@@ -1,7 +1,7 @@
 <template>
     <modal id='UploadEditModal' title="Свойства файла" :loading="loading" size="large">
         <a :href="file.orig" target="_blank"><img :src="file.thumb" alt="" align="left" class="mr-3 mb-3"></a>
-        
+
         <strong>{{ file.orig_name}}</strong><br>
         <div class="text-muted mt-1 mb-2">
             <i>
@@ -14,11 +14,25 @@
             <span v-if="file.deleteType == 'delete'">Удалить файл</span>
         </a>
         <div class="clearfix"></div>
-        
+
         <field-wrapper v-for="(field, key) in file.fields" :field="field" :key="key">
             <print-field :field='field' v-on:change="onChange($event, key)"></print-field>
-        </field-wrapper>  
-            
+        </field-wrapper>
+
+
+        <div class="row text-right form-buttons">
+            <div class="col result-area">
+                <span class="error" v-if='currentStatus == "errorAny"'>Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.</span>
+                <span class="error" v-if='currentStatus == "errorFields"'>Проверьте правильность заполнения данных</span>
+                <span class="success" v-if='currentStatus == "saved"'>Сохранено</span>
+                <span class="text-warning" v-else-if='currentStatus == "saveing"'>Сохраняю...</span>
+            </div>
+            <div class="mr-4">
+                <button v-if="modal" class="btn btn-secondary mr-3" v-on:click="close" role="button" :disabled="disableCloseButton">{{closeLabel}}</button>
+                <button v-if="showBackButton" type="button" class="btn btn-primary mr-2" v-on:click="submit(true)" :disabled="currentStatus == 'saveing' ? true : false">Сохранить и выйти</button>
+                <button type="button" class="btn btn-secondary" v-on:click="submit()" :disabled="currentStatus == 'saveing' ? true : false">Сохранить</button>
+            </div>
+        </div>
         <save-buttons modal="#UploadEditModal" :status="status" v-on:submit="submit"></save-buttons>
     </modal>
 </template>
@@ -39,7 +53,7 @@
         },
         props: [ 'url' ],
         data() {
-            return { 
+            return {
                 loading: true,
                 file: false,
                 status: ''
@@ -65,7 +79,7 @@
 
                         this.loading = false;
                     })
-                    .catch( (error) => { console.log(error.response) });     
+                    .catch( (error) => { console.log(error.response) });
                 }
                 // Покзываем окно
                 $('#UploadEditModal').modal('show');
@@ -75,7 +89,7 @@
                 //Получаем значения
                 for (let key in this.file.fields) res[key] = this.file.fields[key].value
                 this.status = 'saveing';
-                
+
                 axios({
                     url: this.file.saveUrl,
                     method: 'put',
@@ -91,12 +105,12 @@
                         this.status = 'errorAny';
                         console.log(error.response);
                     }
-                }); 
+                });
             },
             //Сохраянем изменения
             onChange (value, name) { this.file.fields[name].value = value },
             closeForm() { $('#UploadEditModal').modal('hide') },
-            
+
             delFile() {
                 //Открепляем
                 this.file.deleteMethod(this.file.deleteValue);

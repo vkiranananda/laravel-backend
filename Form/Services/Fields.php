@@ -343,8 +343,6 @@ class Fields
             $indexRepBlock = 0;
             $errors = [];
 
-            // Log::debug($field);
-
             // Перебираем блоки репитед полей
             foreach ($value as $repData) {
 
@@ -355,7 +353,6 @@ class Fields
 
                 $arrayData[$field['name']][$indexRepBlock] = [];
 
-                // Log::debug($repData['value']);
                 $error = $this->saveFieldsList(
                     $field['fields'],
                     $repData['value'],

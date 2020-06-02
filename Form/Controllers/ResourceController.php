@@ -273,7 +273,6 @@ class ResourceController extends Controller
             Response::json(['errors' => $data['errors']], 422)->send();
             die();
         }
-
         // Устанавливаем новое значние поста
         $this->post = $data['post'];
 
