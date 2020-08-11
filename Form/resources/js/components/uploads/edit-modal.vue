@@ -18,21 +18,7 @@
         <field-wrapper v-for="(field, key) in file.fields" :field="field" :key="key">
             <print-field :field='field' v-on:change="onChange($event, key)"></print-field>
         </field-wrapper>
-
-
-        <div class="row text-right form-buttons">
-            <div class="col result-area">
-                <span class="error" v-if='currentStatus == "errorAny"'>Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.</span>
-                <span class="error" v-if='currentStatus == "errorFields"'>Проверьте правильность заполнения данных</span>
-                <span class="success" v-if='currentStatus == "saved"'>Сохранено</span>
-                <span class="text-warning" v-else-if='currentStatus == "saveing"'>Сохраняю...</span>
-            </div>
-            <div class="mr-4">
-                <button v-if="modal" class="btn btn-secondary mr-3" v-on:click="close" role="button" :disabled="disableCloseButton">{{closeLabel}}</button>
-                <button v-if="showBackButton" type="button" class="btn btn-primary mr-2" v-on:click="submit(true)" :disabled="currentStatus == 'saveing' ? true : false">Сохранить и выйти</button>
-                <button type="button" class="btn btn-secondary" v-on:click="submit()" :disabled="currentStatus == 'saveing' ? true : false">Сохранить</button>
-            </div>
-        </div>
+        
         <save-buttons modal="#UploadEditModal" :status="status" v-on:submit="submit"></save-buttons>
     </modal>
 </template>
