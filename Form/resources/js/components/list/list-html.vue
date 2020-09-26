@@ -35,7 +35,7 @@
         created() {
             history.replaceState(window.location.href, '', window.location.href)
 
-            console.log(this.myData)
+            // console.log(this.myData)
 
             window.onpopstate = (event) => {
                 this.axiosSend(event.state, false )
