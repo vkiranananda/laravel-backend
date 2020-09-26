@@ -37,6 +37,10 @@ trait Index {
 
 		$this->dataReturn['breadcrumbs'] = $this->indexBreadcrumbs($urlPostfix);
 
+		// --------------------------------Компоненты------------------------------------------
+
+        $this->dataReturn['components'] = $this->indexComponents();
+
         //-------------------------------Подготавливаем поля----------------------------------
 
         $fields = [];
@@ -120,6 +124,17 @@ trait Index {
         if ( Request::ajax() ) return $this->dataReturn;
 
         return view($templite, [ 'data' => $this->dataReturn ]);
+    }
+
+    // Выводим компоненты
+    protected function indexComponents() {
+        $result = [];
+        if (isset($this->config['list']['components']) && is_array($this->config['list']['components'])) {
+            foreach ($this->config['list']['components'] as $component) {
+                $result[$component['slot'] ?? 'after-buttons'][] = $component;
+            }
+        }
+        return $result;
     }
 
     // Выводим хлебные крошки.
