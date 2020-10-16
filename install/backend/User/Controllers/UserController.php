@@ -8,9 +8,9 @@ use Illuminate\Support\Str;
 
 class UserController extends \Backend\Root\Form\Controllers\ResourceController
 {
-	public $model = "App\User";
+	public $model = "App\Models\User";
 
-	public function create() 
+	public function create()
 	{
 		// Генерим пароль
 		$this->fields['fields']['password']['value'] = Str::random(8);
@@ -18,7 +18,7 @@ class UserController extends \Backend\Root\Form\Controllers\ResourceController
 		return parent::create();
 	}
 
-    public function store() 
+    public function store()
     {
     	// добавляем валидацию
     	$this->fields['fields']['password']['validate'] .= "|required";
@@ -29,7 +29,7 @@ class UserController extends \Backend\Root\Form\Controllers\ResourceController
     public function edit($id)
     {
     	$this->post = $this->post->findOrFail( $id );
-    	
+
     	// Убираем поле отправки на email. И очищаем хэш пароля
     	unset($this->fields['fields']['send_mail']);
 		$this->post->password = '';
@@ -39,7 +39,7 @@ class UserController extends \Backend\Root\Form\Controllers\ResourceController
     public function update($id)
     {
     	$this->post = $this->post->findOrFail( $id );
-    	
+
 		// Для unique валидации добавляем id в исключение
     	$this->fields['fields']['email']['validate'] .= ",".$this->post->id;
 
@@ -52,8 +52,8 @@ class UserController extends \Backend\Root\Form\Controllers\ResourceController
     }
 
     //Криптуем пароль и отправляем email
-    protected function preSaveData($type){ 
-    	
+    protected function preSaveData($type){
+
     	$fields = Request::input('fields', []);
 
     	if ($type == 'store') {
