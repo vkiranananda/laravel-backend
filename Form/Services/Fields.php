@@ -54,7 +54,7 @@ class Fields
         // Перебираем корневые поля и устанавлтваем значение по умолчанию
         foreach ($fields as &$field) {
 
-            //Если нет данных полей пропускаем
+            // Если нет данных полей пропускаем
             if (!isset($field['name']) || !isset($field['type'])) continue;
 
             //Обрабатываем конкретное поле устанавливая нужные значния
@@ -142,6 +142,7 @@ class Fields
         } // для повторителей.
         elseif ($field['type'] == 'repeated') {
 
+            $field['field-save'] = 'array';
             $value = $this->getFieldValue($field, $post, $arrayData, $none);
 
             // dd($value);
@@ -153,7 +154,6 @@ class Fields
 
             // Обнуляем value для новых значений.
             $field['value'] = [];
-
 
             // Если readonly то присваиваем это всем влоежнным полям
             if (isset($field['readonly']) && $field['readonly']) $this->setFieldsAttr($field['fields'], 'readonly', true);

@@ -142,7 +142,6 @@ class ResourceController extends Controller
     {
         //Если пост еще не получен, получаем его
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
-
         $this->resourceCombine('edit');
 
         $this->dataReturn = [

@@ -1,10 +1,11 @@
 <?php
 
-namespace Backend\Option\Services;
+namespace Backend\Root\Option\Services;
 
-use Backend\Option\Models\Option;
+use Backend\Root\Option\Models\Option;
+use Backend\Root\Core\Services\Backend;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use Route;
 
 class Options
 {
@@ -12,7 +13,7 @@ class Options
 
     /**
      *
-     * Возвращает указанну запись, если указан ключ, то вернется значение этого поля.
+     * Возвращает указанную запись, если указан ключ, то вернется значение этого поля.
      *
      * @param string $name название опции :: значение ключа, массива если есть
      * вложенность задается через точку config::site.name
@@ -23,9 +24,29 @@ class Options
     public function get($name, $default = false)
     {
         $name = $this->parseName($name);
-        // Если опции нет.
-        if (!isset($this->options[$name['name']])) {
-            $option = Option::where('name', $name['name']);
+
+        // Загружаем опцию если нет
+        $this->loadOption($name['name']);
+
+        if (!isset($this->options[$name['name']]['array_data']['fields'])) return $default;
+        // Получаем значения по ключу если есть.
+        if ($name['key']) return Arr::get($this->options[$name['name']]['array_data']['fields'], $name['key'], $default);
+
+        // Если массив не существует возвращаем значение по умолчанию
+        if (!isset($this->options[$name['name']]['array_data']['fields'])) return $default;
+
+        // Иначе возвращаем весь массив
+        return $this->options[$name['name']]['array_data']['fields'];
+    }
+
+    /**
+     * Загружаем опцию, если первый запуск загружаем все опции с овтозагрузкой
+     * @param string $name - название опции
+     */
+    protected function loadOption($name)
+    {
+        if (!isset($this->options[$name])) {
+            $option = Option::where('name', $name);
 
             // Получаем все опции у которых стоит автозагрузка
             if (!$this->options) {
@@ -37,15 +58,6 @@ class Options
                 $this->options[$opt['name']] = $opt;
             }
         }
-
-        // Получаем значения по ключу если есть.
-        if ($name['key']) return Arr::get($this->options[$name['name']]['array_data']['fields'], $name['key'], $default);
-
-        // Если массив не существует возвращаем значение по умолчанию
-        if (!isset($this->options[$name['name']]['array_data']['fields'])) return $default;
-
-        // Иначе возвращаем весь массив
-        return $this->options[$name['name']]['array_data']['fields'];
     }
 
     /**
@@ -85,8 +97,7 @@ class Options
             if ($replace) {
                 Arr::set($data, $name['key'], $value);
                 $newData = $data;
-            }
-            else {
+            } else {
                 // Если рекурсивная замена, получаем текущий массив по ключу
                 $repArray = Arr::get($data, $name['key'], []);
                 // Если он является массивом и заменяемое значние тоже то делаем замену
@@ -137,6 +148,54 @@ class Options
     }
 
     /**
+     *
+     * Возвращаем модель опции если она есть, если $create true создаем новую запись
+     * @param string $name имя опции
+     * @param bool $create
+     * @param array $default Значение новой опции
+     * @param bool $autoload Автозагрузка новой опции
+     * @param bool $hidden Скрытая ли опция
+     * @return false|model возвращем либо модель если она загружена либо false.
+     */
+    public function getModel($name, $create = false, $default = [], $autoload = true, $hidden = true)
+    {
+        $this->loadOption($name);
+
+        // Если опция существует
+        if (isset($this->options[$name])) return $this->options[$name];
+
+        // Если создавать не нужно возвращаем false так как опция не найдена
+        if (!$create) return false;
+
+        // Создаем новую запись
+        $this->options[$name] = new Option();
+        $option = &$this->options[$name];
+        $option['autoload'] = $autoload;
+        $option['hidden'] = $hidden;
+        $option['name'] = $name;
+        $option['array_data'] = ['fields' => $default];
+
+        $option->save();
+
+        return $option;
+    }
+
+    /**
+     * Инсталим роуты для модуля, создается именной роутинг по названию модуля
+     * @param string $moduleName имя модуля
+     * @param array $ext Дополнительные параметры. upload - роуты для аплоадинга
+     */
+    public function installRoutes(string $moduleName, $ext = [])
+    {
+        $modUrl = mb_strtolower($moduleName);
+
+        if (array_search('upload', $ext) !== false) Backend::installUploadRoute($modUrl, $moduleName);
+
+        Route::get($modUrl, '\Backend\\' . $moduleName . '\Controllers\\' . $moduleName . 'Controller@edit')->name($moduleName);
+        Route::put($modUrl, '\Backend\\' . $moduleName . '\Controllers\\' . $moduleName . 'Controller@update');
+    }
+
+    /**
      * Парсим имя на предмет name::key
      * @param string $name
      * @return array массив name, key
@@ -150,4 +209,5 @@ class Options
             'name' => $parseName[0]
         ];
     }
+
 }
