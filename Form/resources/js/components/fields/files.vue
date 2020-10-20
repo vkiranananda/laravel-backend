@@ -25,8 +25,8 @@
     const cloneDeep = require('clone-deep')
 
     export default {
-        created () { 
-            this.$bus.$on('UploadFilesDeleteFile', this.delById) 
+        created () {
+            this.$bus.$on('UploadFilesDeleteFile', this.delById)
         },
         beforeDestroy() { this.$bus.$off('UploadFilesDeleteFile') },
         components: {
@@ -51,7 +51,7 @@
                     return: this.attachFiles
                 }
             },
-            files: { 
+            files: {
                 get: function () { return this.field.value },
                 set: function (newValue) { this.$emit('change', newValue) }
             },
@@ -67,7 +67,7 @@
             delById (id) {
                 var exist = false
                 var res = [];
-                
+
                 for (var file of this.files) {
                     if (id == file.id) {
                         exist = true
@@ -83,12 +83,12 @@
                 this.$delete(res, this.files.indexOf(file))
                 this.$emit('change', res)
             },
-            edit(file) { 
-                this.$bus.$emit( 'UploadFilesEditModalShow', Object.assign({ 
+            edit(file) {
+                this.$bus.$emit( 'UploadFilesEditModalShow', Object.assign({
                     deleteMethod: this.del,
                     deleteValue: file,
                     deleteType: 'unfasten'
-                }, file)) 
+                }, file))
             }
         }
     }
@@ -133,7 +133,7 @@
             }
         }
 
-        .image {      
+        .image {
             .text {
               display: none;
             }
@@ -156,7 +156,7 @@
                 height: 100%;
                 float: left;
             }
-            .text { 
+            .text {
                 overflow: hidden;
                 width: 100%;
                 font-size: 12px;
@@ -166,6 +166,7 @@
                 vertical-align: middle;
                 margin: 6px 10px;
                 max-width: 400px;
+                
             }
         }
     }
