@@ -8,13 +8,13 @@ use Helpers;
 
 class CategoryRootController extends \Backend\Root\Form\Controllers\ResourceController
 {
-	
+
 
     protected $configPath = "Category::config-root";
     protected $fieldsPath = "Category::fields-root";
 
     // Выборка только корневых записей
-    public function index() 
+    public function index()
     {
     	$this->post = $this->post->where('category_id', '0');
 
@@ -51,21 +51,21 @@ class CategoryRootController extends \Backend\Root\Form\Controllers\ResourceCont
             $modules = [];
             // Получаем список доступных модулей для категорий
             foreach ( GetConfig::backend('Category::modules') as $key => $value) {
-                $modules[] = [ 
+                $modules[] = [
                 	'value' => $key,
                 	'label' => $value['label']
                 ];
             }
         	$this->fields['fields']['mod']['options'] = $modules;
-        } 
+        }
 
         // Делаем поле неактивным, так как модуль нельзя поменять
-        if ( $type == 'edit') { 
+        if ( $type == 'edit') {
         	$this->fields['fields']['mod']['attr'] = ['disabled' => true];
-        } 
+        }
     }
-    
-    protected function preSaveData($type) 
+
+    protected function preSaveData($type)
     {
     	// Удаляем лишние слеши
     	$this->post['url'] = trim(preg_replace("/\/{2,}/","/", $this->post['url']) , '\/');

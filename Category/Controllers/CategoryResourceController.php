@@ -15,7 +15,7 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     public function create()
     {
     	// Выставляем значение из параметра.
-        $this->post['category_id'] = Request::input('__parent_category_id', 
+        $this->post['category_id'] = Request::input('__parent_category_id',
         	Request::input('cat', false)
     	);
 
@@ -69,7 +69,7 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     }
 
     // Кнопка перехода в категорию
-    protected function categoryButton($urlPostfix) 
+    protected function categoryButton($urlPostfix)
     {
     	$cat = Categories::getCat(Request::input('cat', false));
     	if ($cat['conf']['type'] != 'hierarchical' ) return '';
@@ -81,7 +81,7 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     }
 
     // Добавляем префикс у урл
-    protected function listSortableButton($urlPostfix) 
+    protected function listSortableButton($urlPostfix)
     {
     	// Добавляем фильтрацию по категории
     	if ($this->categoryParentCat) {
@@ -114,8 +114,8 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     			$cat = Categories::getCat($catID);
     			if (!$cat) abort(403, 'indexBreadcrumbs: категория parent_cat не найдена');
 
-    			$currentUrl = ($this->categoryParentCat == $catID) 
-    				? false 
+    			$currentUrl = ($this->categoryParentCat == $catID)
+    				? false
     				: $url . Helpers::mergeUrlParams($urlPostfix, 'parent_cat', $catID);
 
     			array_unshift($res, [ 'url' => $currentUrl, 'label' => $cat['name']]);
@@ -138,15 +138,15 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
 
 		$catID = Request::input('cat', false);
 
-		// Если запроса на поиск не было либо в запросе не учавстовал индекс category_id, 
+		// Если запроса на поиск не было либо в запросе не учавстовал индекс category_id,
 		// Делаем выборку всех записей
 		if ( !isset($res['category_id']) ) {
-			// category-filter == true выборка данных в текущей категории 
+			// category-filter == true выборка данных в текущей категории
 			if (isset($this->config['list']['category-filter']) && $this->config['list']['category-filter'] ){
 				$this->post = $this->post->where('category_id', $catID);
 				$this->categorySortableUrlCat = $catID;
 			// Выборка во всех вложенных категориях
-			} else {	
+			} else {
 				$this->post = $this->post->whereIn('category_id', Categories::getListIds($catID, true));
 			}
 			// Запрещаем сортировку, так как выведены не все категории раздела
@@ -169,9 +169,9 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
         if ($cat === false) {
         	abort(403, 'CategoryResourceController: Категории "'.$catID.'" не существует');
         }
-        
-        // Эта проверка тоже должна как то быть венесенеа 
-        if ($this->config['module-name'] != 'Category') { 
+
+        // Эта проверка тоже должна как то быть венесенеа
+        if ($this->config['module-name'] != 'Category') {
             if ($this->config['module-name'] != $cat['mod'])
                 abort(403, 'CategoryResourceController: Модуль категории не соответсвует модулю данных');
         }
@@ -181,13 +181,13 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     protected function categoryGetId($type)
     {
     	if ($type == 'index' || $type == 'create') return Request::input('cat', false);
-    	
+
     	if ($type == 'store' || $type == 'update') {
-    		return (isset(Request::input('hidden', [])['category_id'])) 
+    		return (isset(Request::input('hidden', [])['category_id']))
             	? Request::input('hidden')['category_id']
             	: Request::input('fields')['category_id'];
         }
-        
+
         if ($type == 'edit') return $this->post['category_id'];
 
         return false;
@@ -204,14 +204,17 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
         	$this->categorySetFieldTree($catID);
 
         	// Локализация
-        	if (array_search($type, ['create', 'edit', 'index']) !== false ) {  
+        	if (array_search($type, ['create', 'edit', 'index']) !== false ) {
         		// Локализуем из модуля категории если нет своей локализации
-        		if (!isset( $this->config['lang'])) {
-        			$this->config['lang'] = Categories::getRootCat($catID)['lang'];
-        		}
+                // dd(Categories::getRootCat($catID)['lang']);
+                foreach (Categories::getRootCat($catID)['lang'] as $key => $lang) {
+                    if ($lang != '') {
+                        $this->config['lang'][$key] = $lang;
+                    }
+                }
         	}
-
     	}
+
     }
 
     //Функция возвращает урл поста
@@ -223,8 +226,8 @@ class CategoryResourceController extends \Backend\Root\Form\Controllers\Resource
     // Получаем дерево категорий в массиве для select
     protected function categoryGetFieldTree($rootCat, $exclude = '')
     {
-        $tree = Categories::getHtmlTree([ 
-            'root' => $rootCat['id'], 
+        $tree = Categories::getHtmlTree([
+            'root' => $rootCat['id'],
             'offset' => '- ',
             'exclude' => [ $exclude ],
             'first-offset' => true,
