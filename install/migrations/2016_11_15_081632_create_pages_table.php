@@ -20,6 +20,7 @@ class CreatePagesTable extends Migration
             $table->text('text')->nullable();
             // Если используется модуль категорий
             $table->integer('category_id')->unsigned()->default(0);
+            $table->integer('sort_num')->unsigned()->default(1000);
             $table->text('array_data')->nullable();
             $table->softDeletes();
             $table->timestamps();
