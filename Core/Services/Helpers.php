@@ -132,20 +132,20 @@ class Helpers
     }
 
     // Выводим данные поля, если данных нет выводим возвращаем заничение 3 параметр, по умолчанию false
-    static public function getDataField($data, $id, $res = false)
+    static public function getDataField($data, $key, $res = false)
     {
         $result = $res;
-        foreach (explode(".", $id) as $i => $key) {
+        foreach (explode(".", $key) as $i => $k) {
             if ($i == 0) {
                 // Ищем в корне записи
-                if (isset($data[$key])) $result = $data[$key];
+                if (isset($data[$k])) $result = $data[$k];
                 // Ищем в массиве array_data
-                elseif (isset($data['array_data']['fields'][$key]))
-                    $result = $data['array_data']['fields'][$key];
+                elseif (isset($data['array_data']['fields'][$k]))
+                    $result = $data['array_data']['fields'][$k];
                 // Ничего не найдено
                 else return $res;
             } else {
-                if (isset($result[$key])) $result = $result[$key];
+                if (isset($result[$k])) $result = $result[$k];
                 else return $res;
             }
         }
@@ -153,9 +153,9 @@ class Helpers
     }
 
     // То же самое что предыдущее но выводим res если значиение пустое.
-    static public function getDataFieldEmpty(&$data, $id, $res = false)
+    static public function getDataFieldEmpty($data, $key, $res = false)
     {
-        $value = Helpers::getDataField($data, $id);
+        $value = Helpers::getDataField($data, $key);
 
         if ($value != '' && $value !== false) return $value;
 
