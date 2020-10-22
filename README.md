@@ -10,3 +10,6 @@
 [Роутинг - встроенные функции](https://github.com/vkiranananda/laravel-backend/wiki/Роутинг)
 
 [Модуль - конфигурация](https://github.com/vkiranananda/laravel-backend/wiki/Конфигурация-модуля)
+
+[Helpers - функции помощники](https://github.com/vkiranananda/laravel-backend/wiki/Helpers)
+
