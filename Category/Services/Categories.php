@@ -88,7 +88,6 @@ class Categories
             $curClass->getRoutes($routes);
             return $routes;
         });
-        dd($routes);
     }
 
     // Генерим все роуты, рекурсивная функция
