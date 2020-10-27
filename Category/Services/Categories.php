@@ -83,11 +83,11 @@ class Categories
     {
         $curClass = &$this;
 
-        //return Cache::rememberForever('backendCategoryRoutes', function () use ($curClass) {
+        return Cache::rememberForever('backendCategoryRoutes', function () use ($curClass) {
             $routes = [];
             $curClass->getRoutes($routes);
             return $routes;
-        //});
+        });
         dd($routes);
     }
 
