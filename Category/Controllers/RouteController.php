@@ -11,7 +11,6 @@ class RouteController
         $routes = Categories::printRoutes();
 
         $url = '/' . $url;
-
         // Категории, точное совпадение
         if (isset($routes[$url])) {
             $cat = $routes[$url];
@@ -23,7 +22,7 @@ class RouteController
             $resUrl = '';
             while (preg_match("/^(.*)\/(.+)$/", $url, $urlExt)) {
                 // Весь урл до последнего сегмента
-                $url = $urlExt[1];
+                $url = ($urlExt[1] == '') ? '/' : $urlExt[1];
                 // Создаем конечный путь, может быть вложенным
                 $resUrl = ($resUrl != '') ? $urlExt[2] . "/" . $resUrl : $urlExt[2];
 
