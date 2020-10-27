@@ -86,6 +86,7 @@ class Categories
         return Cache::rememberForever('backendCategoryRoutes', function () use ($curClass) {
             $routes = [];
             $curClass->getRoutes($routes);
+
             return $routes;
         });
     }
@@ -97,15 +98,8 @@ class Categories
             $newUrl = $url;
             if ($cat['category_id'] == $category_id) {
                 // if ($category_id == 0) $newUrl = '';
-                if ($cat['url'] != '') {
-                    // Если урл не корневой  добавляем к нем разделитель.
-                    if ($newUrl != '/') $newUrl .= '/';
-                    $newUrl .= $cat['url'];
-                }
-                // Если урл не выставлен ставим как / для базовых категорий
-                elseif ($category_id == 0) {
-                    $newUrl = '/';
-                }
+                if ($cat['url'] != '') $newUrl .= '/' . $cat['url'];
+
 
                 // Обрабатываем раздел с одинаковым урлом, выставляем первым первый
                 // попавшийся или если выставлен параметр 'main-route' в конфиге модулей
