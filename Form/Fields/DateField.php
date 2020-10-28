@@ -4,6 +4,7 @@ namespace Backend\Root\Form\Fields;
 
 use Carbon\Carbon;
 use GetConfig;
+use Illuminate\Support\Facades\Log;
 
 class DateField extends Field
 {
@@ -13,12 +14,12 @@ class DateField extends Field
         if ($value == '') return null;
 
         $dateConfig = $this->getTimeConfig();
-
         // Применяем локальный часовой пояс
         $date = new Carbon($value, $dateConfig['time-zone']);
 
-        // Делаем смещение до системного.
-        $date->setTimezone(config('app.timezone'));
+        // Делаем смещение до системного, только если дата целиком
+        if (isset($this->field['time']) && $this->field['time'])
+            $date->setTimezone(config('app.timezone'));
 
         return $date;
     }
@@ -32,8 +33,13 @@ class DateField extends Field
 
         if (!is_object($value)) $value = Carbon::create($value);
 
-        $value->setTimezone($dateConfig['time-zone']);
-        return (isset($this->field['time'])) ? $value->toDateTimeString() : $value->toDateString();
+        // Применяем часовой пояс если дата полная
+        if (isset($this->field['time']) && $this->field['time']) {
+            $value->setTimezone($dateConfig['time-zone']);
+            return $value->toDateTimeString();
+        }
+
+        return $value->toDateString();
     }
 
     // Получаем готовое значение для списков
@@ -44,11 +50,14 @@ class DateField extends Field
         $dateConfig = $this->getTimeConfig();
 
         if (!is_object($value)) $value = Carbon::create($value);
-        $value->setTimezone($dateConfig['time-zone']);
 
-        return (isset($this->field['time'])) ?
-            $value->format($dateConfig['datetime-format']) :
-            $value->format($dateConfig['date-format']);
+        // Применяем часовой пояс если дата полная
+        if (isset($this->field['time']) && $this->field['time']) {
+            $value->format($dateConfig['datetime-format']);
+            return $value->format($dateConfig['datetime-format']);
+        }
+
+        return $value->format($dateConfig['date-format']);
     }
 
     // Получаем настройки таймзоны из админки
@@ -60,4 +69,6 @@ class DateField extends Field
 
         return $dateConfig;
     }
+
+
 }
