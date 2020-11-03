@@ -25,10 +25,10 @@ class ResourceController extends Controller
     // Имя конфига для полей, если false берется как fields
     protected $fieldsPath = false;
 
-    // Конфиг общий
+    // Основной конфиг  по умолчанию config
     protected $config = [];
 
-    // Конфиг для полей
+    // Конфиг полей по умолчанию fields
     protected $fields = [];
 
     // Переменная где содержатся данные поста
