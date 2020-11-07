@@ -214,22 +214,24 @@ trait Index
     {
         $res = [];
 
-        if ($this->config['list']['item-edit'] && $this->getUserAccess('edit-owner', $post['user_id'])) {
+        $userId = (isset($post['user_id'])) ?? false;
+
+        if ($this->config['list']['item-edit'] && $this->getUserAccess('edit-owner', $userId)) {
             $res['edit'] = action($this->config['controller-name'] . '@edit', $post['id']);
         }
 
-        if ($this->config['list']['item-destroy'] && $this->getUserAccess('destroy-owner', $post['user_id'])) {
+        if ($this->config['list']['item-destroy'] && $this->getUserAccess('destroy-owner', $userId)) {
             $res['destroy'] = action($this->config['controller-name'] . '@destroy', $post['id']);
         }
 
-        if ($this->config['list']['item-clone'] && $this->getUserAccess('create') && $this->getUserAccess('edit-owner', $post['user_id'])) {
+        if ($this->config['list']['item-clone'] && $this->getUserAccess('create') && $this->getUserAccess('edit-owner', $userId)) {
             $res['clone'] = action($this->config['controller-name'] . '@create')
                 . Helpers::mergeUrlParams($urlPostfix, 'clone', $post['id']);
         }
 
         return $res;
     }
-    
+
     // Функция для сортировки списка
     protected function indexOrder()
     {
