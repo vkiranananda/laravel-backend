@@ -31,6 +31,9 @@ class UserAccess
      */
     public static function checkAccess($access, $modKey, $userId = false)
     {
+        // Полный доступ для админов.
+        if (Auth::user()->user_role_id == 0) return true;
+
         $role = UserAccess::getRole();
 
         if (!isset($role[$modKey])) return false;
@@ -72,5 +75,16 @@ class UserAccess
             default:
                 return false;
         }
+    }
+
+    public static function mainMenu($menu)
+    {
+        $res = [];
+        foreach ($menu as $el) {
+            if (!isset($el['user-access-key']) || UserAccess::checkAccess('read-owner', $el['user-access-key'])) {
+                $res[] = $el;
+            }
+        }
+        return $res;
     }
 }

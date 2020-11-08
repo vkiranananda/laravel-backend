@@ -372,9 +372,10 @@ class ResourceController extends Controller
      * @param $access - тип доступа edit-all, edit-owner, read-all, read-owner, create, destroy-all, destroy-owner
      * @param $userId - Если указан будет учавствовать в типах read-owner, edit-owner, delete-owner, если не указан
      * вернет true если разрешена хоть какая то запись.
+     * @param $accessKey - Если нужно переопределить ключ
      * @return bool - Вернет true или false в зависимости от типа запроса.
      */
-    protected function getUserAccess($access, $userId = false)
+    protected function getUserAccess($access, $userId = false, $accessKey = false)
     {
         return true;
     }

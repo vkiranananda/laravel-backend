@@ -4,6 +4,7 @@
 namespace Backend\Root\User\Controllers;
 
 
+use App\Models\User;
 use Backend\Root\Form\Controllers\ResourceController;
 use GetConfig;
 
@@ -40,10 +41,15 @@ class RoleController extends ResourceController
             foreach (GetConfig::backend('User::role-modules') as $mod) {
                 $clone = $this->fields['fields-for-clone'];
 
-                if (isset($mod['type'])) {
-                    if ($mod['type'] == 'only-read') {
-                        unset($clone['fields']['create'], $clone['fields']['edit'], $clone['fields']['destroy'], $clone['fields']['read']['options']['owner']);
-                    }
+                if (isset($mod['disable-owner']) && $mod['disable-owner'] === true) {
+                    unset($clone['fields']['read']['options']['owner'],
+                        $clone['fields']['edit']['options']['owner'],
+                        $clone['fields']['destroy']['options']['owner']
+                    );
+                }
+
+                if (isset($mod['read-only']) && $mod['read-only'] === true) {
+                    unset($clone['fields']['create'], $clone['fields']['edit'], $clone['fields']['destroy'], $clone['fields']['read']['options']['owner']);
                 }
 
                 $clone['name'] = $mod['mod-key'];
@@ -51,5 +57,23 @@ class RoleController extends ResourceController
                 $this->fields['fields']['permissions']['fields'][$mod['mod-key']] = $clone;
             }
         }
+    }
+
+    // Удаляем запись
+    public function destroy($id)
+    {
+        $error = false;
+
+        // Получаем всех пользователей с данной ролью
+        foreach (User::where('user_role_id', $id)->get(['name']) as $user) {
+            if ($error) $error .= ", ";
+            $error .= $user['name'];
+        }
+
+        if ($error) {
+            abort(403, 'Нельзя удалить роль, так как она используется пользователями: ' . $error);
+        }
+
+        return parent::destroy($id);
     }
 }
