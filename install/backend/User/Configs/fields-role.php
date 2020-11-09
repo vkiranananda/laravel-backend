@@ -3,7 +3,7 @@ return [
 
     'list' => [
         ['name' => 'id', 'label' => 'ID', 'attr' => ['width' => '30px'], 'sortable' => true],
-        ['name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true],
+        ['name' => 'name', 'icon' => 'file', 'link' => 'edit-show', 'sortable' => true],
     ],
 
     'fields-for-clone' => [

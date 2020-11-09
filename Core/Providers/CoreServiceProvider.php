@@ -39,11 +39,6 @@ class CoreServiceProvider extends ServiceProvider
             return new \Backend\Root\Core\Services\Backend();
         });
 
-        // $this->app->singleton('UploadedFiles', function($app)
-        // {
-        //     return new \Backend\Root\MediaFile\Services\UploadedFiles();
-        // });
-
         AliasLoader::getInstance()->alias('GetConfig', '\Backend\Root\Core\Facades\GetConfigFacade');
         AliasLoader::getInstance()->alias('Backend', '\Backend\Root\Core\Facades\BackendFacade');
         AliasLoader::getInstance()->alias('Widget', '\Backend\Root\Widget\Services\Widget');

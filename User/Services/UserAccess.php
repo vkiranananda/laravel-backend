@@ -77,6 +77,10 @@ class UserAccess
         }
     }
 
+    /**
+     * @param array $menu - массив меню
+     * @return array - отфильтрованное меню
+     */
     public static function mainMenu($menu)
     {
         $res = [];

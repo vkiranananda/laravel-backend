@@ -10,6 +10,10 @@ use GetConfig;
 
 class RoleController extends ResourceController
 {
+    use \Backend\Root\User\Services\UserAccessTrait;
+
+    protected string $userAccessKey = 'User';
+    
     protected $configPath = "User::config-role";
     protected $fieldsPath = "User::fields-role";
 

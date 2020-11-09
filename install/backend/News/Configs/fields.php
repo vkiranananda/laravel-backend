@@ -2,7 +2,7 @@
 
 	return [
         'list' => [
-        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true],
+        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit-show', 'sortable' => true],
         	[ 'name' => 'category', 'label' => 'Категория', 'attr' => [ 'width' => '20%' ], 'func' => 'indexCategoryField', 'link' => 'category' ],
         	[ 'name' => 'publication_date', 'label' => 'Дата публикации', 'attr' => [ 'width' => '190px;' ], 'sortable' => true ]
         ],

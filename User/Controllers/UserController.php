@@ -10,6 +10,10 @@ use Helpers;
 
 class UserController extends \Backend\Root\Form\Controllers\ResourceController
 {
+    use \Backend\Root\User\Services\UserAccessTrait;
+
+    protected string $userAccessKey = 'User';
+    
     public $model = "App\Models\User";
 
     public function create()

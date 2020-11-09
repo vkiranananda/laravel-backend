@@ -2,17 +2,17 @@
 
 	return [
         'list' => [
-        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true],
+        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit-show', 'sortable' => true],
         ],
 		'fields' => [
 	        'name' => [
-	            'type' => 'text', 
+	            'type' => 'text',
 	            'name' => 'name',
 	            'label' => 'Название',
 	            'validate' => 'required|unique:menu_builder,name,NULL,id,deleted_at,NULL',
 	        ],
 	        'menu' => [
-	            'type' => 'menu-builder', 
+	            'type' => 'menu-builder',
 	            'name' => 'menu',
 	            'label' => 'Дерево меню',
 	        ],

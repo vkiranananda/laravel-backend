@@ -214,10 +214,16 @@ trait Index
     {
         $res = [];
 
-        $userId = (isset($post['user_id'])) ?? false;
+        $userId = $post['user_id'] ?? false;
 
         if ($this->config['list']['item-edit'] && $this->getUserAccess('edit-owner', $userId)) {
-            $res['edit'] = action($this->config['controller-name'] . '@edit', $post['id']);
+            $res['edit'] = $res['edit-show'] = action($this->config['controller-name'] . '@edit', $post['id']);
+        }
+
+        if ($this->config['list']['item-view']) {
+            $res['view'] = action($this->config['controller-name'] . '@show', $post['id']);
+            // Если не установлено, значит реактирование либо отключено либо нет доступ делаем ссылку view
+            if (!isset($res['edit-show'])) $res['edit-show'] = $res['view'];
         }
 
         if ($this->config['list']['item-destroy'] && $this->getUserAccess('destroy-owner', $userId)) {
