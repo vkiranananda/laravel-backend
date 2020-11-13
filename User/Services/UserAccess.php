@@ -22,6 +22,14 @@ class UserAccess
     }
 
     /**
+     * Проверяет на админа.
+     * @return bool
+     */
+    public static function isAdmin()
+    {
+        return (Auth::user()->user_role_id == 0);
+    }
+    /**
      * Проверяем права доступа
      * @param $access - тип доступа edit-all, edit-owner, read-all, read-owner, create, destroy-all, destroy-owner
      * @param $modKey - Ключ модуля по которому будем сверть с ролью
@@ -32,7 +40,7 @@ class UserAccess
     public static function checkAccess($access, $modKey, $userId = false)
     {
         // Полный доступ для админов.
-        if (Auth::user()->user_role_id == 0) return true;
+        if (UserAccess::isAdmin()) return true;
 
         $role = UserAccess::getRole();
 

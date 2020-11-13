@@ -36,7 +36,7 @@
                         </td>
 
                         <td class="menu-td" v-if="itemMenu">
-                            <div class="dropdown">
+                            <div class="dropdown" >
                                 <button class="btn btn-secondary" type="button" id="dropdownMenuButton"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <v-icon name="grabber" width="10"/>

@@ -205,6 +205,7 @@ class ResourceController extends Controller
     //!Показываем запись
     public function show($id)
     {
+        //Если пост еще не получен, получаем его
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
 
         // Проверка на права доступа
@@ -212,13 +213,23 @@ class ResourceController extends Controller
 
         $this->resourceCombine('show');
 
+        $this->dataReturn = [
+            'config' => [
+                'title' => $this->config['lang']['show-title'] ?? null,
+                'viewUrl' => $this->getViewUrl(),
+                'buttons' => $this->formShowButtons(),
+            ],
+            'fields' => [
+                'fields' => $this->fieldsPrep->readFields($this->post, $this->fields['fields']),
+                'tabs' => $this->fields['edit']
+            ]
+        ];
+
         $this->resourceCombineAfter('show');
 
-        return view($this->config['show']['template'], [
-            'config' => $this->config,
-            'fields' => $this->fields,
-            'data' => $this->post
-        ]);
+        if (Request::ajax()) return $this->dataReturn;
+
+        return view($this->config['show']['template'], $this->dataReturn);
     }
 
     //Удаляем запись
@@ -329,7 +340,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Генерируем кнопки внизу форму
+     * Генерируем кнопки внизу формы
      * @return array Массив кнопок
      */
     protected function formEditButtons()
@@ -349,6 +360,36 @@ class ResourceController extends Controller
             return $res;
         }
         return $this->config['edit']['buttons-default'];
+    }
+
+    /**
+     * Генерируем кнопки внизу формы
+     * @return array Массив кнопок
+     */
+    protected function formShowButtons()
+    {
+        // Если доступ есть добавляем ссылку в кнопку редактирования
+        if ($this->getUserAccess('edit-owner', $this->post['user_id'])) {
+            $this->config['show']['buttons-default']['edit']['url'] = action($this->config['controller-name'] . '@edit', $this->post['id']);
+        } else {
+            // Иначе удаляем кнопку
+            unset($this->config['show']['buttons-default']['edit']);
+        }
+        if (isset($this->config['show']['buttons'])) {
+            $res = [];
+            foreach ($this->config['show']['buttons'] as $item) {
+                // Если есть опция default, то берем значения из дефолтного
+                if (isset($item['default'])) {
+                    // объединяем массивы
+                    $newItem = array_replace($this->config['show']['buttons-default'][$item['default']], $item);
+                    // Удаляем опцию дефаулт что бы не передавать в админку
+                    unset($newItem['default']);
+                    $res[] = $newItem;
+                } else $res[] = $item;
+            }
+            return $res;
+        }
+        return $this->config['show']['buttons-default'];
     }
 
     // Функция специально  для перегрузки, когда нужно выполнять различне групповые операции перед

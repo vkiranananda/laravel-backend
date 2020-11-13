@@ -1,5 +1,5 @@
 <template>
-    <textarea v-bind="field.attr" :class='error ? "is-invalid" : "" '  class="form-control" v-model="value"></textarea>
+    <textarea v-bind="field.attr" :class='error ? "is-invalid" : "" '  class="form-control"  :disabled="field.readonly ? true : false" v-model="value"></textarea>
 </template>
 <script>
 

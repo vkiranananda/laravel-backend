@@ -1,12 +1,12 @@
 <template>
     <div class="attached-files" >
-        <div  v-if="сountAgain != 0">
+        <div  v-if="сountAgain != 0 && field.readonly != true">
             <show-uploads-button :config="config"></show-uploads-button>
         </div>
         <div class="conteiner">
             <draggable v-model="files" handle=".item">
                 <div v-for="(file, key) in files" class="media-file item" :class="field.type == 'gallery' ? 'image' : 'file'" :key="key">
-                    <a href='#' v-on:click.prevent="del(file)" class="delete">&times;</a>
+                    <a href='#' v-on:click.prevent="del(file)" class="delete" v-if="field.readonly != true">&times;</a>
                     <div class="file-body" v-on:click.prevent="edit(file)">
                         <img :src="file.thumb" alt="" class="image">
                         <div class="text">{{ file.orig_name}}</div>
@@ -166,7 +166,7 @@
                 vertical-align: middle;
                 margin: 6px 10px;
                 max-width: 400px;
-                
+
             }
         }
     }

@@ -46,6 +46,19 @@ class Fields
         return new $this->fieldsClasses[$type_field]($field);
     }
 
+    // Подготавливаем все поля для отображения. Только в readonly
+    public function readFields($post, $fields)
+    {
+
+        // Выставляем все поля в readonly
+        foreach ($fields as &$field) {
+            $field['readonly'] = true;
+        }
+
+        return $this->editFields($post, $fields);
+    }
+
+
     // Подготавливаем все поля для отображения. fields корневой список
     public function editFields($post, $fields)
     {

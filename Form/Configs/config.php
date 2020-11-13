@@ -44,6 +44,18 @@
 		'show' => [
 		    // Шаблон
 			'template' => 'Form::show',
+            // Кнопки создать закрыть и редактировать внизу страницы
+            'buttons-default' => [
+                'exit' => [
+                    'label' => 'Выйти',
+                    'url' => 'javascript:history.back()',
+                    'type' => 'secondary',
+                ],
+                'edit' => [
+                    'label' => 'Редактировать',
+                    'url' => ''
+                ],
+            ]
 		],
         // Опции загрузки файлов
 		'upload' => [
