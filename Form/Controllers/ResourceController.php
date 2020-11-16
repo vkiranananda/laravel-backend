@@ -129,9 +129,6 @@ class ResourceController extends Controller
 
         $this->saveData('store');
 
-        // Вызываем хук
-        $this->resourceCombineAfter('store');
-
         // Обработка редиректов
         if (isset($this->config['store-redirect'])) {
             $this->dataReturn['redirect'] = $this->config['store-redirect'];
@@ -140,6 +137,9 @@ class ResourceController extends Controller
             $this->dataReturn = $this->edit($this->post['id']);
             $this->dataReturn['replaceUrl'] = action($this->config['controller-name'] . '@edit', $this->post['id']);
         }
+
+        // Вызываем хук
+        $this->resourceCombineAfter('store');
 
         return $this->dataReturn;
     }
@@ -189,15 +189,14 @@ class ResourceController extends Controller
 
         $this->resourceCombine('update');
 
-        $data = $this->saveData('update');
-
-        //Вызываем хук
-        $this->resourceCombineAfter('update');
+        $this->saveData('update');
 
         //Редиректы
         if (isset($this->config['update-redirect'])) $this->dataReturn['redirect'] = $this->config['update-redirect'];
         else $this->dataReturn = $this->edit($id);
 
+        //Вызываем хук
+        $this->resourceCombineAfter('update');
 
         return $this->dataReturn;
     }
@@ -398,7 +397,7 @@ class ResourceController extends Controller
     {
     }
 
-    //Тоже но после сохранения записи. Удобно кэши чистить и прочее..
+    // Тоже но в конце функции перед return. Удобно кэши чистить и прочее..
     protected function resourceCombineAfter($type)
     {
     }
