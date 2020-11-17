@@ -11,12 +11,22 @@ use Helpers;
 class UserAccess
 {
 
-    private static function getRole()
+    public static function getRole()
     {
         static $role = false;
-
         // Получаем роль текущего пользователя если еще не получена
-        if (!$role) $role = Helpers::getDataField(UserRole::findOrFail(Auth::user()->user_role_id), 'permissions', []);
+        if (!$role) {
+            // Если админ
+            if (UserAccess::isAdmin()) {
+                $role = [];
+                return $role;
+            }
+            $data = UserRole::find(Auth::user()->user_role_id);
+
+            if (!$data) abort(403,'UserAccess::getRole role not found');
+
+            $role = Helpers::getDataField($data, 'permissions', []);
+        }
 
         return $role;
     }

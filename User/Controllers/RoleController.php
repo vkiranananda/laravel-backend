@@ -13,7 +13,7 @@ class RoleController extends ResourceController
     use \Backend\Root\User\Services\UserAccessTrait;
 
     protected string $userAccessKey = 'User';
-    
+
     protected $configPath = "User::config-role";
     protected $fieldsPath = "User::fields-role";
 
@@ -55,6 +55,8 @@ class RoleController extends ResourceController
                 if (isset($mod['read-only']) && $mod['read-only'] === true) {
                     unset($clone['fields']['create'], $clone['fields']['edit'], $clone['fields']['destroy'], $clone['fields']['read']['options']['owner']);
                 }
+
+                if (isset($mod['custom-fields']))  $clone['fields'] = array_merge($clone['fields'], $mod['custom-fields']);
 
                 $clone['name'] = $mod['mod-key'];
                 $clone['fields']['title']['html'] = "<hr><b>" . $mod['label'] . "</b><hr>";
