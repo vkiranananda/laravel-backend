@@ -53,7 +53,7 @@ class DateField extends Field
 
         // Применяем часовой пояс если дата полная
         if (isset($this->field['time']) && $this->field['time']) {
-            $value->format($dateConfig['datetime-format']);
+            $value->setTimezone($dateConfig['time-zone']);
             return $value->format($dateConfig['datetime-format']);
         }
 
