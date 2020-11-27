@@ -301,8 +301,12 @@ class Fields
         foreach ($fields as $field) {
             // Если не установлены нужные параметры не обрабатываем
             if (!isset($field['name']) || !isset($field['type'])) continue;
+
             // Если поле только чтение не обрабатываем
             if (isset($field['readonly']) && $field['readonly']) continue;
+
+            // Html поля пропускаем
+            if (array_search($field['type'], ['none', 'html', 'html-title'])) continue;
 
             // Если поле скрыто, так же не обрабатываем
             if (isset($field['show']) && $this->showCheck($field['show'], $request) === false) continue;
