@@ -1,9 +1,9 @@
 import cloneDeep from 'lodash.clonedeep'
 
 export default {
-  	namespaced: true,
+    namespaced: true,
 
-  	state: {
+    state: {
         fields: {},
         tabs: {},
         hiddenFields: {},
@@ -14,8 +14,8 @@ export default {
         show: {}  //Показываем скрываем элементы
     },
 
-  	mutations: {
-        initData (state, {fields, config}) {
+    mutations: {
+        initData(state, {fields, config}) {
             state.fields = fields.fields
             state.hiddenFields = fields.hidden
             state.tabs = fields.tabs
@@ -34,42 +34,65 @@ export default {
             }
         },
         //Инитим отдельные опции конфига.
-        initCustomConfig (state, data) { for (var key in data) state.config[key] = data[key] },
+        initCustomConfig(state, data) {
+            for (var key in data) state.config[key] = data[key]
+        },
         //Устанавливаем свойство в поле property
-        setFieldProp (state, data) { Vue.set (data.field, data.property, data.value ) },
+        setFieldProp(state, data) {
+            Vue.set(data.field, data.property, data.value)
+            // if (data.property == 'value') {
+            //     if (data.field.autosave == true && data.field.type == 'select') {
+            //         window.bus.$emit('FormSave')
+            //     }
+            // }
+        },
         //Устанавливаем уникальный идентификатор для некоторых полей. Нужно для ретитед полей, что бы обозначить уникальность поля с одним именем
-        setUniqueKey (state) { state.uniqueKey++ },
-        setTabVShow (state, data) { Vue.set(state.tabs[data.name], 'v-show', data.value) },
+        setUniqueKey(state) {
+            state.uniqueKey++
+        },
+        setTabVShow(state, data) {
+            Vue.set(state.tabs[data.name], 'v-show', data.value)
+        },
         //Устанавливаем свойства v-show для списка полей в табе по ссылке на поле
-        setTabFieldVShow (state, data) { Vue.set( data.field, 'v-show', data.value) },
+        setTabFieldVShow(state, data) {
+            Vue.set(data.field, 'v-show', data.value)
+        },
         //Выставляем активную табу
-        setTabActive (state, value) { state.tabActive = value },
+        setTabActive(state, value) {
+            state.tabActive = value
+        },
         //Выставляем ошибки
-        setErrors (state, errors) { state.errors = errors },
+        setErrors(state, errors) {
+            state.errors = errors
+        },
         // Добавляем новый репитед блок
-        addRepeatedBlock (state, field) { 
-            field.value.push({fields: cloneDeep(field['fields']), key: field['unique-index'] });
+        addRepeatedBlock(state, field) {
+            field.value.push({fields: cloneDeep(field['fields']), key: field['unique-index']});
             field['unique-index']++;
         },
-        // Удаляем репитед блок 
-        delRepeatedBlock (state, data) { data.block.splice(data.index, 1); },
-        // Добавляем удаляем вновь загруженные файлы.
-        addUploadFile (state, id) { state.uploadFiles.push(id) },
-        delUploadFile (state, id) { 
-            let elId = state.uploadFiles.indexOf(id)
-            if (elId != -1) state.uploadFiles.splice(elId, 1) 
+        // Удаляем репитед блок
+        delRepeatedBlock(state, data) {
+            data.block.splice(data.index, 1);
         },
-     },
+        // Добавляем удаляем вновь загруженные файлы.
+        addUploadFile(state, id) {
+            state.uploadFiles.push(id)
+        },
+        delUploadFile(state, id) {
+            let elId = state.uploadFiles.indexOf(id)
+            if (elId != -1) state.uploadFiles.splice(elId, 1)
+        },
+    },
     actions: {
         // Добавляем новый репитед блок
-        addRepeatedBlock ({ commit, state }, field) {
+        addRepeatedBlock({commit, state}, field) {
             commit('addRepeatedBlock', field);
 
             //Обновляем видимость полей
-            setVShowData(commit, field.value[field.value.length - 1].fields, true );
+            setVShowData(commit, field.value[field.value.length - 1].fields, true);
         },
         //Устанавливаем value
-        setFieldProp ({ commit, state }, data) {
+        setFieldProp({commit, state}, data) {
             // console.log(data);
             var field = data.fields[data.name]
 
@@ -77,21 +100,28 @@ export default {
             let oldValue = field[data.property]
 
             //Устанавливаем значение в поле.
-            commit('setFieldProp', { field, property: data.property, value: data.value });
+            commit('setFieldProp', {field, property: data.property, value: data.value});
             //For value
-            if(data.property == 'value') {
+            if (data.property == 'value') {
                 //Если тип селект или радио обрабатываем отображние полей.
                 if (field.type == 'select' || field.type == 'radio') {
-                    if (data.fieldsType == 'tab' ) setVShowDataRoot(commit, state);
-                    else setVShowData(commit, data.fields); 
+                    if (data.fieldsType == 'tab') setVShowDataRoot(commit, state);
+                    else setVShowData(commit, data.fields);
                 }
 
-                // Добавляем первоначальное значение при изменении...
-                if (field._changed == undefined && data.changed === true) {
-                    commit('setFieldProp', { field, property: '_changed', value: oldValue })
-                } else {
-                    if (field.value == field._changed) {
-                        commit('setFieldProp', { field, property: '_changed', value: undefined })
+                if (field.autosave == true) {
+                    if (field.type == 'select') window.bus.$emit('FormSave')
+                }
+
+                // Обрабатываем изменения только если поле без autosave
+                if (!field.autosave) {
+                    // Добавляем первоначальное значение при изменении...
+                    if (field._changed == undefined && data.changed === true) {
+                        commit('setFieldProp', {field, property: '_changed', value: oldValue})
+                    } else {
+                        if (field.value == field._changed) {
+                            commit('setFieldProp', {field, property: '_changed', value: undefined})
+                        }
                     }
                 }
                 beforeClose();
@@ -99,14 +129,14 @@ export default {
         },
 
         // Возвращаем первоначальное значение
-        setFieldBack ({ commit, state }, data) {
+        setFieldBack({commit, state}, data) {
             var field = data.fields[data.name]
-            commit('setFieldProp', { field, property: 'value', value: field['_changed'] })
-            commit('setFieldProp', { field, property: '_changed', value: undefined })
+            commit('setFieldProp', {field, property: 'value', value: field['_changed']})
+            commit('setFieldProp', {field, property: '_changed', value: undefined})
         },
 
         //Инитим данные
-        initData({ commit, dispatch, state }, data) {
+        initData({commit, dispatch, state}, data) {
             commit('initData', data);
             setVShowDataRoot(commit, state, true);
 
@@ -121,11 +151,11 @@ export default {
             // Если таба еще не выбрана выбираем первую
             if (!tabActive) {
                 for (let key in state.tabs) {
-                    if( state.tabs[key]['v-show'] !== false ) {
-                        commit('setTabActive', key);                
+                    if (state.tabs[key]['v-show'] !== false) {
+                        commit('setTabActive', key);
                         break;
                     }
-                }                
+                }
             }
 
         }
@@ -136,36 +166,36 @@ export default {
 
 
 // Выставляем значения видимости репитед полей.
-function setVShowData (commit, fields, all) {
-    //Перебираем все поля 
-    for (let key in fields ) {
+function setVShowData(commit, fields, all) {
+    //Перебираем все поля
+    for (let key in fields) {
         let field = fields[key];
         if (field.show != undefined) {
             commit('setFieldProp', {
                 field: field,
                 property: 'v-show',
                 value: vShowCheck(field.show, fields)
-            });           
+            });
         }
         //Бежим по всему дереву вверх текущих полей
-        if(all === true) {
+        if (all === true) {
             if (field.type == 'repeated') {
-                for ( let repDataBlock of field.value ) setVShowData (commit, repDataBlock.fields, all) 
+                for (let repDataBlock of field.value) setVShowData(commit, repDataBlock.fields, all)
             }
-            if (field.type == 'group') setVShowData (commit, field.fields, all)
+            if (field.type == 'group') setVShowData(commit, field.fields, all)
         }
     }
 }
 
-// Выставляем значения видимости таба или поля начиная с корня, если опция all стоит, 
+// Выставляем значения видимости таба или поля начиная с корня, если опция all стоит,
 // то функция пробежиться по всему дереву элементов
-function setVShowDataRoot (commit, state, all) {
+function setVShowDataRoot(commit, state, all) {
     //Начинае обработку с табов
-    for ( var tabName in state.tabs) {
+    for (var tabName in state.tabs) {
         // Если есть show выставляем значение
         if (state.tabs[tabName]['show'] != undefined) {
             console.log(tabName)
-            commit('setTabVShow', { name: tabName, value: vShowCheck(state.tabs[tabName]['show'], state.fields) });
+            commit('setTabVShow', {name: tabName, value: vShowCheck(state.tabs[tabName]['show'], state.fields)});
         }
     }
     //Выставляем данные для полей
@@ -173,38 +203,37 @@ function setVShowDataRoot (commit, state, all) {
 }
 
 //Проверка условий на видимость.
-function vShowCheck (show, fields) {
+function vShowCheck(show, fields) {
 
-    if ( ! Array.isArray(show) ) return true;
-    
+    if (!Array.isArray(show)) return true;
+
     var res = false;
-    
+
     for (var i = 0; i < show.length; i++) {
-        if(i != 0) { //не первая запись
+        if (i != 0) { //не первая запись
             //Оператор &&, если предыдущее условие ошибка тогда сл тоже ошибка, проверку не делаем
-            if(show[i].operator == '&&' && res == false)continue; 
+            if (show[i].operator == '&&' && res == false) continue;
             //Опертор ||, если предыдущее истинно, тогда возвращем истину, если ложно делаем проверки дальше.
-            if(show[i].operator == '||' && res == true)return res;    
+            if (show[i].operator == '||' && res == true) return res;
         }
-  
-        var showField = show[i]['field'];        
+
+        var showField = show[i]['field'];
 
         //Проверяем соответсвия условиям
         if (show[i].type == '==') {
-            if ( fields[showField].value == show[i].value) res = true;
-            else res = false;  
+            if (fields[showField].value == show[i].value) res = true;
+            else res = false;
         } else { //!=
-            if ( fields[showField].value != show[i].value) res = true;
-            else res = false;  
+            if (fields[showField].value != show[i].value) res = true;
+            else res = false;
         }
     }
 
     return res;
 }
 
-function beforeClose () {
-    window.onbeforeunload = function(e) {
+function beforeClose() {
+    window.onbeforeunload = function (e) {
         return 'Данные формы не сохранены. Для сохранения, останьтесь на странице и нажмите кнопку [Сохранить]';
     };
 }
-           

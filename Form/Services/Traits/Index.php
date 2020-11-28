@@ -76,7 +76,7 @@ trait Index
         }
 
         // Делаем выборку
-        $query = $this->post->paginate($this->config['list']['count-items'])->toArray();
+        $query = $this->post->paginate($this->config['list']['count-items']);
         if ($query['last_page'] < $query['current_page']) {
             $query = $this->post->paginate($this->config['list']['count-items'], ['*'], 'page', $query['last_page'])->toArray();
         }
@@ -104,7 +104,7 @@ trait Index
         }
 
         // Подготваливаем все поля
-        foreach ($query['data'] as $post) {
+        foreach ($query->items() as $post) {
             $res = []; // Преобразованные данные
 
             $res['_links'] = $this->indexLinks($post, $urlPostfix);

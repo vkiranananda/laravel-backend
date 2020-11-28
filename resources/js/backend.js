@@ -5,6 +5,8 @@ window.Vue = require('vue');
 import Vuex from 'vuex';
 
 import editForm from '../../Form/resources/js/store/edit';
+// Подючаем быстрые фонкции для работы с алертами
+import alert from './libs/alert'
 
 const store = new Vuex.Store({
     modules: {
@@ -12,6 +14,10 @@ const store = new Vuex.Store({
     }
 });
 
+// Обновляет страницу при history.back()
+if (performance.navigation.type == 2) {
+    location.reload(true);
+}
 
 //module.exports = {store: store}
 
@@ -25,8 +31,6 @@ Vue.component('v-icon', require('./components/octicons.vue').default)
 Vue.component('v-modal', require('./components/modal').default)
 // Alert
 Vue.component('v-alert', require('./components/alert').default)
-// Подючаем быстрые фонкции для работы с алертами
-import alert from './libs/alert'
 window.vAlert = alert.vAlert
 window.vConfirm = alert.vConfirm
 
@@ -38,7 +42,6 @@ require('../../Menu/resources/js/init.js');
 
 // Пользовательский js
 require('../../../../../backend/resources/js/backend.js');
-
 
 const backend = new Vue({
     el: '#backend-body',

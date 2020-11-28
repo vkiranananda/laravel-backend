@@ -118,7 +118,7 @@ class ResourceController extends Controller
         return view($this->config['edit']['template'], $this->dataReturn);
     }
 
-    //Сохраняем запись
+    // Сохраняем запись
     public function store()
     {
         // Проверка на права доступа
@@ -191,11 +191,11 @@ class ResourceController extends Controller
 
         $this->saveData('update');
 
-        //Редиректы
+        // Редиректы
         if (isset($this->config['update-redirect'])) $this->dataReturn['redirect'] = $this->config['update-redirect'];
         else $this->dataReturn = $this->edit($id);
 
-        //Вызываем хук
+        // Вызываем хук
         $this->resourceCombineAfter('update');
 
         return $this->dataReturn;
