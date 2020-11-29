@@ -15,6 +15,7 @@ const store = new Vuex.Store({
 });
 
 // Обновляет страницу при history.back()
+// Не работает в сафари
 if (performance.navigation.type == 2) {
     location.reload(true);
 }
