@@ -77,17 +77,15 @@ trait Index
 
         // Делаем выборку
         $query = $this->post->paginate($this->config['list']['count-items']);
-        if ($query['last_page'] < $query['current_page']) {
-            $query = $this->post->paginate($this->config['list']['count-items'], ['*'], 'page', $query['last_page'])->toArray();
+        if ($query->lastPage() < $query->currentPage()) {
+            $query = $this->post->paginate($this->config['list']['count-items'], ['*'], 'page', $query->lastPage());
         }
-
         // Для пагинации
-        $this->dataReturn['items']['currentPage'] = $query['current_page'];
-        $this->dataReturn['items']['lastPage'] = $query['last_page'];
-        $this->dataReturn['items']['total'] = $query['total'];
-
-        //урл страницы списка.
-        $this->dataReturn['config']['indexUrl'] = $query['path'];
+        $this->dataReturn['items']['currentPage'] = $query->currentPage();
+        $this->dataReturn['items']['lastPage'] = $query->lastPage();
+        $this->dataReturn['items']['total'] = $query->total();
+        // урл страницы списка.
+        $this->dataReturn['config']['indexUrl'] = $query->path();
 
         //Список полей для вывода
         $this->dataReturn['fields'] = $fields;

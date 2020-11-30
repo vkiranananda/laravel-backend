@@ -19,6 +19,10 @@ const store = new Vuex.Store({
 if (performance.navigation.type == 2) {
     location.reload(true);
 }
+// А вот этот код похоже работает в сафари но в хроме нет :).
+window.onpopstate = (event) => {
+    location.reload(true);
+};
 
 //module.exports = {store: store}
 

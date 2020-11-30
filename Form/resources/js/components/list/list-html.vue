@@ -43,9 +43,9 @@ export default {
 
         // console.log(this.myData)
 
-        window.onpopstate = (event) => {
-            this.axiosSend(event.state, false)
-        };
+        // window.onpopstate = (event) => {
+        //     this.axiosSend(event.state, false)
+        // };
     },
     destroyed() {
         window.onpopstate = null
@@ -105,6 +105,7 @@ export default {
 
         axiosSend(url, pushState = true) {
             this.loading = true
+            // console.log(url)
             axios.get(url, {
                 params: {
                     _ajax: Math.random()
