@@ -106,6 +106,7 @@ trait Index
             $res = []; // Преобразованные данные
 
             $res['_links'] = $this->indexLinks($post, $urlPostfix);
+            $res['_row_class'] = $this->indexRowClass($post);
 
             foreach ($fields as $key => $field) {
 
@@ -198,6 +199,16 @@ trait Index
             return $res;
         }
         return $this->config['list']['item-menu-default'];
+    }
+
+    /**
+     * Добвляем классы для tr в списке
+     * @param $post object - текущая запись
+     * @return string - классы
+     */
+    protected function indexRowClass($post): string
+    {
+        return "";
     }
 
     // Обрабатываем ссылки в списке

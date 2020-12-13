@@ -18,6 +18,7 @@ class DateField extends Field
         $date = new Carbon($value, $dateConfig['time-zone']);
 
         // Делаем смещение до системного, только если дата целиком
+        // Проверить надо ли вообще
         if (isset($this->field['time']) && $this->field['time'])
             $date->setTimezone(config('app.timezone'));
 
@@ -35,7 +36,7 @@ class DateField extends Field
 
         // Применяем часовой пояс если дата полная
         if (isset($this->field['time']) && $this->field['time']) {
-            $value->setTimezone($dateConfig['time-zone']);
+            // $value->setTimezone($dateConfig['time-zone']);
             return $value->toDateTimeString();
         }
 
@@ -53,7 +54,7 @@ class DateField extends Field
 
         // Применяем часовой пояс если дата полная
         if (isset($this->field['time']) && $this->field['time']) {
-            $value->setTimezone($dateConfig['time-zone']);
+            // $value->setTimezone($dateConfig['time-zone']);
             return $value->format($dateConfig['datetime-format']);
         }
 
