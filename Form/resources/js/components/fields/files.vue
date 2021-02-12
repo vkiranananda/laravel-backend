@@ -15,7 +15,7 @@
             </draggable>
         </div>
         <div class="clearfix"></div>
-        <small class="form-text text-muted" v-if="сountAgain == 0">Привышен лимит. Для того что бы выбрать новый файл сначала удалить имеющийся</small>
+<!--        <small class="form-text text-muted" v-if="сountAgain == 0">Привышен лимит. Для того что бы выбрать новый файл сначала удалить имеющийся</small>-->
     </div>
 </template>
 

@@ -112,15 +112,14 @@ class Fields
     // Подготавливаем поля для вывода
     private function prepEditField($field, &$post, $arrayData, $none = false)
     {
-        //group fields
+        // group fields
         if ($field['type'] == 'group') {
 
-            //Подгружаем поля
+            // Подгружаем поля
             if (isset($field['load-from']))
                 $field['fields'] = GetConfig::backend($field['load-from']);
 
             unset($field['load-from']);
-
 
             // Присваиваем значение value. Бере
             if (isset($field['field-save'])) {
@@ -159,7 +158,7 @@ class Fields
             $value = $this->getFieldValue($field, $post, $arrayData, $none);
 
             // dd($value);
-            //Если значение не установлено, создаем первую запись
+            // Если значение не установлено, создаем первую запись
             if (!is_array($value)) $value = [];
 
             // Уникальный индекc
@@ -184,11 +183,12 @@ class Fields
                     // Если поле не имеет name и type пропускаем
                     if (!isset($oneRepField['name']) || !isset($oneRepField['type'])) continue;
 
-                    //Полюбому значения в массиве
+                    // Полюбому значения в массиве
                     $oneRepField['field-save'] = 'array';
 
-                    //Обрабатываем разные типы и выставляем окончательное значение.
+                    // Обрабатываем разные типы и выставляем окончательное значение.
                     $oneRepField = $this->prepEditField($oneRepField, $post, $valuesBlock, $none);
+                    // Log::debug($valuesBlock);
                 }
                 $field['unique-index']++;
             }
@@ -200,13 +200,14 @@ class Fields
                 // Если поле не имеет name и type пропускаем
                 if (!isset($baseField['name']) || !isset($baseField['type'])) continue;
 
-                $baseField['value'] = '';
+                if (!isset($baseField['value'])) $baseField['value'] = '';
+
                 $baseField = $this->prepEditField($baseField, $post, [], true);
             }
         } else {
             $field['value'] = $this->initField($field)->edit($this->getFieldValue($field, $post, $arrayData, $none));
         }
-        //Убираем лишние опции
+        // Убираем лишние опции
         unset($field['field-save']);
 
         return $field;
