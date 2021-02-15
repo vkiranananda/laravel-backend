@@ -7,6 +7,7 @@ use Auth;
 use Backend\Root\MediaFile\Models\MediaFile;
 use Backend\Root\MediaFile\Models\MediaFileRelation;
 use GetConfig;
+use Illuminate\Support\Facades\Log;
 use Request;
 use Response;
 
