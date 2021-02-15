@@ -5,7 +5,7 @@
 			'create-title' => 'Создать роль',
 			'edit-title' => 'Редактирование роли',
 		],
-        'model' => '\Backend\Root\User\Models\UserRole',
+        'model' => '\Backend\User\Models\UserRole',
         'list' => [
             'sortable' => true,
         ]

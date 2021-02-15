@@ -5,7 +5,7 @@ namespace Backend\Root\User\Services;
 
 
 use Auth;
-use Backend\Root\User\Models\UserRole;
+use Backend\User\Models\UserRole;
 use Helpers;
 
 class UserAccess

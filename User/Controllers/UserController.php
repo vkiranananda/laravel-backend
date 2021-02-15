@@ -2,7 +2,7 @@
 
 namespace Backend\Root\User\Controllers;
 
-use Backend\Root\User\Models\UserRole;
+use Backend\User\Models\UserRole;
 use Illuminate\Support\Str;
 use Mail;
 use Request;
@@ -13,7 +13,7 @@ class UserController extends \Backend\Root\Form\Controllers\ResourceController
     use \Backend\Root\User\Services\UserAccessTrait;
 
     protected string $userAccessKey = 'User';
-    
+
     public $model = "App\Models\User";
 
     public function create()
