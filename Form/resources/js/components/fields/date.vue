@@ -35,7 +35,7 @@ export default {
         return format
       },
       type: function () {
-          return this.field.time != undefined ? 'datetime' : 'date'
+          return this.field.time ? 'datetime' : 'date'
       },
    		// Генерим классы
    		inputClass: function () {
@@ -51,7 +51,7 @@ export default {
    		//Возвращаем дату с нужным форматированем
   		inputFormat: function () {
         if (this.field['input-format'] != undefined) return this.field['input-format']
-        if (this.field.time != undefined) return 'YYYY-MM-DD HH:mm:ss'
+        if (this.field.time) return 'YYYY-MM-DD HH:mm:ss'
         return 'YYYY-MM-DD'
       }
 	},

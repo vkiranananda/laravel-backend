@@ -5,11 +5,11 @@ use Categories;
 
 class RouteController
 {
-    public function index($url)
+    public function index($url = '')
     {
 		$routes = Categories::printRoutes();
 
-		$url = '/'.$url;
+		$url = ($url != '') ? '/' . $url : '';
 
 		// Категории, точное совпадение
 		if (isset($routes[$url]) ){
@@ -26,7 +26,7 @@ class RouteController
 				// Создаем конечный путь, может быть вложенным
 				$resUrl = ($resUrl != '') ? $urlExt[2] . "/" . $resUrl : $urlExt[2];
 
-				// Если урл есть 
+				// Если урл есть
 				if (isset($routes[$url])) {
 					$cat = $routes[$url];
 					// Корнева каотеогрия, получаем контроллер

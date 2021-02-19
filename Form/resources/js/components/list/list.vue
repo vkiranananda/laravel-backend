@@ -25,7 +25,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="item in items.data">
+                    <tr v-for="item in items.data" :class="item['_row_class']">
                         <td v-for="field in fields" v-bind="field.attr">
                             <v-icon :name="field.icon" class="mr-2" v-if="field.icon"/>
                             <a v-if="field.link" :href="item._links[field.link]">{{ item[field.name] }}</a>
@@ -36,7 +36,7 @@
                         </td>
 
                         <td class="menu-td" v-if="itemMenu">
-                            <div class="dropdown">
+                            <div class="dropdown" >
                                 <button class="btn btn-secondary" type="button" id="dropdownMenuButton"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <v-icon name="grabber" width="10"/>

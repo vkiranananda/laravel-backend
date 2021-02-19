@@ -46,6 +46,19 @@ class Fields
         return new $this->fieldsClasses[$type_field]($field);
     }
 
+    // Подготавливаем все поля для отображения. Только в readonly
+    public function readFields($post, $fields)
+    {
+
+        // Выставляем все поля в readonly
+        foreach ($fields as &$field) {
+            $field['readonly'] = true;
+        }
+
+        return $this->editFields($post, $fields);
+    }
+
+
     // Подготавливаем все поля для отображения. fields корневой список
     public function editFields($post, $fields)
     {
@@ -99,15 +112,14 @@ class Fields
     // Подготавливаем поля для вывода
     private function prepEditField($field, &$post, $arrayData, $none = false)
     {
-        //group fields
+        // group fields
         if ($field['type'] == 'group') {
 
-            //Подгружаем поля
+            // Подгружаем поля
             if (isset($field['load-from']))
                 $field['fields'] = GetConfig::backend($field['load-from']);
 
             unset($field['load-from']);
-
 
             // Присваиваем значение value. Бере
             if (isset($field['field-save'])) {
@@ -146,7 +158,7 @@ class Fields
             $value = $this->getFieldValue($field, $post, $arrayData, $none);
 
             // dd($value);
-            //Если значение не установлено, создаем первую запись
+            // Если значение не установлено, создаем первую запись
             if (!is_array($value)) $value = [];
 
             // Уникальный индекc
@@ -171,11 +183,12 @@ class Fields
                     // Если поле не имеет name и type пропускаем
                     if (!isset($oneRepField['name']) || !isset($oneRepField['type'])) continue;
 
-                    //Полюбому значения в массиве
+                    // Полюбому значения в массиве
                     $oneRepField['field-save'] = 'array';
 
-                    //Обрабатываем разные типы и выставляем окончательное значение.
+                    // Обрабатываем разные типы и выставляем окончательное значение.
                     $oneRepField = $this->prepEditField($oneRepField, $post, $valuesBlock, $none);
+                    // Log::debug($valuesBlock);
                 }
                 $field['unique-index']++;
             }
@@ -187,13 +200,14 @@ class Fields
                 // Если поле не имеет name и type пропускаем
                 if (!isset($baseField['name']) || !isset($baseField['type'])) continue;
 
-                $baseField['value'] = '';
+                if (!isset($baseField['value'])) $baseField['value'] = '';
+
                 $baseField = $this->prepEditField($baseField, $post, [], true);
             }
         } else {
             $field['value'] = $this->initField($field)->edit($this->getFieldValue($field, $post, $arrayData, $none));
         }
-        //Убираем лишние опции
+        // Убираем лишние опции
         unset($field['field-save']);
 
         return $field;
@@ -288,8 +302,12 @@ class Fields
         foreach ($fields as $field) {
             // Если не установлены нужные параметры не обрабатываем
             if (!isset($field['name']) || !isset($field['type'])) continue;
+
             // Если поле только чтение не обрабатываем
             if (isset($field['readonly']) && $field['readonly']) continue;
+
+            // Html поля пропускаем
+            if (array_search($field['type'], ['none', 'html', 'html-title'])) continue;
 
             // Если поле скрыто, так же не обрабатываем
             if (isset($field['show']) && $this->showCheck($field['show'], $request) === false) continue;

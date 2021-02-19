@@ -3,8 +3,9 @@ return [
 
     'list' => [
         ['name' => 'id', 'label' => 'ID', 'attr' => ['width' => '30px'], 'sortable' => true],
-        ['name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true],
+        ['name' => 'name', 'icon' => 'file', 'link' => 'edit-show', 'sortable' => true],
         ['name' => 'email', 'sortable' => true],
+        ['name' => 'user_role_id', 'link' => 'user-role'],
         ['name' => 'updated_at', 'type' => 'date', 'time' => true, 'label' => 'Дата модификации', 'attr' => ['width' => '190px;'], 'sortable' => true]
     ],
 
@@ -21,6 +22,14 @@ return [
             'label' => 'Email',
             'desc' => 'Используется для входа',
             'validate' => 'required|email|unique:users,email',
+        ],
+        'user_role_id' => [
+            'type' => 'select',
+            'name' => 'user_role_id',
+            'label' => 'Роль пользователя',
+            'options' => [
+                ['label' => 'Админ', 'value' => 0]
+            ]
         ],
         'password' => [
             'type' => 'text',
@@ -47,7 +56,7 @@ return [
         'main' => [
             'label' => 'Основные',
             'name' => 'main',
-            'fields' => ['name', 'email', 'password', 'send_mail'],
+            'fields' => ['name', 'email', 'user_role_id', 'password', 'send_mail'],
         ],
     ],
 ];

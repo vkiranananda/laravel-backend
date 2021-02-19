@@ -21,6 +21,9 @@
 
 <script>
     export default {
+        //Создаем слушателей событий
+        created () { this.$bus.$on('FormSave', this.submit) },
+        beforeDestroy() { this.$bus.$off('FormSave') },
         props: {
             url: {default: ''},
             method: {default: 'POST'},
@@ -46,6 +49,7 @@
                         break
                     case 'FormBack':
                         window.history.back()
+                        location.reload();
                         break
                     default:
                         this.$bus.$emit(btn.hook, btn)
@@ -90,7 +94,10 @@
 
                         // Если нужно редиректим
                         if (result.redirect != undefined) {
-                            if (result.redirect == 'back') history.back()
+                            if (result.redirect == 'back') {
+                                window.history.back()
+                                location.reload();
+                            }
                             else {
                                 if (result.replace) document.location.replace(result.redirect)
                                 else window.location = result.redirect
@@ -98,7 +105,10 @@
                             return
                         }
 
-                        if (saveAndExit) window.history.back();
+                        if (saveAndExit) {
+                            window.history.back();
+                            // window.location=document.referrer
+                        }
 
                         // Инитим конфиг
                         if (result.config != undefined) {

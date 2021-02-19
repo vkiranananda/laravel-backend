@@ -22,8 +22,8 @@
        	<tr>
             <td>{{ $url }}</td>
             <td>CategoryController</td>
-            <td> 
-            	{{ implode(', ', array_keys($cat) )}} 
+            <td>
+            	{{ implode(', ', array_keys($cat) )}}
             	@if(count($cat) > 1)
             		use {{array_key_first($cat)}}
             	@endif
@@ -35,8 +35,8 @@
        	<tr>
             <td>{{ $url }}/{post-name}</td>
             <td>{{ key($cat) }}Controller</td>
-            <td> 
-            	{{ implode(', ', array_keys($cat) )}} 
+            <td>
+            	{{ implode(', ', array_keys($cat) )}}
             	@if(count($cat) > 1)
             		use {{array_key_first($cat)}}
             	@endif

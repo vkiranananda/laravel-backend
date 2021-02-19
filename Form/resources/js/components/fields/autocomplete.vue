@@ -11,6 +11,7 @@
             autocomplete="off"
             autocapitalize="off"
             spellcheck="false"
+            :readonly="field.readonly"
             @keyup.enter="select"
             @keyup.down="down"
             @keyup.up.prevent.stop="up($event)"

@@ -2,27 +2,27 @@
 
 	return [
         'list' => [
-        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true],
+        	[ 'name' => 'name', 'icon' => 'file', 'link' => 'edit-show', 'sortable' => true],
         	[ 'name' => 'category', 'label' => 'Категория', 'attr' => [ 'width' => '20%' ], 'func' => 'indexCategoryField', 'link' => 'category' ],
         	[ 'name' => 'publication_date', 'label' => 'Дата публикации', 'attr' => [ 'width' => '190px;' ], 'sortable' => true ]
         ],
 		'fields' => [
 	        'name' => [
-	            'type' => 'text', 
+	            'type' => 'text',
 	            'name' => 'name',
 	            'label' => 'Заголовок',
 	            'validate' => 'required',
 	        ],
-	        'announcement' => [	
+	        'announcement' => [
 	        	'name' => 'announcement',
-	            'type' => 'textarea', 
+	            'type' => 'textarea',
 	            'label' => 'Анонс',
 	            'field-save' => 'array',
 	            'attr' => [ 'rows' => '5']
 	        ],
 	        'text' => [
 	        	'name' => 'text',
-	            'type' => 'editor', 
+	            'type' => 'editor',
 	            'label' => 'Текст',
 	            'format' => 'fool',
 	            'size' => 'normal',
@@ -30,35 +30,35 @@
 	        ],
 			'url' => [
 	            'name' => 'url',
-	            'type' => 'text', 
+	            'type' => 'text',
 	            'label' => 'URL',
 	            'validate' => 'nullable|alpha_dash|unique:news,url',
 	        ],
-	        'category_id' => [ 
+	        'category_id' => [
 	        	'name' => 'category_id',
-        		'type' => 'select', 
-        		'name' => 'category_id', 
-        		'label' => 'Категория', 
+        		'type' => 'select',
+        		'name' => 'category_id',
+        		'label' => 'Категория',
     		],
     		'publication_date' => [
     			'name' => 'publication_date',
-	            'type' => 'date', 
+	            'type' => 'date',
 	            'label' => 'Дата публикации',
 	            'value' => 'now',
-	            'validate' => 'required|date|date_format:Y-m-d',
+	            'validate' => 'required|date',
 			],
-			'status' => [		
-				'name' => 'status',            
-	        	'type' => 'select', 
-	            'label' => 'Статус', 
+			'status' => [
+				'name' => 'status',
+	        	'type' => 'select',
+	            'label' => 'Статус',
 	            'options' => [
 	         		[ 'value' => '1', 'label' => 'Опубликован' ],
 	         		[ 'value' => '0', 'label' => 'Черновик' ],
 	         	],
 			],
-			'icon' => [	
-				'name' => 'icon',	
-	            'type' => 'gallery', 
+			'icon' => [
+				'name' => 'icon',
+	            'type' => 'gallery',
 	            'label' => 'Иконка',
 	            'field-save' => 'array',
 	            'max-files' => 1
@@ -67,7 +67,7 @@
     			'name' => 'seo',
     			'type' => 'group',
     			'load-from' => 'seo-fields',
-    			'field-save' => 'array' 
+    			'field-save' => 'array'
     		],
 	    ],
 

@@ -1,110 +1,103 @@
 <?php
+
 namespace Backend\Root\Core\Services;
+
+use Cache;
+use GetConfig;
 use Route;
 use View;
-use Cache;
 
-class Backend {
+class Backend
+{
 
-	private $data;
+    private $data;
 
-	public function init()
-	{
-		// if (app()->runningInConsole()) {
-		// 	$this->data = [];
-		// 	return;
-		// }
-		//43200
-        $this->data = Cache::rememberForever('backendCoreData', function()
-        {
-        	$res = [];
-        	$path['Backend\Root'] = base_path('vendor/vkiranananda/backend/');
-        	$path['Backend'] = base_path('backend/');
+    public function init()
+    {
+        $config = GetConfig::backend('backend');
 
-        	if (!is_dir($path['Backend'])) return [];
+        foreach ($config['views'] as $view) {
+            $path = (isset($view['root']) && $view['root'] === true)
+                ? base_path('vendor/vkiranananda/backend/') : base_path('backend/');
 
-	        foreach ($path as $namespace => $p) {
-	        	$dir = opendir($p);
-	        	while(false !==  ($file = readdir($dir)) ) {
-	               if ($file == '..') continue;
-	               if (is_dir($p.$file.'/resources') && is_dir($p.$file.'/resources/views') ) {
-	               		$ext = (isset($res['views'][$file]) && $file != '.') ? '-ext' : '' ;
-						$res['views'][$file.$ext] = $p.$file.'/resources/views';
-	               }
-	               if (is_file($p.$file.'/routes.php')){
-	               		$res['routes'][$file][$namespace] = $p.$file.'/routes.php';
-	               }
-	            }
-	        }
-	        // Fix core resources
-	        foreach (['views', 'routes'] as $key) {
-		        if(isset($res[$key]['.'])){
-		        	$res[$key]['Backend'] = $res[$key]['.'];
-		        	unset($res[$key]['.']);
-		        }
-	        }
-	        return $res;
-	    });
-        //Выставляем нейм спейсы. Если модуль наследуюется и в родителе уже есть namespace до дабавляем к наследуюемумо -ext. Если наследуется корневой resources тогда надо копировать его весь в свой каталог...
-        if (isset($this->data['views'])){
-	        foreach ($this->data['views'] as $mod => $p) {
-	        	View::addNamespace($mod, $p);
-	        }
-	    }
-	   //dd($this->data);
-	}
+            View::addNamespace($view['name'], $path . $view['name'] . '/resources/views');
+        }
+        // неймспейс для бэкенда
+        View::addNamespace('Backend', base_path('backend/resources/views'));
+    }
 
-	public function installRoutes($mod = '', $ext = [])
-	{
-		// Если в консоли запущено не генерим маршруты.
-		// if (app()->runningInConsole()) return;
+    /**
+     * @param string $mod
+     * @param array $ext upload роутинги загрузки файлов, sortable для сортировки данных,
+     * module инсталит роутинг из модуля и отменяет установку resource маршрутов.
+     * Если нужно так же resource роутинг то добавляем эту опцию. По умолчанию включена если нет параметра module
+     */
+    public function installRoutes($mod = '', $ext = [])
+    {
 
-		if (!is_array($ext)) abort(418, 'installRoutes: Параметр $ext должен быть массивом');
+        if (!is_array($ext)) abort(418, 'installRoutes: Параметр $ext должен быть массивом');
 
-		$modUrl = mb_strtolower($mod);
+        $modUrl = mb_strtolower($mod);
 
-		if ( array_search('upload', $ext) !== false ) $this->installUploadRoute($modUrl, $mod);
-		if ( array_search('sortable', $ext) !== false ) $this->installSortableRoute($modUrl, $mod);
+        $resource = true;
+        foreach ($ext as $key) {
+            switch ($key) {
+                case 'upload':
+                    $this->installUploadRoute($modUrl, $mod);
+                    break;
+                case 'sortable':
+                    $this->installSortableRoute($modUrl, $mod);
+                    break;
+                case 'resource':
+                    // Принудильно инсталим ресурс роутинг в том случае если есть параметр module
+                    $this->installResourceRoute($modUrl, $mod);
+                    $resource = false;
+                    break;
+                case 'module':
+                    require_once(base_path('backend/' . $mod . '/routes.php'));
+                    // Отменяем ресурс роутинг так как подключаем роутинг модуля
+                    $resource = false;
+                    break;
+                default:
+                    break;
+            }
+        }
 
-		if ( isset($this->data['routes'][$mod]['Backend'] ) ){
-            if ( array_search('resource', $ext) !== false ) $this->installResourceRoute($modUrl, $mod);
-			require_once($this->data['routes'][$mod]['Backend']);
-		}
-		else $this->installResourceRoute($modUrl, $mod);
-	}
+        if ($resource) $this->installResourceRoute($modUrl, $mod);
+    }
 
-	public function installResourceRoute($modUrl, $mod, $controller = false)
-	{
+    public function installResourceRoute($modUrl, $mod, $controller = false)
+    {
 
-		if (!$controller) $controller = $mod;
+        if (!$controller) $controller = $mod;
 
-		Route::resource($modUrl, '\Backend\\'.$mod.'\\Controllers\\'.$controller.'Controller');
-	}
+        Route::resource($modUrl, '\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller');
+    }
 
-	public function installSortableRoute($modUrl, $mod, $controller = false)
-	{
-		if (!$controller) $controller = $mod;
+    public function installSortableRoute($modUrl, $mod, $controller = false)
+    {
+        if (!$controller) $controller = $mod;
 
-		Route::get($modUrl.'/sortable', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@listSortable');
-		Route::put($modUrl.'/sortable', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@listSortableSave');
-	}
+        Route::get($modUrl . '/sortable', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@listSortable');
+        Route::put($modUrl . '/sortable', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@listSortableSave');
+    }
 
-	public function installUploadRoute($modUrl, $mod, $controller = false)
-	{
-		if (!$controller) $controller = 'Upload';
+    public function installUploadRoute($modUrl, $mod, $controller = false)
+    {
+        if (!$controller) $controller = 'Upload';
 
-		Route::get($modUrl.'/upload/index/{id?}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@index');
-		Route::post($modUrl.'/upload', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@store');
-		Route::delete($modUrl.'/upload/{postId}/{fileId}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@destroy');
-		Route::get($modUrl.'/upload/edit/{id?}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@edit');
-		Route::put($modUrl.'/upload/update/{id?}', '\Backend\\'.$mod.'\Controllers\\'.$controller.'Controller@update');
-	}
+        Route::get($modUrl . '/upload/index/{id?}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@index');
+        Route::post($modUrl . '/upload', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@store');
+        Route::delete($modUrl . '/upload/{postId}/{fileId}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@destroy');
+        Route::get($modUrl . '/upload/edit/{id?}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@edit');
+        Route::put($modUrl . '/upload/update/{id?}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@update');
+    }
 
-	//Подгружает роутинг из модуля
-	public function loadBackendRoutes($mod = '')
-	{
-		if($mod == 'Backend') $mod = '';
-		if(is_file(base_path('vendor/vkiranananda/backend/'.$mod.'routes.php')))
-			require_once (base_path('vendor/vkiranananda/backend/'.$mod.'routes.php'));
-	}
+    /**
+     * Устанавливаем оснонвые маршруты
+     */
+    public function installBaseRoutes()
+    {
+        require_once(base_path('backend/routes.php'));
+    }
 }

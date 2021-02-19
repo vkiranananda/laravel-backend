@@ -47,7 +47,7 @@ class BackendInstall extends Command
 
     	$this->info("Добавляем в файл с маршрутами routes/web.php строку");
     	$this->line("Backend::installRoutes('Backend');\n");
-    	
+
     	$this->info("Добавляем в файл composer.json в секцию autoload -> psr-4 новое пространство имен");
     	$this->line("\"Backend\\\\\": \"backend/\"");
         $this->info("и выполните команду:");
@@ -73,19 +73,17 @@ class BackendInstall extends Command
    		$this->info("Далее запускаем компиляцию:");
         $this->line("npm run production\n");
 
-        $this->info("ФАЙЛОВАЯ СТРУКТУРА БЭКЕНДА КЭШИРУЕТСЯ, ЕСЛИ ВЫ СДЕЛАЛИ ТАМ КАКИЕ ТО ИЗМЕНЕНИЯ, ОБЯЗАТЕЛЬНО ОЧИСТИТЕ КЭШ");
-        $this->line("php artisan cache:clear\n");
 
     	$this->info("Каталог с модулями " . $this->backendPath . "\n");
 
     	$this->info("Для добавления нового пользователя используйте команду:");
     	$this->line("php artisan backend:user\n");
-    	
+
     	$this->info("Для добавления нового модуля используйте команду:");
     	$this->line("php artisan backend:module\n");
 
     	$this->info("URL админки ". url('content'). "\n");
-    	$this->info("Удачной работы :)\n");    	
+    	$this->info("Удачной работы :)\n");
     }
 
     /**
@@ -105,7 +103,7 @@ class BackendInstall extends Command
     		// Инсталим миграции
     		foreach (File::files($this->installPath . 'migrations') as  $file) {
     			$fileName = basename($file);
-    		
+
     			if (File::exists($this->migrationsPath . $fileName)) {
     				$this->line("Миграция $fileName уже существует, пропускаю.");
     			} else {

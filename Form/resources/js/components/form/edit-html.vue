@@ -23,8 +23,8 @@
         <div v-else>
             <fields-list :fields='tabs[activeTab].fields' :errors="errors" store-name='editForm'></fields-list>
         </div>
-        <send-form store-name='editForm' :url='conf.url' :method='conf.method'></send-form>
 
+        <send-form store-name='editForm' :url='conf.url' :method='conf.method'></send-form>
 
 
         <div v-if="conf.upload !== false && conf.upload != undefined">

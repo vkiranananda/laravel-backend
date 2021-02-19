@@ -1,6 +1,6 @@
 <template>
     <the-mask v-bind="field.attr" :value="field.value" @input="change"
-        :mask="field.mask" class="form-control"  :class='error ? "is-invalid" : "" ' />
+        :mask="field.mask" class="form-control"   :disabled="field.readonly ? true : false" :class='error ? "is-invalid" : "" ' />
 </template>
 
 <script>

@@ -11,5 +11,7 @@
 
 [Модуль - конфигурация](https://github.com/vkiranananda/laravel-backend/wiki/Конфигурация-модуля)
 
+[Базовый контроллер - ResourceController](https://github.com/vkiranananda/laravel-backend/wiki/ResourceController)
+
 [Helpers - функции помощники](https://github.com/vkiranananda/laravel-backend/wiki/Helpers)
 

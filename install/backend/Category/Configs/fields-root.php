@@ -1,7 +1,7 @@
 <?php
 return [
     'list' => [
-        [ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true ],
+        [ 'name' => 'name', 'icon' => 'file', 'link' => 'edit-show', 'sortable' => true ],
         [ 'name' => 'tree', 'label' => '', 'link' => 'category', 'func' => 'indexTreeField', 'attr' => [ 'width' => '50px' ] ],
         [ 'name' => 'url', 'attr' => [ 'width' => '50px' ], 'sortable' => true ],
         [ 'name' => 'mod', 'attr' => [ 'width' => '50px' ], 'sortable' => true ],

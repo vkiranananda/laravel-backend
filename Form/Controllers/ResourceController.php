@@ -25,10 +25,10 @@ class ResourceController extends Controller
     // Имя конфига для полей, если false берется как fields
     protected $fieldsPath = false;
 
-    // Конфиг общий
+    // Основной конфиг  по умолчанию config
     protected $config = [];
 
-    // Конфиг для полей
+    // Конфиг полей по умолчанию fields
     protected $fields = [];
 
     // Переменная где содержатся данные поста
@@ -86,11 +86,17 @@ class ResourceController extends Controller
     // Создаем запись вебка
     public function create()
     {
+        // Проверка на права доступа
+        if (!$this->getUserAccess('create')) abort(403, 'Access deny!');
+
         $this->resourceCombine('create');
 
         // Если стоит опция клонирования получаем запись
         if (($clone = Request::input('clone', false))) {
             $this->post = $this->post->findOrFail($clone);
+
+            // Проверка на права доступа клонируемой записи
+            if (!$this->getUserAccess('read-owner', $this->post['user_id'])) abort(403, 'Access deny!');
         }
 
         $this->dataReturn = [
@@ -113,10 +119,12 @@ class ResourceController extends Controller
         return view($this->config['edit']['template'], $this->dataReturn);
     }
 
-
-    //Сохраняем запись
+    // Сохраняем запись
     public function store()
     {
+        // Проверка на права доступа
+        if (!$this->getUserAccess('create')) abort(403, 'Access deny!');
+
         //Вызываем хук
         $this->resourceCombine('store');
 
@@ -142,6 +150,9 @@ class ResourceController extends Controller
     {
         //Если пост еще не получен, получаем его
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
+        // Проверка на права доступа
+        if (!$this->getUserAccess('edit-owner', $this->post['user_id'])) abort(403, 'Access deny!');
+
         $this->resourceCombine('edit');
 
         $this->dataReturn = [
@@ -168,22 +179,23 @@ class ResourceController extends Controller
         return view($this->config['edit']['template'], $this->dataReturn);
     }
 
-
     //Обновляем запись
     public function update($id)
     {
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
 
+        // Проверка на права доступа
+        if (!$this->getUserAccess('edit-owner', $this->post['user_id'])) abort(403, 'Access deny!');
+
         $this->resourceCombine('update');
 
-        $data = $this->saveData('update');
+        $this->saveData('update');
 
-        //Редиректы
+        // Редиректы
         if (isset($this->config['update-redirect'])) $this->dataReturn['redirect'] = $this->config['update-redirect'];
         else $this->dataReturn = $this->edit($id);
 
-
-        //Вызываем хук
+        // Вызываем хук
         $this->resourceCombineAfter('update');
 
         return $this->dataReturn;
@@ -192,23 +204,40 @@ class ResourceController extends Controller
     //!Показываем запись
     public function show($id)
     {
+        //Если пост еще не получен, получаем его
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
+
+        // Проверка на права доступа
+        if (!$this->getUserAccess('read-owner', $this->post['user_id'])) abort(403, 'Access deny!');
 
         $this->resourceCombine('show');
 
+        $this->dataReturn = [
+            'config' => [
+                'title' => $this->config['lang']['show-title'] ?? null,
+                'viewUrl' => $this->getViewUrl(),
+                'buttons' => $this->formShowButtons(),
+            ],
+            'fields' => [
+                'fields' => $this->fieldsPrep->readFields($this->post, $this->fields['fields']),
+                'tabs' => $this->fields['edit']
+            ]
+        ];
+
         $this->resourceCombineAfter('show');
 
-        return view($this->config['show']['template'], [
-            'config' => $this->config,
-            'fields' => $this->fields,
-            'data' => $this->post
-        ]);
+        if (Request::ajax()) return $this->dataReturn;
+
+        return view($this->config['show']['template'], $this->dataReturn);
     }
 
     //Удаляем запись
     public function destroy($id)
     {
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
+
+        // Проверка на права доступа
+        if (!$this->getUserAccess('destroy-owner', $this->post['user_id'])) abort(403, 'Access deny!');
 
         $this->resourceCombine('destroy');
 
@@ -310,10 +339,11 @@ class ResourceController extends Controller
     }
 
     /**
-     * Генерируем кнопки внизу форму
+     * Генерируем кнопки внизу формы
      * @return array Массив кнопок
      */
-    protected function formEditButtons() {
+    protected function formEditButtons()
+    {
         if (isset($this->config['edit']['buttons'])) {
             $res = [];
             foreach ($this->config['edit']['buttons'] as $item) {
@@ -324,12 +354,41 @@ class ResourceController extends Controller
                     // Удаляем опцию дефаулт что бы не передавать в админку
                     unset($newItem['default']);
                     $res[] = $newItem;
-                }
-                else $res[] = $item;
+                } else $res[] = $item;
             }
             return $res;
         }
         return $this->config['edit']['buttons-default'];
+    }
+
+    /**
+     * Генерируем кнопки внизу формы
+     * @return array Массив кнопок
+     */
+    protected function formShowButtons()
+    {
+        // Если доступ есть добавляем ссылку в кнопку редактирования
+        if ($this->getUserAccess('edit-owner', $this->post['user_id'])) {
+            $this->config['show']['buttons-default']['edit']['url'] = action($this->config['controller-name'] . '@edit', $this->post['id']);
+        } else {
+            // Иначе удаляем кнопку
+            unset($this->config['show']['buttons-default']['edit']);
+        }
+        if (isset($this->config['show']['buttons'])) {
+            $res = [];
+            foreach ($this->config['show']['buttons'] as $item) {
+                // Если есть опция default, то берем значения из дефолтного
+                if (isset($item['default'])) {
+                    // объединяем массивы
+                    $newItem = array_replace($this->config['show']['buttons-default'][$item['default']], $item);
+                    // Удаляем опцию дефаулт что бы не передавать в админку
+                    unset($newItem['default']);
+                    $res[] = $newItem;
+                } else $res[] = $item;
+            }
+            return $res;
+        }
+        return $this->config['show']['buttons-default'];
     }
 
     // Функция специально  для перегрузки, когда нужно выполнять различне групповые операции перед
@@ -338,7 +397,7 @@ class ResourceController extends Controller
     {
     }
 
-    //Тоже но после сохранения записи. Удобно кэши чистить и прочее..
+    // Тоже но в конце функции перед return. Удобно кэши чистить и прочее..
     protected function resourceCombineAfter($type)
     {
     }
@@ -347,6 +406,20 @@ class ResourceController extends Controller
     protected function preSaveData($type)
     {
     }
+
+    /**
+     * Функция заглушка для перегрузки на проверку прав доступа.
+     * @param $access - тип доступа edit-all, edit-owner, read-all, read-owner, create, destroy-all, destroy-owner
+     * @param $userId - Если указан будет учавствовать в типах read-owner, edit-owner, delete-owner, если не указан
+     * вернет true если разрешена хоть какая то запись.
+     * @param $accessKey - Если нужно переопределить ключ
+     * @return bool - Вернет true или false в зависимости от типа запроса.
+     */
+    protected function getUserAccess($access, $userId = false, $accessKey = false)
+    {
+        return true;
+    }
+
 
     //Функция возвращает урл поста
     protected function getViewUrl()
