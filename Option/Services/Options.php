@@ -3,7 +3,7 @@
 namespace Backend\Root\Option\Services;
 
 use Backend\Root\Option\Models\Option;
-use Backend\Root\Core\Services\Backend;
+use Backend;
 use Illuminate\Support\Arr;
 use Route;
 
