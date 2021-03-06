@@ -340,7 +340,7 @@ trait Index
                 }
 
                 // По умолчанию добавляем %% для запроса
-                if (isset($field['exact-match'])) unset($field['exact-match']);
+                if (isset($field['exact-match']) && $field['exact-match']) unset($field['exact-match']);
                 else $req = '%' . $req . '%';
 
                 //Выборка по группе полей, если в каком то поле есть то данные выведутся
