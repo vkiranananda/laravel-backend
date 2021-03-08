@@ -22,6 +22,7 @@ trait Index
             } // Иначе выходим.
             else abort(403, 'Access deny!');
         }
+
         $this->resourceCombine('index');
 
         //Поиск

@@ -29,7 +29,7 @@ class ResourceController extends Controller
     protected $config = [];
 
     // Конфиг полей по умолчанию fields
-    protected $fields = [];
+    protected $fields = false;
 
     // Переменная где содержатся данные поста
     protected $post = null;
@@ -55,15 +55,12 @@ class ResourceController extends Controller
 
         // Получаем пути до конфигов
         if (!$this->configPath) $this->configPath = $moduleName . "::config";
-        if (!$this->fieldsPath) $this->fieldsPath = $moduleName . "::fields";
 
         // Получаем конфиги
         $this->config = array_replace_recursive(
             GetConfig::backend('Form::config', true),
             GetConfig::backend($this->configPath)
         );
-
-        $this->fields = GetConfig::backend($this->fieldsPath);
 
         // Получаем путь до модуля.
         $this->config['base-namespace'] = '\\' . $baseNamespace . '\\';
@@ -79,8 +76,19 @@ class ResourceController extends Controller
 
         $this->post = new $model();
 
+        $this->loadFields();
+
         $this->fieldsPrep = new \Backend\Root\Form\Services\Fields();
 
+    }
+    
+    /**
+     * Получаем массив fields
+     */
+    protected function loadFields()
+    {
+        if (!$this->fieldsPath) $this->fieldsPath = $this->config['module-name'] . "::fields";
+        $this->fields = GetConfig::backend($this->fieldsPath);
     }
 
     // Создаем запись вебка
@@ -119,18 +127,28 @@ class ResourceController extends Controller
         return view($this->config['edit']['template'], $this->dataReturn);
     }
 
-    // Сохраняем запись
+    /**
+     * Сохраняем запись
+     * @return array
+     */
     public function store()
     {
         // Проверка на права доступа
         if (!$this->getUserAccess('create')) abort(403, 'Access deny!');
 
-        //Вызываем хук
         $this->resourceCombine('store');
-
         $this->saveData('store');
+        $this->storeRedirect();
+        $this->resourceCombineAfter('store');
 
-        // Обработка редиректов
+        return $this->dataReturn;
+    }
+
+    /**
+     * Обработка редиректов при создании записи.
+     */
+    public function storeRedirect()
+    {
         if (isset($this->config['store-redirect'])) {
             $this->dataReturn['redirect'] = $this->config['store-redirect'];
         } else {
@@ -138,11 +156,6 @@ class ResourceController extends Controller
             $this->dataReturn = $this->edit($this->post['id']);
             $this->dataReturn['replaceUrl'] = action($this->config['controller-name'] . '@edit', $this->post['id']);
         }
-
-        // Вызываем хук
-        $this->resourceCombineAfter('store');
-
-        return $this->dataReturn;
     }
 
     //Редактируем запись вебка
@@ -209,6 +222,8 @@ class ResourceController extends Controller
 
         // Проверка на права доступа
         if (!$this->getUserAccess('read-owner', $this->post['user_id'])) abort(403, 'Access deny!');
+
+        $this->getFields();
 
         $this->resourceCombine('show');
 
