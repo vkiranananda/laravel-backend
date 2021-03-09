@@ -73,7 +73,7 @@ class Fields
             //Обрабатываем конкретное поле устанавливая нужные значния
             $field = $this->prepEditField($field, $post, $arrayData);
         }
-
+        // dd($fields['blocks']['fields']['blocks']);
         return $fields;
     }
 
@@ -98,7 +98,7 @@ class Fields
     {
         if ($none) return '';
 
-        //Проверяем откуда брать значние. Если условие выполняеся берем из array_data
+        // Проверяем откуда брать значние. Если условие выполняеся берем из array_data
         if (isset($field['field-save'])
             && ($field['field-save'] == 'array' || $field['field-save'] == 'relation')) {
             if (isset($arrayData[$field['name']])) return $arrayData[$field['name']];
@@ -114,17 +114,19 @@ class Fields
     {
         // group fields
         if ($field['type'] == 'group') {
-
             // Подгружаем поля
             if (isset($field['load-from']))
                 $field['fields'] = GetConfig::backend($field['load-from']);
 
             unset($field['load-from']);
 
+
             // Присваиваем значение value. Бере
             if (isset($field['field-save'])) {
                 $value = (isset($arrayData[$field['name']])) ? $arrayData[$field['name']] : [];
             } else $value = $arrayData;
+
+
 
             // Если readonly то присваиваем это всем влоежнным полям
             if (isset($field['readonly']) && $field['readonly']) $this->setFieldsAttr($field['fields'], 'readonly', true);
@@ -143,19 +145,23 @@ class Fields
                     $groupField['field-save'] = 'array';
                 }
 
-                //Выставляем значние, берем из value текущего поля
+               // if ($field['name'] == 'conf-multi-col') dd($field, $groupField, $value,  $this->getFieldValue($groupField, $post, $value, $none), $none);
+
+                // Выставляем значние, берем из value текущего поля
                 $groupField['value'] = $this->getFieldValue($groupField, $post, $value, $none);
+
 
                 //Делаем дополнительные обработки по полям.
                 $groupField = $this->prepEditField($groupField, $post, $value, $none);
             }
-
             unset($field['value']);
         } // для повторителей.
         elseif ($field['type'] == 'repeated') {
 
             $field['field-save'] = 'array';
             $value = $this->getFieldValue($field, $post, $arrayData, $none);
+
+           // if($field['name'] == 'blocks') dd($field);
 
             // dd($value);
             // Если значение не установлено, создаем первую запись
@@ -183,6 +189,7 @@ class Fields
                     // Если поле не имеет name и type пропускаем
                     if (!isset($oneRepField['name']) || !isset($oneRepField['type'])) continue;
 
+                    // if ($field['name'] == 'conf-multi-col')
                     // Полюбому значения в массиве
                     $oneRepField['field-save'] = 'array';
 
@@ -200,9 +207,12 @@ class Fields
                 // Если поле не имеет name и type пропускаем
                 if (!isset($baseField['name']) || !isset($baseField['type'])) continue;
 
+                $baseField['field-save'] = 'array';
+
                 if (!isset($baseField['value'])) $baseField['value'] = '';
 
-                $baseField = $this->prepEditField($baseField, $post, [], true);
+                // Сделал правку тут в конце было true
+                $baseField = $this->prepEditField($baseField, $post, []);
             }
         } else {
             $field['value'] = $this->initField($field)->edit($this->getFieldValue($field, $post, $arrayData, $none));
