@@ -81,7 +81,7 @@ class ResourceController extends Controller
         $this->fieldsPrep = new \Backend\Root\Form\Services\Fields();
 
     }
-    
+
     /**
      * Получаем массив fields
      */
@@ -222,8 +222,6 @@ class ResourceController extends Controller
 
         // Проверка на права доступа
         if (!$this->getUserAccess('read-owner', $this->post['user_id'])) abort(403, 'Access deny!');
-
-        $this->getFields();
 
         $this->resourceCombine('show');
 
