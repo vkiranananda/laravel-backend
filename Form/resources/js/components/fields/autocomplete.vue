@@ -1,3 +1,7 @@
+<!--
+clear-if-select
+
+-->
 <template>
     <div class="autocomplete">
         <input
@@ -19,7 +23,7 @@
         <div v-show="showResults" class="results text-secondary rounded-bottom" ref="results">
             <div v-for="(el, key) in searchData" :key="key" class="item p-2" :class="focus.value == el.value ? 'bg-light' : ''"
                  @mouseover="mouseover(el)"
-                 @click="select"
+                 @click="selectByClick(el)"
             >
                 {{ el.label }}
             </div>
@@ -37,7 +41,7 @@
                 // Открыт ли список
                 showResults: false,
                 resultsUserClose: false,
-                // Выставлем true когда не нужно делать запрос на сервер при спене value
+                // Выставлем true когда не нужно делать запрос на сервер при смене value
                 closeResults: false,
                 value: this.field.value,
                 timerId: 0,
@@ -115,6 +119,12 @@
                         this.value = this.focus.value
                     }
                 }
+            },
+            // Срабатывает при выборе элемента мышкой
+            selectByClick: function (el) {
+                this.$emit('select', el)
+                this.select()
+                if (this.field['clear-if-select']) this.value = ''
             },
             // Поиск значения внутри массива
             searchItem: function (search) {

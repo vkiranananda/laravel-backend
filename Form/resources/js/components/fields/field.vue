@@ -22,6 +22,7 @@
     import FormFieldEditor from './editor.vue'
     import FormFieldMarkdown from './markdown.vue'
     import FormFieldAutocomplete from './autocomplete.vue'
+    import FormFieldSelectSearch from './select-search.vue'
 
 
     const cloneDeep = require('clone-deep')
@@ -52,7 +53,8 @@
             FormFieldMask,
             FormFieldEditor,
             FormFieldMarkdown,
-            FormFieldAutocomplete
+            FormFieldAutocomplete,
+            FormFieldSelectSearch
         },
         computed: {
             component() {
