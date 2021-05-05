@@ -1,7 +1,7 @@
 <template>
     <div class="field-block d-flex align-items-center">
         <div class="field">
-            <component v-if="component" :is="'form-field-'+component" :field="fieldChanged" :error='error'
+            <component v-if="component" :is="'form-field-'+component" :field="fieldChanged" :fields="fields" :error='error'
                        v-on:change="$emit('change', $event)"></component>
         </div>
         <v-icon v-if="field.protected === true && blocked" name="key" class="back" @click="unblock"/>
@@ -30,6 +30,7 @@
     export default {
         props: {
             field: {},
+            fields: {},
             error: {
                 default: '',
                 type: String

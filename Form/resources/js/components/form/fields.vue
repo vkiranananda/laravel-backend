@@ -29,7 +29,7 @@
             </component>
 
             <field-wrapper v-else :error="currentErrors[field.name]" :field="field" @back="onBack(field.name)">
-                <print-field :field='field' :error='currentErrors[field.name]'
+                <print-field :field='field' :fields="fields" :error='currentErrors[field.name]'
                              v-on:change="onChange($event, field.name)"></print-field>
             </field-wrapper>
         </div>
@@ -82,7 +82,7 @@
                     let changed = true
 
                     // Возвращается более сложный объект
-                    if (value.value != undefined) {
+                    if (value && value.value != undefined) {
                         // Не сохраняем это изменение
                         if (value.changed === false) changed = false
                         value = value.value

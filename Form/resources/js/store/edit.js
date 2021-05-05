@@ -40,11 +40,6 @@ export default {
         //Устанавливаем свойство в поле property
         setFieldProp(state, data) {
             Vue.set(data.field, data.property, data.value)
-            // if (data.property == 'value') {
-            //     if (data.field.autosave == true && data.field.type == 'select') {
-            //         window.bus.$emit('FormSave')
-            //     }
-            // }
         },
         //Устанавливаем уникальный идентификатор для некоторых полей. Нужно для ретитед полей, что бы обозначить уникальность поля с одним именем
         setUniqueKey(state) {
@@ -128,6 +123,10 @@ export default {
             }
         },
 
+        // Устанавливаем любое свойство кроме value
+        setFieldPropByField({commit, state}, data) {
+            commit('setFieldProp', {field: data.field, property: data.property, value: data.value});
+        },
         // Возвращаем первоначальное значение
         setFieldBack({commit, state}, data) {
             var field = data.fields[data.name]

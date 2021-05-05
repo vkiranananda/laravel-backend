@@ -16,7 +16,7 @@ clear-if-select
             autocapitalize="off"
             spellcheck="false"
             :readonly="field.readonly"
-            @keyup.enter="select"
+            @keyup.enter="selectByEnter"
             @keyup.down="down"
             @keyup.up.prevent.stop="up($event)"
         >
@@ -125,6 +125,10 @@ clear-if-select
                 this.$emit('select', el)
                 this.select()
                 if (this.field['clear-if-select']) this.value = ''
+            },
+            // Срабатывает при выборе элемента по нажатию enter
+            selectByEnter: function (el) {
+                this.selectByClick(this.focus)
             },
             // Поиск значения внутри массива
             searchItem: function (search) {

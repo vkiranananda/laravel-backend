@@ -25,6 +25,7 @@ class Fields
         'checkbox' => '\Backend\Root\Form\Fields\SelectField',
         'radio' => '\Backend\Root\Form\Fields\SelectField',
         'multiselect' => '\Backend\Root\Form\Fields\SelectField',
+        'select-search' => '\Backend\Root\Form\Fields\SelectSearchField',
     ];
 
     public $request = [];
