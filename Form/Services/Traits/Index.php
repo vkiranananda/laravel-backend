@@ -278,13 +278,13 @@ trait Index
 
         //Если есть поля для поиска
         if (isset($this->fields['search'])) {
-            //Перебираем
+            // Перебираем
             foreach ($this->fields['search'] as $key => &$field) {
-                //Проверяем на валидность
+                // Проверяем на валидность
                 if (!isset($field['name']) || !isset($field['fields']) || !is_array($field['fields'])) continue;
 
 
-                //Копируем данные поля из основных полей
+                // Копируем данные поля из основных полей
                 if (isset($field['field-from'])) {
                     // Если поле не существует, удаляем текущее поле из поиска
                     if (!isset($this->fields['fields'][$field['field-from']])) {
@@ -298,7 +298,10 @@ trait Index
 
                 $field['value'] = Request::input($field['name'], '');
 
-                //Добавляем пустой элемент в начало.
+                // Обработка запроса будет где то в другом месте
+                if (isset($field['query']) && $field['query'] == 'none') continue;
+
+                // Добавляем пустой элемент в начало.
                 if (isset($field['options-empty']) && isset($field['options']) && is_array($field['options'])) {
                     array_unshift($field['options'], ['value' => '', 'label' => $field['options-empty']]);
                 }
@@ -344,7 +347,7 @@ trait Index
                 if (isset($field['exact-match']) && $field['exact-match']) unset($field['exact-match']);
                 else $req = '%' . $req . '%';
 
-                //Выборка по группе полей, если в каком то поле есть то данные выведутся
+                // Выборка по группе полей, если в каком то поле есть то данные выведутся
                 $this->post = $this->post->where(function ($query)
                 use (&$field, $req, $typeComparison, &$searchReq) {
                     $first = true;

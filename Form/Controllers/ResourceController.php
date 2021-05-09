@@ -138,8 +138,8 @@ class ResourceController extends Controller
 
         $this->resourceCombine('store');
         $this->saveData('store');
-        $this->storeRedirect();
         $this->resourceCombineAfter('store');
+        $this->storeRedirect();
 
         return $this->dataReturn;
     }
@@ -149,9 +149,10 @@ class ResourceController extends Controller
      */
     public function storeRedirect()
     {
-        if (isset($this->config['store-redirect'])) {
-            $this->dataReturn['redirect'] = $this->config['store-redirect'];
-        } else {
+        $redirect = $this->config['store-redirect'] ?? $this->config['redirect'] ?? false;
+
+        if ($redirect) $this->dataReturn['redirect'] = $redirect;
+        else {
             // Выставляем дополнительные параметры.
             $this->dataReturn = $this->edit($this->post['id']);
             $this->dataReturn['replaceUrl'] = action($this->config['controller-name'] . '@edit', $this->post['id']);
@@ -204,20 +205,29 @@ class ResourceController extends Controller
 
         $this->saveData('update');
 
-        // Редиректы
-        if (isset($this->config['update-redirect'])) $this->dataReturn['redirect'] = $this->config['update-redirect'];
-        else $this->dataReturn = $this->edit($id);
-
         // Вызываем хук
         $this->resourceCombineAfter('update');
 
+        $this->updateRedirect();
+
         return $this->dataReturn;
+    }
+
+    /**
+     * Обработка редиректов при обновлении записи.
+     */
+    public function updateRedirect()
+    {
+        $redirect = $this->config['update-redirect'] ?? $this->config['redirect'] ?? false;
+
+        if ($redirect) $this->dataReturn['redirect'] = $redirect;
+        else $this->dataReturn = $this->edit($this->post['id']);
     }
 
     //!Показываем запись
     public function show($id)
     {
-        //Если пост еще не получен, получаем его
+        // Если пост еще не получен, получаем его
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
 
         // Проверка на права доступа
