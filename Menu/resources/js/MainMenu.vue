@@ -27,8 +27,8 @@
                 if (item.type == 'method' && item.name != undefined) {
                     this.$set(this.updatedItems, item.name, item.items)
                 }
-
             }
+
             this.$bus.$on('MainMenuUpdate', (data) => {
                 if (data.name != undefined && data.items != undefined) {
                     this.$set(this.updatedItems, data.name, data.items)
@@ -58,7 +58,7 @@
         }
 
         li {
-            a {
+            a, {
                 -webkit-font-smoothing: antialiased;
                 display: block;
                 padding: 4px 10px;
@@ -67,6 +67,11 @@
             a:hover {
                 background-color: black;
                 text-decoration: none;
+            }
+            .title {
+                padding: 8px 10px 0;
+                display: inline-block;
+                font-size: 1.25rem;
             }
         }
 
