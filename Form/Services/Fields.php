@@ -4,6 +4,7 @@ namespace Backend\Root\Form\Services;
 
 use GetConfig;
 use Helpers;
+use Illuminate\Support\Facades\Log;
 use Request;
 use Validator;
 
@@ -431,6 +432,9 @@ class Fields
         $res = false;
 
         foreach ($show as $key => $showBlock) {
+            //Если поля проверочного нет, выводим отказ
+            if (!isset($data[$showBlock['field']])) return false;
+            
             if ($key != 0) { //не первая запись
                 //Оператор &&, если предыдущее условие ошибка тогда сл тоже ошибка, проверку не делаем
                 if ($showBlock['operator'] == '&&' && $res == false) continue;
