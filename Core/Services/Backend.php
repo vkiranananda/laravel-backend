@@ -14,8 +14,12 @@ class Backend
 
     public function init()
     {
+        // Проверка на установленный бэкенд
         $config = GetConfig::backend('backend');
-
+        if (count($config) == 0) {
+            echo "Бэкенд не установлен\n\n";
+            return;
+        }
         foreach ($config['views'] as $view) {
             $path = (isset($view['root']) && $view['root'] === true)
                 ? base_path('vendor/vkiranananda/backend/') : base_path('backend/');
@@ -62,7 +66,6 @@ class Backend
                     break;
             }
         }
-
         if ($resource) $this->installResourceRoute($modUrl, $mod);
     }
 

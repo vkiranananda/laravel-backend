@@ -1,7 +1,9 @@
 <?php
+
 namespace Backend\Root\Core\Services;
 
-class GetConfig {
+class GetConfig
+{
     private $loadedConfigs = [];
 
     //Получаем конфиг
@@ -10,7 +12,7 @@ class GetConfig {
 
     public function &backend($conf, $root = false)
     {
-        $type = ($root) ? 'root' : 'backend' ;
+        $type = ($root) ? 'root' : 'backend';
         // Если конфиг уже загружен возвращаем его
         if (isset($this->loadedConfigs[$type][$conf])) return $this->loadedConfigs[$type][$conf];
 
@@ -18,19 +20,27 @@ class GetConfig {
         $pathRoot = base_path('vendor/vkiranananda/backend/');
         $pathExt = base_path('backend/');
 
-        $path = (strrpos($config, '::') === false) ? "Configs/".$config.".php" :  str_replace('::', '/Configs/', $config).".php";
+        $path = (strrpos($config, '::') === false) ? "Configs/" . $config . ".php" : str_replace('::', '/Configs/', $config) . ".php";
 
-        $this->loadedConfigs[$type][$conf] = ($root == true) ? include ($pathRoot.$path) : include ($pathExt.$path);
+        $path = ($root == true) ? $pathRoot . $path : $pathExt . $path;
+
+        if (file_exists($path)) {
+            $this->loadedConfigs[$type][$conf] = include $path;
+        } else {
+            echo "Конфиг: " . $path . " не найден\n";
+            $this->loadedConfigs[$type][$conf] = [];
+        }
 
         return $this->loadedConfigs[$type][$conf];
+
     }
 
     public function app($conf)
     {
-        if (isset($this->loadedConfigs['app'][$conf]))return $this->loadedConfigs['app'][$conf];
+        if (isset($this->loadedConfigs['app'][$conf])) return $this->loadedConfigs['app'][$conf];
 
-        $file = base_path('app/Configs/'.$conf.'.php');
-        $this->loadedConfigs['app'][$conf] = (is_file($file)) ? include ($file) : [];
+        $file = base_path('app/Configs/' . $conf . '.php');
+        $this->loadedConfigs['app'][$conf] = (is_file($file)) ? include($file) : [];
 
         return $this->loadedConfigs['app'][$conf];
     }

@@ -46,7 +46,7 @@ class BackendInstall extends Command
     	$this->info("Дальнейшие инструкции\n");
 
     	$this->info("Добавляем в файл с маршрутами routes/web.php строку");
-    	$this->line("Backend::installRoutes('Backend');\n");
+    	$this->line("Backend::installBaseRoutes();\n");
 
     	$this->info("Добавляем в файл composer.json в секцию autoload -> psr-4 новое пространство имен");
     	$this->line("\"Backend\\\\\": \"backend/\"");
@@ -66,9 +66,9 @@ class BackendInstall extends Command
 
 
         $this->info("Сборка фронтенда:");
-        $this->line("npm install jquery popper.js bootstrap trumbowyg vue-trumbowyg lodash.clonedeep lodash.size vue vuex vue-multiselect vue-the-mask vue2-datepicker vuedraggable fecha @primer/octicons vue-simplemde simplemde-theme-base\n");
+        $this->line("npm install jquery @popperjs/core bootstrap trumbowyg vue-trumbowyg lodash.clonedeep lodash.size vue vuex vue-multiselect vue-the-mask vue2-datepicker vuedraggable fecha @primer/octicons vue-simplemde simplemde-theme-base\n");
         $this->info("В файл webpack.mix.js добавялем строки:");
-        $this->line("mix.js('vendor/vkiranananda/backend/resources/js/backend.js', 'public/backend/js/admin.js').version();"
+        $this->line("mix.js('vendor/vkiranananda/backend/resources/js/backend.js', 'public/backend/js/admin.js').vue({ version: 2 }).version();"
         	."mix.sass('vendor/vkiranananda/backend/resources/sass/backend.scss', 'public/backend/css/backend.css').options({processCssUrls: false}).version();\n");
    		$this->info("Далее запускаем компиляцию:");
         $this->line("npm run production\n");
