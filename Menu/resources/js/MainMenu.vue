@@ -19,24 +19,28 @@
 
 <script>
     import MainMenuItem from './MainMenuItem.vue'
+    import mitt from 'mitt'
+
+    const emitter = mitt()
 
     export default {
         components: {MainMenuItem},
         created() {
+            console.log(this.menu)
             for (let item of this.menu) {
                 if (item.type == 'method' && item.name != undefined) {
                     this.$set(this.updatedItems, item.name, item.items)
                 }
             }
 
-            this.$bus.$on('MainMenuUpdate', (data) => {
+            emitter.on('MainMenuUpdate', (data) => {
                 if (data.name != undefined && data.items != undefined) {
                     this.$set(this.updatedItems, data.name, data.items)
                 }
             })
         },
         beforeDestroy() {
-            this.$bus.$off('MainMenuUpdate')
+            emitter.off('MainMenuUpdate')
         },
         props: ['menu'],
         data() {
@@ -62,11 +66,12 @@
                 -webkit-font-smoothing: antialiased;
                 display: block;
                 padding: 4px 10px;
+                text-decoration: none;
             }
 
             a:hover {
                 background-color: black;
-                text-decoration: none;
+                //text-decoration: none;
             }
             .title {
                 padding: 8px 10px 0;
@@ -77,6 +82,7 @@
 
         hr {
             margin: 10px 10px;
+            border-top: 1px solid gray;
         }
     }
 </style>

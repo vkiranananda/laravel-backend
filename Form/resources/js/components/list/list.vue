@@ -2,7 +2,7 @@
     <div class="list">
         <div v-if="items.data.length > 0">
             <div class="row mb-3">
-                <div class="col-auto mr-auto"></div>
+                <div class="col-auto me-auto"></div>
                 <div class="col-auto">
                     <list-paginate :data="items" @change="pageChange"></list-paginate>
                 </div>
@@ -27,7 +27,7 @@
                     <tbody>
                     <tr v-for="item in items.data" :class="item['_row_class']">
                         <td v-for="field in fields" v-bind="field.attr">
-                            <v-icon :name="field.icon" class="mr-2" v-if="field.icon"/>
+                            <v-icon :name="field.icon" class="me-2" v-if="field.icon"/>
                             <a v-if="field.link" :href="item._links[field.link]">{{ item[field.name] }}</a>
                             <template v-else>
                                 <span v-if="field.html === true" v-html="item[field.name]"></span>
@@ -36,29 +36,33 @@
                         </td>
 
                         <td class="menu-td" v-if="itemMenu">
-                            <div class="dropdown" >
+                            <div class="dropdown">
                                 <button class="btn btn-secondary" type="button" id="dropdownMenuButton"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        data-bs-toggle="dropdown" aria-expanded="false">
                                     <v-icon name="grabber" width="10"/>
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <template v-for="elMenu in itemMenu">
-                                        <a v-if="item._links[elMenu.link] != undefined"
-                                           class="dropdown-item"
-                                           v-on:click.stop.prevent="itemActionClick(item._links[elMenu.link], elMenu)">
-                                            <v-icon :name="elMenu.icon" class="mr-2" v-if="elMenu.icon"/>
-                                            {{ elMenu.label }}
-                                        </a>
+                                        <li>
+                                            <a v-if="item._links[elMenu.link] != undefined"
+                                               class="dropdown-item"
+                                               v-on:click.stop.prevent="itemActionClick(item._links[elMenu.link], elMenu)">
+                                                <v-icon :name="elMenu.icon" class="me-2" v-if="elMenu.icon"/>
+                                                {{ elMenu.label }}
+                                            </a>
+                                        </li>
                                     </template>
-                                </div>
+                                </ul>
                             </div>
+
+
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
             <div class="row">
-                <div class="col-auto mr-auto"></div>
+                <div class="col-auto me-auto"></div>
                 <div class="col-auto">
                     <list-paginate :data="items" @change="pageChange"></list-paginate>
                 </div>
@@ -70,6 +74,9 @@
 
 <script>
 import paginate from './paginate.vue'
+import mitt from 'mitt'
+
+const emitter = mitt()
 
 export default {
     props: ['items', 'fields', 'itemMenu'],
@@ -78,7 +85,7 @@ export default {
     },
     methods: {
         pageChange: function (value) {
-            this.$emit('change', {currentPage: value})
+            emitter.emit('change', {currentPage: value})
         },
         sortable: function (key) {
             let field = this.fields[key], orderType;
@@ -114,7 +121,7 @@ export default {
                     this.$emit('change', {destroy: 'finished'});
                     //Вызываем хуки
                     if (response.data.hook != undefined && response.data.hook.name) {
-                        this.$bus.$emit(response.data.hook.name, response.data.hook.data)
+                        emitter.emit(response.data.hook.name, response.data.hook.data)
                     }
                 })
                 .catch((error) => {
@@ -191,6 +198,9 @@ export default {
     }
 
     tr {
+        a {
+            text-decoration: none;
+        }
         .dropdown {
             display: none;
 

@@ -1,18 +1,19 @@
 require('./bootstrap');
 
-window.Vue = require('vue');
 
-import Vuex from 'vuex';
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex)
 
 import editForm from '../../Form/resources/js/store/edit';
-// Подючаем быстрые фонкции для работы с алертами
-import alert from './libs/alert'
+// Подключаем быстрые функции для работы с алертами
+import { vAlert, vConfirm} from './libs/alert'
 
 const store = new Vuex.Store({
     modules: {
         editForm,
     }
-});
+})
 
 // Обновляет страницу при history.back()
 // Не работает в сафари
@@ -26,7 +27,6 @@ window.onpopstate = (event) => {
 
 //module.exports = {store: store}
 
-Vue.prototype.$bus = window.bus = new Vue()
 
 Vue.prototype.store = store;
 
@@ -50,4 +50,7 @@ require('../../../../../backend/resources/js/backend.js');
 
 const backend = new Vue({
     el: '#backend-body',
+    // store
 });
+
+window.backend = backend

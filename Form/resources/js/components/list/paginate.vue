@@ -1,6 +1,6 @@
 <template>
 	<div class="form-inline pagination">
-        <span class="mr-2">
+        <span class="me-2">
             {{data.data.length}} {{declOfNum(data.data.length, ['элемент', 'элемента', 'элементов'])}}<span v-if="data.lastPage > 1"> из {{data.total}} </span>
         </span>
         <template v-if="data.lastPage > 1">     

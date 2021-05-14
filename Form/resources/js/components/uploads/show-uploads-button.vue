@@ -5,13 +5,17 @@
 </template>
 
 <script>
-    export default {
-        props: [ 'config' ],
+import mitt from 'mitt'
 
-        methods: {
-            show() { 
-                this.$bus.$emit('UploadFilesModalShow', this.config) 
-            },
-        }
+const emitter = mitt()
+
+export default {
+    props: ['config'],
+
+    methods: {
+        show() {
+            emitter.emit('UploadFilesModalShow', this.config)
+        },
     }
+}
 </script>

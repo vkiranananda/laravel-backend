@@ -1,6 +1,6 @@
 <template>
     <modal id='UploadEditModal' title="Свойства файла" :loading="loading" size="large">
-        <a :href="file.orig" target="_blank"><img :src="file.thumb" alt="" align="left" class="mr-3 mb-3"></a>
+        <a :href="file.orig" target="_blank"><img :src="file.thumb" alt="" align="left" class="me-3 mb-3"></a>
 
         <strong>{{ file.orig_name}}</strong><br>
         <div class="text-muted mt-1 mb-2">
@@ -18,7 +18,7 @@
         <field-wrapper v-for="(field, key) in file.fields" :field="field" :key="key">
             <print-field :field='field' v-on:change="onChange($event, key)"></print-field>
         </field-wrapper>
-        
+
         <save-buttons modal="#UploadEditModal" :status="status" v-on:submit="submit"></save-buttons>
     </modal>
 </template>
@@ -27,10 +27,14 @@
     import printField from '../fields/field.vue'
     import fieldWrapper from '../fields/wrapper.vue'
     import saveButtons from '../form/save-buttons'
+    import mitt from 'mitt'
+
+    const emitter = mitt()
+
     export default {
         //Создаем слушателей событий
-        created () { this.$bus.$on('UploadFilesEditModalShow', this.showModal) },
-        beforeDestroy() { this.$bus.$off('UploadFilesEditModalShow') },
+        created () { emitter.on('UploadFilesEditModalShow', this.showModal) },
+        beforeDestroy() { emitter.off('UploadFilesEditModalShow', this.showModal) },
 
         components: {
             'print-field': printField,

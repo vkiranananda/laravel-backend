@@ -23,11 +23,15 @@
 <script>
     import draggable from 'vuedraggable'
     import saveButtons from '../form/save-buttons'
+    import mitt from 'mitt'
+
+    const emitter = mitt()
+
     export default {
         created () {
-            this.$bus.$on('ListSortableShow', this.showModal)
+            emitter.on('ListSortableShow', this.showModal)
         },
-        beforeDestroy() { this.$bus.$off('ListSortableShow') },
+        beforeDestroy() { emitter.off('ListSortableShow', this.showModal) },
         components: { 
             draggable,
             'save-buttons': saveButtons
@@ -72,7 +76,7 @@
                     
                     // Вызываем хуки
                     if (response.data.hook != undefined && response.data.hook.name) {
-                        this.$bus.$emit(response.data.hook.name, response.data.hook.data)
+                        emitter.emit(response.data.hook.name, response.data.hook.data)
                     }
 
                 }).catch( (error) => { console.log(error.response) });

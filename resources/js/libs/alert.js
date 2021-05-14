@@ -1,7 +1,11 @@
-exports.vAlert = function (msg, func = undefined, btns = undefined) {
-    window.bus.$emit('AlertModalShow', {type: 'alert', msg, func, btns})
+import mitt from 'mitt'
+
+const emitter = mitt()
+
+export function vAlert(msg, func = undefined, btns = undefined) {
+    emitter.emit('AlertModalShow', {type: 'alert', msg, func, btns})
 }
 
-exports.vConfirm = function (msg, func = undefined, btns = undefined) {
-    window.bus.$emit('AlertModalShow', {type: 'confurm', msg, func, btns})
+export function vConfirm (msg, func = undefined, btns = undefined) {
+    emitter.emit('AlertModalShow', {type: 'confurm', msg, func, btns})
 }

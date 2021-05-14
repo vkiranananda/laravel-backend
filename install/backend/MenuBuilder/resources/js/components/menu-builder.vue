@@ -25,7 +25,7 @@
 							</small>
 						</div>
 						<div class="col-12 pt-3">
-							<button class="btn btn-outline-primary mr-2" @click="add">
+							<button class="btn btn-outline-primary me-2" @click="add">
 								<template v-if="create">Добавить</template>
 								<template v-else="create">Изменить</template>
 							</button>

@@ -2,7 +2,7 @@
     <modal id="UploadModal" size="large" title="Медиа файлы">
         <upload-file  ref="uploadedFiles" selectable="false" :url="url" :config="config" :method="method" @select="setSelectedFiles"></upload-file>
         <div slot="footer">
-            <label v-if="config.fieldType == 'mce' || config.showLink" class="form-check-label mr-5 link-img"><input type="checkbox" class="form-check-input" v-model="origLink"> Создать ссылку на оригинал </label>
+            <label v-if="config.fieldType == 'mce' || config.showLink" class="form-check-label me-5 link-img"><input type="checkbox" class="form-check-input" v-model="origLink"> Создать ссылку на оригинал </label>
             <button type="button" class="btn btn-primary" @click="insertFiles()">Вставить</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
         </div>
@@ -11,30 +11,33 @@
 
 <script>
     import uploadFile from './upload-file'
+    import mitt from 'mitt'
+
+    const emitter = mitt()
 
     export default {
         //Создаем слушателей событий
-        created () { this.$bus.$on('UploadFilesModalShow', this.showModal) },
-        beforeDestroy() { this.$bus.$off('UploadFilesModalShow') },
+        created () { emitter.on('UploadFilesModalShow', this.showModal) },
+        beforeDestroy() { emitter.off('UploadFilesModalShow', this.showModal) },
 
         props: [ 'url' ],
         components: { 'upload-file': uploadFile },
-       
-        data() { 
-            return { 
-                config: {}, 
-                origLink: false, 
-                lastReturn: false, 
+
+        data() {
+            return {
+                config: {},
+                origLink: false,
+                lastReturn: false,
                 selectedFiles: [],
-                method: '' 
-            } 
+                method: ''
+            }
         },
 
         methods: {
             // Показываем окно
             showModal (config = {}) {
                 this.config = config
-               
+
                 // Снимаем выделения если калбэк разный
                 if (this.lastReturn != config.return) {
                     //Если не первый вызов

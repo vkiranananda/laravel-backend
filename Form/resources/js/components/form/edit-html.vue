@@ -8,9 +8,9 @@
         <div v-if="countTabs > 1" >
             <ul class="nav nav-tabs" role="tablist">
               <li v-for="(tab, key) in tabs" :key="key" class="nav-item" v-if="tab['v-show'] !== false">
-                <a class="nav-link" :class="activeTab == key ? 'active' : ''"   data-toggle="tab" :href="'#tab-'+key" role="tab" v-on:click='changeTab(key)'>
+                <button class="nav-link" :class="activeTab == key ? 'active' : ''"   data-bs-toggle="tab" :data-bs-target="'#tab-'+key" role="tab" type="button" v-on:click='changeTab(key)'>
                     <span :class="errorsTab[key]">{{ tab.label }}</span>
-                </a>
+                </button>
               </li>
             </ul>
             <!-- Tabs content -->
@@ -88,6 +88,9 @@
         .url{
             position: relative;
             top: -22px;
+            a {
+                text-decoration: none;
+            }
         }
     }
 </style>

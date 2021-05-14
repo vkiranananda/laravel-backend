@@ -12,6 +12,9 @@
   // Import editor css
   import 'trumbowyg/dist/ui/trumbowyg.css';
   import 'trumbowyg/dist/langs/ru';
+  import mitt from 'mitt'
+
+  const emitter = mitt()
   // import './libs/trumbowyg-insert-image';
   // import 'trumbowyg/plugins/resizimg/trumbowyg.resizimg';
 
@@ -23,9 +26,9 @@ export default {
 		},
 
     attachFile: function(files, link) {
-        
+
         var res = ''
-        
+
         for ( var file of files) {
             if (file.file_type == 'image') {
                 let img = '<img alt="" title="" src="'+file.orig+'" data-id="'+file.id+'" />';
@@ -33,10 +36,10 @@ export default {
             } else {
                 res += (link) ? '<a href="'+file.orig+'">'+file.orig_name+'</a> ' : file.orig;
             }
-            
+
             res += ' '
         }
-        
+
         this.$refs.editor.el.trumbowyg('restoreRange');
         this.$refs.editor.el.trumbowyg('execCmd', {
             cmd: 'insertHtml',
@@ -73,13 +76,13 @@ export default {
               btnsDef: {
                   insertImage: {
                       fn: () => {
-                          this.$bus.$emit('UploadFilesModalShow', {type: 'all', showLink: true, return: this.attachFile}) 
+                          emmiter.emit('UploadFilesModalShow', {type: 'all', showLink: true, return: this.attachFile})
                           this.saveRange()
                       },
                       ico: 'insertImage'
                   }
               },
-          }  
+          }
 
           let image = (this.field.upload) ? 'insertImage' : ''
 
@@ -108,7 +111,7 @@ export default {
                   ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
                   ['removeformat'],
                   ['fullscreen']
-              ];            
+              ];
           }
 
           return config
@@ -123,7 +126,7 @@ export default {
 
 <style lang='scss'>
   .small-mce.small {
-      .trumbowyg { 
+      .trumbowyg {
         &.trumbowyg-box {
           min-height: 100px !important;
         }

@@ -28,7 +28,7 @@
         </div>
 
         <div class="text-right">
-            <a v-for="btn in conf.buttons" :href="btn.url" type="button" class="btn ml-2"
+            <a v-for="btn in conf.buttons" :href="btn.url" type="button" class="btn ms-2"
                :class="btn.type ? 'btn-'+btn.type : 'btn-primary'">
                 {{ btn.label }}
             </a>

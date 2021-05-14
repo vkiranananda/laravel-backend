@@ -6,7 +6,7 @@
         <!-- buttons -->
 
         <div class="mb-3">
-            <button v-for="(el, key) in myData.config.menu" class="btn mr-3"
+            <button v-for="(el, key) in myData.config.menu" class="btn me-3"
                     :class="el['btn-type'] ? 'btn-' + el['btn-type'] : 'btn-outline-secondary'" role="button"
                     v-on:click.stop.prevent="menuActionClick(el)">
                 {{ el['label'] }}
@@ -36,6 +36,9 @@ import theLoading from '../loading.vue'
 import theSearch from './search.vue'
 import theSortable from './sortable.vue'
 import theBreadcrumbs from './breadcrumbs.vue'
+import mitt from 'mitt'
+
+const emitter = mitt()
 
 export default {
     created() {
@@ -62,7 +65,7 @@ export default {
         // Меню клик
         menuActionClick(el) {
             if (el.type == 'sortable') {
-                this.$bus.$emit('ListSortableShow', el)
+                emitter.emit('ListSortableShow', el)
                 return
             }
 
