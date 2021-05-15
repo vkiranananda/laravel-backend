@@ -27,14 +27,11 @@
     import printField from '../fields/field.vue'
     import fieldWrapper from '../fields/wrapper.vue'
     import saveButtons from '../form/save-buttons'
-    import mitt from 'mitt'
-
-    const emitter = mitt()
 
     export default {
         //Создаем слушателей событий
-        created () { emitter.on('UploadFilesEditModalShow', this.showModal) },
-        beforeDestroy() { emitter.off('UploadFilesEditModalShow', this.showModal) },
+        created () { this.emitter.on('UploadFilesEditModalShow', this.showModal) },
+        beforeDestroy() { this.emitter.off('UploadFilesEditModalShow', this.showModal) },
 
         components: {
             'print-field': printField,

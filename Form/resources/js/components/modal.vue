@@ -17,7 +17,7 @@
                     </div>
                 </div>
                 <div class="modal-footer" slot="footer">
-                    <div v-if="closeButton" class="text-right">
+                    <div v-if="closeButton" class="text-end">
                         <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
                     </div>
                     <slot v-else name="footer"></slot>

@@ -1,11 +1,7 @@
-import mitt from 'mitt'
-
-const emitter = mitt()
-
 export function vAlert(msg, func = undefined, btns = undefined) {
-    emitter.emit('AlertModalShow', {type: 'alert', msg, func, btns})
+    window.emitter.emit('AlertModalShow', {type: 'alert', msg, func, btns})
 }
 
 export function vConfirm (msg, func = undefined, btns = undefined) {
-    emitter.emit('AlertModalShow', {type: 'confurm', msg, func, btns})
+    window.emitter.emit('AlertModalShow', {type: 'confurm', msg, func, btns})
 }

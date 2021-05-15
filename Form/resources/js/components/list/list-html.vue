@@ -36,9 +36,6 @@ import theLoading from '../loading.vue'
 import theSearch from './search.vue'
 import theSortable from './sortable.vue'
 import theBreadcrumbs from './breadcrumbs.vue'
-import mitt from 'mitt'
-
-const emitter = mitt()
 
 export default {
     created() {
@@ -65,7 +62,7 @@ export default {
         // Меню клик
         menuActionClick(el) {
             if (el.type == 'sortable') {
-                emitter.emit('ListSortableShow', el)
+                this.emitter.emit('ListSortableShow', el)
                 return
             }
 

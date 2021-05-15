@@ -1,5 +1,5 @@
 <template>
-    <div class="row text-right form-buttons">
+    <div class="row text-end form-buttons">
         <div class="col result-area">
             <span class="error" v-if='status == "errorAny"'>Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.</span>
             <span class="error" v-if='status == "errorFields"'>Проверьте правильность заполнения данных</span>
@@ -20,16 +20,14 @@
 </template>
 
 <script>
-import mitt from 'mitt'
 
-const emitter = mitt()
 export default {
     //Создаем слушателей событий
     created() {
-        emitter.on('FormSave', this.submit)
+        this.emitter.on('FormSave', this.submit)
     },
     beforeDestroy() {
-        emitter.off('FormSave', this.submit)
+        this.emitter.off('FormSave', this.submit)
     },
     props: {
         url: {default: ''},
@@ -59,7 +57,7 @@ export default {
                     location.reload();
                     break
                 default:
-                    emitter.emit(btn.hook, btn)
+                    this.emitter.emit(btn.hook, btn)
                     break
             }
         },
@@ -141,10 +139,10 @@ export default {
                     this.store.commit('editForm/setErrors', {});
 
                     // Общий хук сохранения
-                    emitter.emit('FormSaved')
+                    this.emitter.emit('FormSaved')
 
                     if (result.hook != undefined && result.hook.name) {
-                        emitter.emit(result.hook.name, result.hook.data)
+                        this.emitter.emit(result.hook.name, result.hook.data)
                     }
                 })
                 .catch((error) => {

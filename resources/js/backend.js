@@ -3,7 +3,12 @@ require('./bootstrap');
 
 import Vue from 'vue'
 import Vuex from 'vuex'
+import mitt from 'mitt'
+
+const emitter = mitt()
+
 Vue.use(Vuex)
+
 
 import editForm from '../../Form/resources/js/store/edit';
 // Подключаем быстрые функции для работы с алертами
@@ -25,10 +30,12 @@ window.onpopstate = (event) => {
     location.reload(true);
 };
 
-//module.exports = {store: store}
-
-
 Vue.prototype.store = store;
+Vue.prototype.msgAlert = vAlert;
+Vue.prototype.msgConfirm = vConfirm;
+Vue.prototype.emitter = emitter
+
+window.emitter = emitter
 
 // Подключаем иконки они должы быть доступны всем.
 Vue.component('v-icon', require('./components/octicons.vue').default)
@@ -36,8 +43,6 @@ Vue.component('v-icon', require('./components/octicons.vue').default)
 Vue.component('v-modal', require('./components/modal').default)
 // Alert
 Vue.component('v-alert', require('./components/alert').default)
-window.vAlert = alert.vAlert
-window.vConfirm = alert.vConfirm
 
 
 // Модуль форм
@@ -49,7 +54,7 @@ require('../../Menu/resources/js/init.js');
 require('../../../../../backend/resources/js/backend.js');
 
 const backend = new Vue({
-    el: '#backend-body',
+    el: '#backend-body'
     // store
 });
 

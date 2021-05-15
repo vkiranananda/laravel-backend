@@ -76,7 +76,7 @@
         methods: {
             unblock: function () {
                 let msg = (this.field['protected-message']) ? this.field['protected-message'] : 'Разблокировать элемент?'
-                vConfirm(msg, () => {
+                this.msgConfirm(msg, () => {
                     this.blocked = false
                 })
             }

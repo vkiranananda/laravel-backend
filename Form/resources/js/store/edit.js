@@ -1,8 +1,6 @@
 import cloneDeep from 'lodash.clonedeep'
-import mitt from 'mitt'
 import Vue from 'vue'
 
-const emitter = mitt()
 
 export default {
 
@@ -110,7 +108,7 @@ export default {
                 }
 
                 if (field.autosave == true) {
-                    if (field.type == 'select') emitter.emit('FormSave')
+                    if (field.type == 'select') this.emitter.emit('FormSave')
                 }
 
                 // Обрабатываем изменения только если поле без autosave

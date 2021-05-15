@@ -10,6 +10,7 @@
             <v-icon v-if='props.item.icon' :name="props.item.icon" class="me-2"/>
             {{ props.item.label }}
         </a>
+        <slot></slot>
     </li>
 </template>
 <style scoped>

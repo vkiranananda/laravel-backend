@@ -6,7 +6,7 @@
 </template>
 
 <script>
- 
+
 	import showUploadsButton from '../uploads/show-uploads-button'
 
     export default {
@@ -28,7 +28,7 @@
                 tinymce.activeEditor.insertContent(res);
         	}
         },
-  		mounted: function () { 
+  		mounted: function () {
 			tinymce.init({
 	            selector: '#'+this.mceId,
 	            plugins: [
@@ -47,8 +47,8 @@
 	            image_title: true,
 	            image_class_list: [
 	                {title: 'Нет обтекания', value: ''},
-	                {title: 'Текст слева', value: 'image-text-left'},
-	                {title: 'Текст справа', value: 'image-text-right'},
+	                {title: 'Текст слева', value: 'image-text-start'},
+	                {title: 'Текст справа', value: 'image-text-end'},
 	            ],
 
 	            setup: (editor) => {
@@ -63,7 +63,7 @@
 			});
 
   		},
-  		beforeDestroy: function () { this.editor.destroy() }, 
+  		beforeDestroy: function () { this.editor.destroy() },
         data() {
             return {
                 editor: null,

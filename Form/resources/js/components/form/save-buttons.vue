@@ -8,7 +8,7 @@
     hooks - submit
  -->
 <template>
-    <div class="row text-right form-buttons">
+    <div class="row text-end form-buttons">
         <div class="col result-area">
             <span class="error" v-if='currentStatus == "errorAny"'>Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.</span>
             <span class="error" v-if='currentStatus == "errorFields"'>Проверьте правильность заполнения данных</span>

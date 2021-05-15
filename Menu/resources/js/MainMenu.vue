@@ -18,71 +18,68 @@
 </template>
 
 <script>
-    import MainMenuItem from './MainMenuItem.vue'
-    import mitt from 'mitt'
+import MainMenuItem from './MainMenuItem.vue'
 
-    const emitter = mitt()
-
-    export default {
-        components: {MainMenuItem},
-        created() {
-            console.log(this.menu)
-            for (let item of this.menu) {
-                if (item.type == 'method' && item.name != undefined) {
-                    this.$set(this.updatedItems, item.name, item.items)
-                }
+export default {
+    components: {MainMenuItem},
+    created() {
+        for (let item of this.menu) {
+            if (item.type == 'method' && item.name != undefined) {
+                this.$set(this.updatedItems, item.name, item.items)
             }
-
-            emitter.on('MainMenuUpdate', (data) => {
-                if (data.name != undefined && data.items != undefined) {
-                    this.$set(this.updatedItems, data.name, data.items)
-                }
-            })
-        },
-        beforeDestroy() {
-            emitter.off('MainMenuUpdate')
-        },
-        props: ['menu'],
-        data() {
-            return {updatedItems: {}}
-        },
-        methods: {
-            pageChange: function (value) {
-                this.$emit('change', {currentPage: value})
-            },
         }
+
+        this.emitter.on('MainMenuUpdate', (data) => {
+            if (data.name != undefined && data.items != undefined) {
+                this.$set(this.updatedItems, data.name, data.items)
+            }
+        })
+    },
+    beforeDestroy() {
+        this.emitter.off('MainMenuUpdate')
+    },
+    props: ['menu'],
+    data() {
+        return {updatedItems: {}}
+    },
+    methods: {
+        pageChange: function (value) {
+            this.$emit('change', {currentPage: value})
+        },
     }
+}
 </script>
 
 <style lang='scss'>
-    .left-menu {
-        ul {
-            list-style-type: none;
-            padding: 0;
+.left-menu {
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        a, {
+            -webkit-font-smoothing: antialiased;
+            display: block;
+            padding: 4px 10px;
+            text-decoration: none;
         }
 
-        li {
-            a, {
-                -webkit-font-smoothing: antialiased;
-                display: block;
-                padding: 4px 10px;
-                text-decoration: none;
-            }
-
-            a:hover {
-                background-color: black;
-                //text-decoration: none;
-            }
-            .title {
-                padding: 8px 10px 0;
-                display: inline-block;
-                font-size: 1.25rem;
-            }
+        a:hover {
+            background-color: black;
+            //text-decoration: none;
         }
 
-        hr {
-            margin: 10px 10px;
-            border-top: 1px solid gray;
+        .title {
+            padding: 8px 10px 0;
+            display: inline-block;
+            font-size: 1.25rem;
         }
     }
+
+    hr {
+        margin: 10px 10px;
+        border-top: 1px solid gray;
+    }
+}
 </style>

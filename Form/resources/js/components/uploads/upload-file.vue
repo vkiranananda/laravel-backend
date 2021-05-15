@@ -26,9 +26,6 @@
 </template>
 
 <script>
-import mitt from 'mitt'
-
-const emitter = mitt()
 
 export default {
     props: ['url', 'config'],
@@ -173,7 +170,7 @@ export default {
         },
         // Изменяем элемент
         edit(file) {
-            emitter.emit('UploadFilesEditModalShow', Object.assign({
+            this.emitter.emit('UploadFilesEditModalShow', Object.assign({
                 deleteMethod: this.del,
                 deleteValue: file,
                 deleteType: 'delete'
@@ -182,7 +179,7 @@ export default {
 
         // Удаляем файл
         del(file) {
-            vConfirm('Вы уверены что хотите удалить файл: "' + file['orig_name'] + '"?', () => {
+            this.msgConfirm('Вы уверены что хотите удалить файл: "' + file['orig_name'] + '"?', () => {
                 // Снимаем выделение если было.
                 if (file['selected']) this.selectFile(file);
 
@@ -194,7 +191,7 @@ export default {
 
                 var deleteFile = () => {
                     // Оповестить всех что файл удален
-                    emitter.emit('UploadFilesDeleteFile', file.id);
+                    this.emitter.emit('UploadFilesDeleteFile', file.id);
 
                     // Удаляем из новозагруженных файлов
                     this.delUploadedFile(file.id)

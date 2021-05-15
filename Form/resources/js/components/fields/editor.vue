@@ -12,9 +12,6 @@
   // Import editor css
   import 'trumbowyg/dist/ui/trumbowyg.css';
   import 'trumbowyg/dist/langs/ru';
-  import mitt from 'mitt'
-
-  const emitter = mitt()
   // import './libs/trumbowyg-insert-image';
   // import 'trumbowyg/plugins/resizimg/trumbowyg.resizimg';
 

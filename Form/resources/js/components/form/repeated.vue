@@ -10,7 +10,7 @@
                                      :store-name='storeName'></fields-list>
                     </div>
                 </div>
-                <div class="text-right" v-if="!field.readonly">
+                <div class="text-end" v-if="!field.readonly">
                     <button slot="footer" type="button" class="btn btn-success" v-on:click.stop.prevent="addNew">
                         <span>{{field['add-label'] ? field['add-label'] : 'Добавить'}}</span>
                     </button>
@@ -57,7 +57,7 @@
                 this.$emit('change', this.repBlocks);
             },
             delBlock(key) {
-                vConfirm('Подтвердите удаление.', () => {
+                this.msgConfirm('Подтвердите удаление.', () => {
                     this.store.commit(this.storeName + '/delRepeatedBlock', {
                         block: this.field.value,
                         index: key

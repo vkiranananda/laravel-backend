@@ -22,16 +22,14 @@
 <script>
     import draggable from 'vuedraggable'
     import showUploadsButton from '../uploads/show-uploads-button'
-    import mitt from 'mitt'
 
-    const emitter = mitt()
     const cloneDeep = require('clone-deep')
 
     export default {
         created () {
-            emitter.on('UploadFilesDeleteFile', this.delById)
+            this.emitter.on('UploadFilesDeleteFile', this.delById)
         },
-        beforeDestroy() { emitter.off('UploadFilesDeleteFile', this.delById) },
+        beforeDestroy() { this.emitter.off('UploadFilesDeleteFile', this.delById) },
         components: {
             draggable,
             'show-uploads-button': showUploadsButton
@@ -87,7 +85,7 @@
                 this.$emit('change', res)
             },
             edit(file) {
-                emitter.emit( 'UploadFilesEditModalShow', Object.assign({
+                this.emitter.emit( 'UploadFilesEditModalShow', Object.assign({
                     deleteMethod: this.del,
                     deleteValue: file,
                     deleteType: 'unfasten'

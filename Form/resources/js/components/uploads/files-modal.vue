@@ -11,14 +11,11 @@
 
 <script>
     import uploadFile from './upload-file'
-    import mitt from 'mitt'
-
-    const emitter = mitt()
 
     export default {
         //Создаем слушателей событий
-        created () { emitter.on('UploadFilesModalShow', this.showModal) },
-        beforeDestroy() { emitter.off('UploadFilesModalShow', this.showModal) },
+        created () { this.emitter.on('UploadFilesModalShow', this.showModal) },
+        beforeDestroy() { this.emitter.off('UploadFilesModalShow', this.showModal) },
 
         props: [ 'url' ],
         components: { 'upload-file': uploadFile },

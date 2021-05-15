@@ -74,9 +74,6 @@
 
 <script>
 import paginate from './paginate.vue'
-import mitt from 'mitt'
-
-const emitter = mitt()
 
 export default {
     props: ['items', 'fields', 'itemMenu'],
@@ -85,7 +82,7 @@ export default {
     },
     methods: {
         pageChange: function (value) {
-            emitter.emit('change', {currentPage: value})
+            this.emitter.emit('change', {currentPage: value})
         },
         sortable: function (key) {
             let field = this.fields[key], orderType;
@@ -98,7 +95,7 @@ export default {
         },
         itemActionClick: function (url, el) {
             if (el.confirm) {
-                vConfirm(el.confirm, () => {
+                this.msgConfirm(el.confirm, () => {
                     this.itemAction(url, el)
                 })
             } else this.itemAction(url, el)
@@ -121,12 +118,12 @@ export default {
                     this.$emit('change', {destroy: 'finished'});
                     //Вызываем хуки
                     if (response.data.hook != undefined && response.data.hook.name) {
-                        emitter.emit(response.data.hook.name, response.data.hook.data)
+                        this.emitter.emit(response.data.hook.name, response.data.hook.data)
                     }
                 })
                 .catch((error) => {
                     if (error.response.status == 403) {
-                        vAlert(error.response.data.message);
+                        this.msgAlert(error.response.data.message);
                     }
                     console.log(error.response);
                     this.$emit('change', {destroy: 'error'});

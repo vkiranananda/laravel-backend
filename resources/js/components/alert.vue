@@ -4,11 +4,11 @@
             <div class="modal-content">
                 <div class="modal-body p-4" v-html="params.msg"></div>
                 <div class="modal-footer py-1 px-2" slot="footer">
-                    <div class="text-right">
-                        <button v-if="params.type == 'confurm'" class="btn btn-secondary me-1" data-dismiss="modal">
+                    <div class="text-end">
+                        <button v-if="params.type == 'confurm'" class="btn btn-secondary me-1" data-bs-dismiss="modal">
                             {{ labels[1] }}
                         </button>
-                        <button class="btn btn-secondary" data-dismiss="modal" @click="okFunc">{{ labels[0] }}</button>
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" @click="okFunc">{{ labels[0] }}</button>
                     </div>
                 </div>
             </div>
@@ -17,17 +17,14 @@
 </template>
 
 <script>
-import mitt from 'mitt'
-
-const emitter = mitt()
 
 export default {
     name: "alert",
     created() {
-        emitter.on('AlertModalShow', this.show)
+        this.emitter.on('AlertModalShow', this.show)
     },
     beforeDestroy() {
-        emitter.off('AlertModalShow', this.show)
+        this.emitter.off('AlertModalShow', this.show)
     },
     mounted() {
         // Это нужно для того что бы часто открывать окна
@@ -62,6 +59,7 @@ export default {
         },
         show: function (data) {
             // Добавляем в конец очереди
+            console.log('pen')
             this.queue.push(data)
             this.nextQueue()
         },

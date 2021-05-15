@@ -36,76 +36,77 @@
     </div>
 </template>
 <script>
-    import repeatedField from './repeated.vue'
-    import groupField from './group.vue'
-    import printField from '../fields/field.vue'
-    import fieldWrapper from '../fields/wrapper.vue'
+import repeatedField from './repeated.vue'
+import groupField from './group.vue'
+import printField from '../fields/field.vue'
+import fieldWrapper from '../fields/wrapper.vue'
 
-    export default {
-        created() {
-            console.log('fields:', this.fields)
-        },
-        components: {
-            'repeated-field': repeatedField,
-            'group-field': groupField,
-            'print-field': printField,
-            'field-wrapper': fieldWrapper
-        },
-        props: {
-            fields: {},
-            storeName: {
-                type: String,
-                default: ''
-            },
-            fieldsType: {
-                type: String,
-                default: ''
-            },
-            errors: undefined
-        },
-        computed: {
-            currentErrors() {
-                if (this.errors != undefined) return this.errors;
-                else return {};
-            }
-        },
-        methods: {
-            colWidth: function (size, classes) {
-                if (classes) return classes
-                if (size == 'half') return 'col-6'
-                if (size == 'third') return 'col-4'
-                return 'col-12'
-            },
-            onChange: function (value, name) {
-                if (this.storeName == '') this.$emit('change', value, name)
-                else {
-                    let changed = true
 
-                    // Возвращается более сложный объект
-                    if (value && value.value != undefined) {
-                        // Не сохраняем это изменение
-                        if (value.changed === false) changed = false
-                        value = value.value
-                    }
+export default {
+    created() {
+        console.log('fields:', this.fields)
+    },
+    components: {
+        'repeated-field': repeatedField,
+        'group-field': groupField,
+        'print-field': printField,
+        'field-wrapper': fieldWrapper
+    },
+    props: {
+        fields: {},
+        storeName: {
+            type: String,
+            default: ''
+        },
+        fieldsType: {
+            type: String,
+            default: ''
+        },
+        errors: undefined
+    },
+    computed: {
+        currentErrors() {
+            if (this.errors != undefined) return this.errors;
+            else return {};
+        }
+    },
+    methods: {
+        colWidth: function (size, classes) {
+            if (classes) return classes
+            if (size == 'half') return 'col-6'
+            if (size == 'third') return 'col-4'
+            return 'col-12'
+        },
+        onChange: function (value, name) {
+            if (this.storeName == '') this.$emit('change', value, name)
+            else {
+                let changed = true
 
-                    this.store.dispatch(this.storeName + '/setFieldProp', {
-                        name,
-                        value,
-                        changed,
-                        fields: this.fields,
-                        property: 'value',
-                        fieldsType: this.fieldsType,
-                    });
+                // Возвращается более сложный объект
+                if (value && value.value != undefined) {
+                    // Не сохраняем это изменение
+                    if (value.changed === false) changed = false
+                    value = value.value
                 }
-            },
-            onBack: function (name) {
-                vConfirm('Вы действительно хотите вернуть изначальное значение данного поля?', () => {
-                    this.store.dispatch(this.storeName + '/setFieldBack', {
-                        name,
-                        fields: this.fields,
-                    });
-                })
+
+                this.store.dispatch(this.storeName + '/setFieldProp', {
+                    name,
+                    value,
+                    changed,
+                    fields: this.fields,
+                    property: 'value',
+                    fieldsType: this.fieldsType,
+                });
             }
+        },
+        onBack: function (name) {
+            this.msgConfirm('Вы действительно хотите вернуть изначальное значение данного поля?', () => {
+                this.store.dispatch(this.storeName + '/setFieldBack', {
+                    name,
+                    fields: this.fields,
+                });
+            })
         }
     }
+}
 </script>

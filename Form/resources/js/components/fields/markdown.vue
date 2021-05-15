@@ -5,9 +5,6 @@
 <script>
 import VueSimplemde from 'vue-simplemde'
 import 'simplemde-theme-base/dist/simplemde-theme-base.min.css'
-import mitt from 'mitt'
-
-const emitter = mitt()
 
 export default {
     methods: {
@@ -62,7 +59,7 @@ export default {
                     {
                         name: "image",
                         action: (editor) => {
-                            emitter.emit('UploadFilesModalShow', {
+                            this.emitter.emit('UploadFilesModalShow', {
                                 type: 'all',
                                 showLink: true,
                                 return: this.attachFile

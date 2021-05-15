@@ -16,7 +16,6 @@ class MainMenu
 				$item['items'] = $item['method']();
 			}
 		}
-		
 		return view('Menu::widgets.main-menu', [ 'menu' => $menu ]);
 	}
 }
