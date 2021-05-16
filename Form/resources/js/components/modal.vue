@@ -4,7 +4,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{ title }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -18,7 +18,7 @@
                 </div>
                 <div class="modal-footer" slot="footer">
                     <div v-if="closeButton" class="text-end">
-                        <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
                     </div>
                     <slot v-else name="footer"></slot>
                 </div>
