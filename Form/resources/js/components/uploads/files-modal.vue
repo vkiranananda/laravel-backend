@@ -4,7 +4,7 @@
         <div slot="footer">
             <label v-if="config.fieldType == 'mce' || config.showLink" class="form-check-label me-5 link-img"><input type="checkbox" class="form-check-input" v-model="origLink"> Создать ссылку на оригинал </label>
             <button type="button" class="btn btn-primary" @click="insertFiles()">Вставить</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
         </div>
     </modal>
 </template>
