@@ -216,7 +216,8 @@ class Fields
                 // Сделал правку тут в конце было true
                 $baseField = $this->prepEditField($baseField, $post, []);
             }
-        } else {
+        }
+        else {
             $field['value'] = $this->initField($field)->edit($this->getFieldValue($field, $post, $arrayData, $none));
         }
         // Убираем лишние опции
@@ -434,7 +435,7 @@ class Fields
         foreach ($show as $key => $showBlock) {
             //Если поля проверочного нет, выводим отказ
             if (!isset($data[$showBlock['field']])) return false;
-            
+
             if ($key != 0) { //не первая запись
                 //Оператор &&, если предыдущее условие ошибка тогда сл тоже ошибка, проверку не делаем
                 if ($showBlock['operator'] == '&&' && $res == false) continue;

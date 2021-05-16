@@ -28,7 +28,7 @@
                 :error="(field.name) ? currentErrors[field.name] : {}">
             </component>
 
-            <field-wrapper v-else :error="currentErrors[field.name]" :field="field" @back="onBack(field.name)">
+            <field-wrapper v-else-if="field.type != 'hidden'" :error="currentErrors[field.name]" :field="field" @back="onBack(field.name)">
                 <print-field :field='field' :fields="fields" :error='currentErrors[field.name]'
                              v-on:change="onChange($event, field.name)"></print-field>
             </field-wrapper>
