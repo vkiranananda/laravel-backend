@@ -1,5 +1,5 @@
 <template>
-    <div class="row text-end form-buttons">
+    <div class="text-end form-buttons d-flex justify-content-end">
         <div class="col result-area">
             <span class="error" v-if='status == "errorAny"'>Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.</span>
             <span class="error" v-if='status == "errorFields"'>Проверьте правильность заполнения данных</span>

@@ -75,7 +75,7 @@ export default {
     >.item {
         position: relative;
         padding: 5px 7px;
-        margin: 15px 10px 0 15px;
+        margin: 5px 10px 0 15px;
         display: inline-block;
 
         .delete {
