@@ -3,7 +3,7 @@
         <span class="me-2">
             {{data.data.length}} {{declOfNum(data.data.length, ['элемент', 'элемента', 'элементов'])}}<span v-if="data.lastPage > 1"> из {{data.total}} </span>
         </span>
-        <template v-if="data.lastPage > 1">     
+        <template v-if="data.lastPage > 1">
     		<button type="button" class="btn btn-outline-secondary btn-sm" :disabled="data.currentPage == 1" @click=changePage(1)>&lt;&lt;</button>&nbsp;
     		<button type="button" class="btn btn-outline-secondary btn-sm" :disabled="data.currentPage == 1" @click=changePage(data.currentPage-1)>&lt;</button>&nbsp;
     		<input ref="pageNum" class="form-control form-control-sm" type="text" :value="data.currentPage" @change="change">&nbsp;из {{ data.lastPage }}&nbsp;
@@ -28,7 +28,9 @@
             		return;
             	}
 
-            	if ( val != Number(this.data.currentPage) ) this.$emit('change', val)       		
+            	if ( val != Number(this.data.currentPage) ) {
+                    this.$emit('change', val)
+                }
         	},
 
         }

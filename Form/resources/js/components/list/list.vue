@@ -82,7 +82,7 @@ export default {
     },
     methods: {
         pageChange: function (value) {
-            this.emitter.emit('change', {currentPage: value})
+            this.$emit('change', {currentPage: value})
         },
         sortable: function (key) {
             let field = this.fields[key], orderType;
