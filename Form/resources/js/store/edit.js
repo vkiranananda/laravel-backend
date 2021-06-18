@@ -108,7 +108,7 @@ export default {
                 }
 
                 if (field.autosave == true) {
-                    if (field.type == 'select') this.emitter.emit('FormSave')
+                    if (field.type == 'select') window.emitter.emit('FormSave')
                 }
 
                 // Обрабатываем изменения только если поле без autosave
