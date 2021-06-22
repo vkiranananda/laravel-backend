@@ -108,10 +108,14 @@ trait Index
 
             $res['_links'] = $this->indexLinks($post, $urlPostfix);
             $res['_row_class'] = $this->indexRowClass($post);
-
             foreach ($fields as $key => $field) {
 
                 $name = $field['name'];
+
+                // Если нужно указать название столбца базы данных отличное от названия поля.
+                // Иногда бывает нужно выводить одно и тоже поле в разных столбцах по разному
+                // Наприме дата и время отдельно.
+                $bdName = $field['bd-name'] ?? $name;
 
                 if (isset($field['func'])) {
                     $func = $field['func'];
@@ -119,8 +123,7 @@ trait Index
                     continue;
                 }
                 // Обработчик полей
-                $res[$name] =
-                    $fields_prep[$key]->list(Helpers::getDataField($post, $name, ''));
+                $res[$name] = $fields_prep[$key]->list(Helpers::getDataField($post, $bdName, ''));
             }
             $this->dataReturn['items']['data'][] = $res;
         }
@@ -264,7 +267,10 @@ trait Index
 
         if ($order !== false && isset($this->fields['list'][$order]['sortable'])) {
             $orderType = Request::input('order-type', 'desc');
-            $orderField = $this->fields['list'][$order]['name'];
+
+            // возможность сортировки по имени толбца отличного от имени поля.
+            $orderField = $this->fields['list'][$order]['bd-name'] ?? $this->fields['list'][$order]['name'];
+
             $this->fields['list'][$order]['sortable'] = $orderType;
         }
         $this->post = $this->post->orderBy($orderField, $orderType);
