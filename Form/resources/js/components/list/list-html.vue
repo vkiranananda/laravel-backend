@@ -40,13 +40,19 @@ import theBreadcrumbs from './breadcrumbs.vue'
 export default {
     created() {
         history.replaceState(window.location.href, '', window.location.href)
-
-        // console.log(this.myData)
-
-        // window.onpopstate = (event) => {
-        //     this.axiosSend(event.state, false)
-        // };
+        // Данных хук вызовет переданную в параметрах функцию перед отправкой формы,
+        // Результат данной функции должен быть объект ключ значение
+        this.emitter.on('ListAddCustomParamsMethod', this.addCustomParamMethod)
+        // Данных хук запустит поиск
+        this.emitter.on('ListSend', this.send)
     },
+    beforeDestroy() {
+        this.emitter.off('ListAddCustomParamsMethod', this.addCustomParamMethod)
+    },
+    beforeDestroy() {
+        this.emitter.off('ListSend', this.send)
+    },
+
     destroyed() {
         window.onpopstate = null
     },
@@ -55,10 +61,17 @@ export default {
     data() {
         return {
             myData: this.data,
+            customParamMethods: [],
             loading: false
         }
     },
     methods: {
+        addCustomParamMethod(method) {
+            if (this.customParamMethods.indexOf(method) === -1) {
+                console.log('ListAddCustomParamsMethod register new method')
+                this.customParamMethods.push(method)
+            }
+        },
         // Меню клик
         menuActionClick(el) {
             if (el.type == 'sortable') {
@@ -96,6 +109,15 @@ export default {
             if (this.myData.search != undefined) {
                 for (let field of this.myData.search) if (field.value != '') {
                     params = this.genUrl(params, field.name, field.value);
+                }
+            }
+
+            for (let customParamMethod of this.customParamMethods) {
+                let customParams = customParamMethod()
+                for (let customParamName in customParams) {
+                    if (customParams[customParamName] != '') {
+                        params = this.genUrl(params, customParamName, customParams[customParamName]);
+                    }
                 }
             }
 
@@ -158,7 +180,7 @@ export default {
             this.send(changeType);
         },
         searchChange(data) {
-            //Выставляем значния
+            // Выставляем значния
             for (let field of this.myData.search) {
                 if (data[field.name] != undefined) field.value = data[field.name]
             }

@@ -25,12 +25,12 @@ trait Index
 
         $this->resourceCombine('index');
 
-        //Поиск
+        // Поиск
         $this->indexSearch();
-        //Сортировка
+        // Сортировка
         $this->indexOrder();
 
-        //Параметры к урлу
+        // Параметры к урлу
         $urlPostfix = "";
 
         // Получаем все дополнительные параметры.
