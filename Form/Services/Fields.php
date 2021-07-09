@@ -36,6 +36,15 @@ class Fields
         $this->request = Request::all();
     }
 
+    /**
+     * Получить все параметры запроса
+     * @return array
+     */
+    public function getRequestAll()
+    {
+        return $this->request;
+    }
+
     // Инитим поле
     public function initField($field)
     {
