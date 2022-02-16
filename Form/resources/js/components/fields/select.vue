@@ -1,5 +1,10 @@
-<template functional>
-	<select v-bind="props.field.attr" :name="props.field.name" class="form-control" v-on:change="listeners.change($event.target.value)" :class='props.error ? "is-invalid" : "" '>
-		<option v-for="(el, key) in props.field.options" :value="el.value" :disabled="props.field.readonly ? true : false" :selected="el.value == props.field.value" v-bind="el.attr" :key="key">{{el.label}}</option>
+<template>
+	<select v-bind="field.attr" :name="field.name" class="form-control" v-on:change="$emit('v-change', $event.target.value)" :class='error ? "is-invalid" : "" '>
+		<option v-for="(el, key) in field.options" :value="el.value" :disabled="field.readonly ? true : false" :selected="el.value == field.value" v-bind="el.attr" :key="key">{{el.label}}</option>
     </select>
 </template>
+<script>
+export default {
+    props: ['field', 'error']
+}
+</script>

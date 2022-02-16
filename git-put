@@ -1,3 +1,3 @@
 git add .
 git commit -m init
-git push origin current
+git push origin current-vue3

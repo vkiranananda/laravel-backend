@@ -8,7 +8,7 @@
         computed: {
             value: {
             	get() {	return this.field.value },
-            	set(val) { this.$emit('change', val) }
+            	set(val) { this.$emit('v-change', val) }
             }
         },
     }

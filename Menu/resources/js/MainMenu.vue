@@ -25,7 +25,7 @@ export default {
     created() {
         for (let item of this.menu) {
             if (item.type == 'method' && item.name != undefined) {
-                this.$set(this.updatedItems, item.name, item.items)
+                this.updatedItems[item.name] = item.items
             }
         }
 

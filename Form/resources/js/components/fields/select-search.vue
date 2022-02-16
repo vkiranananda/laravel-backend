@@ -61,7 +61,7 @@ export default {
             this.emit(value)
         },
         emit: function (value) {
-            this.$emit('change', this.field.multiple ? value : (value[0] ? value[0] : ''))
+            this.$emit('v-change', this.field.multiple ? value : (value[0] ? value[0] : ''))
         },
         getLabel: function (value) {
             for (let el of this.options) if (el.value == value) return el.label

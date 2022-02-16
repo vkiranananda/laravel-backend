@@ -59,7 +59,6 @@ export default {
         },
         show: function (data) {
             // Добавляем в конец очереди
-            console.log('pen')
             this.queue.push(data)
             this.nextQueue()
         },

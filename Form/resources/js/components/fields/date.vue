@@ -1,16 +1,17 @@
 <template>
     <div>
-        <date-picker :type="type" :input-class="inputClass" v-model="date" :first-day-of-week="1" :format="format"
+        <date-picker :type="type" :input-class="inputClass" v-model:value="date" :first-day-of-week="1" :format="format"
                      lang="ru" :minute-step="field['minute-step'] ? field['minute-step'] : 1"
                      v-bind="field.attr" :disabled="field.readonly"></date-picker>
     </div>
 </template>
 
 <script>
-import DatePicker from 'vue2-datepicker'
-import 'vue2-datepicker/index.css';
+import DatePicker from 'vue-datepicker-next'
+import 'vue-datepicker-next/index.css'
+// {{todo}}
+// import 'vue-datepicker-next/index.css';
 import fecha from 'fecha'
-
 
 export default {
     props: ['field', 'error'],
@@ -27,7 +28,7 @@ export default {
             },
             set: function (newDate) {
                 let date = (newDate != null) ? fecha.format(newDate, this.inputFormat) : ''
-                this.$emit('change', date);
+                this.$emit('v-change', date)
             }
         },
 

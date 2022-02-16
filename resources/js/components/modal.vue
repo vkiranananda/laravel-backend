@@ -16,43 +16,45 @@
                         <slot></slot>
                     </div>
                 </div>
-                <div class="modal-footer" slot="footer">
-                    <div v-if="closeButton" class="text-end">
-                        <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <footer>
+                    <div class="modal-footer">
+                        <div v-if="closeButton" class="text-end">
+                            <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        </div>
+                        <footer v-else>222</footer>
                     </div>
-                    <slot v-else name="footer"></slot>
-                </div>
+                </footer>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-    export default {
-        props: {
-            size: {default: ''},
-            loading: {default: false},
-            title: {},
-            closeButton: {default: false}
+export default {
+    props: {
+        size: {default: ''},
+        loading: {default: false},
+        title: {},
+        closeButton: {default: false}
+    },
+    methods: {
+        show: function () {
+            $(this.$refs.modal).modal('show')
+        }
+    },
+    computed: {
+        classSize: function () {
+            return (this.size == 'large') ? 'modal-lg' : ''
         },
-        methods: {
-            show: function () {
-                $(this.$refs.modal).modal('show')
-            }
-        },
-        computed: {
-            classSize: function () {
-                return (this.size == 'large') ? 'modal-lg' : ''
-            },
-            loadingSize() {
-                return (this.size == 'large') ? 100 : 35;
-            }
+        loadingSize() {
+            return (this.size == 'large') ? 100 : 35;
         }
     }
+}
 </script>
 
 <style scoped lang='scss'>
-    .modal {
-        overflow: auto !important;
-    }
+.modal {
+    overflow: auto !important;
+}
 </style>

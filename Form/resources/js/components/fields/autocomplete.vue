@@ -58,7 +58,7 @@ clear-if-select
                 } else document.body.removeEventListener('click', this.clickOutside)
             },
             value: function (value, oldValue) {
-                this.$emit('change', value)
+                this.$emit('v-change', value)
                 if (value.length < 3 || this.closeResults) {
                     this.showResults = false
                     this.closeResults = false

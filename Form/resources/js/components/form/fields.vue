@@ -1,38 +1,39 @@
 <!-- Для использования в других модулях кроме основного, repeated и group поля работать не будут! -->
 <template>
     <div class="row">
-        <div v-for="(field, key) in fields" :key="key" v-if="field['v-show'] !== false" class="mb-2"
-             :class="colWidth(field.row, field['col-classes'])">
+        <template v-for="(field, key) in fields" :key="key">
+            <div v-if="field['v-show'] !== false" class="mb-2"
+                 :class="colWidth(field.row, field['col-classes'])">
+                <div v-if="field.type == 'html'" v-html="field.html"></div>
 
-            <div v-if="field.type == 'html'" v-html="field.html"></div>
+                <template v-else-if="field.type == 'html-title'">
+                    <h5 v-html="field.title" :class="key == 0  ? 'mt-4' : '' "></h5>
+                    <hr>
+                </template>
 
-            <template v-else-if="field.type == 'html-title'">
-                <h5 v-html="field.title" :class="key == 0  ? 'mt-4' : '' "></h5>
-                <hr>
-            </template>
+                <div v-else-if="field.type == 'repeated'" class="form-group">
+                    <label v-if="field.label" v-html="field.label"></label>
+                    <repeated-field :field='field' :store='store' :error='currentErrors[field.name]'
+                                    v-on:v-change="onChange($event, field.name)"></repeated-field>
+                    <small class="form-text text-muted" v-if="field.desc != ''" v-html="field.desc"></small>
+                </div>
 
-            <div v-else-if="field.type == 'repeated'" class="form-group">
-                <label v-if="field.label" v-html="field.label"></label>
-                <repeated-field :field='field' :store-name='storeName' :error='currentErrors[field.name]'
-                                v-on:change="onChange($event, field.name)"></repeated-field>
-                <small class="form-text text-muted" v-if="field.desc != ''" v-html="field.desc"></small>
+                <group-field v-else-if="field.type == 'group'" :field='field' :store='store'
+                             :error='currentErrors[field.name]'></group-field>
+
+                <component
+                    v-else-if="field.type == 'component'"
+                    :is="'form-component-'+field.name"
+                    :field="field"
+                    :error="(field.name) ? currentErrors[field.name] : {}">
+                </component>
+                <field-wrapper v-else-if="field.type != 'hidden'" :error="currentErrors[field.name]" :field="field"
+                               @v-back="onBack(field.name)">
+                    <print-field :field="field" :fields="fields" :error="currentErrors[field.name]"
+                                 @v-change="onChange($event, field.name)"></print-field>
+                </field-wrapper>
             </div>
-
-            <group-field v-else-if="field.type == 'group'" :field='field' :store-name='storeName'
-                         :error='currentErrors[field.name]'></group-field>
-
-            <component
-                v-else-if="field.type == 'component'"
-                :is="'form-component-'+field.name"
-                :field="field"
-                :error="(field.name) ? currentErrors[field.name] : {}">
-            </component>
-
-            <field-wrapper v-else-if="field.type != 'hidden'" :error="currentErrors[field.name]" :field="field" @back="onBack(field.name)">
-                <print-field :field='field' :fields="fields" :error='currentErrors[field.name]'
-                             v-on:change="onChange($event, field.name)"></print-field>
-            </field-wrapper>
-        </div>
+        </template>
     </div>
 </template>
 <script>
@@ -40,12 +41,10 @@ import repeatedField from './repeated.vue'
 import groupField from './group.vue'
 import printField from '../fields/field.vue'
 import fieldWrapper from '../fields/wrapper.vue'
-
+import formData from '../../store/form-data'
+import {computed, inject} from "vue";
 
 export default {
-    created() {
-        console.log('fields:', this.fields)
-    },
     components: {
         'repeated-field': repeatedField,
         'group-field': groupField,
@@ -54,9 +53,9 @@ export default {
     },
     props: {
         fields: {},
-        storeName: {
-            type: String,
-            default: ''
+        store: {
+            type: Boolean,
+            default: true
         },
         fieldsType: {
             type: String,
@@ -64,22 +63,36 @@ export default {
         },
         errors: undefined
     },
-    computed: {
-        currentErrors() {
-            if (this.errors != undefined) return this.errors;
-            else return {};
-        }
-    },
-    methods: {
-        colWidth: function (size, classes) {
-            if (classes) return classes
-            if (size == 'half') return 'col-6'
-            if (size == 'third') return 'col-4'
-            return 'col-12'
-        },
-        onChange: function (value, name) {
-            if (this.storeName == '') this.$emit('change', value, name)
-            else {
+    setup(props) {
+        const msgConfirm = inject('msgConfirm')
+        return {
+            errorsTab: computed(() => {
+                var res = {};
+                for (let tabName in formData.tabs.value) {
+                    for (let fieldName in formData.tabs.value[tabName].fields) {
+                        if (formData.errors.value[fieldName] != undefined) res[tabName] = 'text-danger';
+                    }
+                }
+                return res;
+            }),
+            currentErrors: computed(() => {
+                if (props.errors != undefined) return props.errors;
+                else return {};
+            }),
+
+            colWidth: function (size, classes) {
+                if (classes) return classes
+                if (size == 'half') return 'col-6'
+                if (size == 'third') return 'col-4'
+                return 'col-12'
+            },
+            onChange: function (value, name) {
+                // Если хранилище не выбрано, отправляем событие родителю
+                if (!props.store) {
+                    this.$emit('v-change', value, name)
+                    return
+                }
+
                 let changed = true
 
                 // Возвращается более сложный объект
@@ -89,24 +102,24 @@ export default {
                     value = value.value
                 }
 
-                this.store.dispatch(this.storeName + '/setFieldProp', {
+                formData.setFieldProp({
                     name,
                     value,
                     changed,
-                    fields: this.fields,
+                    fields: props.fields,
                     property: 'value',
-                    fieldsType: this.fieldsType,
-                });
+                    fieldsType: props.fieldsType,
+                })
+            },
+            onBack: function (name) {
+                msgConfirm('Вы действительно хотите вернуть изначальное значение данного поля?', () => {
+                    formData.setFieldBack({
+                        name,
+                        fields: props.fields,
+                    })
+                })
             }
-        },
-        onBack: function (name) {
-            this.msgConfirm('Вы действительно хотите вернуть изначальное значение данного поля?', () => {
-                this.store.dispatch(this.storeName + '/setFieldBack', {
-                    name,
-                    fields: this.fields,
-                });
-            })
         }
-    }
+    },
 }
 </script>

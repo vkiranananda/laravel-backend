@@ -1,25 +1,15 @@
-require('./bootstrap');
+window.$ = window.jQuery = require('jquery')
+require('bootstrap')
+window.axios = require('axios');
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 
-import Vue from 'vue'
-import Vuex from 'vuex'
+// require('tether');
 import mitt from 'mitt'
-
 const emitter = mitt()
-
-Vue.use(Vuex)
-
-
-import editForm from '../../Form/resources/js/store/edit';
-// Подключаем быстрые функции для работы с алертами
-import { vAlert, vConfirm} from './libs/alert'
-
-const store = new Vuex.Store({
-    modules: {
-        editForm,
-    }
-})
-
+// import store from "../../Form/resources/js/store/edit";
+// // Подключаем быстрые функции для работы с алертами
+import { vAlert, vConfirm } from './libs/alert'
 // Обновляет страницу при history.back()
 // Не работает в сафари
 if (performance.navigation.type == 2) {
@@ -30,32 +20,34 @@ window.onpopstate = (event) => {
     location.reload(true);
 };
 
-Vue.prototype.store = store;
-Vue.prototype.msgAlert = vAlert;
-Vue.prototype.msgConfirm = vConfirm;
-Vue.prototype.emitter = emitter
-
+// Надо убрать
 window.emitter = emitter
 
-// Подключаем иконки они должы быть доступны всем.
-Vue.component('v-icon', require('./components/octicons.vue').default)
-// Модальные окна
-Vue.component('v-modal', require('./components/modal').default)
-// Alert
-Vue.component('v-alert', require('./components/alert').default)
+import { createApp } from 'vue'
+
+const backend = createApp({})
+
+backend.provide('msgConfirm', vConfirm)
+backend.provide('msgAlert', vAlert)
+
+backend.config.globalProperties.emitter = emitter
+backend.config.globalProperties.msgConfirm = vConfirm
+backend.config.globalProperties.msgAlert = vAlert
+// backend.config.globalProperties.store = store
+
+window.backend = backend
+
+backend.component('v-icon', require('./components/octicons').default)
+backend.component('v-alert', require('./components/alert').default)
+backend.component('v-confirm', require('./components/modal').default)
 
 
 // Модуль форм
 require('../../Form/resources/js/init.js');
-// Меню
+// // Меню
 require('../../Menu/resources/js/init.js');
+// // Пользовательский js
+// require('../../../../../backend/resources/js/backend.js');
 
-// Пользовательский js
-require('../../../../../backend/resources/js/backend.js');
-
-const backend = new Vue({
-    el: '#backend-body'
-    // store
-});
-
-window.backend = backend
+backend.mount('#backend-body')
+// setTimeout(vAlert, 5000)

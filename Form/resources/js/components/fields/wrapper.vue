@@ -1,14 +1,19 @@
 <!-- params 'error', 'field' -->
-<template functional>
+<template>
     <div class="form-group">
-        <label v-if="props.field.label" v-html="props.field.label"  :class="props.field._changed != undefined ? 'changed' : ''"></label>
+        <label v-if="field.label" v-html="field.label"  :class="field._changed != undefined ? 'changed' : ''"></label>
         <slot></slot>
-        <div class="invalid-feedback d-block" v-show="props.error">{{ props.error }}</div>
-        <small class="form-text text-muted" v-if="props.field.desc != ''" v-html="props.field.desc"></small>
-        <v-icon v-if='props.field._changed != undefined' name="reply" class="back text-success" @click="listeners.back" />
+        <div class="invalid-feedback d-block" v-show="error">{{ error }}</div>
+        <small class="form-text text-muted" v-if="field.desc != ''" v-html="field.desc"></small>
+        <v-icon v-if='field._changed != undefined' name="reply" class="back text-success" @click="$emit('v-back')" />
     </div>
 </template>
 
+<script>
+export default {
+    props: ['field', 'error']
+}
+</script>
 
 <style lang='scss'>
     .form-group {

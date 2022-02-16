@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import formData from '../../store/form-data'
 
 export default {
     props: ['url', 'config'],
@@ -71,14 +72,6 @@ export default {
             this.$refs.upload.click()
         },
 
-        // Комитим загруженные файлы
-        addUploadedFile(id) {
-            this.store.commit('editForm/addUploadFile', id)
-        },
-        delUploadedFile(id) {
-            this.store.commit('editForm/delUploadFile', id)
-        },
-
         unselectFiles() {
             for (var file of this.files) if (file.selected) file.selected = false;
             this.selectedItems = [];
@@ -121,7 +114,7 @@ export default {
                             this.selectFile(fileInArr)
 
                             // Комитим новые файлы
-                            this.addUploadedFile(fileInArr.id)
+                            formData.addUploadFile(fileInArr.id)
                         })
                         .catch((error) => {
                             console.log(error.response);
@@ -131,9 +124,9 @@ export default {
                             }
                             this.errors += errors + "<br>";
 
-                            this.$set(fileInArr, 'haveErrors', true);
+                            fileInArr['haveErrors'] = true;
                             setTimeout(() => {
-                                this.$delete(this.files, this.files.indexOf(fileInArr));
+                                this.files.splice(this.files.indexOf(fileInArr), 1);
                             }, 1000);
                         });
                 })(files[i]);
@@ -143,14 +136,13 @@ export default {
         // Выбираем файл
         selectFile(file) {
             if ((this.config.type == 'image' && file.file_type == 'image') || this.config.type == 'all') {
-
                 if (file.selected) {
-                    //Удаляем из выбранных элементов
+                    // Удаляем из выбранных элементов
                     this.selectedItems.splice(this.selectedItems.indexOf(file.id), 1);
                     file.selected = false;
                 } else {
                     // console.log('set');
-                    //Снимаем пометку с самого первого элемента, если лимит исчерпан
+                    // Снимаем пометку с самого первого элемента, если лимит исчерпан
                     if (this.config.count != undefined && this.config.count <= this.selectedItems.length) {
                         //Ищем индекс в списке файлов и снимаем его.
                         var lastEl = this.selectedItems.length - 1;
@@ -162,7 +154,7 @@ export default {
                     //Добавляем элемент.
                     if (this.config.count == undefined || this.config.count > this.selectedItems.length) {
                         this.selectedItems.push(file.id);
-                        this.$set(file, 'selected', true);
+                        file['selected'] = true;
                     }
                 }
                 this.emitSelect()
@@ -187,21 +179,19 @@ export default {
                 this.errors = "";
 
                 // Подсвечиваем удаляемый файл
-                this.$set(file, 'haveErrors', true);
+                file['haveErrors'] = true;
 
-                var deleteFile = () => {
+                let deleteFile = () => {
                     // Оповестить всех что файл удален
                     this.emitter.emit('UploadFilesDeleteFile', file.id);
 
                     // Удаляем из новозагруженных файлов
-                    this.delUploadedFile(file.id)
+                    formData.delUploadFile(file.id)
 
                     // Удаляем из списка
-                    this.$delete(this.files, this.files.indexOf(file));
+                    this.files.splice(this.files.indexOf(file), 1);
                 }
-
                 if (file.clone) deleteFile()
-
                 else {
                     // Удаляем
                     axios.delete(this.urls.destroy + '/' + file['id'])

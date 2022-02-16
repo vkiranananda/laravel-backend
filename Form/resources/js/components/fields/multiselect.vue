@@ -42,7 +42,7 @@
 							for (let el of newValues) res.push(el.value)
 						} else res = newValues.value
 					}
-					this.$emit('change', res )
+					this.$emit('v-change', res )
 				 }
 	  		},
 	  	},

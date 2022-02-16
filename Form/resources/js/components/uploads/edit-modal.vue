@@ -16,7 +16,7 @@
         <div class="clearfix"></div>
 
         <field-wrapper v-for="(field, key) in file.fields" :field="field" :key="key">
-            <print-field :field='field' v-on:change="onChange($event, key)"></print-field>
+            <print-field :field='field' v-on:v-change="onChange($event, key)"></print-field>
         </field-wrapper>
 
         <save-buttons modal="#UploadEditModal" :status="status" v-on:submit="submit"></save-buttons>
@@ -27,9 +27,10 @@
     import printField from '../fields/field.vue'
     import fieldWrapper from '../fields/wrapper.vue'
     import saveButtons from '../form/save-buttons'
+    import formData from '../../store/form-data'
 
     export default {
-        //Создаем слушателей событий
+        // Создаем слушателей событий
         created () { this.emitter.on('UploadFilesEditModalShow', this.showModal) },
         beforeDestroy() { this.emitter.off('UploadFilesEditModalShow', this.showModal) },
 
@@ -47,21 +48,20 @@
             }
         },
         methods: {
-            //Показываем модальное окно
+            // Показываем модальное окно
             showModal (file) {
-                //Если указатели не равны инитим данные
+                // Если указатели не равны инитим данные
                 if (this.file.id != file.id) {
-                    //Копируем объект для локальной работы
+                    // Копируем объект для локальной работы
                     this.file = Object.assign({}, file);
 
                     this.loading = true;
-
-                    //Получаем доп инфу по файлу
-                    axios.get(this.store.state.editForm.config.upload.editUrl+'/'+file.id)
+                    // Получаем доп инфу по файлу
+                    axios.get(formData.config.value.upload.editUrl+'/'+file.id)
                     .then( (response) => {
-                        //Добавляем свойства в уже созданный объект
+                        // Добавляем свойства в уже созданный объект
                         for (let key in response.data) {
-                            this.$set(this.file, key, response.data[key])
+                            this.file[key] = response.data[key]
                         }
 
                         this.loading = false;
@@ -73,7 +73,7 @@
             },
             submit () {
                 var res = {};
-                //Получаем значения
+                // Получаем значения
                 for (let key in this.file.fields) res[key] = this.file.fields[key].value
                 this.status = 'saveing';
 
@@ -94,12 +94,12 @@
                     }
                 });
             },
-            //Сохраянем изменения
+            // Сохраянем изменения
             onChange (value, name) { this.file.fields[name].value = value },
             closeForm() { $('#UploadEditModal').modal('hide') },
 
             delFile() {
-                //Открепляем
+                // Открепляем
                 this.file.deleteMethod(this.file.deleteValue);
                 this.closeForm();
             }

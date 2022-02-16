@@ -12,7 +12,7 @@
         components: {TheMask},
         methods: {
         	change: function(data) {
-                if (data != this.field.value) this.$emit('change', data)
+                if (data != this.field.value) this.$emit('v-change', data)
         	}
         }
     }

@@ -1,17 +1,15 @@
 <template>
     <div class="small-mce" :class="field.size ? field.size : 'small'">
-        <trumbowyg ref="editor" :value="field.value" @input="change" :config="config"></trumbowyg>
+        <trumbowyg ref="editor" v-model="content" :config="config"></trumbowyg>
     </div>
 </template>
 
 
 <script>
-// https://summernote.org/plugins
-// Import this component
 import trumbowyg from 'vue-trumbowyg';
-// Import editor css
 import 'trumbowyg/dist/ui/trumbowyg.css';
 import 'trumbowyg/dist/langs/ru';
+import fecha from "fecha";
 // import './libs/trumbowyg-insert-image';
 // import 'trumbowyg/plugins/resizimg/trumbowyg.resizimg';
 
@@ -19,7 +17,7 @@ export default {
     methods: {
         change: function (html) {
             // Фикс повторного срабатывания
-            if (html != this.field.value) this.$emit('change', html)
+            if (html != this.field.value) this.$emit('v-change', html)
         },
 
         attachFile: function (files, link) {
@@ -45,14 +43,15 @@ export default {
         },
     },
     components: {trumbowyg},
-    data() {
-        return {}
-    },
     computed: {
-        // height () {
-        //    	if(this.field.height == undefined) return '300px';
-        //     else return this.field.height + 'px';
-        // },
+        content: {
+            get: function () {
+                return this.field.value
+            },
+            set: function (content) {
+                this.$emit('v-change', content)
+            }
+        },
         config() {
             var config = {
                 lang: 'ru',

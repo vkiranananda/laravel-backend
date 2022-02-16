@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.clonedeep'
-import Vue from 'vue'
+// import Vue from 'vue'
 
 
 export default {
@@ -42,18 +42,18 @@ export default {
         },
         //Устанавливаем свойство в поле property
         setFieldProp(state, data) {
-            Vue.set(data.field, data.property, data.value)
+          /////  Vue.set(data.field, data.property, data.value)
         },
         //Устанавливаем уникальный идентификатор для некоторых полей. Нужно для ретитед полей, что бы обозначить уникальность поля с одним именем
         setUniqueKey(state) {
             state.uniqueKey++
         },
         setTabVShow(state, data) {
-            Vue.set(state.tabs[data.name], 'v-show', data.value)
+          /////  Vue.set(state.tabs[data.name], 'v-show', data.value)
         },
         //Устанавливаем свойства v-show для списка полей в табе по ссылке на поле
         setTabFieldVShow(state, data) {
-            Vue.set(data.field, 'v-show', data.value)
+            ///// Vue.set(data.field, 'v-show', data.value)
         },
         //Выставляем активную табу
         setTabActive(state, value) {

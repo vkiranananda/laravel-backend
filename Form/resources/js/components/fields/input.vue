@@ -1,4 +1,9 @@
-<template functional>
-    <input v-bind="props.field.attr" :type="props.field.type" :value="props.field.value"
-      v-on:input="listeners.change($event.target.value)" :disabled="props.field.readonly ? true : false" class="form-control"  :class='props.error ? "is-invalid" : "" '>
+<template>
+    <input v-bind="field.attr" :type="field.type" :value="field.value"
+      v-on:input="$emit('v-change', $event.target.value)" :disabled="field.readonly ? true : false" class="form-control"  :class='error ? "is-invalid" : "" '>
 </template>
+<script>
+export default {
+    props: ['field', 'error']
+}
+</script>

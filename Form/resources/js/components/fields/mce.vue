@@ -57,7 +57,7 @@
 				    	editor.setContent(this.field.value);
 				    });
 	                editor.on('change', () => {
-	                    this.$emit('change', editor.getContent());
+	                    this.$emit('v-change', editor.getContent());
 	                });
 	            },
 			});

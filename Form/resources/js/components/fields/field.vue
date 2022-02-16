@@ -2,7 +2,7 @@
     <div class="field-block d-flex align-items-center">
         <div class="field">
             <component v-if="component" :is="'form-field-'+component" :field="fieldChanged" :fields="fields" :error='error'
-                       v-on:change="$emit('change', $event)"></component>
+                       v-on:v-change="$emit('v-change', $event)"></component>
         </div>
         <v-icon v-if="field.protected === true && blocked" name="key" class="back" @click="unblock"/>
     </div>
@@ -12,7 +12,7 @@
     import FormFieldInput from './input.vue'
     import FormFieldDate from './date.vue'
     import FormFieldTextarea from './textarea.vue'
-    import FormFieldMce from './mce.vue'
+    // import FormFieldMce from './mce.vue'
     import FormFieldFiles from './files.vue'
     import FormFieldRadio from './radio.vue'
     import FormFieldSelect from './select.vue'
@@ -45,7 +45,7 @@
             FormFieldInput,
             FormFieldDate,
             FormFieldTextarea,
-            FormFieldMce,
+            // FormFieldMce,
             FormFieldFiles,
             FormFieldRadio,
             FormFieldSelect,

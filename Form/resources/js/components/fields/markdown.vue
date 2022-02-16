@@ -10,7 +10,7 @@ export default {
     methods: {
         change: function (text) {
             // Фикс повторного срабатывания
-            if (text != this.field.value) this.$emit('change', text)
+            if (text != this.field.value) this.$emit('v-change', text)
         },
 
         attachFile: function (files, link) {
@@ -40,7 +40,7 @@ export default {
                 return this.field.value
             },
             set: function (text) {
-                this.$emit('change', text)
+                this.$emit('v-change', text)
             }
         },
         config() {

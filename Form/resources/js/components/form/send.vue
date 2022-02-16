@@ -7,19 +7,23 @@
             <span class="text-warning" v-else-if='status == "saveing"'>Сохраняю...</span>
         </div>
         <div class="me-4">
-            <button v-for="btn in buttons"
-                    @click="btnClick(btn)"
-                    :disabled="status == 'saveing' ? true : false"
-                    type="button"
-                    class="btn ms-2"
-                    :class="btn.type ? 'btn-'+btn.type : 'btn-primary'">
-                {{ btn.label }}
-            </button>
+
+            <template v-for="btn in buttons">
+                <button @click="btnClick(btn)"
+                        :disabled="status == 'saveing' ? true : false"
+                        type="button"
+                        class="btn ms-2"
+                        :class="btn.type ? 'btn-'+btn.type : 'btn-primary'">
+                    {{ btn.label }}
+                </button>
+            </template>
         </div>
     </div>
 </template>
 
 <script>
+
+import formData from '../../store/form-data'
 
 export default {
     //Создаем слушателей событий
@@ -34,11 +38,11 @@ export default {
         method: {default: 'POST'},
         modal: {default: false},
         closeUrl: {default: false},
-        storeName: {type: String, default: ''}
+        store: {type: Boolean, default: true}
     },
     computed: {
         buttons: function () {
-            return this.store.state.editForm.config.buttons
+            return formData.config.value.buttons
         },
     },
     methods: {
@@ -63,18 +67,18 @@ export default {
         },
         submit(saveAndExit = false) {
             var res = {};
-            if (this.storeName != '') {
-                //Получаем все value
-                res.fields = getValuesFromTabs(this.store.state[this.storeName].tabs);
+            if (this.store) {
+                // Получаем все value
+                res.fields = getValuesFromTabs(formData.tabs.value);
                 // Получаем скрытые поля
-                res.hidden = this.store.state[this.storeName].hiddenFields;
-                //Получаем загруженные файлы
-                res.files = this.store.state[this.storeName].uploadFiles;
+                res.hidden = formData.hiddenFields.value;
+                // Получаем загруженные файлы
+                res.files = formData.uploadFiles.value;
             }
 
             this.status = 'saveing';
 
-            console.log('Sending editForm', res, this.store.state[this.storeName].fields);
+            console.log('Sending editForm', res, formData.fields.value);
 
             axios({
                 url: this.url,
@@ -85,7 +89,7 @@ export default {
 
                     console.log(response);
 
-                    var result = response.data;
+                    let result = response.data;
 
                     // Отменяем предупреждающее окно при закрытии страницы
                     window.onbeforeunload = null;
@@ -117,13 +121,13 @@ export default {
                     // Инитим конфиг
                     if (result.config != undefined) {
                         if (result.fields != undefined) {//Полный инит
-                            this.store.dispatch('editForm/initData', {
+                            formData.initData({
                                 config: result.config,
                                 fields: result.fields
                             });
                         }
                         // Инитим элементы конфига
-                        else this.store.commit('editForm/initCustomConfig', result.config)
+                        else formData.initCustomConfig(result.config)
                     }
 
                     // Меняем урл если задано
@@ -136,7 +140,7 @@ export default {
                         this.status = ''
                     }, 3000);
 
-                    this.store.commit('editForm/setErrors', {});
+                    formData.setErrors({});
 
                     // Общий хук сохранения
                     this.emitter.emit('FormSaved')
@@ -147,13 +151,9 @@ export default {
                 })
                 .catch((error) => {
                     if (error.response && error.response.status == 422) {
-
                         console.log(error.response.data.errors);
-
-                        this.store.commit('editForm/setErrors', error.response.data.errors);
-
+                        formData.setErrors(error.response.data.errors);
                         this.status = 'errorFields';
-
                     } else {
                         this.status = 'errorAny';
                         console.log(error.response);
