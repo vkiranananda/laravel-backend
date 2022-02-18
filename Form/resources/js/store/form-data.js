@@ -11,6 +11,19 @@ const data = {
     config: ref({}),
     show: ref({}),  // Показываем скрываем элементы
 }
+
+export default {
+    fields: readonly(data.fields),
+    tabs: readonly(data.tabs),
+    hiddenFields: readonly(data.hiddenFields),
+    uploadFiles: readonly(data.uploadFiles),
+    tabActive: readonly(data.tabActive),
+    errors: readonly(data.errors),
+    config: readonly(data.config),
+    show: readonly(data.show),
+    setFieldProp, setFieldBack, addRepeatedBlock, initData, setTabActive, initCustomConfig, setErrors, addUploadFile, delUploadFile
+}
+
 let indexesOfFields = [];
 
 // Добавляем индекс поля если его нет
@@ -22,6 +35,10 @@ function addFieldIndex(field) {
 function indexingFields(fields) {
     for (let name in fields) {
         addFieldIndex(fields[name])
+        // Обрабатываем группу полей
+        if (fields[name].type =='group'){
+            indexingFields(fields[name].fields)
+        }
     }
 }
 
@@ -117,59 +134,33 @@ function setFieldProp({fields, name, property, value, fieldsType, changed}) {
 }
 
 // Возвращаем первоначальное значение
-function setFieldBack({fields, name}) {
+function setFieldBack({fields, name, fieldsType}) {
     let field = fields[name]
 
-    setFieldProp({name, property: 'value', value: field['_changed'], fields})
+    setFieldProp({name, property: 'value', value: field['_changed'], fields, fieldsType})
     setFieldProp({name, property: '_changed', value: undefined, fields})
-}
-
-
-export default {
-    fields: readonly(data.fields),
-    tabs: readonly(data.tabs),
-    hiddenFields: readonly(data.hiddenFields),
-    uploadFiles: readonly(data.uploadFiles),
-    tabActive: readonly(data.tabActive),
-    errors: readonly(data.errors),
-    config: readonly(data.config),
-    show: readonly(data.show),
-    setFieldProp, setFieldBack, addRepeatedBlock, initData, setTabActive, initCustomConfig, setErrors, addUploadFile, delUploadFile
 }
 
 function initCustomConfig(data) {
     for (var key in data) data.config[key] = data[key]
 }
 
-export const formData = () => {
-    // //Инитим отдельные опции конфига.
+// //Устанавливаем уникальный идентификатор для некоторых полей. Нужно для репитед полей, что бы обозначить уникальность поля с одним именем
+// setUniqueKey(state) {
+//     state.uniqueKey++
+// },
 
-    //
-    // //Устанавливаем уникальный идентификатор для некоторых полей. Нужно для репитед полей, что бы обозначить уникальность поля с одним именем
-    // setUniqueKey(state) {
-    //     state.uniqueKey++
-    // },
-    //
-    // //Устанавливаем свойства v-show для списка полей в табе по ссылке на поле
-    // setTabFieldVShow(state, data) {
-    //     data.field['v-show'] = data.value
-    //     // Vue.set(data.field, 'v-show', data.value)
-    // },
-
-    // //Выставляем ошибки
-
-    //
-    // // Удаляем репитед блок
-    // delRepeatedBlock(state, data) {
-    //     data.block.splice(data.index, 1);
-    // },
-    // // Добавляем удаляем вновь загруженные файлы.
+// //Устанавливаем свойства v-show для списка полей в табе по ссылке на поле
+// setTabFieldVShow(state, data) {
+//     data.field['v-show'] = data.value
+//     // Vue.set(data.field, 'v-show', data.value)
+// },
 
 
-    // Выставляем активную табу
-    return {}
-}
-
+// // Удаляем репитед блок
+// delRepeatedBlock(state, data) {
+//     data.block.splice(data.index, 1);
+// },
 function addUploadFile(id) {
     data.uploadFiles.value.push(id)
 }
@@ -210,7 +201,6 @@ function setVShowDataRoot(all) {
     for (let tabName in data.tabs.value) {
         // Если есть show выставляем значение
         if (data.tabs.value[tabName]['show'] != undefined) {
-            // console.log(tabName)
             data.tabs.value[data.name]['v-show'] = {
                 name: tabName,
                 value: vShowCheck(data.tabs.value[tabName]['show'], data.fields.value)

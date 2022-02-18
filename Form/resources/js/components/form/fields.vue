@@ -116,6 +116,7 @@ export default {
                     formData.setFieldBack({
                         name,
                         fields: props.fields,
+                        fieldsType: props.fieldsType,
                     })
                 })
             }

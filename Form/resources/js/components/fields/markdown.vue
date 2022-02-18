@@ -1,18 +1,13 @@
 <template>
-    <vue-simplemde :value="field.value" :configs="config" @input="change" ref="editor"/>
+    <vue-simplemde v-model="value" :configs="config" ref="editor"/>
 </template>
 
 <script>
 import VueSimplemde from 'vue-simplemde'
 import 'simplemde-theme-base/dist/simplemde-theme-base.min.css'
-
+// FIXME Не работает отмена записи. Переменная value меняется, но на деле ничего не происходит. Видимо кэш какой то внутри самого компонента.
 export default {
     methods: {
-        change: function (text) {
-            // Фикс повторного срабатывания
-            if (text != this.field.value) this.$emit('v-change', text)
-        },
-
         attachFile: function (files, link) {
 
             var res = ''
@@ -40,7 +35,7 @@ export default {
                 return this.field.value
             },
             set: function (text) {
-                this.$emit('v-change', text)
+                if (this.field.value != text) this.$emit('v-change', text)
             }
         },
         config() {

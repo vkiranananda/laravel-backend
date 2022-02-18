@@ -7,9 +7,10 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // require('tether');
 import mitt from 'mitt'
 const emitter = mitt()
-// import store from "../../Form/resources/js/store/edit";
+
 // // Подключаем быстрые функции для работы с алертами
 import { vAlert, vConfirm } from './libs/alert'
+
 // Обновляет страницу при history.back()
 // Не работает в сафари
 if (performance.navigation.type == 2) {
@@ -47,7 +48,6 @@ require('../../Form/resources/js/init.js');
 // // Меню
 require('../../Menu/resources/js/init.js');
 // // Пользовательский js
-// require('../../../../../backend/resources/js/backend.js');
+require('../../../../../backend/resources/js/backend.js');
 
 backend.mount('#backend-body')
-// setTimeout(vAlert, 5000)

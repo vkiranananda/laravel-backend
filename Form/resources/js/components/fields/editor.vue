@@ -15,11 +15,6 @@ import fecha from "fecha";
 
 export default {
     methods: {
-        change: function (html) {
-            // Фикс повторного срабатывания
-            if (html != this.field.value) this.$emit('v-change', html)
-        },
-
         attachFile: function (files, link) {
 
             var res = ''
