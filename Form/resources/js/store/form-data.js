@@ -21,7 +21,16 @@ export default {
     errors: readonly(data.errors),
     config: readonly(data.config),
     show: readonly(data.show),
-    setFieldProp, setFieldBack, addRepeatedBlock, initData, setTabActive, initCustomConfig, setErrors, addUploadFile, delUploadFile
+    setFieldProp,
+    setFieldBack,
+    addRepeatedBlock,
+    initData,
+    setTabActive,
+    initCustomConfig,
+    setErrors,
+    addUploadFile,
+    delUploadFile,
+    delRepeatedBlock
 }
 
 let indexesOfFields = [];
@@ -36,8 +45,10 @@ function indexingFields(fields) {
     for (let name in fields) {
         addFieldIndex(fields[name])
         // Обрабатываем группу полей
-        if (fields[name].type =='group'){
+        if (fields[name].type == 'group') {
             indexingFields(fields[name].fields)
+        } else if (fields[name].type == 'repeated') {
+            for (let rFields of fields[name].value) indexingFields(rFields.fields)
         }
     }
 }
@@ -89,25 +100,16 @@ function initData({fields, config}) {
 }
 
 
-// Добавляем новый репитед блок
-function addRepeatedBlock(field) {
-    field.value.push({fields: cloneDeep(field['fields']), key: field['unique-index']});
-    field['unique-index']++;
-
-    // Обновляем видимость полей
-    setVShowData(field.value[field.value.length - 1].fields, true);
-}
-
 // Устанавливаем value
 function setFieldProp({fields, name, property, value, fieldsType, changed}) {
     // Берем из индексов что бы можно было править.
-    let field = indexesOfFields[fields[name]['_index']]
+    let field = _getField(fields[name])
     // Старое значение
     let oldValue = field[property]
 
     // Устанавливаем значение в поле.
-    field[property] = value
-    // For value
+    _setFieldProp(field, property, value)
+
     if (property == 'value') {
         // Если тип селект или радио обрабатываем отображние полей.
         if (field.type == 'select' || field.type == 'radio') {
@@ -121,16 +123,32 @@ function setFieldProp({fields, name, property, value, fieldsType, changed}) {
         // Обрабатываем изменения только если поле без autosave
         else {
             // Добавляем первоначальное значение при изменении...
-            if (field._changed == undefined && changed === true) {
-                field['_changed'] = oldValue
-            } else {
-                if (field.value == field._changed) {
-                    field['_changed'] = undefined
-                }
-            }
+            if (field._changed == undefined && changed === true)
+                _setFieldProp(field, '_changed', oldValue)
+            else if (field.value == field._changed) _setFieldProp(field, '_changed', undefined)
         }
         beforeClose();
     }
+}
+
+// Добавляем новый репитед блок
+function addRepeatedBlock(field) {
+    let lField = _getField(field)
+
+    lField.value.push({fields: cloneDeep(lField['fields']), key: lField['unique-index']});
+    lField['unique-index']++;
+
+    let fields = lField.value[lField.value.length - 1].fields
+    indexingFields(fields)
+    // Обновляем видимость полей
+    setVShowData(fields, true);
+}
+
+// Удаляем репитед блок
+function delRepeatedBlock({field, index}) {
+    // Можно бы удалить конечно индексы из indexesOfFields, но тогда надо менять способ добавления, но смысла в этом не вижу
+    //Какой то глобальной утечки памяти тут реально достич трудно :)
+    indexesOfFields[field['_index']].value.splice(index, 1)
 }
 
 // Возвращаем первоначальное значение
@@ -138,7 +156,8 @@ function setFieldBack({fields, name, fieldsType}) {
     let field = fields[name]
 
     setFieldProp({name, property: 'value', value: field['_changed'], fields, fieldsType})
-    setFieldProp({name, property: '_changed', value: undefined, fields})
+    _setFieldProp(field, '_changed', undefined)
+    // setFieldProp({name, property: '_changed', value: undefined, fields})
 }
 
 function initCustomConfig(data) {
@@ -157,10 +176,6 @@ function initCustomConfig(data) {
 // },
 
 
-// // Удаляем репитед блок
-// delRepeatedBlock(state, data) {
-//     data.block.splice(data.index, 1);
-// },
 function addUploadFile(id) {
     data.uploadFiles.value.push(id)
 }
@@ -174,15 +189,27 @@ function setErrors(errors) {
     data.errors.value = errors
 }
 
+
+// Получаем поле из индекса
+function _getField(field) {
+    return indexesOfFields[field['_index']]
+}
+
+// Устанавливаем свойство полю
+function _setFieldProp(field, prop, value) {
+    _getField(field)[prop] = value
+    // console.log(prop, value)
+}
+
 //-------------------------Код для отбражения скрития элементов----------------------------------
 
 // Выставляем значения видимости(v-show) репитед полей.
 function setVShowData(fields, all) {
     // Перебираем все поля
     for (let key in fields) {
-        let field = fields[key];
+        let field = _getField(fields[key]);
         if (field.show != undefined) {
-            field['v-show'] = vShowCheck(field.show, fields)
+            _setFieldProp(field, 'v-show', vShowCheck(field.show, fields))
         }
         // Проходим по всему дереву вверх текущих полей
         if (all === true) {
@@ -226,14 +253,15 @@ function vShowCheck(show, fields) {
             if (show[i].operator == '||' && res == true) return res;
         }
 
-        var showField = show[i]['field'];
+        let showField = show[i]['field'];
+        let field = _getField(fields[showField])
 
-        //Проверяем соответсвия условиям
+        // Проверяем соответсвия условиям
         if (show[i].type == '==') {
-            if (fields[showField].value == show[i].value) res = true;
+            if (field.value == show[i].value) res = true;
             else res = false;
         } else { //!=
-            if (fields[showField].value != show[i].value) res = true;
+            if (field.value != show[i].value) res = true;
             else res = false;
         }
     }

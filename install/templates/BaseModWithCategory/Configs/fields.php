@@ -26,7 +26,6 @@
     		'category_id' => [
 	        	'name' => 'category_id',
         		'type' => 'select',
-        		'name' => 'category_id',
         		'label' => 'Категория',
     		],
     		{seo}'seo' => [
