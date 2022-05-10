@@ -1,6 +1,6 @@
 {
     "name": "vkiranananda/backend",
-    "description": "Test call request  package",
+    "description": "Бэкенд на vue-3 для laravel 9 и выше",
     "license": "MIT",
 
     "minimum-stability": "stable",
