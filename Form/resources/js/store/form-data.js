@@ -37,6 +37,7 @@ let indexesOfFields = [];
 
 // Добавляем индекс поля если его нет
 function addFieldIndex(field) {
+    // console.log(field.value)
     if (!field['_index']) field['_index'] = indexesOfFields.push(field) - 1
 }
 
@@ -47,6 +48,7 @@ function indexingFields(fields) {
         // Обрабатываем группу полей
         if (fields[name].type == 'group') {
             indexingFields(fields[name].fields)
+            console.log(fields[name].fields)
         } else if (fields[name].type == 'repeated') {
             for (let rFields of fields[name].value) indexingFields(rFields.fields)
         }
@@ -198,7 +200,6 @@ function _getField(field) {
 // Устанавливаем свойство полю
 function _setFieldProp(field, prop, value) {
     _getField(field)[prop] = value
-    // console.log(prop, value)
 }
 
 //-------------------------Код для отбражения скрития элементов----------------------------------

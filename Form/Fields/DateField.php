@@ -4,6 +4,7 @@ namespace Backend\Root\Form\Fields;
 
 use Carbon\Carbon;
 use GetConfig;
+use Log;
 
 class DateField extends Field
 {
@@ -14,32 +15,29 @@ class DateField extends Field
 
         $dateConfig = $this->getTimeConfig();
         // Применяем локальный часовой пояс
-        $date = new Carbon($value, $dateConfig['time-zone']);
-
-        // Делаем смещение до системного, только если дата целиком
-        // Проверить надо ли вообще
-        if (isset($this->field['time']) && $this->field['time'])
-            $date->setTimezone(config('app.timezone'));
+        $date = new Carbon($value, config('app.timezone'));
 
         return $date;
     }
 
     // Получаем сырое значние элемента для редактирования
-    public function edit($value)
+    public function edit($date)
     {
-        if ($value == null) return null;
+        if ($date == null) return '';
 
         $dateConfig = $this->getTimeConfig();
 
-        if (!is_object($value)) $value = Carbon::create($value);
+        if (!is_object($date)) {
+            $date = Carbon::create($date);
+            $date->setTimezone(config('app.timezone'));
+        }
 
         // Применяем часовой пояс если дата полная
         if (isset($this->field['time']) && $this->field['time']) {
-            // $value->setTimezone($dateConfig['time-zone']);
-            return $value->toDateTimeString();
+            return $date->toDateTimeString();
         }
 
-        return $value->toDateString();
+        return $date->toDateString();
     }
 
     // Получаем готовое значение для списков

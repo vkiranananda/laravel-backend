@@ -6,6 +6,7 @@ use Auth;
 use Helpers;
 use Illuminate\Database\Eloquent\Model;
 use Request;
+use Illuminate\Support\Arr;
 
 trait Index
 {
@@ -64,7 +65,8 @@ trait Index
 
         foreach ($this->fields['list'] as $field) {
 
-            // Получаем базовое поле. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
+            // Получаем базовые поля. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
+
             $mainField = (isset ($this->fields['fields'][$field['name']])) ? $this->fields['fields'][$field['name']] : [];
 
             // Выставляем метку если на задано
