@@ -29,7 +29,7 @@
             	}
 
             	if ( val != Number(this.data.currentPage) ) {
-                    this.$emit('change', val)
+                    this.$emit('v-change', val)
                 }
         	},
 

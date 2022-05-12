@@ -1,14 +1,11 @@
-<!--
-clear-if-select
-
--->
 <template>
     <div class="autocomplete">
         <input
             type="text"
             ref="input"
             :placeholder="field.placeholder"
-            v-model="value"
+            :value="field.value"
+            @input="change($event.target.value)"
             class="form-control"
             @click="openResults"
             autocorrect="off"
@@ -43,7 +40,6 @@ clear-if-select
                 resultsUserClose: false,
                 // Выставлем true когда не нужно делать запрос на сервер при смене value
                 closeResults: false,
-                value: this.field.value,
                 timerId: 0,
                 focus: {}
             }
@@ -57,7 +53,9 @@ clear-if-select
                     this.resultsUserClose = false
                 } else document.body.removeEventListener('click', this.clickOutside)
             },
-            value: function (value, oldValue) {
+        },
+        methods: {
+            change: function (value){
                 this.$emit('v-change', value)
                 if (value.length < 3 || this.closeResults) {
                     this.showResults = false
@@ -89,8 +87,6 @@ clear-if-select
                         })
                 }, 170)
             },
-        },
-        methods: {
             clickOutside: function (event) {
                 if (!(this.$refs.results == event.target || this.$refs.results.contains(event.target)
                     || this.$refs.input == event.target || this.$refs.input.contains(event.target))
@@ -110,21 +106,19 @@ clear-if-select
             select: function () {
                 if (this.showResults) {
                     // Закрываем список если значения равны
-                    if (this.focus.value == this.value) {
+                    if (this.focus.value == this.field.value) {
                         this.showResults = false
-
                     } else {
                         // Отменяем запрос по аякс
                         this.closeResults = true
-                        this.value = this.focus.value
                     }
                 }
             },
             // Срабатывает при выборе элемента мышкой
             selectByClick: function (el) {
-                this.$emit('select', el)
+                this.$emit('v-change', el)
                 this.select()
-                if (this.field['clear-if-select']) this.value = ''
+                if (this.field['clear-if-select']) this.$emit('v-change', '')
             },
             // Срабатывает при выборе элемента по нажатию enter
             selectByEnter: function (el) {
@@ -141,14 +135,12 @@ clear-if-select
                 if (i !== false && this.searchData[i + 1]) {
                     this.focus = this.searchData[i + 1]
                 }
-                // event.preventDefault();
             },
             //Клавиша вверх
             up: function (event) {
                 let i = this.searchItem(this.focus.value)
                 if (i > 0 && this.searchData[i - 1]) {
                     this.focus = this.searchData[i - 1]
-                    // event.preventDefault()
                     this.endCursor()
                 }
             },

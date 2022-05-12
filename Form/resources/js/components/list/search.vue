@@ -6,7 +6,7 @@
                 <div class="row">
                     <div v-for="field in fieldsNew.fields" class="form-group col-4">
                         <label v-if="field.label">{{ field.label }}</label>
-                        <print-field :field='field' v-on:change="onChange($event, field)"></print-field>
+                        <print-field :field='field' @v-change="onChange($event, field)"></print-field>
                     </div>
 
                     <div class="col-auto">
@@ -18,7 +18,7 @@
         <div class="form-inline mb-3 mx-2">
             <div v-for="field in fieldsNew.filters" class="form-group text-nowrap">
                 Фильтры: &nbsp;
-                <print-field :field='field' v-on:change="onChange($event, field)" class=""></print-field>
+                <print-field :field='field' @v-change="onChange($event, field)" class=""></print-field>
             </div>
         </div>
     </form>
@@ -59,7 +59,7 @@ export default {
             if (field['search-type'] == 'filter') this.search()
         },
         search: function () {
-            this.$emit('change', this.values)
+            this.$emit('v-change', this.values)
         }
     }
 }

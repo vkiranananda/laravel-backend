@@ -21,13 +21,13 @@
                 <template v-for="(tab, key) in tabs" :key="key">
                     <div class="tab-pane" :class="activeTab == key ? 'active' : ''"
                          :id="'tab-'+key" role="tabpanel" v-if="tab['v-show'] !== false">
-                        <fields-list :fields="tab.fields" :errors="errors" fields-type='tab'></fields-list>
+                        <fields-list :fields="tab.fields" :errors="errors" fields-type='tab' :key="dataKey"></fields-list>
                     </div>
                 </template>
             </div>
         </div>
         <div v-else>
-            <fields-list :fields='tabs[activeTab].fields' :errors="errors"></fields-list>
+            <fields-list :fields='tabs[activeTab].fields' :errors="errors"  :key="dataKey"></fields-list>
         </div>
 
         <send-form :url='conf.url' :method='conf.method'></send-form>
@@ -43,7 +43,7 @@
 
 
 <script>
-//    import assign from 'lodash.assign'
+
 import size from 'lodash.size';
 import fieldsList from './fields.vue'
 import uploadFilesModal from '../uploads/files-modal.vue'
@@ -70,6 +70,7 @@ export default {
             tabs: formData.tabs,
             activeTab: formData.tabActive,
             errors: formData.errors,
+            dataKey: formData.dataKey,
             errorsTab: computed(() => {
                 var res = {};
                 for (let tabName in formData.tabs.value) {

@@ -17,14 +17,14 @@
 
         <the-list-components v-if="myData.components['after-buttons']" components='after-buttons'
                              :data="myData"></the-list-components>
-        <the-search v-if="myData.search != undefined" :fields="myData.search" @change="searchChange"></the-search>
+        <the-search v-if="myData.search != undefined" :fields="myData.search" @v-change="searchChange"></the-search>
         <the-list-components v-if="myData.components['after-search']" components='after-search'
                              :data="myData"></the-list-components>
         <the-breadcrumbs v-if="myData.breadcrumbs" :data="myData.breadcrumbs"></the-breadcrumbs>
         <the-list :fields="myData.fields" :items="myData.items" :itemMenu="myData.itemMenu"
-                  @change="listChange"></the-list>
+                  @v-change="listChange"></the-list>
 
-        <the-sortable @change="pageReload"></the-sortable>
+        <the-sortable @v-change="pageReload"></the-sortable>
         <v-alert></v-alert>
     </div>
 </template>

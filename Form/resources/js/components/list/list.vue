@@ -4,7 +4,7 @@
             <div class="row mb-3">
                 <div class="col-auto me-auto"></div>
                 <div class="col-auto">
-                    <list-paginate :data="items" @change="pageChange"></list-paginate>
+                    <list-paginate :data="items" @v-change="pageChange"></list-paginate>
                 </div>
             </div>
             <div class="table-responsive">
@@ -64,7 +64,7 @@
             <div class="row">
                 <div class="col-auto me-auto"></div>
                 <div class="col-auto">
-                    <list-paginate :data="items" @change="pageChange"></list-paginate>
+                    <list-paginate :data="items" @v-change="pageChange"></list-paginate>
                 </div>
             </div>
         </div>
@@ -82,7 +82,7 @@ export default {
     },
     methods: {
         pageChange: function (value) {
-            this.$emit('change', {currentPage: value})
+            this.$emit('v-change', {currentPage: value})
         },
         sortable: function (key) {
             let field = this.fields[key], orderType;
@@ -91,7 +91,7 @@ export default {
             else if (field.sortable === 'asc') orderType = 'desc';
             else if (field.sortable === 'desc') orderType = true;
 
-            this.$emit('change', {sortable: key, orderType})
+            this.$emit('v-change', {sortable: key, orderType})
         },
         itemActionClick: function (url, el) {
             if (el.confirm) {
@@ -111,11 +111,11 @@ export default {
         //Удаляем элемент
         deleteItem: function (url) {
 
-            this.$emit('change', {destroy: 'begin'});
+            this.$emit('v-change', {destroy: 'begin'});
 
             axios.delete(url)
                 .then((response) => {
-                    this.$emit('change', {destroy: 'finished'});
+                    this.$emit('v-change', {destroy: 'finished'});
                     //Вызываем хуки
                     if (response.data.hook != undefined && response.data.hook.name) {
                         this.emitter.emit(response.data.hook.name, response.data.hook.data)
@@ -126,7 +126,7 @@ export default {
                         this.msgAlert(error.response.data.message);
                     }
                     console.log(error.response);
-                    this.$emit('change', {destroy: 'error'});
+                    this.$emit('v-change', {destroy: 'error'});
                 });
         }
     }

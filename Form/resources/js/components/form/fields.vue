@@ -14,7 +14,7 @@
                 <div v-else-if="field.type == 'repeated'" class="form-group">
                     <label v-if="field.label" v-html="field.label"></label>
                     <repeated-field :field='field' :store='store' :error='currentErrors[field.name]'
-                                    v-on:v-change="onChange($event, field.name)"></repeated-field>
+                                    @v-change="onChange($event, field.name)"></repeated-field>
                     <small class="form-text text-muted" v-if="field.desc != ''" v-html="field.desc"></small>
                 </div>
 
@@ -101,7 +101,7 @@ export default {
                     if (value.changed === false) changed = false
                     value = value.value
                 }
-
+                
                 formData.setFieldProp({
                     name,
                     value,

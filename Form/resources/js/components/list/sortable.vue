@@ -74,7 +74,7 @@ export default {
 
             axios({url: this.url, method: 'put', data: {items}}).then((response) => {
                 this.status = 'saved'
-                this.$emit('change')
+                this.$emit('v-change')
 
                 // Вызываем хуки
                 if (response.data.hook != undefined && response.data.hook.name) {

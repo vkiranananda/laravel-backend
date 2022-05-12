@@ -66,7 +66,7 @@ class BackendInstall extends Command
 
 
         $this->info("Сборка фронтенда:");
-        $this->line("npm install mitt jquery @popperjs/core bootstrap  vue-trumbowyg lodash.clonedeep lodash.size vue@next vue-multiselect vue-the-mask vuedraggable@next fecha @primer/octicons vue-simplemde simplemde-theme-base vue-datepicker-next\n");
+        $this->line("npm install mitt jquery @popperjs/core bootstrap  vue-trumbowyg lodash.clonedeep lodash.size vue@next vue-multiselect vue-the-mask fecha @primer/octicons vue-datepicker-next\n");
         $this->info("В файл webpack.mix.js добавялем строки:");
         $this->line("mix.js('vendor/vkiranananda/backend/resources/js/backend.js', 'public/backend/js/admin.js').version();"
         	."mix.sass('vendor/vkiranananda/backend/resources/sass/backend.scss', 'public/backend/css/backend.css').options({processCssUrls: false}).version();\n");

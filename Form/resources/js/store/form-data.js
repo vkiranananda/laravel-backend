@@ -7,6 +7,8 @@ const data = {
     hiddenFields: ref({}),
     uploadFiles: ref([]),
     tabActive: ref(''),
+    // Уникальный ключ, обновляется при обновлении данных формы, для того что бы перезагрузить компоненты.
+    dataKey: ref(0),
     errors: ref({}),
     config: ref({}),
     show: ref({}),  // Показываем скрываем элементы
@@ -20,6 +22,7 @@ export default {
     tabActive: readonly(data.tabActive),
     errors: readonly(data.errors),
     config: readonly(data.config),
+    dataKey: readonly(data.dataKey),
     show: readonly(data.show),
     setFieldProp,
     setFieldBack,
@@ -30,7 +33,8 @@ export default {
     setErrors,
     addUploadFile,
     delUploadFile,
-    delRepeatedBlock
+    delRepeatedBlock,
+    moveRepeatedBlock
 }
 
 let indexesOfFields = [];
@@ -60,6 +64,7 @@ function setTabActive(value) {
 }
 
 function initData({fields, config}) {
+    data.dataKey.value ++
     data.fields.value = fields.fields
     data.hiddenFields.value = fields.hidden
     data.tabs.value = fields.tabs
@@ -149,12 +154,21 @@ function addRepeatedBlock(field) {
 // Удаляем репитед блок
 function delRepeatedBlock({field, index}) {
     // Можно бы удалить конечно индексы из indexesOfFields, но тогда надо менять способ добавления, но смысла в этом не вижу
-    //Какой то глобальной утечки памяти тут реально достич трудно :)
+    // Какой то глобальной утечки памяти тут реально достич трудно :)
     indexesOfFields[field['_index']].value.splice(index, 1)
+}
+// Перемещаем блоки
+function moveRepeatedBlock({field, newIndex, oldIndex}) {
+    // Меняем местами
+    let els = indexesOfFields[field['_index']].value
+    let tmp = els[newIndex]
+    els[newIndex] = els[oldIndex]
+    els[oldIndex] = tmp
 }
 
 // Возвращаем первоначальное значение
 function setFieldBack({fields, name, fieldsType}) {
+    console.log({fields, name, fieldsType})
     let field = fields[name]
 
     setFieldProp({name, property: 'value', value: field['_changed'], fields, fieldsType})
