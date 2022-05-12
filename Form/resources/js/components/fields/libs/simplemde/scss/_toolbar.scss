@@ -1,0 +1,157 @@
+.editor-toolbar {
+  // 
+  // Container
+  //
+
+  background-color: $color-background;
+  border: 1px solid $color-border;
+  border-bottom: 0;
+  border-top-left-radius: $width-border-radius;
+  border-top-right-radius: $width-border-radius;
+  font-size: $font-size;
+  padding: 0 $width-gap;
+  position: relative;
+  user-select: none;
+
+  &::before,
+  &::after {
+    content: ' ';
+    display: block;
+    height: 1px;
+  }
+  &::before {
+    margin-bottom: $width-gap-half;
+  }
+  &::after {
+    margin-top: $width-gap-half;
+  }
+
+
+  //
+  // Icons
+  //
+
+  a {
+    border: 1px solid transparent;
+    border-radius: $width-border-radius;
+    color: $color-text-muted !important;
+    cursor: pointer;
+    display: inline-block;
+    font-size: $font-size-small;
+    height: $smde-width-toolbar-icon;
+    margin: 0;
+    text-align: center;
+    text-decoration: none !important;
+    width: $smde-width-toolbar-icon;
+
+    &.active,
+    &:hover {
+      border-color: $color-border;
+      color: $color-text !important;
+    }
+
+    &::before {
+      line-height: $smde-width-toolbar-icon;
+    }
+
+    // Header icons
+    &.fa-header-x::after {
+      bottom: $smde-bottom-sub;
+      font-family: $font-family;
+      font-size: $font-size-small;
+      line-height: 0;
+      position: relative;
+      vertical-align: baseline;
+    }
+    &.fa-header-1::after {
+      content: "1";
+    }
+    &.fa-header-2::after {
+      content: "2";
+    }
+    &.fa-header-3::after {
+      content: "3";
+    }
+    &.fa-header-bigger::after {
+      content: "▲";
+    }
+    &.fa-header-smaller::after {
+      content: "▼";
+    }
+  }
+
+
+  //
+  // Separator
+  //
+
+  & i.separator {
+    border-right: 1px solid $color-border;
+    color: transparent;
+    display: inline-block;
+    margin: 0 $width-gap-half;
+    // Hide the true charector `|`
+    text-indent: -10px;
+    width: 0;
+  }
+
+  &:hover a {
+    color: $color-text !important;
+  }
+}
+
+
+//
+// Fullscreen mode
+//
+
+.editor-toolbar.fullscreen {
+  background-color: $color-background;
+  border: 0;
+  box-sizing: border-box;
+  height: $smde-height-toolbar-fullscreen;
+  left: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: $width-gap;
+  padding-top: $width-gap;
+  position: fixed;
+  top: 0;
+  white-space: nowrap;
+  width: 100%;
+  z-index: $smde-z-index-fullscreen;
+
+  &::before,
+  &::after {
+    height: $smde-height-toolbar-fullscreen;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    top: 0;
+    width: 20px;
+  }
+}
+
+
+//
+// Mobile mode
+//
+
+@media only screen and (max-width: $smde-breakpoint-mobile) {
+  .editor-toolbar a.no-mobile {
+    display: none;
+  }
+}
+
+
+//
+// Disable when priview
+//
+
+.editor-toolbar.disabled-for-preview a:not(.no-disable) {
+  background-color: $smde-color-background-preview;
+  border-color: transparent;
+  pointer-events: none;
+  text-shadow: inherit;
+}

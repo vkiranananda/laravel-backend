@@ -1,0 +1,137 @@
+// All variables need to be named as ${rule}-${element}-${modifier}
+
+//
+//
+// Colors
+//
+
+// Add !default so _custom.scss can override it
+$color-background: white !default;
+$color-text: #333 !default;
+$color-text-muted: #777 !default;
+$color-border: #ddd !default;
+
+$color-primary: hsl(210, 70%, 50%) !default;
+$color-danger: hsl(0, 65%, 60%) !default;
+
+$color-background-faded: darken($color-background, 5%) !default;
+$color-background-selected: rgba(0, 0, 0, 0.1) !default;
+
+//
+//
+// Layout
+//
+
+$max-width-container: 800px !default;
+$max-width-container-wider: 1200px !default;
+
+$width-breakpoint: 768px !default;
+
+//
+//
+// Spacing
+//
+
+// The base size, all other size are based on it
+$size-base: 10px !default;
+
+$width-gap: $size-base * 1.5 !default;
+$width-gap-double: $width-gap * 2 !default;
+$width-gap-half: $width-gap * 0.5 !default;
+
+$width-padding-input: $size-base * 0.5 !default;
+
+$width-border-radius: $size-base * 0.3 !default;
+
+$width-border: 1px !default;
+
+$padding-code: 0.2em 0.3em !default;
+
+//
+//
+// Typography
+//
+
+$font-size: $size-base * 1.6 !default;
+
+$font-size-h1: $size-base * 3.2 !default;
+$font-size-h2: $size-base * 2.6 !default;
+$font-size-h3: $size-base * 2.2 !default;
+$font-size-h4: $size-base * 2 !default;
+$font-size-h5: $size-base * 1.8 !default;
+$font-size-h6: $size-base * 1.6 !default;
+
+$font-size-pre: $size-base * 1.3 !default;
+
+$font-size-small: 85% !default;
+
+$line-height: 1.5 !default;
+$line-height-header: 2 !default;
+
+$line-height-input: 1.25 !default;
+// line-height need to be set to pre, not code
+$line-height-pre: 1.2 !default;
+
+$font-weight-bold: 600 !default;
+
+$font-family: inherit !default;
+
+$font-family-monospace:
+  Menlo,
+  Monaco,
+  Consolas,
+  "Liberation Mono",
+  "Courier New",
+  monospace !default;
+
+//
+//
+// SimpleMDE specific variables, prefixed with smde-
+//
+
+// For preview section
+$smde-color-background-preview: #fff !default;
+// Image alt, HTML tag and attribute
+$smde-color-text-tag: hsl(120, 50%, 50%) !default;
+
+// Icon size
+$smde-width-toolbar-icon: 30px !default;
+
+// The height of toolbar in fullscreen mode
+$smde-height-toolbar-fullscreen: $smde-width-toolbar-icon + ($width-gap * 2) !default;
+
+//
+//
+// Be careful
+//
+
+// A margin need to be set to hidden the right and bottom scrollbar of container
+// By default it's set in the codemirror project, default to 30px
+// For some reasons, if you resize the padding of the container,
+// you need to reset this margin size
+// Delete all the textarea content and hide the border of the container to test it
+// Be careful!
+$smde-margin-hidden-scrollbar: 32px !default;
+
+// This is hard coded in simplemde/src/js/simplemde.js
+// Be careful if you want to change it 
+$smde-breakpoint-mobile: $width-breakpoint !default;
+
+// z-index
+$smde-z-index-container: 1 !default;
+$smde-z-index-fullscreen: 9 !default;
+
+// The left and right padding for every line
+// This is not needed because SimpleMDE doesn't has line-number
+$smde-padding-line: 0 !default;
+
+// Height for container
+// This should be set by user, not theme
+$smde-height-container: auto !default;
+// Minimun height for container
+// This should be set by user, not theme
+$smde-min-height-container: 300px !default;
+
+// <sub> relative bottom
+// Defines the <sub> position of H1, H2, H3 icon
+$smde-bottom-sub: -0.25em !default;

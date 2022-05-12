@@ -1,0 +1,70 @@
+.CodeMirror {
+  background-color: $color-background;
+  border: 1px solid $color-border;
+  border-bottom-left-radius: $width-border-radius;
+  border-bottom-right-radius: $width-border-radius;
+  color: $color-text;
+  font-family: $font-family;
+  font-size: $font-size;
+  height: $smde-height-container;
+  line-height: $line-height;
+  min-height: $smde-min-height-container;
+  padding: $width-gap;
+  z-index: $smde-z-index-container;
+}
+
+.CodeMirror-scroll {
+  margin-bottom: -$smde-margin-hidden-scrollbar;
+  margin-right: -$smde-margin-hidden-scrollbar;
+  min-height: $smde-min-height-container;
+  padding-bottom: $smde-margin-hidden-scrollbar;
+}
+
+.CodeMirror-fullscreen {
+  background-color: $color-background;
+  border: 0;
+  border-top: 1px solid $color-border;
+  bottom: 0;
+  height: auto;
+  left: 0;
+  position: fixed !important;
+  right: 0;
+  top: $smde-height-toolbar-fullscreen;
+  z-index: $smde-z-index-fullscreen;
+}
+
+.CodeMirror-sided {
+  width: 50% !important;
+}
+
+// Placeholder
+.CodeMirror .CodeMirror-placeholder {
+  color: $color-text-muted;
+}
+
+// Cursor
+.CodeMirror-cursor {
+  border-left-color: $color-text;
+}
+
+.CodeMirror-lines {
+  padding: 0;
+}
+
+// Override the default every-line-paddings in codemirror.css
+.CodeMirror pre {
+  padding: 0 $smde-padding-line;
+}
+
+
+//
+// Selected text background-color
+//
+
+.CodeMirror-selected,
+.CodeMirror-focused .CodeMirror-selected,
+.CodeMirror-line::selection,
+.CodeMirror-line > span::selection,
+.CodeMirror-line > span > span::selection {
+  background-color: $color-background-selected;
+}

@@ -1,0 +1,28 @@
+//
+// Statusbar
+//
+
+.editor-statusbar {
+  color: $color-text-muted;
+  font-family: $font-family;
+  font-size: $font-size-small;
+  padding: $width-gap-half $width-gap;
+  text-align: right;
+}
+
+.editor-statusbar span {
+  display: inline-block;
+  margin-left: 1em;
+}
+
+.editor-statusbar .lines::before {
+  content: 'lines: ';
+}
+
+.editor-statusbar .words::before {
+  content: 'words: ';
+}
+
+.editor-statusbar .characters::before {
+  content: 'characters: ';
+}

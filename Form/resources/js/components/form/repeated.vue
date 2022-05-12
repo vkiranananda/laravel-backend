@@ -28,7 +28,6 @@ export default {
         error: undefined,
     },
     mounted() {
-        const targetDomElement = this.$el
         this._sortable = new Sortable(this.$refs.repeatedFields, {
             disabled: this.field.readonly ? true : false,
             handle: '.move',
