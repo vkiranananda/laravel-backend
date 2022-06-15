@@ -1,11 +1,11 @@
 <?php
 
 namespace Backend\Root\Core\Services;
-
+use \Illuminate\Database\Eloquent\Collection;
 class Helpers
 {
 
-    // Получаем все поля где есть массив options, передается параметр табов
+    // Получаем все поля, где есть массив options, передается параметр табов
     static public function changeFieldsOptions($fields)
     {
         $res = [];
@@ -18,7 +18,7 @@ class Helpers
         return $fields;
     }
 
-    // Обьединям параметры урл
+    // Объединяем параметры урл
     static public function mergeUrlParams($url, $param, $value)
     {
         $url .= ($url != '') ? '&' : '?';
@@ -48,7 +48,7 @@ class Helpers
         return $res;
     }
 
-    // Заполняем массив значиениями keys
+    // Заполняем массив значениями keys
     static public function setArray(&$from, $keys)
     {
         $res = [];
@@ -68,10 +68,10 @@ class Helpers
     }
 
     // Генерит список value label для селектов и прочего из списка данных
-    static public function getHtmlOptions(&$from)
+    static public function getHtmlOptions($from)
     {
         $res = [];
-        if (is_array($from)) {
+        if (is_array($from) || $from instanceof Collection) {
             foreach ($from as $el) {
                 $r['value'] = $el['id'];
                 $r['label'] = $el['name'];

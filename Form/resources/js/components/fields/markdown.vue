@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import SimpleMDE from './libs/simplemde/js/simplemde'
-import './libs/simplemde/scss/simplemde-theme-base.scss'
+// import SimpleMDE from './libs/simplemde/js/simplemde'
+// import './libs/simplemde/scss/simplemde-theme-base.scss'
 export default {
     props: ['field'],
 

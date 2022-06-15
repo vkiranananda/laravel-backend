@@ -7,60 +7,58 @@
                     <list-paginate :data="items" @v-change="pageChange"></list-paginate>
                 </div>
             </div>
-            <div class="table-responsive">
-                <table class="table table-hover" id="table-list">
-                    <thead>
-                    <tr class="table-light">
-                        <th v-for="(field, key) in fields" :key="field.name" class="align-middle" scope="col"
-                            v-bind="field.attr">
-                            <div v-if="field.sortable != undefined" class="sortable"
-                                 :class="field.sortable === true ? 'none' : field.sortable" @click="sortable(key)">
-                                {{ field.label }}
-                                <v-icon name="chevron-down" class="down"/>
-                                <v-icon name="chevron-up" class="up"/>
-                            </div>
-                            <span v-else>{{ field.label }}</span>
-                        </th>
-                        <th scope="col" class="menu-td" v-if="itemMenu"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="item in items.data" :class="item['_row_class']">
-                        <td v-for="field in fields" v-bind="field.attr">
-                            <v-icon :name="field.icon" class="me-2" v-if="field.icon"/>
-                            <a v-if="field.link" :href="item._links[field.link]">{{ item[field.name] }}</a>
-                            <template v-else>
-                                <span v-if="field.html === true" v-html="item[field.name]"></span>
-                                <template v-else>{{ item[field.name] }}</template>
-                            </template>
-                        </td>
+            <table class="table table-hover h-100" id="table-list">
+                <thead>
+                <tr class="table-light">
+                    <th v-for="(field, key) in fields" :key="field.name" class="align-middle" scope="col"
+                        v-bind="field.attr">
+                        <div v-if="field.sortable != undefined" class="sortable"
+                             :class="field.sortable === true ? 'none' : field.sortable" @click="sortable(key)">
+                            {{ field.label }}
+                            <v-icon name="chevron-down" class="down"/>
+                            <v-icon name="chevron-up" class="up"/>
+                        </div>
+                        <span v-else>{{ field.label }}</span>
+                    </th>
+                    <th scope="col" class="menu-td" v-if="itemMenu"></th>
+                </tr>
+                </thead>
+                <tbody class="position-static">
+                <tr v-for="item in items.data" :class="item['_row_class']">
+                    <td v-for="field in fields" v-bind="field.attr">
+                        <v-icon :name="field.icon" class="me-2" v-if="field.icon"/>
+                        <a v-if="field.link" :href="item._links[field.link]">{{ item[field.name] }}</a>
+                        <template v-else>
+                            <span v-if="field.html === true" v-html="item[field.name]"></span>
+                            <template v-else>{{ item[field.name] }}</template>
+                        </template>
+                    </td>
 
-                        <td class="menu-td" v-if="itemMenu">
-                            <div class="dropdown">
-                                <button class="btn btn-secondary" type="button" id="dropdownMenuButton"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                    <v-icon name="grabber" width="10"/>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <template v-for="elMenu in itemMenu">
-                                        <li>
-                                            <a v-if="item._links[elMenu.link] != undefined"
-                                               class="dropdown-item"
-                                               v-on:click.stop.prevent="itemActionClick(item._links[elMenu.link], elMenu)">
-                                                <v-icon :name="elMenu.icon" class="me-2" v-if="elMenu.icon"/>
-                                                {{ elMenu.label }}
-                                            </a>
-                                        </li>
-                                    </template>
-                                </ul>
-                            </div>
+                    <td class="menu-td" v-if="itemMenu">
+                        <div class="dropdown" data-boundary="window">
+                            <button class="btn btn-secondary" type="button" id="dropdownMenuButton"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <v-icon name="grabber" width="10"/>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <template v-for="elMenu in itemMenu">
+                                    <li>
+                                        <a v-if="item._links[elMenu.link] != undefined"
+                                           class="dropdown-item"
+                                           v-on:click.stop.prevent="itemActionClick(item._links[elMenu.link], elMenu)">
+                                            <v-icon :name="elMenu.icon" class="me-2" v-if="elMenu.icon"/>
+                                            {{ elMenu.label }}
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
 
 
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
             <div class="row">
                 <div class="col-auto me-auto"></div>
                 <div class="col-auto">
@@ -136,6 +134,17 @@ export default {
 
 <style lang='scss'>
 .list {
+    //@media (max-width: 767px) {
+    //    .table-responsive .dropdown-menu {
+    //        position: static !important;
+    //    }
+    //}
+    //@media (min-width: 768px) {
+    //    .table-responsive {
+    //        overflow: inherit;
+    //    }
+    //}
+
     .sortable {
         cursor: pointer;
         position: relative;
@@ -198,6 +207,7 @@ export default {
         a {
             text-decoration: none;
         }
+
         .dropdown {
             display: none;
 

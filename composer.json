@@ -13,7 +13,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Backend\\Root\\": ""
+            "Backend\\Root\\": "",
+            "Backend\\": "backend/"
         }
     },
     "require": {

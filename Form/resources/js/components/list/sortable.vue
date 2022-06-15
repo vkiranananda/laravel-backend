@@ -8,13 +8,11 @@
                 </th>
             </tr>
             </thead>
-            <draggable v-model="list"  handle=".item"  item-key="id" tag="tbody">
-                <template #item="{element}">
-                    <tr class="item">
-                        <td v-for="field in fields" :key="field.name">{{ element[field.name] }}</td>
-                    </tr>
-                </template>
-            </draggable>
+            <tbody ref="listSortable">
+            <tr class="item" v-for="el in list">
+                <td v-for="field in fields" :key="field.name">{{ el[field.name] }}</td>
+            </tr>
+            </tbody>
         </table>
         <div slot="footer">
             <save-buttons modal="#ListSortableModal" :status="status" v-on:submit="submit"></save-buttons>
@@ -23,10 +21,25 @@
 </template>
 
 <script>
-import draggable from 'vuedraggable'
+import Sortable from '../../../../../resources/js/libs/sortable'
 import saveButtons from '../form/save-buttons'
 
 export default {
+    mounted() {
+        this._sortable = new Sortable(this.$refs.listSortable, {
+            // animation: 300,
+            handle: '.item',
+            // easing: "cubic-bezier(1, 0, 0, 1)",
+            onEnd: (evt) => {
+                let oldEl = this.list[evt.oldIndex]
+                this.list[evt.oldIndex] = this.list[evt.newIndex]
+                this.list[evt.newIndex] = oldEl
+            }
+        });
+    },
+    beforeUnmount() {
+        if (this._sortable !== undefined) this._sortable.destroy();
+    },
     created() {
         this.emitter.on('ListSortableShow', this.showModal)
     },
@@ -34,8 +47,7 @@ export default {
         this.emitter.off('ListSortableShow', this.showModal)
     },
     components: {
-        draggable,
-        'save-buttons': saveButtons
+        saveButtons
     },
     data() {
         return {

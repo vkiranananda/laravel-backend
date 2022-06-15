@@ -4,33 +4,45 @@
             <show-uploads-button :config="config"></show-uploads-button>
         </div>
         <div class="conteiner">
-            <draggable v-model="files" handle=".item" item-key="id">
-                <template #item="{element}">
-                    <div class="media-file item"
-                         :class="field.type == 'gallery' ? 'image' : 'file'">
-                        <a href='#' v-on:click.prevent="del(element)" class="delete"
-                           v-if="field.readonly != true">&times;</a>
-                        <div class="file-body" v-on:click.prevent="edit(element)">
-                            <img :src="element.thumb" alt="" class="image">
-                            <div class="text">{{ element.orig_name }}</div>
-                        </div>
+            <div ref="listSortable" class="d-flex flex-row">
+                <div v-for="file in files" class="media-file item" :key="file.id"
+                     :class="field.type == 'gallery' ? 'image' : 'file'">
+                    <a href='#' v-on:click.prevent="del(file)" class="delete"
+                       v-if="field.readonly != true">&times;</a>
+                    <div class="file-body" v-on:click.prevent="edit(file)">
+                        <img :src="file.thumb" alt="" class="image">
+                        <div class="text">{{ file.orig_name }}</div>
                     </div>
-                </template>
-            </draggable>
+                </div>
+            </div>
         </div>
 
-        <div class="clearfix"></div>
         <!--        <small class="form-text text-muted" v-if="сountAgain == 0">Привышен лимит. Для того что бы выбрать новый файл сначала удалить имеющийся</small>-->
     </div>
 </template>
 
 <script>
-import draggable from 'vuedraggable'
+import Sortable from '../../../../../resources/js/libs/sortable'
 import showUploadsButton from '../uploads/show-uploads-button'
 
 const cloneDeep = require('clone-deep')
 
 export default {
+    mounted() {
+        this._sortable = new Sortable(this.$refs.listSortable, {
+            onEnd: (evt) => {
+                let res = this.files.slice()
+                let oldEl = res[evt.oldIndex]
+                res[evt.oldIndex] = res[evt.newIndex]
+                res[evt.newIndex] = oldEl
+                console.log(res)
+                this.$emit('v-change', res)
+            }
+        });
+    },
+    beforeUnmount() {
+        if (this._sortable !== undefined) this._sortable.destroy();
+    },
     created() {
         this.emitter.on('UploadFilesDeleteFile', this.delById)
     },
@@ -38,14 +50,13 @@ export default {
         this.emitter.off('UploadFilesDeleteFile', this.delById)
     },
     components: {
-        draggable,
         'show-uploads-button': showUploadsButton
     },
     props: ['field'],
     computed: {
         // Количество файлов доступное для загрузки
         сountAgain() {
-            var res = undefined; // Унлимитед
+            let res = undefined; // Унлимитед
             if (this.field['max-files'] != undefined) {
                 res = this.field['max-files'] - this.field.value.length;
                 if (res < 0) res = 0;
@@ -59,28 +70,23 @@ export default {
                 return: this.attachFiles
             }
         },
-        files: {
-            get: function () {
-                return this.field.value
-            },
-            set: function (newValue) {
-                this.$emit('v-change', newValue)
-            }
+        files() {
+            return this.field.value
         },
     },
     methods: {
         // Добавляем файлы
         attachFiles(files) {
-            var newValue = this.files.slice()
-            for (var file of files) newValue.push(file)
+            let newValue = this.files.slice()
+            for (let file of files) newValue.push(file)
             this.$emit('v-change', newValue)
         },
         // Когда файл удаляется полностью
         delById(id) {
-            var exist = false
-            var res = [];
+            let exist = false
+            let res = [];
 
-            for (var file of this.files) {
+            for (let file of this.files) {
                 if (id == file.id) {
                     exist = true
                     continue
@@ -91,7 +97,7 @@ export default {
             if (exist) this.$emit('v-change', {value: res, changed: false})
         },
         del(file) {
-            var res = this.files.slice()
+            let res = this.files.slice()
             res.splice(this.files.indexOf(file), 1)
             this.$emit('v-change', res)
         },
@@ -116,7 +122,6 @@ export default {
         padding-right: 12px;
         margin-right: 6px;
         margin-top: 13px;
-        float: left;
         position: relative;
 
         .file-body {
@@ -158,7 +163,6 @@ export default {
 
     .file {
         position: relative;
-        float: left;
         padding-right: 10px;
         margin-right: 21px;
         margin-bottom: 21px;
@@ -173,7 +177,6 @@ export default {
         img {
             width: auto;
             height: 100%;
-            float: left;
         }
 
         .text {
