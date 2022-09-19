@@ -6,7 +6,6 @@ use Auth;
 use Helpers;
 use Illuminate\Database\Eloquent\Model;
 use Request;
-use Illuminate\Support\Arr;
 
 trait Index
 {
@@ -104,6 +103,9 @@ trait Index
             }
         }
 
+        // Сохраняем в переменную о том подключен ли класс, что бы не плодить кучу проверок.
+        $IndexEditablePrep = method_exists($this, 'IndexEditablePrep');
+
         // Подготваливаем все поля
         foreach ($query->items() as $post) {
             $res = []; // Преобразованные данные
@@ -126,6 +128,11 @@ trait Index
                 }
                 // Обработчик полей
                 $res[$name] = $fields_prep[$key]->list(Helpers::getDataField($post, $bdName, ''));
+
+                if (isset($field['editable']) && $field['editable'] === true) {
+                    if (!$IndexEditablePrep) dd("Подключите trait 'use \Backend\Root\Form\Services\Traits\IndexEditable;'");
+                    $this->IndexEditablePrep($post, $field);
+                }
             }
             $this->dataReturn['items']['data'][] = $res;
         }

@@ -25,13 +25,17 @@
                 </thead>
                 <tbody class="position-static">
                 <tr v-for="item in items.data" :class="item['_row_class']">
-                    <td v-for="field in fields" v-bind="field.attr">
+                    <td v-for="field in fields" v-bind="field.attr" class="position-relative"
+                        :class="field.editable ? 'editable' : ''">
                         <v-icon :name="field.icon" class="me-2" v-if="field.icon"/>
                         <a v-if="field.link" :href="item._links[field.link]">{{ item[field.name] }}</a>
                         <template v-else>
                             <span v-if="field.html === true" v-html="item[field.name]"></span>
                             <template v-else>{{ item[field.name] }}</template>
                         </template>
+                        <a v-if="field.editable" class="editable-link text-primary" href="#" @click.stop.prevent="editField(field)">
+                            <v-icon name="pencil"/>
+                        </a>
                     </td>
 
                     <td class="menu-td" v-if="itemMenu">
@@ -53,8 +57,6 @@
                                 </template>
                             </ul>
                         </div>
-
-
                     </td>
                 </tr>
                 </tbody>
@@ -79,6 +81,9 @@ export default {
         'list-paginate': paginate
     },
     methods: {
+        editField: function (field) {
+            console.log(field)
+        },
         pageChange: function (value) {
             this.$emit('v-change', {currentPage: value})
         },
@@ -148,15 +153,23 @@ export default {
     .sortable {
         cursor: pointer;
         position: relative;
+        display: inline-block;
+        padding-right: 10px;
 
-        .octicon {
+        .octicon-wrapper {
             display: none;
             position: absolute;
             margin-left: 5px;
-            top: 5px;
+            top: 0px;
+            right: -8px;
+
+            &.up {
+                top: 2px;
+            }
         }
 
         &.none {
+
             &:hover {
                 .down {
                     display: inline;
@@ -219,6 +232,25 @@ export default {
         &:hover {
             .dropdown {
                 display: block;
+            }
+        }
+
+        td {
+            &.editable {
+                //padding-right: 20px;
+
+                &:hover {
+                    .editable-link {
+                        opacity: 1;
+                    }
+                }
+            }
+
+            .editable-link {
+                position: absolute;
+                top: 7;
+                right: -1px;
+                opacity: 0.2;
             }
         }
     }

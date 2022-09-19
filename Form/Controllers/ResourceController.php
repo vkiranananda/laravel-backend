@@ -159,13 +159,23 @@ class ResourceController extends Controller
         }
     }
 
+    /**
+     * Получаем пост, если он не был получен и делает проверку на права доступа. При ошибке прерывает процесс.
+     * @param $id
+     * @param $access
+     * @return void
+     */
+    public function getPost($id, $access) {
+        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
+
+        // Проверка на права доступа
+        if (!$this->getUserAccess('edit-owner', $this->post['user_id'])) abort(403, 'Access deny!');
+    }
+
     //Редактируем запись вебка
     public function edit($id)
     {
-        //Если пост еще не получен, получаем его
-        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
-        // Проверка на права доступа
-        if (!$this->getUserAccess('edit-owner', $this->post['user_id'])) abort(403, 'Access deny!');
+        $this->getPost($id, 'edit-owner');
 
         $this->resourceCombine('edit');
 
@@ -196,10 +206,7 @@ class ResourceController extends Controller
     //Обновляем запись
     public function update($id)
     {
-        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
-
-        // Проверка на права доступа
-        if (!$this->getUserAccess('edit-owner', $this->post['user_id'])) abort(403, 'Access deny!');
+        $this->getPost($id, 'edit-owner');
 
         $this->resourceCombine('update');
 
@@ -227,11 +234,7 @@ class ResourceController extends Controller
     //!Показываем запись
     public function show($id)
     {
-        // Если пост еще не получен, получаем его
-        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
-
-        // Проверка на права доступа
-        if (!$this->getUserAccess('read-owner', $this->post['user_id'])) abort(403, 'Access deny!');
+        $this->getPost($id, 'read-owner');
 
         $this->resourceCombine('show');
 
@@ -257,10 +260,7 @@ class ResourceController extends Controller
     //Удаляем запись
     public function destroy($id)
     {
-        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
-
-        // Проверка на права доступа
-        if (!$this->getUserAccess('destroy-owner', $this->post['user_id'])) abort(403, 'Access deny!');
+        $this->getPost($id, 'destroy-owner');
 
         $this->resourceCombine('destroy');
 
