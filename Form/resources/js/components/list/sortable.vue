@@ -9,7 +9,7 @@
             </tr>
             </thead>
             <tbody ref="listSortable">
-            <tr class="item" v-for="el in list">
+            <tr class="item" v-for="el in list" :data-id="el.id">
                 <td v-for="field in fields" :key="field.name">{{ el[field.name] }}</td>
             </tr>
             </tbody>
@@ -25,18 +25,6 @@ import Sortable from '../../../../../resources/js/libs/sortable'
 import saveButtons from '../form/save-buttons'
 
 export default {
-    mounted() {
-        this._sortable = new Sortable(this.$refs.listSortable, {
-            // animation: 300,
-            handle: '.item',
-            // easing: "cubic-bezier(1, 0, 0, 1)",
-            onEnd: (evt) => {
-                let oldEl = this.list[evt.oldIndex]
-                this.list[evt.oldIndex] = this.list[evt.newIndex]
-                this.list[evt.newIndex] = oldEl
-            }
-        });
-    },
     beforeUnmount() {
         if (this._sortable !== undefined) this._sortable.destroy();
     },
@@ -52,6 +40,7 @@ export default {
     data() {
         return {
             list: [],
+            resList: [],
             fields: [],
             loading: false,
             url: '',
@@ -61,6 +50,7 @@ export default {
     methods: {
         showModal(el) {
             $('#ListSortableModal').modal('show');
+
             this.status = ''
 
             if (this.url != el.url) {
@@ -73,18 +63,26 @@ export default {
                     this.fields = response.data.fields;
                     this.list = response.data.data;
 
+                    // Добавляем возможность сортировки.
+                    setTimeout(() => {
+                        console.log('connect')
+                        this._sortable = new Sortable(this.$refs.listSortable, {
+                            handle: '.item',
+                            easing: "cubic-bezier(1, 0, 0, 1)",
+                            animation: 200,
+                        });
+                    }, 500)
                 }).catch((error) => {
                     console.log(error.response)
                 });
             }
         },
         submit() {
-            let items = []
-            for (var key in this.list) items[key] = this.list[key].id
+            // Если элемент сортировки не создан.
+            if (this._sortable === undefined) return
 
             this.status = 'saveing'
-
-            axios({url: this.url, method: 'put', data: {items}}).then((response) => {
+            axios({url: this.url, method: 'put', data: { items: this._sortable.toArray()}} ).then((response) => {
                 this.status = 'saved'
                 this.$emit('v-change')
 
@@ -106,10 +104,11 @@ export default {
     tr.item {
         cursor: move;
         user-select: none;
+        background-color: white;
     }
 
     .sortable-ghost {
-        background-color: rgba(0, 0, 0, 0.075);
+        //background-color: rgba(0, 0, 0, 0.075);
         cursor: move;
     }
 }
