@@ -65,8 +65,7 @@ trait Index
         foreach ($this->fields['list'] as $field) {
 
             // Получаем базовые поля. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
-
-            $mainField = (isset ($this->fields['fields'][$field['name']])) ? $this->fields['fields'][$field['name']] : [];
+            $mainField = $this->fields['fields'][$field['name']] ?? [];
 
             // Выставляем метку если на задано
             if (!isset($field['label']) && isset($mainField['label'])) {
@@ -103,9 +102,6 @@ trait Index
             }
         }
 
-        // Сохраняем в переменную о том подключен ли класс, что бы не плодить кучу проверок.
-        $IndexEditablePrep = method_exists($this, 'IndexEditablePrep');
-
         // Подготваливаем все поля
         foreach ($query->items() as $post) {
             $res = []; // Преобразованные данные
@@ -123,15 +119,14 @@ trait Index
 
                 if (isset($field['func'])) {
                     $func = $field['func'];
-                    $res[$name] = $this->$func($post, $field, $urlPostfix);
+                    $res[$name]['value'] = $this->$func($post, $field, $urlPostfix);
                     continue;
                 }
                 // Обработчик полей
-                $res[$name] = $fields_prep[$key]->list(Helpers::getDataField($post, $bdName, ''));
+                $res[$name]['value'] = $fields_prep[$key]->list(Helpers::getDataField($post, $bdName, ''));
 
                 if (isset($field['editable']) && $field['editable'] === true) {
-                    if (!$IndexEditablePrep) dd("Подключите trait 'use \Backend\Root\Form\Services\Traits\IndexEditable;'");
-                    $this->IndexEditablePrep($post, $field);
+                    $res[$name]['links'] = $this->IndexEditableLinks($post, $field, $urlPostfix);
                 }
             }
             $this->dataReturn['items']['data'][] = $res;

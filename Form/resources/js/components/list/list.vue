@@ -26,14 +26,14 @@
                 <tbody class="position-static">
                 <tr v-for="item in items.data" :class="item['_row_class']">
                     <td v-for="field in fields" v-bind="field.attr" class="position-relative"
-                        :class="field.editable ? 'editable' : ''">
+                        :class="field.editable  ? 'editable' : ''">
                         <v-icon :name="field.icon" class="me-2" v-if="field.icon"/>
-                        <a v-if="field.link" :href="item._links[field.link]">{{ item[field.name] }}</a>
+                        <a v-if="field.link" :href="item._links[field.link]">{{ item[field.name].value }}</a>
                         <template v-else>
-                            <span v-if="field.html === true" v-html="item[field.name]"></span>
-                            <template v-else>{{ item[field.name] }}</template>
+                            <span v-if="field.html === true" v-html="item[field.name].value"></span>
+                            <template v-else>{{ item[field.name].value }}</template>
                         </template>
-                        <a v-if="field.editable" class="editable-link text-primary" href="#" @click.stop.prevent="editField(field)">
+                        <a v-if="field.editable && item[field.name].links" class="editable-link text-primary" href="#" @click.stop.prevent="editField(field)">
                             <v-icon name="pencil"/>
                         </a>
                     </td>

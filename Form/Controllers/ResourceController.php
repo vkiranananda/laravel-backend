@@ -16,6 +16,7 @@ class ResourceController extends Controller
 
     use \Backend\Root\Form\Services\Traits\Index;
     use \Backend\Root\Form\Services\Traits\ListSortable;
+    use \Backend\Root\Form\Services\Traits\IndexEditable;
 
     //    use \Backend\Root\Form\Services\Traits\RelationFields;
 

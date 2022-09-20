@@ -52,6 +52,9 @@ class Backend
                 case 'sortable':
                     $this->installSortableRoute($modUrl, $mod);
                     break;
+                case 'editable':
+                    $this->installEditableRoute($modUrl, $mod);
+                    break;
                 case 'resource':
                     // Принудильно инсталим ресурс роутинг в том случае если есть параметр module
                     $this->installResourceRoute($modUrl, $mod);
@@ -83,6 +86,14 @@ class Backend
 
         Route::get($modUrl . '/sortable', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@listSortable');
         Route::put($modUrl . '/sortable', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@listSortableSave');
+    }
+
+    public function installEditableRoute($modUrl, $mod, $controller = false)
+    {
+        if (!$controller) $controller = $mod;
+
+        Route::get($modUrl . '/editable/{postId}/{fieldName}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@IndexEditableEdit');
+        Route::put($modUrl . '/editable/{postId}/{fieldName}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@IndexEditableUpdate');
     }
 
     public function installUploadRoute($modUrl, $mod, $controller = false)
