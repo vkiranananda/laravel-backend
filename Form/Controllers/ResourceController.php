@@ -173,7 +173,7 @@ class ResourceController extends Controller
         if (!$this->getUserAccess('edit-owner', $this->post['user_id'])) abort(403, 'Access deny!');
     }
 
-    //Редактируем запись вебка
+    // Редактируем запись вебка
     public function edit($id)
     {
         $this->getPost($id, 'edit-owner');
@@ -187,7 +187,7 @@ class ResourceController extends Controller
                 'method' => 'put',
                 'viewUrl' => $this->getViewUrl(),
                 'upload' => $this->uploadUrls(),
-                'postId' => $this->post['id'],
+                'postId' => $id,
                 'buttons' => $this->formEditButtons(),
             ],
             'fields' => [
@@ -204,7 +204,7 @@ class ResourceController extends Controller
         return view($this->config['edit']['template'], $this->dataReturn);
     }
 
-    //Обновляем запись
+    // Обновляем запись
     public function update($id)
     {
         $this->getPost($id, 'edit-owner');
@@ -319,7 +319,7 @@ class ResourceController extends Controller
     {
         // Сохраняем данные в запись
         $data = $this->fieldsPrep->saveFields($this->post, $this->fields);
-
+        
         // Если ошибка валидации
         if ($data['errors'] !== true) {
             Response::json(['errors' => $data['errors']], 422)->send();
@@ -336,10 +336,10 @@ class ResourceController extends Controller
 
         $this->post->save();
 
-        //Сохраняем медиафайлы
+        // Сохраняем медиафайлы
         if ($this->config['upload']['enable']) $this->saveMediaRelations(Request::input('files', []));
 
-        //Сохраяняем связи
+        // Сохраяняем связи
         if (method_exists($this, 'saveRelationFields')) {
             // Удаялем все записи
             if ($method != 'store') $this->destroyRelationFields($this->post);

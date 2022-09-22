@@ -33,7 +33,8 @@
                             <span v-if="field.html === true" v-html="item[field.name].value"></span>
                             <template v-else>{{ item[field.name].value }}</template>
                         </template>
-                        <a v-if="field.editable && item[field.name].links" class="editable-link text-primary" href="#" @click.stop.prevent="editField(field)">
+                        <a v-if="field.editable && item[field.name].config" class="editable-link text-primary" href="#"
+                           @click.stop.prevent="editField(item[field.name])">
                             <v-icon name="pencil"/>
                         </a>
                     </td>
@@ -69,20 +70,24 @@
             </div>
         </div>
         <p v-else class="pt-1">Ничего не найдено</p>
+        <edit-field  @v-change="pageChange" />
     </div>
 </template>
 
 <script>
 import paginate from './paginate.vue'
+import editField from './edit-field.vue'
 
 export default {
     props: ['items', 'fields', 'itemMenu'],
     components: {
-        'list-paginate': paginate
+        'list-paginate': paginate,
+        'edit-field': editField,
     },
+
     methods: {
-        editField: function (field) {
-            console.log(field)
+        editField: function (data) {
+            this.emitter.emit('ListEditableShow', data)
         },
         pageChange: function (value) {
             this.$emit('v-change', {currentPage: value})
@@ -135,21 +140,9 @@ export default {
     }
 }
 </script>
-<!-- <the-list-sortable></the-list-sortable > -->
 
 <style lang='scss'>
 .list {
-    //@media (max-width: 767px) {
-    //    .table-responsive .dropdown-menu {
-    //        position: static !important;
-    //    }
-    //}
-    //@media (min-width: 768px) {
-    //    .table-responsive {
-    //        overflow: inherit;
-    //    }
-    //}
-
     .sortable {
         cursor: pointer;
         position: relative;
@@ -238,6 +231,7 @@ export default {
         td {
             &.editable {
                 //padding-right: 20px;
+                //padding-left: 20px;
 
                 &:hover {
                     .editable-link {
@@ -248,7 +242,7 @@ export default {
 
             .editable-link {
                 position: absolute;
-                top: 7;
+                top: 7px;
                 right: -1px;
                 opacity: 0.2;
             }

@@ -4,9 +4,9 @@ namespace Backend\Root\Form\Services;
 
 use GetConfig;
 use Helpers;
-use Illuminate\Support\Facades\Log;
 use Request;
 use Validator;
+use Log;
 
 // Подготовка и сохарнение полей
 
@@ -306,6 +306,33 @@ class Fields
             'post' => $post
         ];
     }
+
+
+    /**
+     * Сохраняем одно поле
+     * @param $post
+     * @param $field
+     * @param $value
+     * @return array возвращаем модифицированный $post и error если есть, иначе true.
+     */
+    public function saveField($post, $field, $value)
+    {
+        $fields[$field['name']] = $field;
+        $relationData = [];
+        $arrayDataFields = [];
+
+        $errors = $this->saveFieldsList($fields, [$field['name'] => $value], $post, $arrayDataFields, $relationData);
+
+        if ($errors !== true) {
+            $errors = $errors[$field['name']];
+        }
+
+        return [
+            'error' => $errors,
+            'post' => $post
+        ];
+    }
+
 
     // Обходит массив полей и сохраняет данные. Рекурсивная функция
     private function saveFieldsList(

@@ -126,7 +126,7 @@ trait Index
                 $res[$name]['value'] = $fields_prep[$key]->list(Helpers::getDataField($post, $bdName, ''));
 
                 if (isset($field['editable']) && $field['editable'] === true) {
-                    $res[$name]['links'] = $this->IndexEditableLinks($post, $field, $urlPostfix);
+                    $res[$name]['config'] = $this->IndexEditableConf($post, $field, $urlPostfix);
                 }
             }
             $this->dataReturn['items']['data'][] = $res;
