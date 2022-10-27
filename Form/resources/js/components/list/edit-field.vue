@@ -38,6 +38,7 @@ export default {
             loading: false,
             error: '',
             lastUrl: '',
+            updateUrl: '',
             label: '',
             field: {},
             status
@@ -54,6 +55,7 @@ export default {
                 this.field = response.data.field
                 this.label = this.field.label
                 this.field.label = undefined
+                this.updateUrl = response.data.config.updateUrl
             }).catch((error) => {
                 console.log(error.response)
             }).then(() => {
@@ -66,7 +68,7 @@ export default {
         update: function () {
             this.status = 'saveing'
             axios({
-                url: this.lastUrl, method: 'PUT', data: {value: this.field.value}
+                url: this.updateUrl, method: 'PUT', data: {value: this.field.value}
             }).then((response) => {
                 this.status = 'saved'
                 this.$emit('v-change')
