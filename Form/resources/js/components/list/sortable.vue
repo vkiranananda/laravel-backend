@@ -1,5 +1,5 @@
 <template>
-    <modal id="ListSortableModal" size="large" :loading="loading" title="Сортировка">
+    <v-modal name="ListSortableModal" size="large" :loading="loading" title="Сортировка">
         <table class="table table-hover">
             <thead>
             <tr class="table-success">
@@ -15,9 +15,9 @@
             </tbody>
         </table>
         <div slot="footer">
-            <save-buttons modal="#ListSortableModal" :status="status" v-on:submit="submit"></save-buttons>
+            <save-buttons modalName="ListSortableModal" :status="status" v-on:submit="submit"></save-buttons>
         </div>
-    </modal>
+    </v-modal>
 </template>
 
 <script>
@@ -49,7 +49,7 @@ export default {
     },
     methods: {
         showModal(el) {
-            $('#ListSortableModal').modal('show');
+            this.modal.show('ListSortableModal')
 
             this.status = ''
 
@@ -65,7 +65,6 @@ export default {
 
                     // Добавляем возможность сортировки.
                     setTimeout(() => {
-                        console.log('connect')
                         this._sortable = new Sortable(this.$refs.listSortable, {
                             handle: '.item',
                             easing: "cubic-bezier(1, 0, 0, 1)",
@@ -80,20 +79,20 @@ export default {
         submit() {
             // Если элемент сортировки не создан.
             if (this._sortable === undefined) return
-
             this.status = 'saveing'
-            axios({url: this.url, method: 'put', data: { items: this._sortable.toArray()}} ).then((response) => {
-                this.status = 'saved'
-                this.$emit('v-change')
-
-                // Вызываем хуки
-                if (response.data.hook != undefined && response.data.hook.name) {
-                    this.emitter.emit(response.data.hook.name, response.data.hook.data)
-                }
-
-            }).catch((error) => {
-                console.log(error.response)
-            });
+            axios({url: this.url, method: 'put', data: {items: this._sortable.toArray()}})
+                .then((response) => {
+                    this.status = 'saved'
+                    this.$emit('v-change')
+                    this.modal.hide('ListSortableModal')
+                    // Вызываем хуки
+                    if (response.data.hook && response.data.hook.name) {
+                        this.emitter.emit(response.data.hook.name, response.data.hook.data)
+                    }
+                })
+                .catch((error) => {
+                    console.log(error.response)
+                });
         }
     }
 }

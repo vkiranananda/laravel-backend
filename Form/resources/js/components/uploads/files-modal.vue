@@ -1,5 +1,5 @@
 <template>
-    <modal id="UploadModal" size="large" title="Медиа файлы">
+    <v-modal name="UploadModal" size="large" title="Медиа файлы">
         <upload-file ref="uploadedFiles" selectable="false" :url="url" :config="config" :method="method"
                      @select="setSelectedFiles"></upload-file>
         <template #footer>
@@ -8,7 +8,7 @@
             <button type="button" class="btn btn-primary" @click="insertFiles()">Вставить</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
         </template>
-    </modal>
+    </v-modal>
 </template>
 
 <script>
@@ -48,7 +48,7 @@ export default {
                 this.lastReturn = config.return;
             }
 
-            $('#UploadModal').modal('show');
+            this.modal.show('UploadModal')
         },
 
         // Выбранные файлы
@@ -58,7 +58,7 @@ export default {
 
         // Вставка файлов
         insertFiles() {
-            $('#UploadModal').modal('hide')
+            this.modal.hide('UploadModal')
 
             if (this.selectedFiles.length > 0) {
                 // Вызываем калбэк

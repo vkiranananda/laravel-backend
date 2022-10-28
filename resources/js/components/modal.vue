@@ -1,12 +1,12 @@
 <template>
-    <div class="modal fade" ref="modal">
+    <!--     fade -->
+    <div class="modal" ref="modal">
         <div class="modal-dialog" :class="classSize" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{ title }}</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            @click="hide"></button>
                 </div>
                 <div class="text-center" v-if="loading">
                     <img src="/backend/images/loading5.gif" alt="">
@@ -16,14 +16,12 @@
                         <slot></slot>
                     </div>
                 </div>
-                <footer>
-                    <div class="modal-footer">
-                        <div v-if="closeButton" class="text-end">
-                            <button class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                        </div>
-                        <footer v-else>222</footer>
+                <div class="modal-footer" slot="footer">
+                    <div v-if="closeButton" class="text-end">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Закрыть</button>
                     </div>
-                </footer>
+                    <slot v-else name="footer"></slot>
+                </div>
             </div>
         </div>
     </div>
@@ -35,11 +33,39 @@ export default {
         size: {default: ''},
         loading: {default: false},
         title: {},
-        closeButton: {default: false}
+        closeButton: {default: false},
+        name: {
+            required: true,
+            type: String
+        }
+    },
+    created() {
+        this.emitter.on(this.name, this.action)
+    },
+    beforeDestroy() {
+        this.emitter.off(this.name, this.action)
+    },
+    mounted() {
+        this.modal = $(this.$refs.modal)
     },
     methods: {
+        action: function (data) {
+            switch (data.action) {
+                case 'show':
+                    this.show()
+                    break
+                case 'hide':
+                    this.hide()
+                    break
+                default:
+                    break
+            }
+        },
         show: function () {
-            $(this.$refs.modal).modal('show')
+            this.modal.show()
+        },
+        hide: function () {
+            this.modal.hide()
         }
     },
     computed: {
@@ -53,7 +79,7 @@ export default {
 }
 </script>
 
-<style scoped lang='scss'>
+<style lang='scss'>
 .modal {
     overflow: auto !important;
 }

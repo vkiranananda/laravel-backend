@@ -1,5 +1,5 @@
 <template>
-    <modal id='UploadEditModal' title="Свойства файла" :loading="loading" size="large">
+    <v-modal name='UploadEditModal' title="Свойства файла" :loading="loading" size="large">
         <a :href="file.orig" target="_blank"><img :src="file.thumb" alt="" align="left" class="me-3 mb-3"></a>
 
         <strong>{{ file.orig_name}}</strong><br>
@@ -20,7 +20,7 @@
         </field-wrapper>
 
         <save-buttons modal="#UploadEditModal" :status="status" v-on:submit="submit"></save-buttons>
-    </modal>
+    </v-modal>
 </template>
 
 <script>
@@ -69,7 +69,7 @@
                     .catch( (error) => { console.log(error.response) });
                 }
                 // Покзываем окно
-                $('#UploadEditModal').modal('show');
+                this.modal.show('UploadEditModal')
             },
             submit () {
                 var res = {};
@@ -96,7 +96,7 @@
             },
             // Сохраянем изменения
             onChange (value, name) { this.file.fields[name].value = value },
-            closeForm() { $('#UploadEditModal').modal('hide') },
+            closeForm() { this.modal.hide('UploadEditModal') },
 
             delFile() {
                 // Открепляем

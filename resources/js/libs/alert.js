@@ -1,5 +1,4 @@
-import mitt from 'mitt'
-const emitter = mitt()
+import emitter from './mitt'
 
 export function vAlert(msg, func = undefined, btns = undefined) {
     emitter.emit('AlertModalShow', {type: 'alert', msg, func, btns})

@@ -1,6 +1,6 @@
 <template>
     <!--  Редактирование полей  -->
-    <modal id="IndexEditableModal" size="large" :loading="loading"
+    <v-modal name="IndexEditableModal" size="large" :loading="loading"
            :title="'Изменить значение поля ' + label">
         <div v-if="field.type" class="mt-1 mb-3">
             <fieldWrapper :field="field" :error="error">
@@ -11,7 +11,7 @@
         <div slot="footer">
             <save-buttons modal="#IndexEditableModal" :status="status" v-on:submit="update"></save-buttons>
         </div>
-    </modal>
+    </v-modal>
 </template>
 
 <script>

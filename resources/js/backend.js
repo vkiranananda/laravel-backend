@@ -16,14 +16,17 @@ import {vAlert, vConfirm} from './libs/alert'
 app.provide('msgConfirm', vConfirm)
 app.provide('msgAlert', vAlert)
 
-import mitt from 'mitt'
-app.config.globalProperties.emitter = mitt()
+import modalFunc from './libs/modal'
+app.config.globalProperties.modal = modalFunc
+
+import emitter from './libs/mitt'
+app.config.globalProperties.emitter = emitter
 
 import alert from "./components/alert.vue"
 // Надо сделать это основным модальным окном и убрать из Form
-// import modal from "./components/modal.vue"
+import modal from "./components/modal.vue"
 import octicons from "./components/octicons.vue"
-addComponents({'v-icon': octicons, 'v-alert': alert})
+addComponents({'v-icon': octicons, 'v-alert': alert, 'v-modal': modal})
 
 import formInit from '../../Form/resources/js/init.js'
 addComponents(formInit.components)

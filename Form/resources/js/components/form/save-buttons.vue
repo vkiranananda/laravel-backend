@@ -27,7 +27,7 @@
     export default {
         props: {
             status: { default: '' },
-            modal: { default: false },
+            modalName: { default: false },
             closeUrl: { default: false }
         },
         data() { return {
@@ -45,7 +45,7 @@
                         this.currentStatus = ''
                     }, 3000);
 
-                    if (this.modal) $(this.modal).modal('hide')
+                    if (this.modal) this.modal.hide(this.modal)
                     if (this.saveExit) {
                         window.history.back();
                     }
@@ -69,7 +69,7 @@
                 this.$emit('submit', saveAndExit)
             },
             close() {
-                if (this.modal) $(this.modal).modal('hide')
+                if (this.modalName) this.modal.hide(this.modalName)
             },
         }
 

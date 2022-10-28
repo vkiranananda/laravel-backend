@@ -31,7 +31,8 @@ export default {
 
         this.emitter.on('MainMenuUpdate', (data) => {
             if (data.name != undefined && data.items != undefined) {
-                this.$set(this.updatedItems, data.name, data.items)
+                this.updatedItems[data.name] = data.items
+                // this.$set(this.updatedItems, data.name, data.items)
             }
         })
     },
