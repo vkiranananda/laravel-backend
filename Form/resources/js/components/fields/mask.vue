@@ -5,7 +5,7 @@
 
 <script>
 	//v-on:input="change" field.value
-    import TheMask from './libs/mask/component'
+    import TheMask from './libs/mask/component.vue'
     import fecha from "fecha";
 
     export default {

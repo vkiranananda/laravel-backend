@@ -1,15 +1,4 @@
-window.$ = window.jQuery = require('jquery')
-require('bootstrap')
-window.axios = require('axios');
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
-
-// require('tether');
-import mitt from 'mitt'
-const emitter = mitt()
-
-// // Подключаем быстрые функции для работы с алертами
-import { vAlert, vConfirm } from './libs/alert'
+import {createApp} from 'vue/dist/vue.esm-bundler.js'
 
 // Обновляет страницу при history.back()
 // Не работает в сафари
@@ -21,33 +10,41 @@ window.onpopstate = (event) => {
     location.reload(true);
 };
 
-// Надо убрать
-window.emitter = emitter
+const app = createApp({})
 
-import { createApp } from 'vue'
+import {vAlert, vConfirm} from './libs/alert'
+app.provide('msgConfirm', vConfirm)
+app.provide('msgAlert', vAlert)
 
-const backend = createApp({})
+import mitt from 'mitt'
+app.config.globalProperties.emitter = mitt()
 
-backend.provide('msgConfirm', vConfirm)
-backend.provide('msgAlert', vAlert)
+import alert from "./components/alert.vue"
+// Надо сделать это основным модальным окном и убрать из Form
+// import modal from "./components/modal.vue"
+import octicons from "./components/octicons.vue"
+addComponents({'v-icon': octicons, 'v-alert': alert})
 
-backend.config.globalProperties.emitter = emitter
-backend.config.globalProperties.msgConfirm = vConfirm
-backend.config.globalProperties.msgAlert = vAlert
-// backend.config.globalProperties.store = store
+import formInit from '../../Form/resources/js/init.js'
+addComponents(formInit.components)
 
-window.backend = backend
+import menuInit from '../../Menu/resources/js/init.js'
+addComponents(menuInit.components)
 
-backend.component('v-icon', require('./components/octicons').default)
-backend.component('v-alert', require('./components/alert').default)
-backend.component('v-confirm', require('./components/modal').default)
+import customInit from '../../../../../backend/resources/js/backend.js'
+addComponents(customInit.components)
+
+// Генерим массив для Vue.
+function addComponents(components) {
+    if (components) {
+        for (let key in components) {
+            app.component(key, components[key])
+        }
+    }
+}
+app.config.globalProperties.msgConfirm = vConfirm
+app.config.globalProperties.msgAlert = vAlert
+app.mount('#backend-body')
 
 
-// Модуль форм
-require('../../Form/resources/js/init.js');
-// // Меню
-require('../../Menu/resources/js/init.js');
-// // Пользовательский js
-require('../../../../../backend/resources/js/backend.js');
 
-backend.mount('#backend-body')

@@ -25,7 +25,7 @@
     import FormFieldSelectSearch from './select-search.vue'
 
 
-    const cloneDeep = require('clone-deep')
+    import cloneDeep from 'clone-deep'
 
     export default {
         props: {

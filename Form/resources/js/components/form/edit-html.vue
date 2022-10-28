@@ -44,12 +44,12 @@
 
 <script>
 
-import size from 'lodash.size';
+import size from 'lodash.size'
 import fieldsList from './fields.vue'
 import uploadFilesModal from '../uploads/files-modal.vue'
 import uploadEditFileModal from '../uploads/edit-modal.vue'
 import sendForm from './send.vue'
-import formData from '../../store/form-data'
+import formData from '../../store/form-data.js'
 import {computed} from "vue";
 
 export default {

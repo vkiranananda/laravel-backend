@@ -7,7 +7,7 @@
 
 <script>
 
-	import showUploadsButton from '../uploads/show-uploads-button'
+	import showUploadsButton from '../uploads/show-uploads-button.vue'
 
     export default {
         components: { 'show-uploads-button': showUploadsButton },

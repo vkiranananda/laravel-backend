@@ -1,13 +1,17 @@
+import fieldsList from './components/form/fields.vue'
+import printField from './components/fields/field.vue'
+import modal from './components/modal.vue'
+import editHtmlForm from './components/form/edit-html.vue'
+import showHtmlForm from './components/form/show-html.vue'
+import listHtmlPosts from './components/list/list-html.vue'
 
-// import Vue from 'vue'
-
-// Vue.component('fields-list', require('./components/fields-list.vue'));
-
-// Компоненты для фиелдсов
-backend.component('print-field', require('./components/fields/field').default)
-backend.component('fields-list', require('./components/form/fields').default)
-backend.component('modal', require('./components/modal').default)
-backend.component('edit-html-form', require('./components/form/edit-html').default)
-backend.component('show-html-form', require('./components/form/show-html').default)
-backend.component('list-html-posts', require('./components/list/list-html').default)
-
+export default {
+    components: {
+        'print-field': printField,
+        'fields-list': fieldsList,
+        'modal': modal,
+        'edit-html-form': editHtmlForm,
+        'show-html-form': showHtmlForm,
+        'list-html-posts': listHtmlPosts
+    }
+}

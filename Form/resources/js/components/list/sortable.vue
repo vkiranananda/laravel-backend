@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import Sortable from '../../../../../resources/js/libs/sortable'
-import saveButtons from '../form/save-buttons'
+import Sortable from '../../../../../resources/js/libs/sortable.js'
+import saveButtons from '../form/save-buttons.vue'
 
 export default {
     beforeUnmount() {

@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import uploadFile from './upload-file'
+import uploadFile from './upload-file.vue'
 
 export default {
     //Создаем слушателей событий

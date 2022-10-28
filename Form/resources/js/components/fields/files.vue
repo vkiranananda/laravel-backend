@@ -22,10 +22,9 @@
 </template>
 
 <script>
-import Sortable from '../../../../../resources/js/libs/sortable'
-import showUploadsButton from '../uploads/show-uploads-button'
-
-const cloneDeep = require('clone-deep')
+import Sortable from '../../../../../resources/js/libs/sortable.js'
+import showUploadsButton from '../uploads/show-uploads-button.vue'
+import cloneDeep from 'clone-deep'
 
 export default {
     mounted() {

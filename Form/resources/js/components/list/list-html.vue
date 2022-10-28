@@ -31,10 +31,12 @@
 
 <script>
 import theList from './list.vue'
-import theListComponents from './list-components'
+import theListComponents from './list-components.vue'
 import theLoading from '../loading.vue'
 import theSearch from './search.vue'
+
 import theSortable from './sortable.vue'
+
 import theBreadcrumbs from './breadcrumbs.vue'
 
 export default {

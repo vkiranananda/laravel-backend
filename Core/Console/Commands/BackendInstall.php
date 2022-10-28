@@ -66,13 +66,14 @@ class BackendInstall extends Command
 
 
         $this->info("Сборка фронтенда:");
-        $this->line("npm install mitt jquery @popperjs/core bootstrap  vue-trumbowyg lodash.clonedeep lodash.size vue@next vue-multiselect fecha @primer/octicons vue-datepicker-next\n");
-        $this->info("В файл webpack.mix.js добавялем строки:");
-        $this->line("mix.js('vendor/vkiranananda/backend/resources/js/backend.js', 'public/backend/js/admin.js').vue().version();"
-        	."mix.sass('vendor/vkiranananda/backend/resources/sass/backend.scss', 'public/backend/css/backend.css').options({processCssUrls: false}).version();\n");
-   		$this->info("Далее запускаем компиляцию:");
-        $this->line("npm run production\n");
-
+        $this->line("npm install @vitejs/plugin-vue clone-deep vuedraggable@next sass mitt jquery @popperjs/core bootstrap  vue-trumbowyg lodash.clonedeep lodash.size vue@next vue-multiselect fecha @primer/octicons vue-datepicker-next\n");
+        $this->info("В файл vite.config.js добавялем строки:");
+        $this->line("import vue from '@vitejs/plugin-vue';\n"
+        	."в секцию plugins добавляем: vue()\n");
+   		$this->info("Далее запускаем компиляцию для сброки продакшен:");
+        $this->line("npm run build\n");
+        $this->info("Или для разработки:");
+        $this->line("npm run dev\n");
 
     	$this->info("Каталог с модулями " . $this->backendPath . "\n");
 

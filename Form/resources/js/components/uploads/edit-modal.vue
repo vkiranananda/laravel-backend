@@ -26,8 +26,8 @@
 <script>
     import printField from '../fields/field.vue'
     import fieldWrapper from '../fields/wrapper.vue'
-    import saveButtons from '../form/save-buttons'
-    import formData from '../../store/form-data'
+    import saveButtons from '../form/save-buttons.vue'
+    import formData from '../../store/form-data.js'
 
     export default {
         // Создаем слушателей событий

@@ -16,8 +16,8 @@
 
 <script>
 import printField from '../fields/field.vue'
-import fieldWrapper from '../fields/wrapper'
-import saveButtons from '../form/save-buttons'
+import fieldWrapper from '../fields/wrapper.vue'
+import saveButtons from '../form/save-buttons.vue'
 
 export default {
     name: "edit-field",

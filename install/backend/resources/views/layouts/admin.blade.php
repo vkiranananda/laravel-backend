@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Администрирование - @yield('title')</title>
-
-    <link href="{{ mix('/backend/css/backend.css') }}" rel="stylesheet">
+    @vite('vendor/vkiranananda/backend/resources/sass/backend.scss')
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
@@ -25,8 +24,8 @@
         </div>
     </div>
 </div>
-<!-- <script src="/backend/tinymce/tinymce.min.js"></script> -->
-<script src="{{ mix('/backend/js/admin.js') }}"></script>
 </body>
+@vite('vendor/vkiranananda/backend/resources/js/bootstrap.js')
+@vite('vendor/vkiranananda/backend/resources/js/backend.js')
 </html>
 

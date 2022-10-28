@@ -1,14 +1,19 @@
 /**!
  * Sortable 1.15.0
- * @author	RubaXa   <trash@rubaxa.org>
- * @author	owenm    <owen23355@gmail.com>
+ * @author    RubaXa   <trash@rubaxa.org>
+ * @author    owenm    <owen23355@gmail.com>
  * @license MIT
  */
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-        typeof define === 'function' && define.amd ? define(factory) :
-            (global = global || self, global.Sortable = factory());
-}(this, (function () { 'use strict';
+
+
+// export default a
+// console.log (a)
+// var a = (function (global, factory) {
+//     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+//         typeof define === 'function' && define.amd ? define(factory) :
+//             (global = global || self, global.Sortable = factory());
+// }(this, (function () {
+//     'use strict';
 
     function ownKeys(object, enumerableOnly) {
         var keys = Object.keys(object);
@@ -331,6 +336,7 @@
             return document.documentElement;
         }
     }
+
     /**
      * Returns the "bounding client rect" of given element
      * @param  {HTMLElement} el                       The element whose boundingClientRect is wanted
@@ -410,6 +416,7 @@
             height: height
         };
     }
+
     /**
      * Checks if a side of an element is scrolled past a side of its parents
      * @param  {HTMLElement}  el           The element who's side being scrolled out of view is in question
@@ -441,6 +448,7 @@
 
         return false;
     }
+
     /**
      * Gets nth child of el, ignoring hidden children, sortable's elements (does not ignore clone if it's visible)
      * and non-draggable elements
@@ -470,6 +478,7 @@
 
         return null;
     }
+
     /**
      * Gets the last child in the el, ignoring ghostEl or invisible elements (clones)
      * @param  {HTMLElement} el       Parent element
@@ -487,6 +496,7 @@
 
         return last || null;
     }
+
     /**
      * Returns the index of an element within its parent for a selected set of
      * elements
@@ -513,6 +523,7 @@
 
         return index;
     }
+
     /**
      * Returns the scroll offset of the given element, added with all the scroll offsets of parent elements.
      * The value is returned in real pixels.
@@ -538,6 +549,7 @@
 
         return [offsetLeft, offsetTop];
     }
+
     /**
      * Returns the index of the object within the given array
      * @param  {Array} arr   Array that may or may not hold the object
@@ -1215,6 +1227,7 @@
             dragEl.parentNode[expando]._isOutsideThisEl(evt.target);
         }
     };
+
     /**
      * @class  Sortable
      * @param  {HTMLElement}  el
@@ -1595,7 +1608,8 @@
                     } else {
                         window.getSelection().removeAllRanges();
                     }
-                } catch (err) {}
+                } catch (err) {
+                }
             },
             _dragStarted: function _dragStarted(fallback, evt) {
 
@@ -2633,6 +2647,7 @@
 
         return 0;
     }
+
     /**
      * Gets the direction dragEl must be swapped relative to target in order to make it
      * seem that dragEl has been "inserted" into that element's position
@@ -2648,6 +2663,7 @@
             return -1;
         }
     }
+
     /**
      * Generate id
      * @param   {HTMLElement} el
@@ -3014,7 +3030,8 @@
         }
     };
 
-    function Revert() {}
+    function Revert() {
+    }
 
     Revert.prototype = {
         startIndex: null,
@@ -3052,7 +3069,8 @@
         pluginName: 'revertOnSpill'
     });
 
-    function Remove() {}
+    function Remove() {
+    }
 
     Remove.prototype = {
         onSpill: function onSpill(_ref4) {
@@ -3757,6 +3775,7 @@
             }
         });
     }
+
     /**
      * Insert multi-drag clones
      * @param  {[Boolean]} elementsInserted  Whether the multi-drag elements are inserted
@@ -3789,6 +3808,6 @@
     Sortable.mount(new SwapPlugin());
     Sortable.mount(new MultiDragPlugin());
 
-    return Sortable;
+    export default Sortable;
 
-})));
+// })));

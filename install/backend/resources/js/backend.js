@@ -1,1 +1,8 @@
-backend.component('form-field-menu-builder', require('../../MenuBuilder/resources/js/components/menu-builder').default)
+
+import menuBuilder from '../../MenuBuilder/resources/js/components/menu-builder.vue'
+
+export default {
+    components: {
+        'form-field-menu-builder': menuBuilder
+    }
+}
