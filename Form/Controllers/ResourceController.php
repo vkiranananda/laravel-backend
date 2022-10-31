@@ -213,10 +213,10 @@ class ResourceController extends Controller
 
         $this->saveData('update');
 
+        $this->updateRedirect();
+
         // Вызываем хук
         $this->resourceCombineAfter('update');
-
-        $this->updateRedirect();
 
         return $this->dataReturn;
     }
@@ -319,7 +319,7 @@ class ResourceController extends Controller
     {
         // Сохраняем данные в запись
         $data = $this->fieldsPrep->saveFields($this->post, $this->fields);
-        
+
         // Если ошибка валидации
         if ($data['errors'] !== true) {
             Response::json(['errors' => $data['errors']], 422)->send();

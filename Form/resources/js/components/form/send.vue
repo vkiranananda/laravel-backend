@@ -146,7 +146,7 @@ export default {
                     this.emitter.emit('FormSaved')
 
                     if (result.hook != undefined && result.hook.name) {
-                        this.emitter.emit(result.hook.name, result.hook.data)
+                       this.emitter.emit(result.hook.name, result.hook.data)
                     }
                 })
                 .catch((error) => {

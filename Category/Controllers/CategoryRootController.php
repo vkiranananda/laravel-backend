@@ -80,7 +80,6 @@ class CategoryRootController extends \Backend\Root\Form\Controllers\ResourceCont
 
             // Обновляем данные с категориями.
             Categories::init();
-
             // Выставляем хук для обновления списка категорий
             $this->dataReturn['hook'] = [
             	'name' => 'MainMenuUpdate',

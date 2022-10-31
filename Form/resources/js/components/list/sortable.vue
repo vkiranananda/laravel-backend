@@ -14,9 +14,9 @@
             </tr>
             </tbody>
         </table>
-        <div slot="footer">
+        <template #footer>
             <save-buttons modalName="ListSortableModal" :status="status" v-on:submit="submit"></save-buttons>
-        </div>
+        </template>
     </v-modal>
 </template>
 

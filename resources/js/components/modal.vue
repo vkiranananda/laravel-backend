@@ -8,19 +8,21 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                             @click="hide"></button>
                 </div>
-                <div class="text-center" v-if="loading">
-                    <img src="/backend/images/loading5.gif" alt="">
-                </div>
-                <div v-else>
-                    <div class="modal-body">
-                        <slot></slot>
+                <div class="modal-body">
+                    <div class="text-center" v-if="loading">
+                        <img src="/backend/images/loading5.gif" alt="">
                     </div>
+                    <slot v-else></slot>
                 </div>
                 <div class="modal-footer" slot="footer">
                     <div v-if="closeButton" class="text-end">
                         <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Закрыть</button>
                     </div>
-                    <slot v-else name="footer"></slot>
+                    <slot  v-else name="footer"></slot>
+<!--                    <div>-->
+<!--                        sdfsdf-->
+<!--&lt;!&ndash;                        <template #footer>wewewe</template>&ndash;&gt;-->
+<!--                    </div>-->
                 </div>
             </div>
         </div>

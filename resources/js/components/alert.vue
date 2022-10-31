@@ -1,25 +1,27 @@
 <template>
-    <div class="alert modal fade" ref="modal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-body p-4" v-html="params.msg"></div>
-                <div class="modal-footer py-1 px-2" slot="footer">
-                    <div class="text-end">
-                        <button v-if="params.type == 'confurm'" class="btn btn-secondary me-1" data-bs-dismiss="modal">
-                            {{ labels[1] }}
-                        </button>
-                        <button class="btn btn-secondary" data-bs-dismiss="modal" @click="okFunc">{{ labels[0] }}</button>
-                    </div>
-                </div>
+    <v-modal name="AlertModal">
+        <div v-html="params.msg"></div>
+        <template #footer>
+            <div class="text-end">
+                <button v-if="params.type == 'confurm'" @click="hide" class="btn btn-secondary me-1">
+                    {{ labels[1] }}
+                </button>
+                <button class="btn btn-secondary" @click="okFunc">
+                    {{ labels[0] }}
+                </button>
             </div>
-        </div>
-    </div>
+        </template>
+    </v-modal>
 </template>
 
 <script>
+import vModal from "./modal.vue"
 
 export default {
     name: "alert",
+    components: {
+        vModal
+    },
     created() {
         this.emitter.on('AlertModalShow', this.show)
     },
@@ -43,26 +45,33 @@ export default {
         }
     },
     methods: {
-        nextQueue: function () {
-            // Если модал не открыт открываем.
-            if (this.queue.length > 0 && !this.currentModalOpen) {
-                // Отмечаем что модал открыт
-                this.currentModalOpen = true
-                $(this.$refs.modal).modal('show')
-
-                // Берем первый элемент
-                let data = this.queue.shift()
-
-                this.params = data
-                if (data.btns) this.btns = data.btns
-            }
-        },
+        // nextQueue: function () {
+        //     // Если модал не открыт открываем.
+        //     if (this.queue.length > 0 && !this.currentModalOpen) {
+        //         // Отмечаем что модал открыт
+        //         this.currentModalOpen = true
+        //         $(this.$refs.modal).modal('show')
+        //
+        //         // Берем первый элемент
+        //         let data = this.queue.shift()
+        //
+        //         this.params = data
+        //         if (data.btns) this.btns = data.btns
+        //     }
+        // },
         show: function (data) {
+            console.log(data)
+            this.params = data
+            this.modal.show("AlertModal")
             // Добавляем в конец очереди
-            this.queue.push(data)
-            this.nextQueue()
+            // this.queue.push(data)
+            // this.nextQueue()
+        },
+        hide: function () {
+            this.modal.hide("AlertModal")
         },
         okFunc: function () {
+            this.hide()
             if (this.params.func) this.params.func()
         }
     },
