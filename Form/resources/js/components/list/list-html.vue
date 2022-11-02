@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <h3 class="mb-4">{{ myData.config.title }}</h3>
+    <div class="list-html">
+        <h3 class="mb-4 title" v-html="myData.config.title"></h3>
         <the-loading :loading="loading"></the-loading>
 
         <!-- buttons -->
@@ -205,3 +205,4 @@ export default {
     }
 }
 </script>
+
