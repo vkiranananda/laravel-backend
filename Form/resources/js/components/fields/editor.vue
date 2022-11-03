@@ -91,6 +91,16 @@ export default {
                     ['removeformat'],
                     ['fullscreen']
                 ];
+            } else if(this.field.format == 'small') {
+                config.btns = [
+                    ['viewHTML'],
+                    ['strong', 'em'],
+                    ['link'],
+                    [image],
+                    ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+                    ['removeformat'],
+                    ['fullscreen']
+                ];
             } else {
                 config.btns = [
                     ['viewHTML'],
