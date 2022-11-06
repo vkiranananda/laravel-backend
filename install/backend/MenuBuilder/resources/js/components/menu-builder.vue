@@ -108,7 +108,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .menu-builder {
     .item-container {
         max-width: 20rem;
