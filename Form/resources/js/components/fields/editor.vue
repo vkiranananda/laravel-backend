@@ -57,6 +57,8 @@ export default {
                 resetCss: true,
                 // Очищаем форматирование при вставке
                 removeformatPasted: true,
+
+                // tagsToKeep: ['i', 'b', 'strong', 'a'],
                 // Автовысота
                 autogrow: true,
                 // Редктор масштабируется при клике
