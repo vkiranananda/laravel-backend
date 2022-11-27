@@ -22,13 +22,13 @@ class EditorField extends Field {
                 if (! ($file = MediaFile::find($fileId)) ) return $img;
 
                 // Получаем размеры
-                $sizes[0] = (preg_match('/width=[\'\"]{1}(\d+)px[\'\"]{1}/i', $img, $width)) 
+                $sizes[0] = (preg_match('/width=[\'\"]{1}(\d+)(px)?[\'\"]{1}/i', $img, $width))
                 	? $width[1] : 'auto';
-                $sizes[1] = (preg_match('/height=[\'\"]{1}(\d+)px[\'\"]{1}/i', $img, $height))
+                $sizes[1] = (preg_match('/height=[\'\"]{1}(\d+)(px)?[\'\"]{1}/i', $img, $height))
                 	? $height[1] : 'auto';
 
                 // Если какой то из размеров задан. Иначе берем оригинал. (Если были сделаны правки ранее, надо вернуть оригинал)
-                $imgUrl = ( $sizes[0] != 'auto' ||  $sizes[1] != 'auto') 
+                $imgUrl = ( $sizes[0] != 'auto' ||  $sizes[1] != 'auto')
                 	? UploadedFiles::genFileLink($file, $sizes)
                 	: UploadedFiles::getOrigUrl($file);
 
@@ -42,5 +42,5 @@ class EditorField extends Field {
 	}
 }
 
-            
+
 
