@@ -275,6 +275,7 @@ class Fields
             }
         }
 
+        // Log::debug($arrayDataFields);
         $errors = $this->saveFieldsList($newFields, $this->request['fields'] ?? [], $post, $arrayDataFields, $relationData);
 
         // Сохраняем скрытые поля
@@ -449,9 +450,11 @@ class Fields
 
         // Сохраняем данные в массив
         if (($field['field-save'] == 'array' || $field['field-save'] == 'relation')) {
-            // Log::debug($value);
+            // Баг фикс, если поле было снача текстовым, а потом стало массивом будет ошибка...
+            if(!is_array($arrayData)) $arrayData = [];
+
             $arrayData[$field['name']] = $value;
-            //Добавляем в связи
+            // Добавляем в связи
             if ($field['field-save'] == 'relation') {
                 $relationData[$field['name']] = $value;
             }
