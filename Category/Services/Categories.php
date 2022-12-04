@@ -117,19 +117,19 @@ class Categories
 
 
     // Генерим урл на пост - категорию
-    public function getUrl(&$post)
+    public function getUrl(&$post, $baseUrl = true)
     {
         if (!isset($post['id'])) return '';
 
         $res = '';
 
-        $url = (isset($post['url']) && $post['url'] != '') ? $post['url'] : $post['id'];
-
         foreach ($this->getPath($post['category_id']) as $cat) {
             if ($cat['url'] != '') $res .= '/' . $cat['url'];
         }
 
-        return url($res . '/' . $url);
+        $res .= '/' . ((isset($post['url']) && $post['url'] != '') ? $post['url'] : $post['id']);
+
+        return $baseUrl ? url($res) : $res;
     }
 
     // Выводим путь до нужной категории
