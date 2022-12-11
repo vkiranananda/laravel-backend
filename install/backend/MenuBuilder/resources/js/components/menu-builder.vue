@@ -41,7 +41,7 @@
 
 
 <script>
-import nestedItem from "./nested-item"
+import nestedItem from "./nested-item.vue"
 import cloneDeep from "lodash.clonedeep"
 
 export default {
