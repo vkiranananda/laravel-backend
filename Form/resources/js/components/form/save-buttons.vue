@@ -16,63 +16,74 @@
             <span class="text-warning" v-else-if='currentStatus == "saveing"'>Сохраняю...</span>
         </div>
         <div class="me-4">
-            <button v-if="modal" class="btn btn-secondary me-3" v-on:click="close" role="button" :disabled="disableCloseButton">{{closeLabel}}</button>
-            <button v-if="showBackButton" type="button" class="btn btn-primary me-2" v-on:click="submit(true)" :disabled="currentStatus == 'saveing' ? true : false">Сохранить и выйти</button>
-            <button type="button" class="btn btn-secondary" v-on:click="submit()" :disabled="currentStatus == 'saveing' ? true : false">Сохранить</button>
+            <button v-if="modal" class="btn btn-secondary me-3" v-on:click="close" role="button"
+                    :disabled="disableCloseButton">{{ closeLabel }}
+            </button>
+            <button v-if="showBackButton" type="button" class="btn btn-primary me-2" v-on:click="submit(true)"
+                    :disabled="currentStatus == 'saveing' ? true : false">Сохранить и выйти
+            </button>
+            <button type="button" class="btn btn-secondary" v-on:click="submit()"
+                    :disabled="currentStatus == 'saveing' ? true : false">Сохранить
+            </button>
         </div>
+
     </div>
 </template>
 
 <script>
-    export default {
-        props: {
-            status: { default: '' },
-            modalName: { default: false },
-            closeUrl: { default: false }
-        },
-        data() { return {
+export default {
+    props: {
+        status: {default: ''},
+        modalName: {default: false},
+        closeUrl: {default: false}
+    },
+    data() {
+        return {
             currentStatus: '',
             saveExit: false
-        } },
-
-        watch: {
-            status: function (val) {
-                this.currentStatus = this.status;
-
-                // Если статус окей, скрываем текст через 3 секунды
-                if (val == 'saved') {
-                    setTimeout(() => {
-                        this.currentStatus = ''
-                    }, 3000);
-
-                    if (this.modal) this.modal.hide(this.modal)
-                    if (this.saveExit) {
-                        window.history.back();
-                    }
-                }
-
-            }
-        },
-        computed: {
-            closeLabel: function() { return (this.modal) ? 'Закрыть' : 'Назад' },
-            disableCloseButton: function() {
-                if (!this.closeUrl && !this.modal && document.referrer == '') return true
-                else false
-            },
-            showBackButton: function() {
-                return (!this.modal && document.referrer != '') ? true : false
-            }
-        },
-        methods: {
-            submit(saveAndExit = false) {
-                this.saveExit = saveAndExit
-                this.$emit('submit', saveAndExit)
-            },
-            close() {
-                if (this.modalName) this.modal.hide(this.modalName)
-            },
         }
+    },
 
+    watch: {
+        status: function (val) {
+            this.currentStatus = this.status;
 
+            // Если статус окей, скрываем текст через 3 секунды
+            if (val == 'saved') {
+                setTimeout(() => {
+                    this.currentStatus = ''
+                }, 3000);
+
+                if (this.modal) this.modal.hide(this.modal)
+                if (this.saveExit) {
+                    window.history.back();
+                }
+            }
+
+        }
+    },
+    computed: {
+        closeLabel: function () {
+            return (this.modal) ? 'Закрыть' : 'Назад'
+        },
+        disableCloseButton: function () {
+            if (!this.closeUrl && !this.modal && document.referrer == '') return true
+            else false
+        },
+        showBackButton: function () {
+            return (!this.modal && document.referrer != '') ? true : false
+        }
+    },
+    methods: {
+        submit(saveAndExit = false) {
+            this.saveExit = saveAndExit
+            this.$emit('submit', saveAndExit)
+        },
+        close() {
+            if (this.modalName) this.modal.hide(this.modalName)
+        },
     }
+
+
+}
 </script>

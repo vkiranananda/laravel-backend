@@ -1,13 +1,9 @@
 <template>
     <div class="text-end form-buttons d-flex justify-content-end">
         <div class="col result-area">
-            <span class="error" v-if='status == "errorAny"'>Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.</span>
-            <span class="error" v-if='status == "errorFields"'>Проверьте правильность заполнения данных</span>
-            <span class="success" v-if='status == "saved"'>Сохранено</span>
-            <span class="text-warning" v-else-if='status == "saveing"'>Сохраняю...</span>
+            <span :class="statusText[status].class" v-if='status != ""'>{{ statusText[status].text }}</span>
         </div>
         <div class="me-4">
-
             <template v-for="btn in buttons">
                 <button @click="btnClick(btn)"
                         :disabled="status == 'saveing' ? true : false"
@@ -17,6 +13,24 @@
                     {{ btn.label }}
                 </button>
             </template>
+        </div>
+        <div class="float-buttons">
+            <div class="result-area float-error-block" v-if='status != ""'>
+                <span :class="statusText[status].class">{{ statusText[status].text }}</span>
+            </div>
+            <button class="button-main">
+                <v-icon name="pencil" width="18" height="18"/>
+            </button>
+            <div class="action-con">
+                <button v-for="btn in buttons" @click="btnClick(btn)"
+                        :disabled="status == 'saveing' ? true : false"
+                        type="button"
+                        class="button-main button-action"
+                        data-toggle="tooltip" data-placement="left" data-html="true" :title="btn.label"
+                >
+                    <v-icon :name="btn.icon" width="15" height="15"/>
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -146,7 +160,7 @@ export default {
                     this.emitter.emit('FormSaved')
 
                     if (result.hook != undefined && result.hook.name) {
-                       this.emitter.emit(result.hook.name, result.hook.data)
+                        this.emitter.emit(result.hook.name, result.hook.data)
                     }
                 })
                 .catch((error) => {
@@ -163,7 +177,16 @@ export default {
     },
     data() {
         return {
-            status: ''
+            status: '',
+            statusText: {
+                errorAny: {
+                    class: 'error',
+                    text: 'Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.'
+                },
+                errorFields: {class: 'error', text: 'Проверьте правильность заполнения данных'},
+                saved: {class: 'success', text: 'Сохранено'},
+                saveing: {class: 'text-warning', text: 'Сохраняю...'},
+            }
         }
     }
 }
@@ -234,6 +257,80 @@ function getValuesFromFields(fields) {
 
             &.success {
                 color: green !important;
+            }
+        }
+    }
+
+    .float-buttons {
+        position: fixed;
+        top: 10px;
+        right: 20px;
+        text-align: right;
+        z-index: 100;
+
+
+        .float-error-block {
+            position: fixed;
+            background-color: white;
+            top: 20px;
+            right: 70px;
+            padding-right: 20px;
+            border-radius: 5px;
+        }
+        &:hover {
+            .action-con {
+                display: flex;
+                opacity: 1;
+            }
+
+            > .button-main {
+                transform: scale(1.1);
+            }
+        }
+
+        .button-main {
+            background-color: white;
+            border-radius: 25px;
+            background-color: #0d6efd;
+
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border: none;
+            -webkit-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.75);
+            -moz-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.75);
+            box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.75);
+            transition: transform .2s;
+            .octicon-wrapper {
+                fill: white;
+            }
+        }
+
+        .action-con {
+            margin-top: 20px;
+            //width: 50px;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            display: none;
+            transition: opacity 1s;
+
+            .button-action {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 7px;
+                background-color: white;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
+
+                .octicon-wrapper {
+                    fill: black;
+                }
             }
         }
     }

@@ -31,12 +31,14 @@
             'buttons-default' => [
                 'save-and-exit' => [
                     'label' => 'Сохранить и выйти',
-                    'hook' => 'FormSendAndExit'
+                    'hook' => 'FormSendAndExit',
+                    'icon' => 'checklist'
                 ],
                 'save' => [
                     'label' => 'Сохранить',
                     'hook' => 'FormSend',
-                    'type' => 'secondary'
+                    'type' => 'secondary',
+                    'icon' => 'check'
                 ],
             ]
 		],
