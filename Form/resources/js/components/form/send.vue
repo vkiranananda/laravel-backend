@@ -134,7 +134,7 @@ export default {
 
                     // Инитим конфиг
                     if (result.config != undefined) {
-                        if (result.fields != undefined) {//Полный инит
+                        if (result.fields != undefined) {// Полный инит
                             formData.initData({
                                 config: result.config,
                                 fields: result.fields

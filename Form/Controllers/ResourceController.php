@@ -44,6 +44,8 @@ class ResourceController extends Controller
     // Модель данных с которой работаем
     public $model = false;
 
+    // Первый вызванный метод класса.
+    private $_firstMethod = false;
 
     // Инитим данные.
     function __construct()
@@ -137,6 +139,7 @@ class ResourceController extends Controller
         // Проверка на права доступа
         if (!$this->getUserAccess('create')) abort(403, 'Access deny!');
 
+        $this->setFirstMethod('store');
         $this->resourceCombine('store');
         $this->saveData('store');
         $this->resourceCombineAfter('store');
@@ -173,6 +176,8 @@ class ResourceController extends Controller
         if (!$this->getUserAccess('edit-owner', $this->post['user_id'])) abort(403, 'Access deny!');
     }
 
+//    public function edit
+
     // Редактируем запись вебка
     public function edit($id)
     {
@@ -191,11 +196,15 @@ class ResourceController extends Controller
                 'buttons' => $this->formEditButtons(),
             ],
             'fields' => [
-                'fields' => $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
                 'hidden' => $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
-                'tabs' => $this->fields['edit']
             ]
         ];
+
+        // Обновляем поля если reload-fields = true или первый метод не равен сохранию или обновлению записи
+        if ($this->config['reload-fields'] || !in_array($this->getFirstMethod(), ['store', 'update'])) {
+            $this->dataReturn['fields']['fields'] = $this->fieldsPrep->editFields($this->post, $this->fields['fields']);
+            $this->dataReturn['fields']['tabs'] = $this->fields['edit'];
+        }
 
         $this->resourceCombineAfter('edit');
 
@@ -207,8 +216,11 @@ class ResourceController extends Controller
     // Обновляем запись
     public function update($id)
     {
+        $this->setFirstMethod('update');
+
         $this->getPost($id, 'edit-owner');
 
+        $this->processStep = 'update';
         $this->resourceCombine('update');
 
         $this->saveData('update');
@@ -413,6 +425,16 @@ class ResourceController extends Controller
             return $res;
         }
         return $this->config['show']['buttons-default'];
+    }
+
+    protected function  setFirstMethod($method)
+    {
+        if ($this->_firstMethod === false) $this->_firstMethod = $method;
+    }
+
+    protected function  getFirstMethod()
+    {
+        return $this->_firstMethod;
     }
 
     // Функция специально  для перегрузки, когда нужно выполнять различне групповые операции перед

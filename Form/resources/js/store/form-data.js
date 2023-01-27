@@ -64,12 +64,16 @@ function setTabActive(value) {
 }
 
 function initData({fields, config}) {
-    data.dataKey.value ++
-    data.fields.value = fields.fields
     data.hiddenFields.value = fields.hidden
-    data.tabs.value = fields.tabs
     data.config.value = config
     data.uploadFiles.value = (config['clone-files']) ? config['clone-files'] : []
+
+    // Выходим если не выставлены поля
+    if (fields.fields === undefined) return
+
+    data.dataKey.value ++
+    data.fields.value = fields.fields
+    data.tabs.value = fields.tabs
 
     // Обнуляем индексы полей
     indexesOfFields = []
