@@ -9,7 +9,7 @@
             </fieldWrapper>
         </div>
         <div slot="footer">
-            <save-buttons modal="#IndexEditableModal" :status="status" v-on:submit="update"></save-buttons>
+            <save-buttons modal-name="IndexEditableModal" :status="status" v-on:submit="update"></save-buttons>
         </div>
     </v-modal>
 </template>

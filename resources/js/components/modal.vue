@@ -19,10 +19,6 @@
                         <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Закрыть</button>
                     </div>
                     <slot  v-else name="footer"></slot>
-<!--                    <div>-->
-<!--                        sdfsdf-->
-<!--&lt;!&ndash;                        <template #footer>wewewe</template>&ndash;&gt;-->
-<!--                    </div>-->
                 </div>
             </div>
         </div>

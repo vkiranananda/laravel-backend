@@ -19,7 +19,7 @@
             <print-field :field='field' v-on:v-change="onChange($event, key)"></print-field>
         </field-wrapper>
 
-        <save-buttons modal="#UploadEditModal" :status="status" v-on:submit="submit"></save-buttons>
+        <save-buttons modal-name="UploadEditModal" :status="status" v-on:submit="submit"></save-buttons>
     </v-modal>
 </template>
 

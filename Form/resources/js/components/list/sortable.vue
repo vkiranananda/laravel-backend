@@ -15,7 +15,7 @@
             </tbody>
         </table>
         <template #footer>
-            <save-buttons modalName="ListSortableModal" :status="status" v-on:submit="submit"></save-buttons>
+            <save-buttons modal-name="ListSortableModal" :status="status" v-on:submit="submit"></save-buttons>
         </template>
     </v-modal>
 </template>

@@ -1,11 +1,11 @@
 <template>
     <div class="text-end form-buttons d-flex justify-content-end">
         <div class="col result-area">
-            <span :class="statusText[status].class" v-if='status != ""'>{{ statusText[status].text }}</span>
+            <span :class="statusText[status].class" v-if='status != "" && statusArea == "bottom"'>{{ statusText[status].text }}</span>
         </div>
         <div class="me-4">
             <template v-for="btn in buttons">
-                <button @click="btnClick(btn)"
+                <button @click="btnClick(btn, 'bottom')"
                         :disabled="status == 'saveing' ? true : false"
                         type="button"
                         class="btn ms-2"
@@ -15,14 +15,14 @@
             </template>
         </div>
         <div class="float-buttons">
-            <div class="result-area float-error-block" v-if='status != ""'>
+            <div class="result-area float-error-block" v-if='status != "" && statusArea == "float"'>
                 <span :class="statusText[status].class">{{ statusText[status].text }}</span>
             </div>
             <button class="button-main">
                 <v-icon name="pencil" width="18" height="18"/>
             </button>
             <div class="action-con">
-                <button v-for="btn in buttons" @click="btnClick(btn)"
+                <button v-for="btn in buttons" @click="btnClick(btn, 'float')"
                         :disabled="status == 'saveing' ? true : false"
                         type="button"
                         class="button-main button-action"
@@ -60,9 +60,10 @@ export default {
         },
     },
     methods: {
-        btnClick(btn) {
+        btnClick(btn, type) {
             if (btn.link) window.location = btn.link
             if (!btn.hook) return
+            this.statusArea = type
             switch (btn.hook) {
                 case 'FormSend':
                     this.submit()
@@ -178,6 +179,7 @@ export default {
     data() {
         return {
             status: '',
+            statusArea: '',
             statusText: {
                 errorAny: {
                     class: 'error',
