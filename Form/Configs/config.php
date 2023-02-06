@@ -40,6 +40,14 @@
                     'type' => 'secondary',
                     'icon' => 'check'
                 ],
+                'exit' => [
+                    'label' => 'Назад',
+                    'hook' => 'FormBack',
+                    'type' => 'light',
+                    'icon' => 'reply',
+                    'float-class' => 'mt-4',
+                    'class' => 'ms-4'
+                ],
             ]
 		],
         // Перезагружать поля после сохранения записи

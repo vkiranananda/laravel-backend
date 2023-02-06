@@ -9,7 +9,7 @@
                         :disabled="status == 'saveing' ? true : false"
                         type="button"
                         class="btn ms-2"
-                        :class="btn.type ? 'btn-'+btn.type : 'btn-primary'">
+                        :class="btn.type ? 'btn-'+btn.type : 'btn-primary', btn['class']">
                     {{ btn.label }}
                 </button>
             </template>
@@ -26,7 +26,8 @@
                         :disabled="status == 'saveing' ? true : false"
                         type="button"
                         class="button-main button-action"
-                        data-toggle="tooltip" data-placement="left" data-html="true" :title="btn.label"
+                        :title="btn.label"
+                        :class="btn['float-class']"
                 >
                     <v-icon :name="btn.icon" width="15" height="15"/>
                 </button>
@@ -73,7 +74,7 @@ export default {
                     break
                 case 'FormBack':
                     window.history.back()
-                    location.reload();
+                    // location.reload();
                     break
                 default:
                     this.emitter.emit(btn.hook, btn)
