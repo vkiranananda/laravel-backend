@@ -1,6 +1,6 @@
 <template>
     <!--     fade -->
-    <div class="modal" ref="modal">
+    <div class="modal fade show" ref="modal">
         <div class="modal-dialog" :class="classSize" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -60,6 +60,7 @@ export default {
             }
         },
         show: function () {
+            console.log(this.modal)
             this.modal.show()
         },
         hide: function () {
