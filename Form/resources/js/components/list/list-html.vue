@@ -41,6 +41,7 @@ import theBreadcrumbs from './breadcrumbs.vue'
 
 export default {
     created() {
+        console.log(this.myData);
         history.replaceState(window.location.href, '', window.location.href)
         // Данных хук вызовет переданную в параметрах функцию перед отправкой формы,
         // Результат данной функции должен быть объект ключ значение

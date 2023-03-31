@@ -47,7 +47,10 @@ class DateField extends Field
 
         $dateConfig = $this->getTimeConfig();
 
-        if (!is_object($value)) $value = Carbon::create($value);
+        if (!is_object($value)) {
+            $value = Carbon::create($value);
+            $value->setTimezone(config('app.timezone'));
+        }
 
         if (isset($this->field['format'])) {
             $format = $this->field['format'];

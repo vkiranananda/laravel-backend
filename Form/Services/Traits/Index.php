@@ -194,6 +194,7 @@ trait Index
     {
         if (isset($this->config['list']['item-menu'])) {
             $res = [];
+
             foreach ($this->config['list']['item-menu'] as $item) {
                 // Если есть опция default, то берем значения из дефолтного меню
                 if (isset($item['default'])) {

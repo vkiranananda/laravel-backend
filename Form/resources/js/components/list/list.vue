@@ -40,7 +40,7 @@
                     </td>
 
                     <td class="menu-td" v-if="itemMenu">
-                        <div class="dropdown" data-boundary="window">
+                        <div v-if="checkItemMenuEmpty(item._links)" class="dropdown" data-boundary="window">
                             <button class="btn btn-secondary" type="button" id="dropdownMenuButton"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 <v-icon name="grabber" width="10"/>
@@ -70,7 +70,7 @@
             </div>
         </div>
         <p v-else class="pt-1">Ничего не найдено</p>
-        <edit-field  @v-change="pageChange" />
+        <edit-field @v-change="pageChange"/>
     </div>
 </template>
 
@@ -115,6 +115,12 @@ export default {
                 if (el.target) window.open(url, el.target)
                 else document.location.href = url
             }
+        },
+        checkItemMenuEmpty: function (links) {
+            for (let item in this.itemMenu) {
+                if (links[this.itemMenu[item].link]) return true;
+            }
+            return false
         },
         //Удаляем элемент
         deleteItem: function (url) {

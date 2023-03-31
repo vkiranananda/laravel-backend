@@ -173,7 +173,7 @@ class ResourceController extends Controller
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
 
         // Проверка на права доступа
-        if (!$this->getUserAccess('edit-owner', $this->post['user_id'])) abort(403, 'Access deny!');
+        if (!$this->getUserAccess($access, $this->post['user_id'])) abort(403, 'Access deny!');
     }
 
 //    public function edit

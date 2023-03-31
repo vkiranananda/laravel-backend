@@ -58,7 +58,6 @@ class UserAccess
 
         $perm = $role[$modKey];
 
-
         $checkOwner = function ($key) use ($userId, $perm) {
             // Если не установлена запрещаем доступ
             if (!isset($perm[$key])) return false;
