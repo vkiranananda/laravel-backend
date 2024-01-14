@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Auth;
 use Backend\Root\MediaFile\Models\MediaFile;
 use Backend\Root\MediaFile\Models\MediaFileRelation;
+use Carbon\Carbon;
 use GetConfig;
 use Illuminate\Support\Facades\Log;
 use Request;
@@ -169,7 +170,8 @@ class ResourceController extends Controller
      * @param $access
      * @return void
      */
-    public function getPost($id, $access) {
+    public function getPost($id, $access)
+    {
         if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
 
         // Проверка на права доступа
@@ -194,6 +196,7 @@ class ResourceController extends Controller
                 'upload' => $this->uploadUrls(),
                 'postId' => $id,
                 'buttons' => $this->formEditButtons(),
+                'updated' => $this->getCurrentDateStr()
             ],
             'fields' => [
                 'hidden' => $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
@@ -220,6 +223,8 @@ class ResourceController extends Controller
 
         $this->getPost($id, 'edit-owner');
 
+        $this->checkUpdateDate();
+
         $this->processStep = 'update';
         $this->resourceCombine('update');
 
@@ -231,6 +236,26 @@ class ResourceController extends Controller
         $this->resourceCombineAfter('update');
 
         return $this->dataReturn;
+    }
+
+    public function checkUpdateDate()
+    {
+        if ($this->getCurrentDateStr() != Request::input('updated', '')) {
+            Log::debug($this->getCurrentDateStr());
+            Log::debug(Request::input('updated', ''));
+            abort(403, 'Кто то внес изменения в эту запись пока вы ее редактировали, вам необходимо обновить страницу и внести изменения по новой');
+        }
+    }
+
+    // Получаем текущую дату в тексте
+    public function getCurrentDateStr()
+    {
+        if (!isset($this->post['updated_at'])) return '';
+
+        $date = !is_object($this->post['updated_at']) ? Carbon::create($this->post['updated_at']) :  $this->post['updated_at'];
+
+        return $date->toDateTimeString();
+
     }
 
     /**
@@ -427,12 +452,12 @@ class ResourceController extends Controller
         return $this->config['show']['buttons-default'];
     }
 
-    protected function  setFirstMethod($method)
+    protected function setFirstMethod($method)
     {
         if ($this->_firstMethod === false) $this->_firstMethod = $method;
     }
 
-    protected function  getFirstMethod()
+    protected function getFirstMethod()
     {
         return $this->_firstMethod;
     }

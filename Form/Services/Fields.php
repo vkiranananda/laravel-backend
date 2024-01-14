@@ -27,6 +27,7 @@ class Fields
         'radio' => '\Backend\Root\Form\Fields\SelectField',
         'multiselect' => '\Backend\Root\Form\Fields\SelectField',
         'select-search' => '\Backend\Root\Form\Fields\SelectSearchField',
+        'editor-blocks' => '\Backend\Root\Form\Fields\EditorBlocksField',
     ];
 
     public $request = [];

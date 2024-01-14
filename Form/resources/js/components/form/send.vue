@@ -1,7 +1,8 @@
 <template>
     <div class="text-end form-buttons d-flex justify-content-end">
         <div class="col result-area">
-            <span :class="statusText[status].class" v-if='status != "" && statusArea == "bottom"'>{{ statusText[status].text }}</span>
+            <span :class="statusText[status].class"
+                  v-if='status != "" && statusArea == "bottom"'>{{ statusText[status].text }}</span>
         </div>
         <div class="me-4">
             <template v-for="btn in buttons">
@@ -84,97 +85,111 @@ export default {
         submit(saveAndExit = false) {
             var res = {};
             if (this.store) {
+
                 // Получаем все value
-                res.fields = getValuesFromTabs(formData.tabs.value);
-                // Получаем скрытые поля
-                res.hidden = formData.hiddenFields.value;
-                // Получаем загруженные файлы
-                res.files = formData.uploadFiles.value;
-            }
+                getValuesFromTabs(formData.tabs.value).then((fields) => {
+                    res.fields = fields
 
-            this.status = 'saveing';
+                    // Получаем скрытые поля
+                    res.hidden = formData.hiddenFields.value;
+                    // Получаем загруженные файлы
+                    res.files = formData.uploadFiles.value;
 
-            console.log('Sending editForm', res, formData.fields.value);
+                    // Возвращем данные последнего обновления, для того что бы сделать запрет на запись если кто то со стороны внес изменения
+                    res.updated = formData.config.value.updated
 
-            axios({
-                url: this.url,
-                method: this.method,
-                data: res
-            })
-                .then((response) => {
-
-                    console.log(response);
-
-                    let result = response.data;
-
-                    // Отменяем предупреждающее окно при закрытии страницы
-                    window.onbeforeunload = null;
-
-                    // Если нажата кнопка "Сохранить и выйти"
-                    if (saveAndExit) {
-                        // проверяем есть ли кастомный редирект, если нет дисаблим редирект
-                        result.redirect = (result['redirect-save-and-exit'] != undefined) ?
-                            result['redirect-save-and-exit'] : undefined
-                    }
-
-                    // Если нужно редиректим
-                    if (result.redirect != undefined) {
-                        if (result.redirect == 'back') {
-                            window.history.back()
-                            location.reload();
-                        } else {
-                            if (result.replace) document.location.replace(result.redirect)
-                            else window.location = result.redirect
-                        }
-                        return
-                    }
-
-                    if (saveAndExit) {
-                        window.history.back();
-                        // window.location=document.referrer
-                    }
-
-                    // Инитим конфиг
-                    if (result.config != undefined) {
-                        if (result.fields != undefined) {// Полный инит
-                            formData.initData({
-                                config: result.config,
-                                fields: result.fields
-                            });
-                        }
-                        // Инитим элементы конфига
-                        else formData.initCustomConfig(result.config)
-                    }
-
-                    // Меняем урл если задано
-                    if (result.replaceUrl != undefined) {
-                        history.replaceState('data', '', result.replaceUrl);
-                    }
-
-                    this.status = 'saved'
-                    setTimeout(() => {
-                        this.status = ''
-                    }, 3000);
-
-                    formData.setErrors({});
-
-                    // Общий хук сохранения
-                    this.emitter.emit('FormSaved')
-
-                    if (result.hook != undefined && result.hook.name) {
-                        this.emitter.emit(result.hook.name, result.hook.data)
-                    }
-                })
-                .catch((error) => {
-                    if (error.response && error.response.status == 422) {
-                        console.log(error.response.data.errors);
-                        formData.setErrors(error.response.data.errors);
-                        this.status = 'errorFields';
-                    } else {
-                        this.status = 'errorAny';
-                        console.log(error.response);
-                    }
+                    sendForm()
+                }).catch((error) => {
+                    console.log(error)
                 });
+            } else sendForm()
+
+            var sendForm = () => {
+                this.status = 'saveing';
+
+                console.log('Sending editForm', res, formData.fields.value);
+
+                axios({
+                    url: this.url,
+                    method: this.method,
+                    data: res
+                })
+                    .then((response) => {
+
+                        console.log(response);
+
+                        let result = response.data;
+
+                        // Отменяем предупреждающее окно при закрытии страницы
+                        window.onbeforeunload = null;
+
+                        // Если нажата кнопка "Сохранить и выйти"
+                        if (saveAndExit) {
+                            // проверяем есть ли кастомный редирект, если нет дисаблим редирект
+                            result.redirect = (result['redirect-save-and-exit'] != undefined) ?
+                                result['redirect-save-and-exit'] : undefined
+                        }
+
+                        // Если нужно редиректим
+                        if (result.redirect != undefined) {
+                            if (result.redirect == 'back') {
+                                window.history.back()
+                                location.reload();
+                            } else {
+                                if (result.replace) document.location.replace(result.redirect)
+                                else window.location = result.redirect
+                            }
+                            return
+                        }
+
+                        if (saveAndExit) {
+                            window.history.back();
+                            // window.location=document.referrer
+                        }
+
+                        // Инитим конфиг
+                        if (result.config != undefined) {
+                            if (result.fields != undefined) {// Полный инит
+                                formData.initData({
+                                    config: result.config,
+                                    fields: result.fields
+                                });
+                            }
+                            // Инитим элементы конфига
+                            else formData.initCustomConfig(result.config)
+                        }
+
+                        // Меняем урл если задано
+                        if (result.replaceUrl != undefined) {
+                            history.replaceState('data', '', result.replaceUrl);
+                        }
+
+                        this.status = 'saved'
+                        setTimeout(() => {
+                            this.status = ''
+                        }, 3000);
+
+                        formData.setErrors({});
+
+                        // Общий хук сохранения
+                        this.emitter.emit('FormSaved')
+
+                        if (result.hook != undefined && result.hook.name) {
+                            this.emitter.emit(result.hook.name, result.hook.data)
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.status == 422) {
+                            console.log(error.response.data.errors);
+                            formData.setErrors(error.response.data.errors);
+                            this.status = 'errorFields';
+                        } else {
+                            this.status = 'errorAny';
+                            this.statusText.errorAny.text = error.response.data.message
+                            console.log(error.response);
+                        }
+                    });
+            }
         }
     },
     data() {
@@ -184,7 +199,7 @@ export default {
             statusText: {
                 errorAny: {
                     class: 'error',
-                    text: 'Произошла непредвиденная ошибка, попробуйте обновить страницу, если не помогает свяжитесь с администратором сайта.'
+                    text: ''
                 },
                 errorFields: {class: 'error', text: 'Проверьте правильность заполнения данных'},
                 saved: {class: 'success', text: 'Сохранено'},
@@ -196,7 +211,7 @@ export default {
 
 
 // Начинаем получать данные с табов
-function getValuesFromTabs(tabs) {
+async function getValuesFromTabs(tabs) {
     var allFields = {};
     for (var tabName in tabs) { //Получаем список всех активных корневых полей
         var currentTab = tabs[tabName];
@@ -206,18 +221,18 @@ function getValuesFromTabs(tabs) {
             allFields[fieldName] = currentTab.fields[fieldName];
         }
     }
-    return getValuesFromFields(allFields);
+    return await getValuesFromFields(allFields);
 }
 
 // Получаем данные со списка полей
-function getValuesFromFields(fields) {
+async function getValuesFromFields(fields) {
     var res = {};
     for (var fieldName in fields) {
         var currentField = fields[fieldName];
 
-        if (currentField['v-show'] === false) continue; //Пропускаем если скрыто поле или
+        if (currentField['v-show'] === false) continue; // Пропускаем если скрыто поле или
 
-        if (currentField.type == 'repeated') { //Для повторителей
+        if (currentField.type == 'repeated') { // Для повторителей
             res[fieldName] = [];
             //Перебираем блоки полей
             var currentFieldValue = currentField.value;
@@ -226,13 +241,13 @@ function getValuesFromFields(fields) {
                 //Добавляем ключ сортировки, нужен для грамотного отображения ошибок.
                 res[fieldName][repIndex] = {
                     key: currentFieldValue[repIndex].key,
-                    value: getValuesFromFields(currentFieldValue[repIndex].fields)
+                    value: await getValuesFromFields(currentFieldValue[repIndex].fields)
                 };
             }
             continue;
         }
         if (currentField.type == 'group') { //Для групп полей
-            res[fieldName] = getValuesFromFields(currentField['fields']);
+            res[fieldName] = await getValuesFromFields(currentField['fields']);
             continue;
         }
         //Обрабатываем галлереи и файлы
@@ -241,7 +256,7 @@ function getValuesFromFields(fields) {
             for (var currentFieldValue of currentField.value) res[fieldName].push(currentFieldValue.id);
             continue;
         }
-        res[fieldName] = currentField['value'];
+        res[fieldName] = currentField.saveMethod ? await currentField.saveMethod() : currentField['value']
     }
     return res;
 }
@@ -280,6 +295,7 @@ function getValuesFromFields(fields) {
             padding-right: 20px;
             border-radius: 5px;
         }
+
         &:hover {
             .action-con {
                 display: flex;
@@ -307,6 +323,7 @@ function getValuesFromFields(fields) {
             -moz-box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.75);
             box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.75);
             transition: transform .2s;
+
             .octicon-wrapper {
                 fill: white;
             }

@@ -23,6 +23,7 @@
     import FormFieldMarkdown from './markdown.vue'
     import FormFieldAutocomplete from './autocomplete.vue'
     import FormFieldSelectSearch from './select-search.vue'
+    import FormFieldEditorBlocks from './editor-blocks.vue'
 
 
     import cloneDeep from 'clone-deep'
@@ -55,7 +56,8 @@
             FormFieldEditor,
             FormFieldMarkdown,
             FormFieldAutocomplete,
-            FormFieldSelectSearch
+            FormFieldSelectSearch,
+            FormFieldEditorBlocks
         },
         computed: {
             component() {

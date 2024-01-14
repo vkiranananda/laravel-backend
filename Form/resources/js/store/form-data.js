@@ -34,14 +34,14 @@ export default {
     addUploadFile,
     delUploadFile,
     delRepeatedBlock,
-    moveRepeatedBlock
+    moveRepeatedBlock,
+    beforeClose,
 }
 
 let indexesOfFields = [];
 
 // Добавляем индекс поля если его нет
 function addFieldIndex(field) {
-    // console.log(field.value)
     if (!field['_index']) field['_index'] = indexesOfFields.push(field) - 1
 }
 
@@ -121,6 +121,7 @@ function setFieldProp({fields, name, property, value, fieldsType, changed}) {
     // Устанавливаем значение в поле.
     _setFieldProp(field, property, value)
 
+    console.log(field)
     if (property == 'value') {
         // Если тип селект или радио обрабатываем отображние полей.
         if (field.type == 'select' || field.type == 'radio') {

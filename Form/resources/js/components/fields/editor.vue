@@ -67,7 +67,6 @@ export default {
                 btnsDef: {
                     insertImage: {
                         fn: () => {
-                            console.log('123')
                             this.emitter.emit('UploadFilesModalShow', {type: 'all', showLink: true, return: this.attachFile})
                             this.saveRange()
                         },
