@@ -1,11 +1,13 @@
 <template>
-	<vue-multiselect :class='error ? "is-invalid" : "" ' v-model="value" :options="field.options"  :multiple="field.multiple"  track-by="value" label="label" :placeholder="placeholder" :showLabels="false"></vue-multiselect>
+<!--    -->
+	<vue-multiselect :class='error ? "is-invalid" : ""' v-model="value" :options="field.options"  :multiple="field.multiple"  label="label" track-by="value" :placeholder="placeholder" :showLabels="false"></vue-multiselect>
 </template>
 
 <script>
 	import VueMultiselect from 'vue-multiselect'
     export default {
-        props: [ 'field', 'error'],
+
+        props: [ 'field', 'error', 'fields'],
         components: { VueMultiselect },
 	  	computed: {
 	  		optionsSearch: function () {
@@ -19,7 +21,7 @@
 	  			return (this.field.placeholder == undefined) ? 'Выберете опцию' : this.field.placeholder
 	  		},
 	  		value: {
-	  			get: function () { 
+	  			get: function () {
 	  				let res = null
 	  				if (this.field.multiple) {
 	  					res = []
@@ -52,7 +54,7 @@
     }
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>
 
 <style lang='scss'>
   .multiselect {
