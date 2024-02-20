@@ -1,5 +1,4 @@
 <template>
-<!--    -->
 	<vue-multiselect :class='error ? "is-invalid" : ""' v-model="value" :options="field.options"  :multiple="field.multiple"  label="label" track-by="value" :placeholder="placeholder" :showLabels="false"></vue-multiselect>
 </template>
 
@@ -22,7 +21,7 @@
 	  		},
 	  		value: {
 	  			get: function () {
-	  				let res = null
+	  				let res = []
 	  				if (this.field.multiple) {
 	  					res = []
 	  					if (!Array.isArray(this.field.value)) return null
@@ -37,7 +36,7 @@
 	  				return res
 	  			},
 	    		set: function (newValues) {
-					let res = ''
+					let res = []
 					if (newValues != null) {
 						if (this.field.multiple) {
 							res = []

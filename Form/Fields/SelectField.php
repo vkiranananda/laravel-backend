@@ -6,6 +6,7 @@ use Helpers;
 
 class SelectField extends Field {
 	private $options = [];
+    private $type = 'select';
 
 	function __construct($field)
 	{
@@ -13,14 +14,16 @@ class SelectField extends Field {
 		if ( isset( $field['options'] ) && is_array($field['options']) ) {
         	$this->options = Helpers::optionsToArr($field['options']);
        	}
-		
+
+        $this->type = $field['type'];
+        
 		parent::__construct($field);
 	}
 
 	// Получаем значение для сохраниения
 	public function save($value)
 	{
-		if ($value != '' && ! Helpers::optionsSearch( $this->field['options'], $value ) ) { 
+		if ($value != '' && ! Helpers::optionsSearch( $this->field['options'], $value ) ) {
             abort(403, 'SelectField has error in '.$this->field['type'].':'.$this->field['name'].':'.$this->field['value']);
             }
 		return $value;
@@ -45,21 +48,23 @@ class SelectField extends Field {
 	// Получаем сырое значние элемента для редактирования
 	public function edit($value)
 	{
-		// Мультиселект, делаем проверки на существование ключей и возвращаем результат 
-		if (is_array($value)) {
-			$res = [];
-			foreach ($value as $key) if (isset($this->options[$key])) $res[] = $key;
-			return $res;
-		} 
-		// Проверяем является ли значение существующим. 
+		// Мультиселект, делаем проверки на существование ключей и возвращаем результат
+        if ($this->type === 'multiselect') {
+            $res = [];
+            if (is_array($value)) {
+                foreach ($value as $key) if (isset($this->options[$key])) $res[] = $key;
+            }
+            return $res;
+        }
+		// Проверяем является ли значение существующим.
 		if (isset($this->options[$value])) return $value;
 		// Если значение не существует проверяем есть ли значение по умолчанию и существует ли оно
 		if (isset($this->field['value']) && isset($this->options[$this->field['value']]))
 			return $this->field['value'];
 		// Иначе получаем первый элемент если он есть и тип данных select или radio, если нет выводим пустое значение
-		return ( array_search($this->field['type'], ['select', 'radio']) !== false && 
-			     isset($this->field['options'][0]['value'])) 
-					? $this->field['options'][0]['value'] 
+		return ( array_search($this->field['type'], ['select', 'radio']) !== false &&
+			     isset($this->field['options'][0]['value']))
+					? $this->field['options'][0]['value']
 					: '';
 	}
 }
