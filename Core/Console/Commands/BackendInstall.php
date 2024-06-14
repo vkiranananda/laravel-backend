@@ -66,7 +66,7 @@ class BackendInstall extends Command
 
 
         $this->info("Сборка фронтенда:");
-        $this->line("npm install @vitejs/plugin-vue clone-deep vuedraggable@next sass mitt jquery @popperjs/core bootstrap  vue-trumbowyg lodash.clonedeep lodash.size vue@next vue-multiselect fecha @primer/octicons vue-datepicker-next vue-multiselect@next @editorjs/editorjs\n");
+        $this->line("npm install @vitejs/plugin-vue clone-deep vuedraggable@next sass mitt jquery @popperjs/core bootstrap  vue-trumbowyg lodash.clonedeep lodash.size vue@next vue-multiselect fecha @primer/octicons vue-datepicker-next vue-multiselect@next @editorjs/editorjs @editorjs/header @editorjs/list @editorjs/quote @editorjs/marker @editorjs/table  @editorjs/underline @editorjs/paragraph @editorjs/inline-code @editorjs/raw vue-multiselect@next\n");
         $this->info("В файл vite.config.js добавялем строки:");
         $this->line("import vue from '@vitejs/plugin-vue';\n"
         	."в секцию plugins добавляем: vue({template: {transformAssetUrls: { base: null, includeAbsolute: false}}})\n"

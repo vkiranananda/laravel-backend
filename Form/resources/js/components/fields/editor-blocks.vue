@@ -12,7 +12,7 @@ import Marker from '@editorjs/marker';
 // import CodeTool from '@editorjs/code';
 import Delimiter from './libs/editorjs/plugins/delimiter'
 import Big from './libs/editorjs/plugins/big'
-import Delimiter2 from '@editorjs/delimiter'
+
 import Table from '@editorjs/table';
 import Underline from '@editorjs/underline';
 import TextAlign from './libs/editorjs/plugins/text-align'
