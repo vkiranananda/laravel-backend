@@ -1,7 +1,5 @@
 <template>
-    <!--    <div class="small-mce" :class="field.size ? field.size : 'small'">-->
     <div ref="editor" class="editor-blocks border rounded-2 position-relative"></div>
-    <!--    </div>-->
 </template>
 
 
@@ -13,6 +11,7 @@ import Quote from '@editorjs/quote';
 import Marker from '@editorjs/marker';
 // import CodeTool from '@editorjs/code';
 import Delimiter from './libs/editorjs/plugins/delimiter'
+import Big from './libs/editorjs/plugins/big'
 import Delimiter2 from '@editorjs/delimiter'
 import Table from '@editorjs/table';
 import Underline from '@editorjs/underline';
@@ -40,7 +39,7 @@ export default {
             holder: this.$refs.editor,
             logLevel: 'ERROR',
 
-            inlineToolbar: ['link', 'marker', 'underline', 'bold', 'italic', 'inlineCode'],
+            inlineToolbar: ['link', 'marker', 'underline', 'bold', 'italic', 'big', 'inlineCode'],
             onChange: (api, event) => {
                 formData.beforeClose()
             },
@@ -82,6 +81,7 @@ export default {
                 //     inlineToolbar: true
                 // },
                 underline: Underline,
+                big: Big,
                 table: {
                     class: Table,
                     tunes: ['TextAlign'],
@@ -138,6 +138,7 @@ export default {
                         "Bold": "Полужирный",
                         "Italic": "Курсив",
                         "InlineCode": "Моноширинный",
+                        "Big": "Увеличить размер",
                     },
                     ui: {
                         "blockTunes": {
