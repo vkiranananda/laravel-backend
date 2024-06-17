@@ -86,6 +86,7 @@ class Fields
             $field = $this->prepEditField($field, $post, $arrayData);
         }
         // dd($fields['blocks']['fields']['blocks']);
+
         return $fields;
     }
 
@@ -276,7 +277,7 @@ class Fields
             }
         }
 
-        // Log::debug($arrayDataFields);
+
         $errors = $this->saveFieldsList($newFields, $this->request['fields'] ?? [], $post, $arrayDataFields, $relationData);
 
         // Сохраняем скрытые поля
@@ -346,7 +347,6 @@ class Fields
         $fieldSave = null // Куда сохраняем поле
     )
     {
-
         $res = [];
         $errors = [];
 
@@ -467,14 +467,16 @@ class Fields
     }
 
 
-    //Проверка условий на видимость.
+    // Проверка условий на видимость.
     private function showCheck($show, &$data)
     {
         $res = false;
 
         foreach ($show as $key => $showBlock) {
             //Если поля проверочного нет, выводим отказ
-            if (!isset($data[$showBlock['field']])) return false;
+            if (!array_key_exists($showBlock['field'], $data)) {
+                return false;
+            }
 
             if ($key != 0) { //не первая запись
                 //Оператор &&, если предыдущее условие ошибка тогда сл тоже ошибка, проверку не делаем

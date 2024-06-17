@@ -226,8 +226,8 @@ class ResourceController extends Controller
         $this->checkUpdateDate();
 
         $this->processStep = 'update';
-        $this->resourceCombine('update');
 
+        $this->resourceCombine('update');
         $this->saveData('update');
 
         $this->updateRedirect();
