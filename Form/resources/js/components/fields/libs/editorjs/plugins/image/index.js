@@ -21,6 +21,7 @@ class BackendImage {
         this.el.innerHTML = '<i>Изображение не загружено</i>'
 
         this.localRender()
+
         return this.el
     }
 
@@ -34,7 +35,6 @@ class BackendImage {
     }
 
     attachFile = (files, link) => {
-
         if (files.length > 0) this.image = {url: files[0].orig, id: files[0].id, link}
 
         this.localRender()
@@ -44,6 +44,9 @@ class BackendImage {
         if (!this.image.url) return
         let img = '<img alt="" title="" src="' + this.image.url + '" />'
         this.el.innerHTML = img;
+
+
+
         // res += (link) ? '<a href="' + file.orig + '">' + img + '</a> ' : img
     }
 

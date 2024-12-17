@@ -43,14 +43,26 @@ class EditorBlocksField extends Field {
 //        $arr = json_decode($value, true);
         if (!isset($arr['blocks'])) return [];
 
+        $blocks = [];
         foreach ($arr['blocks'] as $key => $block) {
             if ($block['type'] == 'image'){
                 // Удаляем пустой блок
-                if (!isset($block['data']['url'])) unset($arr['blocks'][$key]);
+                if (!isset($block['data']['url'])) continue;
             }
+            $blocks[] = $block;
         }
+        $arr['blocks'] = $blocks;
 
         return $arr;
+    }
+    // Получаем сырое значние элемента для редактирования
+    public function edit($value)
+    {
+        // Если в массиве по каким то причинам ключи не идут по порядку, например есть пропуски
+        // редактор вылетает, убираем пропуски
+        $value['blocks'] = array_values($value['blocks']);
+
+        return $value;
     }
 }
 

@@ -206,28 +206,7 @@ export default {
             let res = await this.editor.save()
             this.editor.render(res)
             return res
-        },
-        // attachFile: function (files, link) {
-        //
-        //     var res = ''
-        //
-        //     for (var file of files) {
-        //         if (file.file_type == 'image') {
-        //             let img = '<img alt="" title="" src="' + file.orig + '" data-id="' + file.id + '" />';
-        //             res += (link) ? '<a href="' + file.orig + '">' + img + '</a> ' : img
-        //         } else {
-        //             res += (link) ? '<a href="' + file.orig + '">' + file.orig_name + '</a> ' : file.orig;
-        //         }
-        //
-        //         res += ' '
-        //     }
-        //
-        //     this.$refs.editor.el.trumbowyg('restoreRange');
-        //     this.$refs.editor.el.trumbowyg('execCmd', {
-        //         cmd: 'insertHtml',
-        //         param: res
-        //     });
-        // },
+        }
     },
 
     props: ['field', 'fields'],
