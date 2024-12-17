@@ -60,7 +60,7 @@ class EditorBlocksField extends Field {
     {
         // Если в массиве по каким то причинам ключи не идут по порядку, например есть пропуски
         // редактор вылетает, убираем пропуски
-        $value['blocks'] = array_values($value['blocks']);
+        $value['blocks'] = isset($value['blocks']) ? array_values($value['blocks']) : [];
 
         return $value;
     }
