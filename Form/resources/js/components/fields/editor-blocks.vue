@@ -17,7 +17,6 @@ import Table from '@editorjs/table';
 import Underline from '@editorjs/underline';
 import TextAlign from './libs/editorjs/plugins/text-align'
 import BackendImage from './libs/editorjs/plugins/image'
-import Paragraph from '@editorjs/paragraph'
 import InlineCode from '@editorjs/inline-code'
 import RawTool from '@editorjs/raw'
 
@@ -50,9 +49,7 @@ export default {
                     tunes: ['TextAlign'],
                 },
                 paragraph: {
-                    class: Paragraph,
                     tunes: ['TextAlign'],
-                    preserveBlank: true,
                 },
                 image: {
                     class: BackendImage,
