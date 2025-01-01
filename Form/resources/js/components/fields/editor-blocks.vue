@@ -140,6 +140,15 @@ export default {
                         },
                     },
                     tools: {
+                        "header": {
+                            "Header": "Заголовок",
+                            "Heading 1": "Заголовок 1",
+                            "Heading 2": "Заголовок 2",
+                            "Heading 3": "Заголовок 3",
+                            "Heading 4": "Заголовок 4",
+                            "Heading 5": "Заголовок 5",
+                            "Heading 6": "Заголовок 6",
+                        },
                         "table": {
                             "With headings": "С заголовками",
                             "Without headings": "Баз заголовков",
