@@ -9,7 +9,6 @@ import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Quote from '@editorjs/quote';
 import Marker from '@editorjs/marker';
-// import CodeTool from '@editorjs/code';
 import Delimiter from './libs/editorjs/plugins/delimiter'
 import Big from './libs/editorjs/plugins/big'
 
@@ -19,9 +18,6 @@ import TextAlign from './libs/editorjs/plugins/text-align'
 import BackendImage from './libs/editorjs/plugins/image'
 import InlineCode from '@editorjs/inline-code'
 import RawTool from '@editorjs/raw'
-
-// import Embed from '@editorjs/embed'
-// import Warning from '@editorjs/warning'
 
 import formData from '../../store/form-data'
 
@@ -69,14 +65,7 @@ export default {
                     },
                 },
                 marker: Marker,
-                // Глючит
-                // code: CodeTool,
                 delimiter: Delimiter,
-// Чет не работает
-                // embed: {
-                //     class: Embed,
-                //     inlineToolbar: true
-                // },
                 underline: Underline,
                 big: Big,
                 table: {
@@ -84,14 +73,6 @@ export default {
                     tunes: ['TextAlign'],
                     inlineToolbar: true,
                 },
-                // warning: {
-                //     class: Warning,
-                //     inlineToolbar: true,
-                //     config: {
-                //         titlePlaceholder: 'Заголовок',
-                //         messagePlaceholder: 'Текст',
-                //     },
-                // },
                 raw: RawTool,
                 TextAlign: {
                     class: TextAlign,
@@ -109,16 +90,17 @@ export default {
                 messages: {
                     blockTunes: {
                         "delete": {
-                            "Delete": "Удалить"
+                            "Delete": "Удалить",
+                            "Click to delete": "Нажмите для удаления"
                         },
                         "moveUp": {
                             "Move up": "Переместить вверх"
                         },
                         "moveDown": {
                             "Move down": "Переместить вниз"
-                        }
-                    },
+                        },
 
+                    },
                     toolNames: {
                         "Text": "Параграф",
                         "Heading": "Заголовок",
@@ -134,6 +116,7 @@ export default {
                         "Marker": "Маркер",
                         "Bold": "Полужирный",
                         "Italic": "Курсив",
+                        "Underline": "Подчеркнутый",
                         "InlineCode": "Моноширинный",
                         "Big": "Увеличить размер",
                     },
@@ -144,16 +127,17 @@ export default {
                                 "or drag to move": "или перетащите"
                             },
                         },
-                        "inlineToolbar": {
-                            "converter": {
-                                "Convert to": "Конвертировать в"
-                            }
-                        },
+
                         "toolbar": {
                             "toolbox": {
                                 "Add": "Добавить"
                             }
-                        }
+                        },
+                        popover: {
+                            Filter: "Фильтр",
+                            "Nothing found": "Ничего не найдено",
+                            "Convert to": "Конвертировать в"
+                        },
                     },
                     tools: {
                         "table": {
@@ -168,27 +152,20 @@ export default {
                         },
 
                         "quote": {
-                          "Align Left": "Текст слева",
-                          "Align Center": "Текст по центру"
+                            "Align Left": "Текст слева",
+                            "Align Center": "Текст по центру"
                         },
                         "list": {
                             "Unordered": "Ненумерованный",
                             "Ordered": "Нумерованный"
                         },
-                        "warning": { // <-- 'Warning' tool will accept this dictionary section
+                        "warning": {
                             "Title": "Название",
                             "Message": "Сообщение",
                         },
-
-                        /**
-                         * Link is the internal Inline Tool
-                         */
                         "link": {
                             "Add a link": "Вставьте ссылку"
                         },
-                        /**
-                         * The "stub" is an internal block tool, used to fit blocks that does not have the corresponded plugin
-                         */
                         "stub": {
                             'The block can not be displayed correctly.': 'Блок не может быть отображен'
                         }
@@ -238,13 +215,10 @@ export default {
     .cdx-quote__text {
         min-height: 80px;
     }
+
     .ce-rawtool__textarea {
         min-height: 100px;
     }
-    //.ce-code__textarea {
-    //    min-height: 70px;
-    //    max-height: 330px;
-    //}
 }
 </style>
 
