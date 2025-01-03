@@ -2,11 +2,11 @@
 
 namespace Backend\Root\Form\Fields;
 
-use \Backend\Root\MediaFile\Models\MediaFile;
-use UploadedFiles;
 use Log;
+use UploadedFiles;
 
-class EditorBlocksField extends Field {
+class EditorBlocksField extends Field
+{
 
     // Получаем значение для сохраниения
     public function save($value)
@@ -14,7 +14,7 @@ class EditorBlocksField extends Field {
 //        //Создаем миниатюры
 //        if ( isset($this->field['upload']) ) {
 //            //Ищем картинки с тэгом data-id
-/*            $value = preg_replace_callback("|<img.*?data-id=[\'\"]{1}(\d+)[\'\"]{1}.*?>|", function($matches)*/
+        /*            $value = preg_replace_callback("|<img.*?data-id=[\'\"]{1}(\d+)[\'\"]{1}.*?>|", function($matches)*/
 //            {
 //                $img = $matches[0];
 //                $fileId = $matches[1];
@@ -45,7 +45,7 @@ class EditorBlocksField extends Field {
 
         $blocks = [];
         foreach ($arr['blocks'] as $key => $block) {
-            if ($block['type'] == 'image'){
+            if ($block['type'] == 'image') {
                 // Удаляем пустой блок
                 if (!isset($block['data']['url'])) continue;
             }
@@ -55,12 +55,15 @@ class EditorBlocksField extends Field {
 
         return $arr;
     }
+
     // Получаем сырое значние элемента для редактирования
     public function edit($value)
     {
         // Если в массиве по каким то причинам ключи не идут по порядку, например есть пропуски
         // редактор вылетает, убираем пропуски
-        $value['blocks'] = isset($value['blocks']) ? array_values($value['blocks']) : [];
+        if (!is_array($value) || !isset($value['blocks'])) return ['blocks' => []];
+
+        $value['blocks'] = array_values($value['blocks']);
 
         return $value;
     }
