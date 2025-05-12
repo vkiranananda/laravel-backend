@@ -69,7 +69,7 @@ export default {
 }
 
 .item-sub {
-    margin: 0 0 0 1rem;
+    margin: 0 0 0 1rem !important;
 }
 
 .octicon-wrapper {
