@@ -18,7 +18,7 @@ class Menu
 				'label'	=> $cat['name'],
 				'icon'	=> $cat['conf']['icon'],
 				'url'	=> action(Categories::getModuleControllers($cat['mod'])['resourceController'].'@index').'?cat='.$cat['id']
-			];	
+			];
 		}
 		return $res;
 	}

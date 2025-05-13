@@ -1,20 +1,81 @@
 <template>
     <div class="small-mce" :class="field.size ? field.size : 'small'">
-        <trumbowyg ref="editor" v-model="content" :config="config"></trumbowyg>
+        <div ref="editor"></div>
     </div>
 </template>
 
 
 <script>
-import trumbowyg from 'vue-trumbowyg';
-import 'trumbowyg/dist/ui/trumbowyg.css';
-import 'trumbowyg/dist/langs/ru';
-import fecha from "fecha";
-// import './libs/trumbowyg-insert-image';
-// import 'trumbowyg/plugins/resizimg/trumbowyg.resizimg';
+function loadScript(url, callback) {
+    const script = document.createElement('script'); // Создаем новый элемент <script>
+    script.type = 'text/javascript'; // Устанавливаем тип
+    script.src = url; // Указываем путь к файлу
+
+    // Если у вас есть функция обратного вызова, которая должна быть вызвана после загрузки скрипта
+    script.onload = function () {
+        if (callback) callback();
+    };
+
+    // Добавляем элемент <script> в <head> или <body>
+    document.head.appendChild(script);
+}
+
+function loadCSS(url, callback) {
+    const link = document.createElement('link'); // Создаем новый элемент <link>
+    link.rel = 'stylesheet'; // Устанавливаем атрибут rel
+    link.type = 'text/css'; // Устанавливаем тип
+    link.href = url; // Указываем путь к файлу
+
+    // Если у вас есть функция обратного вызова, которая должна быть вызвана после загрузки стилей
+    link.onload = function () {
+        if (callback) callback();
+    };
+
+    // Добавляем элемент <link> в <head>
+    document.head.appendChild(link);
+}
 
 export default {
+    mounted() {
+        // if (window.trumbowygLoad === true) {
+            this.init()
+        // } else {
+        //     window.trumbowygLoad = true
+        //     loadCSS('/js/trumbowyg/ui/trumbowyg.min.css')
+        //     loadScript('/js/trumbowyg/trumbowyg.min.js', () => {
+        //         loadScript('/js/trumbowyg/langs/' + this.config.lang + '.min.js', () => {
+        //             window.trumbowygLoad = true
+        //             console.log('init editor')
+        //             this.init()
+        //         })
+        //     })
+        // }
+    },
+    beforeDestroy() {
+        this.editor.trumbowyg('destroy');
+    },
+
+    watch: {
+        'field.value'(newValue) {
+            if (this.currentVal !== newValue) this.editor.trumbowyg('html', newValue);
+        }
+    },
     methods: {
+        init: function () {
+            this.editor = $(this.$refs.editor)
+            this.editor.trumbowyg(this.config).on('tbwchange', () => {
+                // Отложенное сохраниение значения.
+                clearTimeout(this.timerId)
+                this.timerId = setTimeout(() => {
+                    this.currentVal = this.editor.trumbowyg('html')
+                    this.$emit('v-change', this.editor.trumbowyg('html'))
+                }, 500)
+            }).on('tbwinit', () => {
+                // Устанавливаем начальное значение
+                this.editor.trumbowyg('html', this.field.value)
+            });
+
+        },
         attachFile: function (files, link) {
 
             var res = ''
@@ -30,23 +91,14 @@ export default {
                 res += ' '
             }
 
-            this.$refs.editor.el.trumbowyg('restoreRange');
-            this.$refs.editor.el.trumbowyg('execCmd', {
+            this.editor.trumbowyg('restoreRange');
+            this.editor.trumbowyg('execCmd', {
                 cmd: 'insertHtml',
                 param: res
             });
         },
     },
-    components: {trumbowyg},
     computed: {
-        content: {
-            get: function () {
-                return this.field.value
-            },
-            set: function (content) {
-                this.$emit('v-change', content)
-            }
-        },
         config() {
             var config = {
                 lang: 'ru',
@@ -67,7 +119,11 @@ export default {
                 btnsDef: {
                     insertImage: {
                         fn: () => {
-                            this.emitter.emit('UploadFilesModalShow', {type: 'all', showLink: true, return: this.attachFile})
+                            this.emitter.emit('UploadFilesModalShow', {
+                                type: 'all',
+                                showLink: true,
+                                return: this.attachFile
+                            })
                             this.saveRange()
                         },
                         ico: 'insertImage'
@@ -92,7 +148,7 @@ export default {
                     ['removeformat'],
                     ['fullscreen']
                 ];
-            } else if(this.field.format == 'small') {
+            } else if (this.field.format == 'small') {
                 config.btns = [
                     ['viewHTML'],
                     ['strong', 'em'],

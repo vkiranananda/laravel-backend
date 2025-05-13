@@ -196,7 +196,6 @@ function setVShowDataRoot(commit, state, all) {
     for (var tabName in state.tabs) {
         // Если есть show выставляем значение
         if (state.tabs[tabName]['show'] != undefined) {
-            console.log(tabName)
             commit('setTabVShow', {name: tabName, value: vShowCheck(state.tabs[tabName]['show'], state.fields)});
         }
     }

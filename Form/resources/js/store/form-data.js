@@ -244,18 +244,31 @@ function setVShowData(fields, all) {
 // Выставляем значения видимости таба или поля начиная с корня, если опция all стоит,
 // то функция пробежиться по всему дереву элементов
 function setVShowDataRoot(all) {
-    // Начинае обработку с табов
-    for (let tabName in data.tabs.value) {
-        // Если есть show выставляем значение
-        if (data.tabs.value[tabName]['show'] != undefined) {
-            data.tabs.value[data.name]['v-show'] = {
-                name: tabName,
-                value: vShowCheck(data.tabs.value[tabName]['show'], data.fields.value)
-            }
-        }
-    }
     // Выставляем данные для полей
     setVShowData(data.fields.value, all);
+
+    // Начинае обработку с табов
+    for (let tabName in data.tabs.value) {
+        let currentTab = data.tabs.value[tabName]
+        // Если есть show выставляем значение
+        if (currentTab['show'] != undefined) {
+            data.tabs.value[data.name]['v-show'] = {
+                name: tabName,
+                value: vShowCheck(currentTab['show'], data.fields.value)
+            }
+        }
+
+        // Скрываем табу если в ней нет не одного поля.
+        let showTab = false;
+        for (let fieldName in currentTab.fields) {
+            // Если поле скрыто.
+            if (currentTab.fields[fieldName]['v-show'] === false) continue
+            showTab = true
+            break
+        }
+        currentTab['v-show'] = showTab
+    }
+
 }
 
 // Проверка условий на видимость.

@@ -8,7 +8,6 @@ class MainMenu
 	public function show($args = '')
 	{
 		$menu = GetConfig::backend("main-menu");
-
 		foreach ($menu as &$item) {
 			if (!isset($item['type'])) continue;
 
