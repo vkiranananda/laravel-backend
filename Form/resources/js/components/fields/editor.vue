@@ -6,50 +6,10 @@
 
 
 <script>
-function loadScript(url, callback) {
-    const script = document.createElement('script'); // Создаем новый элемент <script>
-    script.type = 'text/javascript'; // Устанавливаем тип
-    script.src = url; // Указываем путь к файлу
-
-    // Если у вас есть функция обратного вызова, которая должна быть вызвана после загрузки скрипта
-    script.onload = function () {
-        if (callback) callback();
-    };
-
-    // Добавляем элемент <script> в <head> или <body>
-    document.head.appendChild(script);
-}
-
-function loadCSS(url, callback) {
-    const link = document.createElement('link'); // Создаем новый элемент <link>
-    link.rel = 'stylesheet'; // Устанавливаем атрибут rel
-    link.type = 'text/css'; // Устанавливаем тип
-    link.href = url; // Указываем путь к файлу
-
-    // Если у вас есть функция обратного вызова, которая должна быть вызвана после загрузки стилей
-    link.onload = function () {
-        if (callback) callback();
-    };
-
-    // Добавляем элемент <link> в <head>
-    document.head.appendChild(link);
-}
 
 export default {
     mounted() {
-        // if (window.trumbowygLoad === true) {
-            this.init()
-        // } else {
-        //     window.trumbowygLoad = true
-        //     loadCSS('/js/trumbowyg/ui/trumbowyg.min.css')
-        //     loadScript('/js/trumbowyg/trumbowyg.min.js', () => {
-        //         loadScript('/js/trumbowyg/langs/' + this.config.lang + '.min.js', () => {
-        //             window.trumbowygLoad = true
-        //             console.log('init editor')
-        //             this.init()
-        //         })
-        //     })
-        // }
+        this.init()
     },
     beforeDestroy() {
         this.editor.trumbowyg('destroy');
@@ -212,5 +172,3 @@ export default {
 
 
 </style>
-
-

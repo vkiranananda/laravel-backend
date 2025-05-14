@@ -1,7 +1,10 @@
 <?php
 
 namespace Backend\Root\Core\Services;
-use \Illuminate\Database\Eloquent\Collection;
+
+use Illuminate\Database\Eloquent\Collection;
+use Carbon\Carbon;
+
 class Helpers
 {
 
@@ -172,4 +175,10 @@ class Helpers
         return $res;
     }
 
+    // Получаем дату в нужном формате
+    static public function getDate($date, $format)
+    {
+        $date = Carbon::parse($date);
+        return $date->format($format);
+    }
 }
