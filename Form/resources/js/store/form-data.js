@@ -71,7 +71,7 @@ function initData({fields, config}) {
     // Выходим если не выставлены поля
     if (fields.fields === undefined) return
 
-    data.dataKey.value ++
+    data.dataKey.value++
     data.fields.value = fields.fields
     data.tabs.value = fields.tabs
 
@@ -144,16 +144,22 @@ function setFieldProp({fields, name, property, value, fieldsType, changed}) {
 }
 
 // Добавляем новый репитед блок
-function addRepeatedBlock(field) {
+function addRepeatedBlock({field, index = false}) {
     let lField = _getField(field)
 
-    lField.value.push({fields: cloneDeep(lField['fields']), key: lField['unique-index']});
+    // Если не указан индекс
+    if (index === false) {
+        index = lField.value.length
+    }
+    lField.value.splice(index, 0, {fields: cloneDeep(lField['fields']), key: lField['unique-index']})
+
+    // lField.value.push();
     lField['unique-index']++;
 
-    let fields = lField.value[lField.value.length - 1].fields
-    indexingFields(fields)
+    // Индексируем
+    indexingFields(lField.value[index].fields)
     // Обновляем видимость полей
-    setVShowData(fields, true);
+    setVShowData(lField.value[index].fields, true);
 }
 
 // Удаляем репитед блок
@@ -162,6 +168,7 @@ function delRepeatedBlock({field, index}) {
     // Какой то глобальной утечки памяти тут реально достич трудно :)
     indexesOfFields[field['_index']].value.splice(index, 1)
 }
+
 // Перемещаем блоки
 function moveRepeatedBlock({field, newIndex, oldIndex}) {
     // Меняем местами

@@ -15,30 +15,30 @@ class UploadedFiles {
     // Запрошенные размеры в текущем запросе
     private $reqImgSize = [];
     // Тип возвращаемого значения.
-    private $reqResultArray = true; 
+    private $reqResultArray = true;
 
     // Прелоадинг файлов
     private $loadFiles = [];
 
     // Генерим миниатюрку к файлу пример: [100, 100, 'fit'], [100, 'auto']
     public function genFileLink($file, $size)
-    {  
+    {
         if (count($size) > 0 && $file['file_type'] == 'image') {
 			if (pathinfo($file['file'])['extension'] == 'gif') {
             	return $this->getOrigUrl($file);
             } else {
             	$sizeStr = Uploads::sizesToStr($size);
-	          
+
 	          	// Если миниатюрки нет.
 	            if (! isset($file['sizes'][$sizeStr])) {
 	                if (!is_array($file['sizes'])) $file['sizes'] = [];
-	                
+
 	                $file['sizes'] = array_merge($file['sizes'], Uploads::genSizes($file, [ $size ]));
 	                $file->save();
 	            }
 	            return $file['url'].$file['path'].$file['sizes'][$sizeStr]['path'].urlencode($file['sizes'][$sizeStr]['file']);
 	        }
-        } 
+        }
         return false;
     }
 
@@ -73,7 +73,7 @@ class UploadedFiles {
             if (count($gal) > 0) {
             	// Только первые картинки
             	if ($first) $req[] = reset($gal);
-            	else $req = array_merge($req, $gal); 
+            	else $req = array_merge($req, $gal);
             }
         }
 
@@ -82,7 +82,7 @@ class UploadedFiles {
 
     // Добавляет данные для автоматической загрузки всех изображений, что бы не плодить запросы
     // указвается массив данных
-    public function loadByArray($array) 
+    public function loadByArray($array)
     {
     	if (is_array($array)) {
     		foreach ($array as $id) {
@@ -95,12 +95,12 @@ class UploadedFiles {
 
     // Добавляет данные для автоматической загрузки всех изображений, что бы не плодить запросы
     // Можно указать как название поля, так и массив из названий поля
-    public function loadByField($post, $field) 
+    public function loadByField($post, $field)
     {
     	$fields = (!is_array($field)) ? [$field] : $field;
 
     	foreach ($fields as $field) {
-    		$this->loadByArray(Helpers::getDataField($post, $field)); 
+    		$this->loadByArray(Helpers::getDataField($post, $field));
     	}
 
     	return $this;
@@ -108,7 +108,7 @@ class UploadedFiles {
 
     // Добавляет данные для автоматической загрузки всех изображений, что бы не плодить запросы
     // указывается модель данных. Запрашиваются все файлы пренадлежашие этой модели.
-    public function loadByPost($post) 
+    public function loadByPost($post)
     {
     	$className = class_basename($post);
     	if (isset($post['id']) && $className != '') {
@@ -117,7 +117,7 @@ class UploadedFiles {
         		->where('rel.post_id', '=', $post->id)
         		->where('rel.post_type', '=', $className)
       			->orderBy('id', 'desc')->get() as $img) {
-	            
+
 	            	$this->images[$img['id']] = $img;
 	        }
 	    }
@@ -131,13 +131,13 @@ class UploadedFiles {
 
         foreach ($list as $key => $file) {
         	$item = ['orig' => $this->getOrigUrl($file)];
-        	
+
         	if ($file['file_type'] == 'image') {
         		$item['thumb'] = $this->genFileLink($file, [128, 128, 'fit']);
         	} else {
         		$item['thumb'] = '/backend/images/file.png';
         	}
-        	
+
 			foreach (['id', 'orig_name', 'file_type'] as $key) {
 				$item[$key] = Helpers::getDataField($file, $key);
 			}
@@ -156,7 +156,7 @@ class UploadedFiles {
     // Получаем данные по id. Можно указать как массив так и единичный элемент
     // Результат будет таким же либо массив либо единичный элемент
     public function get($id, $first = false)
-    {	    	
+    {
     	$this->reqImgSize = [];
 
     	$this->reqResultArray = ($first) ? false : true;
@@ -201,9 +201,9 @@ class UploadedFiles {
 
 		$attrNew = $attr;
 
-		if (!isset($attr['title'])) 
+		if (!isset($attr['title']))
     		$attrNew['title'] = Helpers::getDataField($file, 'img_title');
-    	if (!isset($attr['alt'])) 
+    	if (!isset($attr['alt']))
     		$attrNew['alt'] =  Helpers::getDataField($file, 'img_alt');
 
 		$title = Helpers::getDataField($file, 'img_title');
@@ -215,12 +215,12 @@ class UploadedFiles {
 			foreach ($this->reqImgSize as $key => $size) {
 				// Получаем урлы миниатюры и если нету генерим ее
 				$thumb = $this->genFileLink($file, $size);
-				
+
 				// Генерим srcset если функция size была вызвана более одного раза
 				if($countImgSize > 1) {
 					// Далее получаем текстовый размер
 					$strSize = Uploads::sizesToStr($size);
-					// Тут нужно получить ширину для srcset, если нет миниатюры не добавляем srcset 
+					// Тут нужно получить ширину для srcset, если нет миниатюры не добавляем srcset
 					if(isset($file['sizes'][$strSize])){
 						$srcset .= $thumb." ".$file['sizes'][$strSize]['size'][0]."w, ";
 					}
@@ -228,13 +228,15 @@ class UploadedFiles {
 				if($key == 0) $src = $thumb;
 			}
 		} else $src = $this->getOrigUrl($file); // Получаем оригинал
-		
+
 		if ($srcset != '') $srcset = 'srcset="'.mb_substr($srcset, 0, -2).'"';
 
 		return '<img src="'.$src.'" '.$srcset.' '.Helpers::getAttrs($attrNew).'>';
     }
 
-    // Получаем готовый тэг html img, только для картинок, если вызван метод size будут сгенереный нужные размеры, если метод size вызван несколько раз, будет сгенерирован тег srcset. src будет первый вызваный size, если $link = true будет создана ссылка с атрибутами linkAttr
+    // Получаем готовый тэг html img, только для картинок, если вызван метод size будут сгенереный нужные размеры,
+    // если метод size вызван несколько раз, будет сгенерирован тег srcset. src будет первый вызваный size,
+    // если $link = true будет создана ссылка с атрибутами linkAttr
     public function htmlImg($link = false, $attr = [], $linkAttr = [])
     {
 
@@ -246,18 +248,18 @@ class UploadedFiles {
 			if (!isset($this->images[$id]) || $this->images[$id]['file_type'] != 'image' ) continue;
 
 			$res[] = ($link)
-				? "<a href=\"" 
-					. $this->getOrigUrl($this->images[$id]) . "\" " 
-					. Helpers::getAttrs($linkAttr) . ">" 
+				? "<a href=\""
+					. $this->getOrigUrl($this->images[$id]) . "\" "
+					. Helpers::getAttrs($linkAttr) . ">"
 					. $this->_htmlImg($this->images[$id], $attr) . "</a>"
 				: $this->_htmlImg($this->images[$id], $attr);
 		}
 // dd($this->reqResultArray);
-		if ($this->reqResultArray) return $res; 
+		if ($this->reqResultArray) return $res;
 		elseif (count($res) > 0) return $res[0];
     }
 
-    // Получить список урлов, если вызван метод size будут сгенерены нужные размеры(только для изображений). 
+    // Получить список урлов, если вызван метод size будут сгенерены нужные размеры(только для изображений).
     // Если указано нескольколь размеров, то будет отдан массив с размерами по порядку указания.
     // Парметр $attr добавляет дополнительный опции из массива файла
     public function url($attr = [])
@@ -295,7 +297,7 @@ class UploadedFiles {
     public function keyOrEmpty($key, $defValue = '', $attr = [])
     {
     	$res = $this->url($attr);
-    	
+
     	return Helpers::getDataField($res, $key, $defValue);
     }
 
@@ -341,19 +343,19 @@ class UploadedFiles {
 
     	// Закидываем ключи обратно в массив
     	$delFiles = array_keys($delFiles);
-		
+
 		// Если файлов на удаление больше 0, то удаляем.
 		if (count($delFiles) > 0) Uploads::deleteFiles(MediaFile::whereIn('id', $delFiles)->get());
     }
 
 
-    // Удаляет  файл, с переданными связями postType и postId, 
-    // если передан массив, удалит массив файлов. 
+    // Удаляет  файл, с переданными связями postType и postId,
+    // если передан массив, удалит массив файлов.
     // если останутся еще какие то связи то файл не удалится.
     // Если передан четвертый параметр как true. То удалятся только связи, а файл остенется.
     public function deleteFilesByRelation($files, $postType, $postId, $soft = false)
     {
-    	
+
     	if (!is_array($files)) $files = [ $files ];
 
     	if (count($files) == 0) return;
