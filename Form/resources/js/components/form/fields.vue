@@ -2,7 +2,7 @@
 <template>
     <div class="row">
         <template v-for="(field, key) in fields" :key="key">
-            <div v-if="field['v-show'] !== false" class="mb-2"
+            <div v-if="field['v-show'] !== false && field['hidden'] !== true" class="mb-2"
                  :class="colWidth(field.row, field['col-classes'])">
                 <div v-if="field.type == 'html'" v-html="field.html"></div>
 
@@ -101,7 +101,7 @@ export default {
                     if (value.changed === false) changed = false
                     value = value.value
                 }
-                
+
                 formData.setFieldProp({
                     name,
                     value,

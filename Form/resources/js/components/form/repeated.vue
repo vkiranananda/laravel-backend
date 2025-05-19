@@ -2,19 +2,31 @@
     <div class="repeated-fields card">
         <div class="card-body">
             <div ref="repeatedFields">
-                <div class="fields-block" :class="field.style ?? ''" v-for="(item, index) in field.value" :key="item.key"
+                <div class="fields-block" :class="field.style ?? ''" v-for="(item, index) in field.value"
+                     :key="item.key"
                      :ref="'block' + index">
                     <div class="card">
                         <div class="menu-con" v-if="!field.readonly" :ref="'menu' + index">
                             <div class="text-end">
                                 <v-icon name="gear" class="menu-icon" @click="menuOpen(index)"/>
                             </div>
-                            <div class="menu" v-if="currentMenuOpen === index">
-                                <div class="item mt-1" @click="addNew(index + 1)">
+                            <v-dropdown class="base-menu" @clickOutside="closeMenu()" v-if="currentMenuOpen === index">
+                                <div class="item" @click="addNew(index)">
                                     <v-icon name="plus" class="add-icon"/>
                                     Добавить новый элемент
                                 </div>
-                                <hr class="my-1">
+                                <hr>
+                                <template v-if="propFields">
+                                    <div class="prop-fields">
+                                        <div v-for="field in propFields.fields" class="prop-field">
+                                            <label>{{ field.label }}</label>
+                                            <print-field :field="field" :fields="propFields.fieldsGroup"
+                                                         @v-change="onPropChange($event, field.name)">
+                                            </print-field>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </template>
                                 <div class="item" :class="index == 0 ? 'disabled' : ''" @click="moveUp(index)">
                                     <v-icon name="arrow-up"/>
                                     Переместить вверх
@@ -28,7 +40,7 @@
                                     <v-icon name="arrow-down"/>
                                     Переместить вниз
                                 </div>
-                            </div>
+                            </v-dropdown>
                         </div>
                         <div class="card-body">
                             <fields-list :fields="item.fields" :errors="errors[item.key]"></fields-list>
@@ -36,29 +48,28 @@
                     </div>
                 </div>
             </div>
-            <div class="text-end" v-if="!field.readonly">
-                <button slot="footer" type="button" class="btn btn-success" v-on:click.stop.prevent="addNew()">
-                    <span>{{ field['add-label'] ? field['add-label'] : 'Добавить' }}</span>
-                </button>
+            <div class="text-center mt-1 mb-2" v-if="!field.readonly">
+                <div class="add-button" @click="addNew()">
+                    <v-icon name="plus" class="add-icon"/>
+                    {{ field['add-label'] ? field['add-label'] : 'Добавить новый элемент' }}
+                </div>
             </div>
         </div>
     </div>
 </template>
 <script>
 import formData from '../../store/form-data'
-// import Sortable from '../../../../../resources/js/libs/sortable'
+import printField from '../fields/field.vue'
 
 export default {
+    components: {
+        'print-field': printField,
+    },
     props: {
         field: {},
         error: undefined,
     },
-    mounted() {
-        document.addEventListener('click', this.handleClickOutside);
-    },
-    beforeUnmount() { // Vue 3
-        document.removeEventListener('click', this.handleClickOutside);
-    },
+
     data() {
         return {
             currentMenuOpen: false,
@@ -70,21 +81,52 @@ export default {
             if (this.error == undefined) return {};
             return this.error;
         },
+        propFields: function () {
+            // Проверяем есть ли поля для конфигурации и меню открыто
+            if (this.currentMenuOpen !== false
+                && this.field['prop-fields']
+                && Array.isArray(this.field['prop-fields'])
+                && this.field['prop-fields'].length > 0) {
+
+                // получаем текущую группу полей
+                let fieldsGroup = this.field.value[this.currentMenuOpen].fields
+                let fields = []
+                for (let key of this.field['prop-fields']) {
+                    if (fieldsGroup[key] && fieldsGroup[key]['v-show'] !== false) {
+                        let newField = Object.assign({}, fieldsGroup[key])
+                        newField.size = 'small'
+                        fields.push(newField)
+                    }
+                }
+                return fields.length > 0 ? {fieldsGroup, fields} : false
+            }
+            return false
+        },
     },
     methods: {
-        handleClickOutside(event) {
-            if (this.currentMenuOpen !== false) {
-                const dropdown = this.$refs['menu' + this.currentMenuOpen][0];
-                if (dropdown && !dropdown.contains(event.target)) {
-                    this.closeMenu()
-                }
-            }
+        onPropChange: function (value, name) {
+            formData.setFieldProp({
+                name,
+                value,
+                fields: this.propFields.fieldsGroup,
+                property: 'value',
+            })
+            if (this.propFields.fields.length === 1) this.closeMenu()
         },
-        closeMenu () {
+
+        closeMenu() {
             this.currentMenuOpen = false
             this.beforeDelete = false
         },
         addNew(index = false) {
+            // Добавляем элемент из меню
+            if (index !== false && this.currentMenuOpen !== false) {
+                document.documentElement.scrollTop += this.$refs['block' + index][0].offsetHeight;
+                this.currentMenuOpen++;
+                index++
+            } else {
+                this.closeMenu()
+            }
             formData.addRepeatedBlock({field: this.field, index})
         },
         moveUp(index) {
@@ -113,93 +155,51 @@ export default {
 
 <style lang='scss'>
 .repeated-fields {
-
-    .delete {
-        position: absolute;
-        right: 5px;
-        top: -8px;
-        font-size: 28px;
-        text-align: center;
-        color: red;
-        text-decoration: none;
-        display: inline-block;
+    .add-button {
         cursor: pointer;
     }
 
-    .move {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 10px;
-        height: 100%;
-        background-color: rgb(246, 246, 246);
-        cursor: move;
-    }
-
-    .card-body {
-
+    .add-icon {
+        fill: green;
     }
 
     .fields-block {
         padding-bottom: 20px;
+
         .menu-con {
             position: absolute;
             right: 5px;
             top: 1px;
             //display: none;
+            .base-menu {
+                min-width: 350px;
+            }
+
+            .prop-fields {
+                margin: 10px;
+
+                .prop-field {
+                    margin-bottom: 10px;
+                }
+            }
 
             .menu-icon {
                 cursor: pointer;
             }
 
-            .menu {
-                border: 1px solid lightgray;
-                background-color: white;
-                padding: 5px;
-                z-index: 100;
-                position: relative;
-                .item {
-                    cursor: pointer;
-                    padding: 5px;
-
-                    &:hover {
-                        background-color: lightgray;
-                    }
-
-                    &.disabled {
-                        pointer-events: none;
-                        opacity: 0.5;
-                        cursor: not-allowed;
-                    }
-                }
-
+            .dropdown {
                 .remove-icon {
                     fill: red;
                 }
-                .add-icon {
-                    fill: green;
-                }
-
-            }
-
-            &:hover {
-                > .menu {
-                    //display: block;
-                    //opacity: 1;
-                    //transition: opacity 0.5s; /* 0.5s анимация, 1s задержка */
-                }
             }
         }
 
-        &:hover {
-            > .menu-con {
-                display: block;
-            }
-        }
         &.editor {
             padding-bottom: 0;
-            >.card {
+
+            > .card {
                 border-color: transparent;
+
                 &:hover {
                     background-color: #fbfbfb;
                 }

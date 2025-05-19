@@ -4,51 +4,53 @@ namespace Backend\Root\Form\Fields;
 
 use Helpers;
 
-class SelectField extends Field {
-	private $options = [];
+class SelectField extends Field
+{
+    private $options = [];
     private $type = 'select';
 
-	function __construct($field)
-	{
-		//Подготавливаем опции в нужный формат, что бы подставлять верное значение
-		if ( isset( $field['options'] ) && is_array($field['options']) ) {
-        	$this->options = Helpers::optionsToArr($field['options']);
-       	}
+    function __construct($field)
+    {
+        //Подготавливаем опции в нужный формат, что бы подставлять верное значение
+        if (isset($field['options']) && is_array($field['options'])) {
+            $this->options = Helpers::optionsToArr($field['options']);
+        }
 
-        $this->type = $field['type'];
-        
-		parent::__construct($field);
-	}
 
-	// Получаем значение для сохраниения
-	public function save($value)
-	{
-		if ($value != '' && ! Helpers::optionsSearch( $this->field['options'], $value ) ) {
-            abort(403, 'SelectField has error in '.$this->field['type'].':'.$this->field['name'].':'.$this->field['value']);
+        $this->type = (isset($field['multiselect']) && $field['multiselect'] === true) ? 'multiselect' : $field['type'];
+
+        parent::__construct($field);
+    }
+
+    // Получаем значение для сохраниения
+    public function save($value)
+    {
+        if ($value != '' && !Helpers::optionsSearch($this->field['options'], $value)) {
+            abort(403, 'SelectField has error in ' . $this->field['type'] . ':' . $this->field['name']);
+        }
+        return $value;
+    }
+
+    // Получаем готовое значение для списков
+    public function list($value)
+    {
+        // Мультиселект
+        if (is_array($value)) {
+            $res = '';
+            foreach ($value as $end_value) {
+                $end_value = (isset($this->options[$end_value])) ? $this->options[$end_value] : $end_value;
+                if ($res != '') $res .= ', ';
+                $res .= $end_value;
             }
-		return $value;
-	}
+            return $res;
+        }
+        return (isset($this->options[$value])) ? $this->options[$value] : $value;
+    }
 
-	// Получаем готовое значение для списков
-	public function list($value)
-	{
-		// Мультиселект
-		if (is_array($value)) {
-			$res = '';
-			foreach ($value as $end_value) {
-				$end_value = (isset($this->options[$end_value])) ? $this->options[$end_value] : $end_value;
-				if ($res != '') $res .= ', ';
-				$res .= $end_value;
-			}
-			return $res;
-		}
-		return (isset($this->options[$value])) ? $this->options[$value] : $value;
-	}
-
-	// Получаем сырое значние элемента для редактирования
-	public function edit($value)
-	{
-		// Мультиселект, делаем проверки на существование ключей и возвращаем результат
+    // Получаем сырое значние элемента для редактирования
+    public function edit($value)
+    {
+        // Мультиселект, делаем проверки на существование ключей и возвращаем результат
         if ($this->type === 'multiselect') {
             $res = [];
             if (is_array($value)) {
@@ -56,17 +58,23 @@ class SelectField extends Field {
             }
             return $res;
         }
-		// Проверяем является ли значение существующим.
-		if (isset($this->options[$value])) return $value;
-		// Если значение не существует проверяем есть ли значение по умолчанию и существует ли оно
-		if (isset($this->field['value']) && isset($this->options[$this->field['value']]))
-			return $this->field['value'];
-		// Иначе получаем первый элемент если он есть и тип данных select или radio, если нет выводим пустое значение
-		return ( array_search($this->field['type'], ['select', 'radio']) !== false &&
-			     isset($this->field['options'][0]['value']))
-					? $this->field['options'][0]['value']
-					: '';
-	}
+
+        // Проверяем является ли значение существующим.
+        if (isset($this->options[$value])) return $value;
+
+        // Для селекта что бы хоть какой то элемент был выбран
+        if ($this->field['type'] === 'select' || $this->field['type'] === 'radio') {
+            // Если значение не существует проверяем есть ли значение по умолчанию и существует ли оно
+            if (isset($this->field['value']) && isset($this->options[$this->field['value']]))
+                return $this->field['value'];
+
+            // Иначе получаем первый элемент если он есть и тип данных select или radio, если нет выводим пустое значение
+            return (array_search($this->field['type'], ['select', 'radio']) !== false &&
+                isset($this->field['options'][0]['value']))
+                ? $this->field['options'][0]['value']
+                : '';
+        }
+    }
 }
 
 
