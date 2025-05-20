@@ -16,10 +16,10 @@ class Uploads {
 
         $file = Request::file('file');
         $mediaFile = new MediaFile;
-      
+
         $mediaFile->disk = $conf['disk'];
 
-        $mediaFile->url = $conf['url'];        
+        $mediaFile->url = $conf['url'];
         $mediaFile->user_id = ( isset($conf['user-id']) ) ? $conf['user-id'] : Auth::user()->id;
         $mediaFile->orig_name = $file->getClientOriginalName();
 
@@ -34,13 +34,13 @@ class Uploads {
         $fileInfo = pathinfo($file->getClientOriginalName());
         if(!isset($fileInfo['extension'])) $fileInfo['extension'] = '';
 
-        //Устанавливаем имя файлу
+        // Устанавливаем имя файлу
         if($conf['file-name-type'] == 'id'){
             $fileName = $mediaFile->id;
             if($fileInfo['extension'] != '') $fileName .= '.'.$fileInfo['extension'];
         } else {
             $fileName = mb_substr(
-                str_replace(' ', '-', 
+                str_replace(' ', '-',
                     str_replace( [ '\\','/','<','>','%','?',':','*','"','|','+','!','@' ], '', $file->getClientOriginalName() )
                 )
                   , -50, 50);
@@ -51,19 +51,19 @@ class Uploads {
 
         //Генерируем миниатюру
         if( array_search(strtolower($fileInfo['extension']), ['jpeg', 'png', 'gif', 'jpg'], true) !== false ){
-            
+
             $mediaFile->file_type = 'image';
 
             if( isset($conf['sizes']) && is_array($conf['sizes']) && count($conf['sizes']) > 0 ){
                 $mediaFile->sizes = Uploads::genSizes($mediaFile, $conf['sizes'], $file->getPathname());
-            } 
+            }
         }
 
         //Сохраняем файл
         $file->storeAs($mediaFile->path, $mediaFile->file, $mediaFile->disk);
-        
+
         $mediaFile->array_data = $array_data;
-        
+
         $mediaFile->save();
 
         return $mediaFile;
@@ -87,10 +87,10 @@ class Uploads {
 
         $loadedFile = ($tmpFile) ? file_get_contents($tmpFile) : $disk->get($file['path'].$file['file']);
 
-        foreach ($sizes as $value) 
+        foreach ($sizes as $value)
         {
             $img = Image::make($loadedFile);
-            
+
             //Оригинальные размеры, что бы потом можно было проверить был ли изменен файл
             if($orig === false) {
                 if( !isset( $file['sizes']['orig'] ) ){
@@ -106,7 +106,7 @@ class Uploads {
             $sizeStr = Uploads::sizesToStr($value);
             if(isset($value[2]) && $value[2] == 'fit'){
                 $img->fit($value[0], $value[1], function ($constraint) {
-                    $constraint->upsize();  
+                    $constraint->upsize();
                 });
             }else{
                 if($value[0] == 'auto')$value[0] = null;
@@ -114,7 +114,7 @@ class Uploads {
                 $img->resize($value[0], $value[1], function ($constraint) {
                         $constraint->aspectRatio();
                         $constraint->upsize();
-                });                    
+                });
             }
 
             //Если файл не был изменен не сохраяем его...
@@ -130,8 +130,8 @@ class Uploads {
             $res[$sizeStr ]['file'] = pathinfo($file['file'])['filename'].'.jpg';
 
             $disk->put(
-            	$file['path'] . $res[$sizeStr ]['path'] . $res[$sizeStr ]['file'], 
-            	$img->encode('jpg', 100) 
+            	$file['path'] . $res[$sizeStr ]['path'] . $res[$sizeStr ]['file'],
+            	$img->encode('jpg', 100)
             );
         }
 
@@ -142,7 +142,7 @@ class Uploads {
     private static function getIndividualName(&$newFile, $name)
     {
         $fInfo = pathinfo($name);
-        
+
         $fInfo['extension'] = (isset($fInfo['extension'])) ? '.'.$fInfo['extension'] : '' ;
 
         //Получаем список файлов в каталоге

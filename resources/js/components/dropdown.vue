@@ -13,7 +13,7 @@ export default {
     methods: {
         handleClickOutside(event) {
             const dropdown = this.$refs.dropdown;
-            if (dropdown && !dropdown.contains(event.target)) this.$emit('clickOutside')
+            if (dropdown && !dropdown.contains(event.target)) this.$emit('v-click-outside')
         }
     }
 }

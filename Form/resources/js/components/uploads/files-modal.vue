@@ -43,7 +43,7 @@ export default {
 
             // Снимаем выделения если калбэк разный
             if (this.lastReturn != config.return) {
-                //Если не первый вызов
+                // Если не первый вызов
                 if (this.lastReturn) this.$refs.uploadedFiles.unselectFiles()
                 this.lastReturn = config.return;
             }
@@ -64,7 +64,7 @@ export default {
                 // Вызываем калбэк
                 this.config.return(this.selectedFiles, this.origLink)
 
-                //Убираем выделение после вставки
+                // Убираем выделение после вставки
                 this.$refs.uploadedFiles.unselectFiles()
             }
         }

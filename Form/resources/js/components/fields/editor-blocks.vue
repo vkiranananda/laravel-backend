@@ -16,6 +16,7 @@ import Table from '@editorjs/table';
 import Underline from '@editorjs/underline';
 import TextAlign from './libs/editorjs/plugins/text-align'
 import BackendImage from './libs/editorjs/plugins/image'
+import StyledText from './libs/editorjs/plugins/styled-text'
 import InlineCode from '@editorjs/inline-code'
 import RawTool from '@editorjs/raw'
 
@@ -30,7 +31,8 @@ export default {
             property: 'saveMethod',
             value: this.saveData
         })
-        this.editor = new EditorJS({
+
+        let config = {
             holder: this.$refs.editor,
             logLevel: 'ERROR',
 
@@ -177,11 +179,33 @@ export default {
                         },
                         "stub": {
                             'The block can not be displayed correctly.': 'Блок не может быть отображен'
-                        }
+                        },
                     },
                 }
             }
-        });
+        }
+
+        if (this.field.plugins) {
+            for (let pluginKey in this.field.plugins) {
+                let plugin = this.field.plugins[pluginKey]
+                if (plugin.label) {
+                    config.i18n.messages.toolNames['Styled Text'] = plugin.label
+                }
+                if (plugin.type === 'StyledText') {
+                    config.tools[pluginKey] = {
+                        class: StyledText,
+                        config: {
+                            styles: plugin.styles
+                        }
+                    }
+                }
+
+                if (plugin['text-align'] === true) config.tools[pluginKey].tunes = ['TextAlign']
+                if (plugin['toolbar'] === true) config.tools[pluginKey].inlineToolbar = true
+            }
+        }
+console.log(config)
+        this.editor = new EditorJS(config);
     },
 
     methods: {
@@ -190,7 +214,8 @@ export default {
             this.editor.render(res)
             return res
         }
-    },
+    }
+    ,
 
     props: ['field', 'fields'],
 }

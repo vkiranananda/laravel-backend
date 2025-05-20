@@ -50,6 +50,11 @@ class c {
             html: "<div>&nbsp;</div>",
             icon: emptyIcon
         },
+        'downble-space': {
+            name: "Двойная пустая строка",
+            html: "<div>&nbsp;<br>&nbsp;</div>",
+            icon: emptyIcon
+        },
         '***': {
             name: "* * *",
             html: "<div class='text-center h2 pt-4 pb-0 m-0 '>* * *</div>",

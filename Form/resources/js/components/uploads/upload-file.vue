@@ -48,6 +48,7 @@ export default {
                 this.loading = true;
                 axios.get(this.url)
                     .then((response) => {
+                        console.log(response.data.files)
                         this.urls = response.data.urls
                         this.files = response.data.files
                         this.loading = false
@@ -83,7 +84,7 @@ export default {
             for (let file of this.files) if (file.selected) selFiles.push(file)
             this.$emit('select', selFiles)
         },
-        //Загружаем файлы
+        // Загружаем файлы
         uploadFiles() {
             var files = this.$refs.upload.files;
             this.errors = "";
@@ -135,7 +136,11 @@ export default {
 
         // Выбираем файл
         selectFile(file) {
-            if ((this.config.type == 'image' && file.file_type == 'image') || this.config.type == 'all') {
+            // fix for svg, должен отдавать как картинку.
+
+            // file.orig_name.toLowerCase().endsWith('.svg')
+            // console.log(file)
+            if (((this.config.type == 'image' && file.file_type == 'image') || file.orig_name.toLowerCase().endsWith('.svg')) || this.config.type == 'all') {
                 if (file.selected) {
                     // Удаляем из выбранных элементов
                     this.selectedItems.splice(this.selectedItems.indexOf(file.id), 1);

@@ -8,9 +8,9 @@
                     <div class="card">
                         <div class="menu-con" v-if="!field.readonly" :ref="'menu' + index">
                             <div class="text-end">
-                                <v-icon name="gear" class="menu-icon" @click="menuOpen(index)"/>
+                                <v-icon name="three-bars" class="menu-icon" @click="menuOpen(index)"/>
                             </div>
-                            <v-dropdown class="base-menu" @clickOutside="closeMenu()" v-if="currentMenuOpen === index">
+                            <v-dropdown class="base-menu" @v-click-outside="closeMenu()" v-if="currentMenuOpen === index">
                                 <div class="item" @click="addNew(index)">
                                     <v-icon name="plus" class="add-icon"/>
                                     Добавить новый элемент
