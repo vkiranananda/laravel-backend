@@ -77,6 +77,8 @@ class BackendInstall extends Command
         $this->info("Или для разработки:");
         $this->line("npm run dev\n");
 
+        $this->line("Если вы используете блочный редактор и часть блоков на фронтенде, то добавьте стиль в свою сборку @forward \"/vendor/vkiranananda/backend/resources/sass/blocks.scss\";\n");
+
     	$this->info("Каталог с модулями " . $this->backendPath . "\n");
 
     	$this->info("Для добавления нового пользователя используйте команду:");

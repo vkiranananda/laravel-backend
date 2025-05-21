@@ -1,5 +1,5 @@
-@import "../../Form/resources/sass/style";
-
+@forward "../../Form/resources/sass/style";
+@forward "blocks";
 
 a.disabled {
     pointer-events: none;

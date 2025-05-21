@@ -47,12 +47,12 @@ class c {
     types = {
         'space': {
             name: "Пустая строка",
-            html: "<div>&nbsp;</div>",
+            html: "<div class='blocks-delimiter-height'> </div>",
             icon: emptyIcon
         },
         'downble-space': {
             name: "Двойная пустая строка",
-            html: "<div>&nbsp;<br>&nbsp;</div>",
+            html: "<div class='blocks-delimiter-dowble-height'> </div>",
             icon: emptyIcon
         },
         '***': {
