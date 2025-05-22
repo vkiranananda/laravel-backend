@@ -15,8 +15,8 @@ import Big from './libs/editorjs/plugins/big'
 import Table from '@editorjs/table';
 import Underline from '@editorjs/underline';
 import TextAlign from './libs/editorjs/plugins/text-align'
-import BackendImage from './libs/editorjs/plugins/image'
 import StyledText from './libs/editorjs/plugins/styled-text'
+import Image from './libs/editorjs/plugins/image'
 import InlineCode from '@editorjs/inline-code'
 import RawTool from '@editorjs/raw'
 
@@ -49,33 +49,14 @@ export default {
                 paragraph: {
                     tunes: ['TextAlign'],
                 },
-                image: {
-                    class: BackendImage,
-                    tunes: ['TextAlign'],
-                },
                 inlineCode: InlineCode,
                 list: {
                     class: List,
                     inlineToolbar: true,
                 },
-                quote: {
-                    class: Quote,
-                    inlineToolbar: true,
-                    config: {
-                        quotePlaceholder: 'Введите цитату',
-                        captionPlaceholder: 'Введите автора',
-                    },
-                },
                 marker: Marker,
-                delimiter: Delimiter,
                 underline: Underline,
                 big: Big,
-                table: {
-                    class: Table,
-                    tunes: ['TextAlign'],
-                    inlineToolbar: true,
-                },
-                raw: RawTool,
                 TextAlign: {
                     class: TextAlign,
                     config: {
@@ -121,6 +102,7 @@ export default {
                         "Underline": "Подчеркнутый",
                         "InlineCode": "Моноширинный",
                         "Big": "Увеличить размер",
+                        "Image": "Картинка"
                     },
                     ui: {
                         "blockTunes": {
@@ -185,26 +167,63 @@ export default {
             }
         }
 
+        const keyToConf = {
+            'styled-text': {
+                class: StyledText,
+                langKey: 'Styled Text'
+            },
+            'table': {
+                class: Table,
+                langKey: 'Table'
+            },
+            'raw': {
+                class: RawTool,
+                langKey: 'Raw HTML'
+            },
+            'delimiter': {
+                class: Delimiter,
+                langKey: 'Delimiter'
+            },
+            'quote': {
+                class: Quote,
+                langKey: 'Quote'
+            },
+            'image': {
+                class: Image,
+                langKey: 'Image'
+            },
+        }
+
         if (this.field.plugins) {
             for (let pluginKey in this.field.plugins) {
+                let conf = keyToConf[pluginKey]
+                if (!conf) {
+                    console.error(`editor-blocks: plugin "${pluginKey}" not found`)
+                    continue
+                }
                 let plugin = this.field.plugins[pluginKey]
-                if (plugin.label) {
-                    config.i18n.messages.toolNames['Styled Text'] = plugin.label
-                }
-                if (plugin.type === 'StyledText') {
-                    config.tools[pluginKey] = {
-                        class: StyledText,
-                        config: {
-                            styles: plugin.styles
+                if (plugin.label) config.i18n.messages.toolNames[conf.langKey] = plugin.label
+                config.tools[pluginKey] = {}
+
+                switch (pluginKey) {
+                    case 'styled-text':
+                        config.tools[pluginKey].config = {styles: plugin.styles}
+                        break;
+                    case 'quote':
+                        config.tools[pluginKey].config = {
+                            quotePlaceholder: 'Введите цитату',
+                            captionPlaceholder: 'Введите автора',
                         }
-                    }
+                        break;
+                    default:
                 }
+                config.tools[pluginKey].class = conf.class
 
                 if (plugin['text-align'] === true) config.tools[pluginKey].tunes = ['TextAlign']
                 if (plugin['toolbar'] === true) config.tools[pluginKey].inlineToolbar = true
             }
         }
-console.log(config)
+
         this.editor = new EditorJS(config);
     },
 

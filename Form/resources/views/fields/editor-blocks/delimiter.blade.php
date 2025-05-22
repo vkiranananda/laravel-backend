@@ -1,6 +1,6 @@
 @switch($data['data']['type'])
     @case('***')
-        <div class="text-center h2">* * *</div>
+        <div class="blocks-delimiter-asterisk">* * *</div>
         @break
     @case('space')
         <div class="blocks-delimiter-height">&nbsp;</div>

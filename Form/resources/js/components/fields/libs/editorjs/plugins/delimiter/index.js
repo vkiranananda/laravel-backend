@@ -26,7 +26,7 @@ class c {
         for (let key in this.types) {
             res.push({
                 icon: this.types[key].icon,
-                label: this.types[key].name,
+                label: this.types[key].label,
                 onActivate: () => this.setType(key),
                 closeOnActivate: !0,
                 isActive: this.data.type === key
@@ -46,18 +46,18 @@ class c {
 
     types = {
         'space': {
-            name: "Пустая строка",
+            label: "Пустая строка",
             html: "<div class='blocks-delimiter-height'> </div>",
             icon: emptyIcon
         },
         'downble-space': {
-            name: "Двойная пустая строка",
+            label: "Двойная пустая строка",
             html: "<div class='blocks-delimiter-dowble-height'> </div>",
             icon: emptyIcon
         },
         '***': {
-            name: "* * *",
-            html: "<div class='text-center h2 pt-4 pb-0 m-0 '>* * *</div>",
+            label: "* * *",
+            html: "<div class='blocks-delimiter-asterisk'>* * *</div>",
             icon: emptyIcon
         }
     };

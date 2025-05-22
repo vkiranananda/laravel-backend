@@ -5,7 +5,7 @@ namespace Backend\Root\Form\Services;
 
 class FormField
 {
-    static public function getFieldData($data, $type)
+    static public function getFieldEditorBlock($data, $type, $templates = [])
     {
         $text = '';
         if ($type === 'editor-blocks' && is_array($data['blocks']) && count($data['blocks']) > 0) {
@@ -24,7 +24,7 @@ class FormField
                             break;
                     }
                 }
-                $text .= view('Form::fields.editor-blocks.' . $block['type'], ['data' => $block])->render();
+                $text .= view($templates[$block['type']] ?? 'Form::fields.editor-blocks.' . $block['type'], ['data' => $block])->render();
             }
         }
         return $text;
