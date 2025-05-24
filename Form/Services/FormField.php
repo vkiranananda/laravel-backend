@@ -5,7 +5,7 @@ namespace Backend\Root\Form\Services;
 
 class FormField
 {
-    static public function getFieldEditorBlock($data, $type, $templates = [])
+    static public function getFieldEditorBlock($data, $templates = [])
     {
         $text = '';
         if ($type === 'editor-blocks' && is_array($data['blocks']) && count($data['blocks']) > 0) {
