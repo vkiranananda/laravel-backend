@@ -96,5 +96,9 @@
             cursor: pointer;
             padding-left: 12px;
         }
+        .readonly-field {
+            border: 1px solid #d7e0e2;
+            padding: 10px;
+        }
     }
 </style>

@@ -15,7 +15,7 @@
                 </button>
             </template>
         </div>
-        <div class="float-buttons">
+        <div class="float-buttons" v-if="showFloatButtons">
             <div class="result-area float-error-block" v-if='status != "" && statusArea == "float"'>
                 <span :class="statusText[status].class">{{ statusText[status].text }}</span>
             </div>
@@ -59,6 +59,9 @@ export default {
     computed: {
         buttons: function () {
             return formData.config.value.buttons
+        },
+        showFloatButtons: function () {
+            return formData.config.value.hideFloatButtons === true ? false : true
         },
     },
     methods: {

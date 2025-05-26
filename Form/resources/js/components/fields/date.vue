@@ -1,6 +1,7 @@
 <template>
-    <div>
-        <date-picker :type="type" :input-class="inputClass" v-model:value="date" :first-day-of-week="1" :format="format"
+    <div class="datepicker">
+        <div class="readonly-field" v-if="field.readonly">{{field.value}}</div>
+        <date-picker v-else :type="type" :input-class="inputClass" v-model:value="date" :first-day-of-week="1" :format="format"
                      lang="ru" :minute-step="field['minute-step'] ? field['minute-step'] : 1"
                      v-bind="field.attr" :disabled="field.readonly"></date-picker>
     </div>

@@ -281,6 +281,7 @@ class ResourceController extends Controller
                 'title' => $this->config['lang']['show-title'] ?? null,
                 'viewUrl' => $this->getViewUrl(),
                 'buttons' => $this->formShowButtons(),
+                'hideFloatButtons' => true
             ],
             'fields' => [
                 'fields' => $this->fieldsPrep->readFields($this->post, $this->fields['fields']),

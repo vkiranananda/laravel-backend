@@ -1,6 +1,9 @@
 <template>
-    <div class="small-mce" :class="field.size ? field.size : 'small'">
-        <div ref="editor"></div>
+    <div class="editor">
+        <div v-if="field.readonly" v-html="field.value" class="readonly-field"></div>
+        <div v-else class="small-mce" :class="field.size ? field.size : 'small'">
+            <div ref="editor"></div>
+        </div>
     </div>
 </template>
 
@@ -9,7 +12,7 @@
 
 export default {
     mounted() {
-        this.init()
+        if (!this.field.readonly) this.init()
     },
     beforeDestroy() {
         this.editor.trumbowyg('destroy');
@@ -34,7 +37,6 @@ export default {
                 // Устанавливаем начальное значение
                 this.editor.trumbowyg('html', this.field.value)
             });
-
         },
         attachFile: function (files, link) {
 
@@ -142,33 +144,35 @@ export default {
 </script>
 
 <style lang='scss'>
-.small-mce.small {
+.editor {
+    .small-mce.small {
+        .trumbowyg {
+            &.trumbowyg-box {
+                min-height: 100px !important;
+            }
+
+            .trumbowyg-editor, {
+                min-height: 100px !important;
+            }
+
+            &.trumbowyg-editor-visible .trumbowyg-textarea, &.trumbowyg-editor-hidden .trumbowyg-textarea {
+                min-height: 100px;
+            }
+        }
+    }
+
+
     .trumbowyg {
-        &.trumbowyg-box {
-            min-height: 100px !important;
-        }
+        margin: auto;
 
-        .trumbowyg-editor, {
-            min-height: 100px !important;
-        }
-
-        &.trumbowyg-editor-visible .trumbowyg-textarea, &.trumbowyg-editor-hidden .trumbowyg-textarea {
-            min-height: 100px;
+        .trumbowyg-button-pane {
+            background: none;
         }
     }
-}
 
-.trumbowyg {
-    margin: auto;
-
-    .trumbowyg-button-pane {
-        background: none;
+    .trumbowyg-fullscreen {
+        z-index: 25 !important;
     }
+
 }
-
-.trumbowyg-fullscreen {
-    z-index: 25 !important;
-}
-
-
 </style>
