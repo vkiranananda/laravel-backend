@@ -7,8 +7,8 @@
                 <div v-if="field.type == 'html'" v-html="field.html"></div>
 
                 <template v-else-if="field.type == 'html-title'">
-                    <h5 v-html="field.title" :class="key == 0  ? 'mt-4' : '' "></h5>
-                    <hr>
+                    <h5 v-html="field.title" class="mt-3 mb-0" :class="key == 0  ? 'mt-4' : '' "></h5>
+                    <hr class="my-1">
                 </template>
 
                 <div v-else-if="field.type == 'repeated'" class="form-group">
@@ -19,7 +19,8 @@
                 </div>
 
                 <group-field v-else-if="field.type == 'group'" :field='field' :store='store'
-                             :error='currentErrors[field.name]'></group-field>
+                             :error='currentErrors[field.name]'>
+                </group-field>
 
                 <component
                     v-else-if="field.type == 'component'"
