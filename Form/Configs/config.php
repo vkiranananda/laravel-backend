@@ -56,11 +56,13 @@
 		'show' => [
 		    // Шаблон
 			'template' => 'Form::show',
+            // Разрешить редактирование.
+            'edit' => true,
             // Кнопки создать закрыть и редактировать внизу страницы
             'buttons-default' => [
                 'exit' => [
                     'label' => 'Выйти',
-                    'url' => 'javascript:history.back()',
+                    'hook' => 'FormBack',
                     'type' => 'secondary',
                 ],
                 'edit' => [

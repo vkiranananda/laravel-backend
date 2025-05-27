@@ -71,9 +71,15 @@ export default {
 
 
 <style lang='scss'>
-.mx-datepicker {
-    .mx-input {
-        font-size: 1rem;
+.datepicker {
+    .readonly-field {
+        //display: inline-block;
+    }
+
+    .mx-datepicker {
+        .mx-input {
+            font-size: 1rem;
+        }
     }
 }
 </style>

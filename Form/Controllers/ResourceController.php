@@ -22,28 +22,28 @@ class ResourceController extends Controller
     //    use \Backend\Root\Form\Services\Traits\RelationFields;
 
     // Имя общего конфига, если false берется как config
-    protected $configPath = false;
+    public $model = false;
 
     // Имя конфига для полей, если false берется как fields
-    protected $fieldsPath = false;
+    protected $configPath = false;
 
     // Основной конфиг  по умолчанию config
-    protected $config = [];
+    protected $fieldsPath = false;
 
     // Конфиг полей по умолчанию fields
-    protected $fields = false;
+    protected $config = [];
 
     // Переменная где содержатся данные поста
-    protected $post = null;
+    protected $fields = false;
 
     // Генерируемый массив с данными для веб
-    protected $dataReturn = [];
+    protected $post = null;
 
     // Класс для работы с полями
-    protected $fieldsPrep;
+    protected $dataReturn = [];
 
     // Модель данных с которой работаем
-    public $model = false;
+    protected $fieldsPrep;
 
     // Первый вызванный метод класса.
     private $_firstMethod = false;
@@ -96,40 +96,6 @@ class ResourceController extends Controller
     }
 
     // Создаем запись вебка
-    public function create()
-    {
-        // Проверка на права доступа
-        if (!$this->getUserAccess('create')) abort(403, 'Access deny!');
-
-        $this->resourceCombine('create');
-
-        // Если стоит опция клонирования получаем запись
-        if (($clone = Request::input('clone', false))) {
-            $this->post = $this->post->findOrFail($clone);
-
-            // Проверка на права доступа клонируемой записи
-            if (!$this->getUserAccess('read-owner', $this->post['user_id'])) abort(403, 'Access deny!');
-        }
-
-        $this->dataReturn = [
-            'config' => [
-                'url' => action($this->config['controller-name'] . '@store'),
-                'title' => $this->config['lang']['create-title'],
-                'method' => 'post',
-                'upload' => $this->uploadUrls($clone),
-                'buttons' => $this->formEditButtons(),
-                'clone-files' => ($this->cloneGetFiles($clone))
-            ],
-            'fields' => [
-                'fields' => $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
-                'hidden' => $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
-                'tabs' => $this->fields['edit']
-            ],
-        ];
-        $this->resourceCombineAfter('create');
-
-        return view($this->config['edit']['template'], $this->dataReturn);
-    }
 
     /**
      * Сохраняем запись
@@ -148,206 +114,6 @@ class ResourceController extends Controller
 
         return $this->dataReturn;
     }
-
-    /**
-     * Обработка редиректов при создании записи.
-     */
-    public function storeRedirect()
-    {
-        $redirect = $this->config['store-redirect'] ?? $this->config['redirect'] ?? false;
-
-        if ($redirect) $this->dataReturn['redirect'] = $redirect;
-        else {
-            // Выставляем дополнительные параметры.
-            $this->dataReturn = $this->edit($this->post['id']);
-            $this->dataReturn['replaceUrl'] = action($this->config['controller-name'] . '@edit', $this->post['id']);
-        }
-    }
-
-    /**
-     * Получаем пост, если он не был получен и делает проверку на права доступа. При ошибке прерывает процесс.
-     * @param $id
-     * @param $access
-     * @return void
-     */
-    public function getPost($id, $access)
-    {
-        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
-
-        // Проверка на права доступа
-        if (!$this->getUserAccess($access, $this->post['user_id'])) abort(403, 'Access deny!');
-    }
-
-//    public function edit
-
-    // Редактируем запись вебка
-    public function edit($id)
-    {
-        $this->getPost($id, 'edit-owner');
-
-        $this->resourceCombine('edit');
-
-        $this->dataReturn = [
-            'config' => [
-                'url' => action($this->config['controller-name'] . '@update', $id),
-                'title' => $this->config['lang']['edit-title'] ?? null,
-                'method' => 'put',
-                'viewUrl' => $this->getViewUrl(),
-                'upload' => $this->uploadUrls(),
-                'postId' => $id,
-                'buttons' => $this->formEditButtons(),
-                'updated' => $this->getCurrentDateStr()
-            ],
-            'fields' => [
-                'hidden' => $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
-            ]
-        ];
-
-        // Обновляем поля если reload-fields = true или первый метод не равен сохранию или обновлению записи
-        if ($this->config['reload-fields'] || !in_array($this->getFirstMethod(), ['store', 'update'])) {
-            $this->dataReturn['fields']['fields'] = $this->fieldsPrep->editFields($this->post, $this->fields['fields']);
-            $this->dataReturn['fields']['tabs'] = $this->fields['edit'];
-        }
-
-        $this->resourceCombineAfter('edit');
-
-        if (Request::ajax()) return $this->dataReturn;
-
-        return view($this->config['edit']['template'], $this->dataReturn);
-    }
-
-    // Обновляем запись
-    public function update($id)
-    {
-        $this->setFirstMethod('update');
-
-        $this->getPost($id, 'edit-owner');
-
-        $this->checkUpdateDate();
-
-        $this->processStep = 'update';
-
-        $this->resourceCombine('update');
-        $this->saveData('update');
-
-        $this->updateRedirect();
-
-        // Вызываем хук
-        $this->resourceCombineAfter('update');
-
-        return $this->dataReturn;
-    }
-
-    public function checkUpdateDate()
-    {
-        if ($this->getCurrentDateStr() != Request::input('updated', '')) {
-            Log::debug($this->getCurrentDateStr());
-            Log::debug(Request::input('updated', ''));
-            abort(403, 'Кто то внес изменения в эту запись пока вы ее редактировали, вам необходимо обновить страницу и внести изменения по новой');
-        }
-    }
-
-    // Получаем текущую дату в тексте
-    public function getCurrentDateStr()
-    {
-        if (!isset($this->post['updated_at'])) return '';
-
-        $date = !is_object($this->post['updated_at']) ? Carbon::create($this->post['updated_at']) :  $this->post['updated_at'];
-
-        return $date->toDateTimeString();
-
-    }
-
-    /**
-     * Обработка редиректов при обновлении записи.
-     */
-    public function updateRedirect()
-    {
-        $redirect = $this->config['update-redirect'] ?? $this->config['redirect'] ?? false;
-
-        if ($redirect) $this->dataReturn['redirect'] = $redirect;
-        else $this->dataReturn = $this->edit($this->post['id']);
-    }
-
-    //!Показываем запись
-    public function show($id)
-    {
-        $this->getPost($id, 'read-owner');
-
-        $this->resourceCombine('show');
-
-        $this->dataReturn = [
-            'config' => [
-                'title' => $this->config['lang']['show-title'] ?? null,
-                'viewUrl' => $this->getViewUrl(),
-                'buttons' => $this->formShowButtons(),
-                'hideFloatButtons' => true
-            ],
-            'fields' => [
-                'fields' => $this->fieldsPrep->readFields($this->post, $this->fields['fields']),
-                'tabs' => $this->fields['edit']
-            ]
-        ];
-
-        $this->resourceCombineAfter('show');
-
-        if (Request::ajax()) return $this->dataReturn;
-
-        return view($this->config['show']['template'], $this->dataReturn);
-    }
-
-    //Удаляем запись
-    public function destroy($id)
-    {
-        $this->getPost($id, 'destroy-owner');
-
-        $this->resourceCombine('destroy');
-
-        $this->post->destroy($id);
-
-        $this->resourceCombineAfter('destroy');
-
-        return $this->dataReturn;
-    }
-
-    // Получаем список файлов для клонирования
-    protected function cloneGetFiles($id)
-    {
-        $list = ($id) ? MediaFile
-            ::join('media_file_relations as rel', 'rel.file_id', '=', 'media_files.id')
-            ->where('rel.post_id', '=', $id)
-            ->where('rel.post_type', '=', class_basename($this->post))
-            ->select('media_files.id')
-            ->get() : [];
-
-        $res = [];
-
-        foreach ($list as $file) $res[] = $file['id'];
-
-        return $res;
-    }
-
-    // Сахраняем загруженные данные.
-    public function saveMediaRelations($files, $imageable = false, $id = false)
-    {
-        if (is_array($files) && count($files) > 0) {
-
-            // Возможность задать класс для сохранения файла
-            if ($imageable == false) $imageable = class_basename($this->post);
-            // Возможность задать id
-            if ($id == false) $id = $this->post->id;
-
-            foreach ($files as $fileId) {
-                // Проверит есть ли запись firstOrCreate
-                MediaFileRelation::firstOrCreate([
-                    'file_id' => $fileId,
-                    'post_id' => $id,
-                    'post_type' => $imageable,
-                ]);
-            }
-        }
-    }
-
 
     /**
      * Сохраняем данные
@@ -386,7 +152,177 @@ class ResourceController extends Controller
         }
     }
 
-    // Получаем url для загрузки, $clone для включения клонирования в урл
+    protected function preSaveData($type)
+    {
+    }
+
+    public function saveMediaRelations($files, $imageable = false, $id = false)
+    {
+        if (is_array($files) && count($files) > 0) {
+
+            // Возможность задать класс для сохранения файла
+            if ($imageable == false) $imageable = class_basename($this->post);
+            // Возможность задать id
+            if ($id == false) $id = $this->post->id;
+
+            foreach ($files as $fileId) {
+                // Проверит есть ли запись firstOrCreate
+                MediaFileRelation::firstOrCreate([
+                    'file_id' => $fileId,
+                    'post_id' => $id,
+                    'post_type' => $imageable,
+                ]);
+            }
+        }
+    }
+
+//    public function edit
+
+    // Редактируем запись вебка
+
+    /**
+     * Обработка редиректов при создании записи.
+     */
+    public function storeRedirect()
+    {
+        $redirect = $this->config['store-redirect'] ?? $this->config['redirect'] ?? false;
+
+        if ($redirect) $this->dataReturn['redirect'] = $redirect;
+        else {
+            // Выставляем дополнительные параметры.
+            $this->dataReturn = $this->edit($this->post['id']);
+            $this->dataReturn['replaceUrl'] = action($this->config['controller-name'] . '@edit', $this->post['id']);
+        }
+    }
+
+    // Обновляем запись
+
+    public function edit($id)
+    {
+        $this->getPost($id, 'edit-owner');
+
+        $this->resourceCombine('edit');
+
+        $this->dataReturn = [
+            'config' => [
+                'url' => action($this->config['controller-name'] . '@update', $id),
+                'title' => $this->config['lang']['edit-title'] ?? null,
+                'method' => 'put',
+                'viewUrl' => $this->getViewUrl(),
+                'upload' => $this->uploadUrls(),
+                'postId' => $id,
+                'buttons' => $this->formEditButtons(),
+                'updated' => $this->getCurrentDateStr()
+            ],
+            'fields' => [
+                'hidden' => $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
+            ]
+        ];
+
+        // Обновляем поля если reload-fields = true или первый метод не равен сохранию или обновлению записи
+        if ($this->config['reload-fields'] || !in_array($this->getFirstMethod(), ['store', 'update'])) {
+            $this->dataReturn['fields']['fields'] = $this->fieldsPrep->editFields($this->post, $this->fields['fields']);
+            $this->dataReturn['fields']['tabs'] = $this->fields['edit'];
+        }
+
+        $this->resourceCombineAfter('edit');
+
+        if (Request::ajax()) return $this->dataReturn;
+
+        return view($this->config['edit']['template'], $this->dataReturn);
+    }
+
+    /**
+     * Получаем пост, если он не был получен и делает проверку на права доступа. При ошибке прерывает процесс.
+     * @param $id
+     * @param $access
+     * @return void
+     */
+    public function getPost($id, $access)
+    {
+        if (!isset($this->post['id'])) $this->post = $this->post->findOrFail($id);
+
+        // Проверка на права доступа
+        if (!$this->getUserAccess($access, $this->post['user_id'])) abort(403, 'Access deny!');
+    }
+
+    // Получаем текущую дату в тексте
+
+    protected function getViewUrl()
+    {
+        return '';
+    }
+
+    public function getCurrentDateStr()
+    {
+        if (!isset($this->post['updated_at'])) return '';
+
+        $date = !is_object($this->post['updated_at']) ? Carbon::create($this->post['updated_at']) : $this->post['updated_at'];
+
+        return $date->toDateTimeString();
+
+    }
+
+    //!Показываем запись
+
+    public function create()
+    {
+        // Проверка на права доступа
+        if (!$this->getUserAccess('create')) abort(403, 'Access deny!');
+
+        $this->resourceCombine('create');
+
+        // Если стоит опция клонирования получаем запись
+        if (($clone = Request::input('clone', false))) {
+            $this->post = $this->post->findOrFail($clone);
+
+            // Проверка на права доступа клонируемой записи
+            if (!$this->getUserAccess('read-owner', $this->post['user_id'])) abort(403, 'Access deny!');
+        }
+
+        $this->dataReturn = [
+            'config' => [
+                'url' => action($this->config['controller-name'] . '@store'),
+                'title' => $this->config['lang']['create-title'],
+                'method' => 'post',
+                'upload' => $this->uploadUrls($clone),
+                'buttons' => $this->formEditButtons(),
+                'clone-files' => ($this->cloneGetFiles($clone))
+            ],
+            'fields' => [
+                'fields' => $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
+                'hidden' => $this->fieldsPrep->editHiddenFields($this->post, $this->fields['hidden'] ?? []),
+                'tabs' => $this->fields['edit']
+            ],
+        ];
+        $this->resourceCombineAfter('create');
+
+        return view($this->config['edit']['template'], $this->dataReturn);
+    }
+
+    //Удаляем запись
+
+    /**
+     * Функция заглушка для перегрузки на проверку прав доступа.
+     * @param $access - тип доступа edit-all, edit-owner, read-all, read-owner, create, destroy-all, destroy-owner
+     * @param $userId - Если указан будет учавствовать в типах read-owner, edit-owner, delete-owner, если не указан
+     * вернет true если разрешена хоть какая то запись.
+     * @param $accessKey - Если нужно переопределить ключ
+     * @return bool - Вернет true или false в зависимости от типа запроса.
+     */
+    protected function getUserAccess($access, $userId = false, $accessKey = false)
+    {
+        return true;
+    }
+
+    // Получаем список файлов для клонирования
+
+    protected function resourceCombine($type)
+    {
+    }
+
+    // Сахраняем загруженные данные.
+
     private function uploadUrls($clone = false)
     {
         if ($this->config['upload']['enable']) {
@@ -423,6 +359,112 @@ class ResourceController extends Controller
         return $this->config['edit']['buttons-default'];
     }
 
+    // Получаем url для загрузки, $clone для включения клонирования в урл
+
+    protected function cloneGetFiles($id)
+    {
+        $list = ($id) ? MediaFile
+            ::join('media_file_relations as rel', 'rel.file_id', '=', 'media_files.id')
+            ->where('rel.post_id', '=', $id)
+            ->where('rel.post_type', '=', class_basename($this->post))
+            ->select('media_files.id')
+            ->get() : [];
+
+        $res = [];
+
+        foreach ($list as $file) $res[] = $file['id'];
+
+        return $res;
+    }
+
+    protected function resourceCombineAfter($type)
+    {
+    }
+
+    protected function getFirstMethod()
+    {
+        return $this->_firstMethod;
+    }
+
+    protected function setFirstMethod($method)
+    {
+        if ($this->_firstMethod === false) $this->_firstMethod = $method;
+    }
+
+    public function update($id)
+    {
+        $this->setFirstMethod('update');
+
+        $this->getPost($id, 'edit-owner');
+
+        $this->checkUpdateDate();
+
+        $this->processStep = 'update';
+
+        $this->resourceCombine('update');
+        $this->saveData('update');
+
+        $this->updateRedirect();
+
+        // Вызываем хук
+        $this->resourceCombineAfter('update');
+
+        return $this->dataReturn;
+    }
+
+    // Функция специально  для перегрузки, когда нужно выполнять различне групповые операции перед
+    //Сохранием, обновлением, создание или редактированием
+
+    public function checkUpdateDate()
+    {
+        if ($this->getCurrentDateStr() != Request::input('updated', '')) {
+            Log::debug($this->getCurrentDateStr());
+            Log::debug(Request::input('updated', ''));
+            abort(403, 'Кто то внес изменения в эту запись пока вы ее редактировали, вам необходимо обновить страницу и внести изменения по новой');
+        }
+    }
+
+    // Тоже но в конце функции перед return. Удобно кэши чистить и прочее..
+
+    /**
+     * Обработка редиректов при обновлении записи.
+     */
+    public function updateRedirect()
+    {
+        $redirect = $this->config['update-redirect'] ?? $this->config['redirect'] ?? false;
+
+        if ($redirect) $this->dataReturn['redirect'] = $redirect;
+        else $this->dataReturn = $this->edit($this->post['id']);
+    }
+
+    // Вызывается перед сохранением данных. Что бы была возможность поменять что то в модели, после всех обработок. В параметре type указывается, store update
+
+    public function show($id)
+    {
+        $this->getPost($id, 'read-owner');
+
+        $this->resourceCombine('show');
+
+        $this->dataReturn = [
+            'config' => [
+                'title' => $this->config['lang']['show-title'] ?? null,
+                'viewUrl' => $this->getViewUrl(),
+                'buttons' => $this->formShowButtons(),
+                'readonly' => true
+            ],
+            'fields' => [
+                'fields' => $this->fieldsPrep->readFields($this->post, $this->fields['fields']),
+                'tabs' => $this->fields['edit']
+            ]
+        ];
+
+        $this->resourceCombineAfter('show');
+
+        if (Request::ajax()) return $this->dataReturn;
+
+        return view($this->config['show']['template'], $this->dataReturn);
+    }
+
     /**
      * Генерируем кнопки внизу формы
      * @return array Массив кнопок
@@ -430,10 +472,9 @@ class ResourceController extends Controller
     protected function formShowButtons()
     {
         // Если доступ есть добавляем ссылку в кнопку редактирования
-        if ($this->getUserAccess('edit-owner', $this->post['user_id'])) {
+        if ($this->config['show']['edit'] === true && $this->getUserAccess('edit-owner', $this->post['user_id'])) {
             $this->config['show']['buttons-default']['edit']['url'] = action($this->config['controller-name'] . '@edit', $this->post['id']);
         } else {
-            // Иначе удаляем кнопку
             unset($this->config['show']['buttons-default']['edit']);
         }
         if (isset($this->config['show']['buttons'])) {
@@ -453,49 +494,19 @@ class ResourceController extends Controller
         return $this->config['show']['buttons-default'];
     }
 
-    protected function setFirstMethod($method)
-    {
-        if ($this->_firstMethod === false) $this->_firstMethod = $method;
-    }
-
-    protected function getFirstMethod()
-    {
-        return $this->_firstMethod;
-    }
-
-    // Функция специально  для перегрузки, когда нужно выполнять различне групповые операции перед
-    //Сохранием, обновлением, создание или редактированием
-    protected function resourceCombine($type)
-    {
-    }
-
-    // Тоже но в конце функции перед return. Удобно кэши чистить и прочее..
-    protected function resourceCombineAfter($type)
-    {
-    }
-
-    // Вызывается перед сохранением данных. Что бы была возможность поменять что то в модели, после всех обработок. В параметре type указывается, store update
-    protected function preSaveData($type)
-    {
-    }
-
-    /**
-     * Функция заглушка для перегрузки на проверку прав доступа.
-     * @param $access - тип доступа edit-all, edit-owner, read-all, read-owner, create, destroy-all, destroy-owner
-     * @param $userId - Если указан будет учавствовать в типах read-owner, edit-owner, delete-owner, если не указан
-     * вернет true если разрешена хоть какая то запись.
-     * @param $accessKey - Если нужно переопределить ключ
-     * @return bool - Вернет true или false в зависимости от типа запроса.
-     */
-    protected function getUserAccess($access, $userId = false, $accessKey = false)
-    {
-        return true;
-    }
-
 
     //Функция возвращает урл поста
-    protected function getViewUrl()
+
+    public function destroy($id)
     {
-        return '';
+        $this->getPost($id, 'destroy-owner');
+
+        $this->resourceCombine('destroy');
+
+        $this->post->destroy($id);
+
+        $this->resourceCombineAfter('destroy');
+
+        return $this->dataReturn;
     }
 }

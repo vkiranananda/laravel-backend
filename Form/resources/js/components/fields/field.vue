@@ -98,7 +98,7 @@
         }
         .readonly-field {
             border: 1px solid #d7e0e2;
-            padding: 10px;
+            padding: 5px 10px;
         }
     }
 </style>

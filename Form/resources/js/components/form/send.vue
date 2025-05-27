@@ -61,11 +61,12 @@ export default {
             return formData.config.value.buttons
         },
         showFloatButtons: function () {
-            return formData.config.value.hideFloatButtons === true ? false : true
+            return formData.config.value.readonly === true ? false : true
         },
     },
     methods: {
         btnClick(btn, type) {
+            console.log('23434')
             if (btn.link) window.location = btn.link
             if (!btn.hook) return
             this.statusArea = type
