@@ -240,8 +240,6 @@ trait Index
 
         if ($this->config['list']['item-view']) {
             $res['view'] = action($this->config['controller-name'] . '@show', $post['id']);
-            // Если не установлено, значит реактирование либо отключено либо нет доступ делаем ссылку view
-            if (!isset($res['edit-show'])) $res['edit-show'] = $res['view'];
         }
 
         if ($this->config['list']['item-destroy'] && $this->getUserAccess('destroy-owner', $userId)) {

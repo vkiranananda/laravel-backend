@@ -15,6 +15,7 @@
             'item-view' => true,
 			// Меню для записи в списке
 			'item-menu-default' => [
+				'view' => [ 'label' => 'Просмотр', 'link' => 'view', 'icon' => 'book' ],
 				'edit' => [ 'label' => 'Править', 'link' => 'edit', 'icon' => 'pencil' ],
 				'clone' => [ 'label' => 'Клонировать', 'link' => 'clone', 'icon' => 'file-symlink-file' ],
 				'destroy' => [ 'label' => 'Удалить', 'link' => 'destroy', 'icon' => 'trash', 'confirm' => 'Вы действительно хотите удалить эту запись?' ]
