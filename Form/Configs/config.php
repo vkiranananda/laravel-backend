@@ -17,8 +17,8 @@
 			'item-menu-default' => [
 				'view' => [ 'label' => 'Просмотр', 'link' => 'view', 'icon' => 'book' ],
 				'edit' => [ 'label' => 'Править', 'link' => 'edit', 'icon' => 'pencil' ],
-				'clone' => [ 'label' => 'Клонировать', 'link' => 'clone', 'icon' => 'file-symlink-file' ],
-				'destroy' => [ 'label' => 'Удалить', 'link' => 'destroy', 'icon' => 'trash', 'confirm' => 'Вы действительно хотите удалить эту запись?' ]
+				'clone' => [ 'label' => 'Клонировать', 'link' => 'clone', 'icon' => 'copy' ],
+				'destroy' => [ 'label' => 'Удалить', 'link' => 'destroy', 'icon' => 'delete', 'confirm' => 'Вы действительно хотите удалить эту запись?' ]
 			],
 			'default-order' => ['col' => 'id', 'type' => 'desc'],
 			// Сортировка списка перетаскиванием объектов, должны быть созданы соответсвующие роутнг и поле в бд sort_num
@@ -45,7 +45,7 @@
                     'label' => 'Назад',
                     'hook' => 'FormBack',
                     'type' => 'light',
-                    'icon' => 'reply',
+                    'icon' => 'back',
                     'float-class' => 'mt-4',
                     'class' => 'ms-4'
                 ],

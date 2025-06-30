@@ -1,33 +1,8 @@
-@forward "../../Form/resources/sass/style";
-@forward "blocks";
+@forward '../../Form/resources/sass/style';
+@forward 'blocks';
 
-a.disabled {
-    pointer-events: none;
-    cursor: default;
-}
+// Основные стили для админки
+@forward 'style';
 
-.card {
-    border-radius: 0px !important;
-}
-
-.text-success {
-    fill: #28a745 !important;
-}
-
-.text-light, .text-white {
-    fill: #f8f9fa !important;
-}
-
-.text-primary {
-    fill: #007bff !important;
-}
-
-.text-danger {
-    fill: #dc3545 !important;
-}
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-@import "backend/resources/sass/backend.scss";
+// Импорт основных стилей админки
+@forward '../../../../../backend/resources/sass/backend.scss';

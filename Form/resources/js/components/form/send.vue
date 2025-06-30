@@ -20,7 +20,7 @@
                 <span :class="statusText[status].class">{{ statusText[status].text }}</span>
             </div>
             <button class="button-main">
-                <v-icon name="pencil" width="18" height="18"/>
+                <v-icon name="pencil" class="icon-white"/>
             </button>
             <div class="action-con">
                 <button v-for="btn in buttons" @click="btnClick(btn, 'float')"
@@ -30,7 +30,7 @@
                         :title="btn.label"
                         :class="btn['float-class']"
                 >
-                    <v-icon :name="btn.icon" width="15" height="15"/>
+                    <v-icon :name="btn.icon"/>
                 </button>
             </div>
         </div>
@@ -328,9 +328,6 @@ async function getValuesFromFields(fields) {
             box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.75);
             transition: transform .2s;
 
-            .octicon-wrapper {
-                fill: white;
-            }
         }
 
         .action-con {
@@ -350,10 +347,6 @@ async function getValuesFromFields(fields) {
 
                 &:hover {
                     transform: scale(1.1);
-                }
-
-                .octicon-wrapper {
-                    fill: black;
                 }
             }
         }

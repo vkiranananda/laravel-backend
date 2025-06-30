@@ -3,16 +3,16 @@
         <div class="card-body">
             <div ref="repeatedFields">
                 <div class="fields-block" :class="field.style ?? ''" v-for="(item, index) in field.value"
-                     :key="item.key"
-                     :ref="'block' + index">
+                    :key="item.key" :ref="'block' + index">
                     <div class="card">
                         <div class="menu-con" v-if="!field.readonly" :ref="'menu' + index">
                             <div class="text-end">
-                                <v-icon name="three-bars" class="menu-icon" @click="menuOpen(index)"/>
+                                <v-icon name="menu" class="menu-icon" width="18" height="18"  @click="menuOpen(index)" />
                             </div>
-                            <v-dropdown class="base-menu" @v-click-outside="closeMenu()" v-if="currentMenuOpen === index">
+                            <v-dropdown class="base-menu" @v-click-outside="closeMenu()"
+                                v-if="currentMenuOpen === index">
                                 <div class="item" @click="addNew(index)">
-                                    <v-icon name="plus" class="add-icon"/>
+                                    <v-icon name="plus" class="add-icon icon-green" />
                                     Добавить новый элемент
                                 </div>
                                 <hr>
@@ -21,23 +21,23 @@
                                         <div v-for="field in propFields.fields" class="prop-field">
                                             <label>{{ field.label }}</label>
                                             <print-field :field="field" :fields="propFields.fieldsGroup"
-                                                         @v-change="onPropChange($event, field.name)">
+                                                @v-change="onPropChange($event, field.name)">
                                             </print-field>
                                         </div>
                                     </div>
                                     <hr>
                                 </template>
                                 <div class="item" :class="index == 0 ? 'disabled' : ''" @click="moveUp(index)">
-                                    <v-icon name="arrow-up"/>
+                                    <v-icon name="arrow-up" />
                                     Переместить вверх
                                 </div>
                                 <div class="item" @click="delBlock(index)">
-                                    <v-icon name="x" class="remove-icon"/>
+                                    <v-icon name="close" class="remove-icon icon-red" />
                                     Удалить
                                 </div>
                                 <div class="item" :class="field.value.length -1 == index ? 'disabled' : ''"
-                                     @click="moveDown(index)">
-                                    <v-icon name="arrow-down"/>
+                                    @click="moveDown(index)">
+                                    <v-icon name="arrow-down" />
                                     Переместить вниз
                                 </div>
                             </v-dropdown>
@@ -50,7 +50,7 @@
             </div>
             <div class="text-center mt-1 mb-2" v-if="!field.readonly">
                 <div class="add-button" @click="addNew()">
-                    <v-icon name="plus" class="add-icon"/>
+                    <v-icon name="plus" class="add-icon" />
                     {{ field['add-label'] ? field['add-label'] : 'Добавить новый элемент' }}
                 </div>
             </div>
@@ -73,7 +73,6 @@ export default {
     data() {
         return {
             currentMenuOpen: false,
-            beforeDelete: false
         }
     },
     computed: {
@@ -116,7 +115,6 @@ export default {
 
         closeMenu() {
             this.currentMenuOpen = false
-            this.beforeDelete = false
         },
         addNew(index = false) {
             // Добавляем элемент из меню
@@ -159,10 +157,6 @@ export default {
         cursor: pointer;
     }
 
-    .add-icon {
-        fill: green;
-    }
-
     .fields-block {
         padding-bottom: 20px;
 
@@ -185,12 +179,6 @@ export default {
 
             .menu-icon {
                 cursor: pointer;
-            }
-
-            .dropdown {
-                .remove-icon {
-                    fill: red;
-                }
             }
         }
 

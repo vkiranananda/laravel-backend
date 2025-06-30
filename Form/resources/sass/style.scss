@@ -1,2 +1,10 @@
-@import "node_modules/bootstrap/scss/bootstrap.scss";
-@import "edit";
+@forward "edit";
+
+// Стили для форм
+.form-control {
+    border-radius: 0;
+}
+
+.btn {
+    border-radius: 0;
+}
