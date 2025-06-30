@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Администрирование - @yield('title')</title>
+    <link rel="stylesheet" href="/backend/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/backend/js/trumbowyg/ui/trumbowyg.min.css" />
     @vite('vendor/vkiranananda/backend/resources/sass/backend.scss')
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
@@ -27,12 +29,10 @@
 </body>
 
 <script src="/backend/js/jquery.min.js"></script>
-
 <script src="/backend/js/trumbowyg/trumbowyg.min.js"></script>
 <script src="/backend/js/trumbowyg/langs/ru.min.js"></script>
 <link rel="stylesheet" href="/backend/js/trumbowyg/ui/trumbowyg.min.css" />
 
-@vite('vendor/vkiranananda/backend/resources/js/bootstrap.js')
 @vite('vendor/vkiranananda/backend/resources/js/backend.js')
 
 </html>

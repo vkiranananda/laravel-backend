@@ -34,8 +34,7 @@ return [
             'type' => 'input',
             'field-save' => 'array',
             'label' => 'Иконка в списке',
-            'field-save' => 'array',
-            'desc' => 'Иконки можно посмотреть <a href="https://octicons.github.com"target="_blank">тут</a> пишем без .octicon-'
+            'desc' => 'Иконки можно посмотреть <a href="' . route('icons') . '" target="_blank">тут</a>'
         ],
         'desc' => [
             'name' => 'desc',
