@@ -132,7 +132,7 @@ export default {
         padding: 5px;
         border-radius: 4px;
         transition: background 0.15s, color 0.15s;
-
+        display: block;
         &.active {
             background-color: #f0f0f0;
             color: #2563eb;

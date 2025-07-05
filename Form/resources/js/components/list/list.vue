@@ -47,15 +47,15 @@
                                 <v-dropdown class="base-menu item-menu-con" @v-click-outside="currentMenuOpen = false"
                                     v-if="currentMenuOpen === index">
                                     <template v-for="elMenu in itemMenu">
-                                        <div class="item" v-if="item._links[elMenu.link] != undefined">
-                                            <a v-on:click.stop.prevent="itemActionClick(item._links[elMenu.link], elMenu)">
-                                                <v-icon :name="elMenu.icon" class="me-2" v-if="elMenu.icon" />
-                                                {{ elMenu.label }}
-                                            </a>
-                                        </div>
+                                        <!-- <div class="item" > -->
+                                        <a v-if="item._links[elMenu.link] != undefined"
+                                            v-on:click.stop.prevent="itemActionClick(item._links[elMenu.link], elMenu)" class="item">
+                                            <v-icon :name="elMenu.icon" class="me-2" v-if="elMenu.icon" />
+                                            {{ elMenu.label }}
+                                        </a>
+                                        <!-- </div> -->
                                     </template>
                                 </v-dropdown>
-
                             </div>
                         </td>
                     </tr>
