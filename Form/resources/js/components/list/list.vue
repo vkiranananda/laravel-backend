@@ -44,7 +44,7 @@
                         <td class="menu-td" v-if="itemMenu">
                             <div v-if="checkItemMenuEmpty(item._links)" class="position-relative">
                                 <v-icon name="menu" class="open-menu-icon" @click="currentMenuOpen = index" />
-                                <v-dropdown class="base-menu item-menu-con" @v-click-outside="currentMenuOpen = false"
+                                <v-dropdown class="base-menu" :width="200" @v-click-outside="currentMenuOpen = false"
                                     v-if="currentMenuOpen === index">
                                     <template v-for="elMenu in itemMenu">
                                         <!-- <div class="item" > -->
@@ -210,12 +210,6 @@ export default {
 
     }
 
-    // .file-directory {
-    //     font-size: 22px;
-    //     margin-right: 10px;
-    //     vertical-align: middle;
-    // }
-
     tr {
         a {
             text-decoration: none;
@@ -238,13 +232,6 @@ export default {
                 opacity: 0.2;
             }
         }
-    }
-
-    .item-menu-con {
-        min-width: 200px;
-        position: absolute;
-        right: 5px;
-        top: 1px;
     }
 
     .open-menu-icon {
