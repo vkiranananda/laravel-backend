@@ -9,20 +9,14 @@ export default {
     position: {
       type: String,
       default: 'right', // 'right', 'left'
-      validator: value => ['right', 'left'].includes(value)
-    }
+      validator: value => ['right', 'left'].includes(value),
+    },
   },
   computed: {
     dropdownStyle() {
-      const style = {
+      return {
         width: this.width + 'px',
       };
-
-      // Добавляем позиционирование в зависимости от actualPosition
-      if (this.actualPosition === 'left') style.right = 0;
-      else style.left = 0;
-
-      return style;
     },
   },
   data() {
@@ -129,24 +123,34 @@ export default {
     },
 
     calculatePosition() {
+      //Баг фикс, что бы не было ошибки при расчете позиции
+      this.$el.style.display = 'none';
       // Получаем размеры экрана
       const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
 
-      // Получаем позицию родительского элемента
+      // Получаем позицию родительского элемента относительно экрана
       const parentElement = this.$el.parentElement;
       const parentRect = parentElement.getBoundingClientRect();
 
-      // Рассчитываем, где будет dropdown при разных позициях
-      let bestPosition = this.position;
+      const top = parentRect.top;
+      const left = parentRect.left;
+      this.$el.style.display = 'block';
 
-      // Проверяем только горизонтальное позиционирование
-      if (this.position === 'right' && parentRect.right + this.width > screenWidth) {
-        bestPosition = 'left';
-      } else if (this.position === 'left' && parentRect.left - this.width < 0) {
-        bestPosition = 'right';
+      // Расчет позиции относительно экрана
+      if (this.position === 'right') {
+        if (left + this.width > screenWidth) {
+          this.$el.style.left = '-' + (this.width - parentElement.offsetWidth) + 'px';
+        } else {
+          this.$el.style.left = '0px';
+        }
       }
-
-      this.actualPosition = bestPosition;
+      if (top + this.$el.clientHeight > screenHeight) {
+        this.$el.style.top = '-' + this.$el.clientHeight + 'px';
+      } else {
+        this.$el.style.top = 'none';
+        // this.$el.style.bottom = 'none';
+      }
     },
   },
   updated() {
@@ -160,10 +164,7 @@ export default {
 </script>
 
 <template>
-  <div
-    class="dropdown"
-    ref="dropdown"
-    :style="dropdownStyle">
+  <div class="dropdown" ref="dropdown" :style="dropdownStyle">
     <slot></slot>
   </div>
 </template>
@@ -173,9 +174,10 @@ export default {
   border: 1px solid lightgray;
   background-color: white;
   padding: 5px;
-  z-index: 100;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: absolute;
-
+  // display: none;
   hr {
     margin: 5px 0;
   }
