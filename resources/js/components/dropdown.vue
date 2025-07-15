@@ -26,7 +26,6 @@ export default {
     };
   },
   mounted() {
-    this.calculatePosition();
     this.setFirstActive();
     this.addMouseListeners();
     // Что бы клик при активации элемента не отрабатывал уже в этом цикле
@@ -35,6 +34,11 @@ export default {
       document.addEventListener('click', this.handleClickOutside);
       document.addEventListener('keydown', this.handleKeydown);
     }, 100);
+
+    // Вычисляем позицию с небольшой задержкой для полной инициализации
+    this.$nextTick(() => {
+      this.calculatePosition();
+    });
   },
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
@@ -123,8 +127,14 @@ export default {
     },
 
     calculatePosition() {
-      //Баг фикс, что бы не было ошибки при расчете позиции
+      // Проверяем, что компонент готов
+      if (!this.$el || !this.$el.parentElement) {
+        return;
+      }
+
+      // Баг фикс, что бы не было ошибки при расчете позиции
       this.$el.style.display = 'none';
+
       // Получаем размеры экрана
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
@@ -135,6 +145,8 @@ export default {
 
       const top = parentRect.top;
       const left = parentRect.left;
+
+      // Показываем элемент для получения его размеров
       this.$el.style.display = 'block';
 
       // Расчет позиции относительно экрана
@@ -145,11 +157,11 @@ export default {
           this.$el.style.left = '0px';
         }
       }
+
       if (top + this.$el.clientHeight > screenHeight) {
         this.$el.style.top = '-' + this.$el.clientHeight + 'px';
       } else {
-        this.$el.style.top = 'none';
-        // this.$el.style.bottom = 'none';
+        this.$el.style.top = '0px';
       }
     },
   },
@@ -177,7 +189,7 @@ export default {
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: absolute;
-  // display: none;
+  display: none;
   hr {
     margin: 5px 0;
   }

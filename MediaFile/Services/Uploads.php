@@ -5,7 +5,7 @@ use Backend\Root\MediaFile\Models\MediaFile;
 use Backend\Root\MediaFile\Models\MediaFileRelation;
 use Intervention\Image\Facades\Image as Image;
 use Auth;
-use Request;
+use Log;
 use Storage;
 
 class Uploads
@@ -29,16 +29,19 @@ class Uploads
         self::fileNameNormalize($conf['name']),
         $mediaFile->disk
       );
+      // Получаем расширение файла из имени файла
+      $mediaFile->extension = strtolower(self::parceFileName($mediaFile->name)['extension']);
     } else {
-      // Если имя файла не задано, то генерируем уникальное случайное имя файла 
+      // Получаем расширение файла из оригинального имени файла
+      $mediaFile->extension = strtolower(self::parceFileName($mediaFile->orig_name)['extension']);
+      // Если имя файла не задано, то генерируем уникальное случайное имя файла
       $mediaFile->name = self::generateFileNameRandom(
         $mediaFile->path,
-        $mediaFile->orig_name,
+        $mediaFile->extension,
         $mediaFile->disk
       );
     }
 
-    $mediaFile->extension = strtolower(self::parceFileName($mediaFile->name)['extension']);
     $mediaFile->size = $file->getSize();
     $mediaFile->array_data = [];
 
@@ -111,15 +114,11 @@ class Uploads
   }
 
   // Генерируем уникальное имя файла случайное
-  public static function generateFileNameRandom($path, $name, $disk)
+  public static function generateFileNameRandom($path, $extension, $disk)
   {
-    // Получаем расширение файла в родном регистре
-    $extension = self::parceFileName($name)['extension'];
-    $extension = ($extension !== '' ? '.' . $extension : '');
-
     // Генерируем уникальное имя файла
     while (true) {
-      $randomName = strtolower(\Illuminate\Support\Str::random(15)) . $extension;
+      $randomName = strtolower(\Illuminate\Support\Str::random(15)) . self::getFileExt($extension);
       if (self::fileExists($path, $randomName, $disk)) {
         continue;
       }
@@ -164,97 +163,107 @@ class Uploads
     ];
   }
 
-  // Преобразуем массив с размеров в строку...
-  public static function sizesToStr($size)
+  // Получаем расширение файла
+  private static function getFileExt($extension)
+  {
+    return ($extension !== '' ? '.' . $extension : '');
+  }
+
+  // Получаем миниатюру картинки
+  public static function getThumbnail($file, $size)
+  {
+    // Если файл не изображение, то возвращаем null
+    if ($file['type'] !== 'image') {
+      return false;
+    }
+
+    // Преобразуем массив с размером в строку
+    $textSize = self::sizeToStr($size);
+
+    // Получаем данные файла
+    $data = $file['array_data'];
+
+    // Если размер уже есть, то возвращаем его
+    if (isset($data['sizes'][$textSize])) {
+      return $data['sizes'][$textSize];
+    }
+    Log::info('gen');
+    $loadedFile = Storage::disk($file['disk'])->get($file['path'] . $file['name']);
+    // Если файл не найден, то возвращаем false
+    if (!$loadedFile) {
+      return false;
+    }
+
+    $img = Image::make($loadedFile);
+
+    // Если размер указан как fit, то используем метод fit
+    if (isset($size[2]) && $size[2] == 'fit') {
+      $img->fit($size[0], $size[1], function ($constraint) {
+        $constraint->upsize();
+      });
+    } else {
+      // Если размер указан как auto, то используем метод resize и сохраняем в jpg формате
+      if ($size[0] == 'auto')
+        $size[0] = null;
+      if ($size[1] == 'auto')
+        $size[1] = null;
+      $img->resize($size[0], $size[1], function ($constraint) {
+        $constraint->aspectRatio();
+        $constraint->upsize();
+      });
+    }
+
+    // Сохраняем миниатюру в кеш
+    $thumbnail = self::createCacheFileFrom($file, $img->encode('jpg', 100), 'jpg');
+    $data['sizes'][$textSize] = self::getFileData($thumbnail);
+
+    $file['array_data'] = $data;
+    $file->save();
+
+    return $data['sizes'][$textSize];
+  }
+
+  // Получаем данные о файле
+  public static function getFileData($file){
+    return [
+      'path' => $file->path . $file->name,
+      'key' => $file->key . self::getFileExt($file->extension),
+    ];
+  }
+
+  // Создаем кеш файла из другого файла
+  public static function createCacheFileFrom($fromFile, $file, $extension = '')
+  {
+    setlocale(LC_ALL, 'ru_RU.utf8');
+
+    $mediaFile = new MediaFile;
+    $mediaFile->disk = 'uploads';
+    $mediaFile->parent_id = $fromFile->id;
+    $mediaFile->user_id = $fromFile->user_id;
+    $mediaFile->orig_name = $fromFile->orig_name;
+    $mediaFile->path = self::generatePath();
+    $mediaFile->key = self::generateKey();
+    $mediaFile->name = self::generateFileNameRandom($mediaFile->path, $extension, $mediaFile->disk);
+    $mediaFile->extension = strtolower($extension);
+    $mediaFile->array_data = [];
+    $mediaFile->size = strlen($file);
+    $mediaFile->type = 'cache';
+
+    $mediaFile->save();
+
+    Storage::disk($mediaFile->disk)->put($mediaFile->path . $mediaFile->name, $file);
+
+    return $mediaFile;
+  }
+
+  // Преобразуем массив с размером в строку...
+  public static function sizeToStr($size)
   {
     if (count($size) < 2)
       return '';
     $res = $size[0] . 'x' . $size[1];
     $res .= (isset($size[2]) && $size[2] == 'fit') ? '-fit' : '';
     return $res;
-  }
-
-  // Генерируем различные размеры
-  public static function genSizes(&$file, $sizes, $tmpFile = false)
-  {
-    $res = array();
-    $disk = Storage::disk($file['disk']);
-    $orig = false;
-
-    $loadedFile = ($tmpFile) ? file_get_contents($tmpFile) : $disk->get($file['path'] . $file['file']);
-
-    foreach ($sizes as $value) {
-      $img = Image::make($loadedFile);
-
-      // Оригинальные размеры, что бы потом можно было проверить был ли изменен файл
-      if ($orig === false) {
-        if (!isset($file['sizes']['orig'])) {
-          $res['orig']['size'] = [$img->width(), $img->height()];
-          $res['orig']['file'] = $file['file'];
-          $res['orig']['path'] = '';
-          $orig = $res['orig'];
-        } else {
-          $orig = $file['sizes']['orig'];
-        }
-      }
-
-      $sizeStr = Uploads::sizesToStr($value);
-      if (isset($value[2]) && $value[2] == 'fit') {
-        $img->fit($value[0], $value[1], function ($constraint) {
-          $constraint->upsize();
-        });
-      } else {
-        if ($value[0] == 'auto')
-          $value[0] = null;
-        if ($value[1] == 'auto')
-          $value[1] = null;
-        $img->resize($value[0], $value[1], function ($constraint) {
-          $constraint->aspectRatio();
-          $constraint->upsize();
-        });
-      }
-
-      // Если файл не был изменен не сохраяем его...
-      if (($img->width() == $orig['size'][0]) && ($img->height() == $orig['size'][1])) {
-        $res[$sizeStr] = $orig;
-        continue;
-      }
-
-      $res[$sizeStr]['size'] = [$img->width(), $img->height()];
-
-      // Сохраняем только в jpg формате
-      $res[$sizeStr]['path'] = 'sizes/' . $sizeStr . '/';
-      $res[$sizeStr]['file'] = pathinfo($file['file'])['filename'] . '.jpg';
-
-      $disk->put(
-        $file['path'] . $res[$sizeStr]['path'] . $res[$sizeStr]['file'],
-        $img->encode('jpg', 100)
-      );
-    }
-
-    return $res;
-  }
-
-  // получаем индивидуальное имя. Можно вообще брать ID записи и сохранять под ним, будет быстрее и проще и не надо ничего проверять :)
-  private static function getIndividualName(&$newFile, $name)
-  {
-    $fInfo = pathinfo($name);
-
-    $fInfo['extension'] = (isset($fInfo['extension'])) ? '.' . $fInfo['extension'] : '';
-
-    // Получаем список файлов в каталоге
-    $filesExists = [];
-    foreach (MediaFile::where('disk', $newFile['disk'])->where('path', $newFile['path'])->get(['file']) as $file) {
-      $filesExists[$file['file']] = '';
-    }
-    $index = 1;
-
-    // Ищем подходящее имя файла
-    while (isset($filesExists[$name])) {
-      $name = $fInfo['filename'] . '-' . $index++ . $fInfo['extension'];
-    }
-
-    return $name;
   }
 
   // Удаляет массив файлов
