@@ -224,7 +224,8 @@ class Uploads
   }
 
   // Получаем данные о файле
-  public static function getFileData($file){
+  public static function getFileData($file)
+  {
     return [
       'path' => $file->path . $file->name,
       'key' => $file->key . self::getFileExt($file->extension),
@@ -266,23 +267,69 @@ class Uploads
     return $res;
   }
 
-  // Удаляет массив файлов
-  public static function deleteFiles($files)
+  // Удаляем файл. Возвращает массив с файлами которые не удалось удалить или true 
+  public static function deleteFile($file)
   {
-    foreach ($files as $file) {
-      // Удаляем основной файл
-      Storage::disk($file['disk'])->delete($file['path'] . $file['file']);
-
-      if (!is_array($file['sizes']))
-        continue;
-      // Удаляем миниатюры
-      foreach ($file['sizes'] as $fileSizes) {
-        Storage::disk($file['disk'])->delete($file['path'] . $fileSizes['path'] . $fileSizes['file']);
+    $res = [];
+    // Если папка, то удаляем все файлы в папке
+    if ($file->type === 'folder') {
+      // Удаляем все файлы в папке
+      foreach (MediaFile::where('parent_id', $file->id)->get() as $file) {
+        // Рекурсивно удаляем все файлы в папке
+        // if (count($res) > 0)
+          $res = array_merge($res, self::deleteFile($file));
       }
-      // Удаляем из базы
-      MediaFile::destroy($file['id']);
+    } else {
+      // Проверяем, используется ли файл в таблице связей
+      $relations = MediaFileRelation::where('file_id', $file->id)->get();
+
+      // Если файл используется в таблице связей, то не удаляем его
+      if ($relations->count() > 0) {
+        $relRes = [];
+        foreach ($relations as $relation) {
+          // Получаем модель того кто использует файл и id
+          $relRes[] = ['type' => $relation->post_type, 'id' => $relation->post_id];
+        }
+        return ['file' => $file, 'relations' => $relRes];
+      }
+      // Удаляем все файлы привязанные к этому файлу. Например, миниатюры.
+      // К файлу могут быть привязаны только файлы без вложенных файлов.
+      foreach (MediaFile::where('parent_id', $file->id)->get() as $cacheFile) {
+        // Удаляем "миниатюры" из хранилища
+        Storage::disk($file->disk)->delete($cacheFile->path . $cacheFile->name);
+        $cacheFile->delete();
+      }
     }
+
+    // Если есть ошибки, то возвращаем их
+    if (count($res) > 0) {
+      return $res;
+    }
+
+    // Иначе удаляем файл из хранилища
+    Storage::disk($file->disk)->delete($file->path . $file->name);
+    $file->delete();
+
+    return [];
   }
+
+  // Удаляет массив файлов
+  // public static function deleteFiles($files)
+  // {
+  //   foreach ($files as $file) {
+  //     // Удаляем основной файл
+  //     Storage::disk($file['disk'])->delete($file['path'] . $file['file']);
+
+  //     if (!is_array($file['sizes']))
+  //       continue;
+  //     // Удаляем миниатюры
+  //     foreach ($file['sizes'] as $fileSizes) {
+  //       Storage::disk($file['disk'])->delete($file['path'] . $fileSizes['path'] . $fileSizes['file']);
+  //     }
+  //     // Удаляем из базы
+  //     MediaFile::destroy($file['id']);
+  //   }
+  // }
 }
 
 ?>

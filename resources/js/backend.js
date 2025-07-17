@@ -11,6 +11,7 @@ import formInit from '../../Form/resources/js/init.js'
 import menuInit from '../../Menu/resources/js/init.js'
 import customInit from '../../../../../backend/resources/js/backend.js'
 import axios from 'axios';
+import helpers from './libs/helpers.js'
 
 window.axios = axios
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
@@ -28,6 +29,9 @@ const app = createApp({})
 
 app.provide('msgConfirm', vConfirm)
 app.provide('msgAlert', vAlert)
+app.provide('appHelpers', helpers);
+
+
 
 app.config.globalProperties.modal = modalFunc
 
@@ -52,7 +56,6 @@ function addComponents(components) {
 
 app.config.globalProperties.msgConfirm = vConfirm
 app.config.globalProperties.msgAlert = vAlert
+app.config.globalProperties.appHelpers = helpers
 app.mount('#backend-body')
-
-
 
