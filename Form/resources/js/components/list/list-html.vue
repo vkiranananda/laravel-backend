@@ -25,7 +25,6 @@
                   @v-change="listChange"></the-list>
 
         <the-sortable @v-change="pageReload"></the-sortable>
-        <v-alert></v-alert>
     </div>
 </template>
 

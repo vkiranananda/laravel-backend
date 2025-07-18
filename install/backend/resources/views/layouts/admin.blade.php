@@ -26,6 +26,7 @@
         </div>
     </div>
 </div>
+<v-alert></v-alert>
 </body>
 
 <script src="/backend/js/jquery.min.js"></script>

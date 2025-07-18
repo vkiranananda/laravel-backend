@@ -19,7 +19,7 @@ class Uploads
     $mediaFile->parent_id = $conf['parentId'] ?? 0;
     $mediaFile->user_id = $conf['user-id'] ?? Auth::user()->id;
     $mediaFile->orig_name = $conf['orig_name'] ?? $file->getClientOriginalName();
-    $mediaFile->path = isset($conf['path']) ? $conf['path'] : self::generatePath();
+    $mediaFile->path = isset($conf['path']) ? self::pathNormalize($conf['path']) : self::generatePath();
     $mediaFile->key = self::generateKey();
 
     // Если имя файла задано, то генерируем уникальное имя файла
@@ -61,6 +61,41 @@ class Uploads
     return $mediaFile;
   }
 
+  // Создаем папку
+  public static function createFolder($conf)
+  {
+    setlocale(LC_ALL, 'ru_RU.utf8');
+
+    $mediaFile = new MediaFile;
+    $mediaFile->disk = $conf['disk'];
+    $mediaFile->parent_id = $conf['parentId'] ?? 0;
+    $mediaFile->user_id = $conf['user-id'] ?? Auth::user()->id;
+    $mediaFile->path = self::pathNormalize($conf['path']);
+    $mediaFile->type = 'folder';
+    $mediaFile->key = self::generateKey();
+
+    $mediaFile->orig_name = $mediaFile->name = self::generateFileName(
+      $mediaFile->path,
+      self::fileNameNormalize($conf['name']),
+      $mediaFile->disk
+    );
+
+    // Создаем папку в хранилище
+    Storage::disk($mediaFile->disk)->makeDirectory($mediaFile->path . $mediaFile->name);
+
+    $mediaFile->save();
+    return $mediaFile;
+  }
+
+  // Нормализуем путь. Добавляем / в конец если нет
+  public static function pathNormalize($path)
+  {
+    if ($path != '' && substr($path, -1) !== '/') {
+      $path .= '/';
+    }
+    return $path;
+  }
+
   // Проверяем существование файла
   public static function fileExists($path, $name, $disk)
   {
@@ -68,6 +103,15 @@ class Uploads
       ->where('path', $path)
       ->where('name', $name)
       ->exists();
+  }
+
+  // Получаем файл
+  public static function getFile($path, $name, $disk)
+  {
+    return MediaFile::where('disk', $disk)
+      ->where('path', $path)
+      ->where('name', $name)
+      ->first();
   }
 
   // Генерируем уникальный путь
@@ -163,7 +207,8 @@ class Uploads
     ];
   }
 
-  // Получаем расширение файла
+  // Получаем расширение файла, если есть вернет расширение с точкой
+  // если нет пустую строку.
   private static function getFileExt($extension)
   {
     return ($extension !== '' ? '.' . $extension : '');
@@ -232,7 +277,7 @@ class Uploads
     ];
   }
 
-  // Создаем кеш файла из другого файла
+  // Создаем кеш файла из другого файла, например для миниатюры
   public static function createCacheFileFrom($fromFile, $file, $extension = '')
   {
     setlocale(LC_ALL, 'ru_RU.utf8');
@@ -267,7 +312,7 @@ class Uploads
     return $res;
   }
 
-  // Удаляем файл. Возвращает массив с файлами которые не удалось удалить или true 
+  // Удаляем файл. Возвращает массив с файлами которые не удалось удалить или true
   public static function deleteFile($file)
   {
     $res = [];
@@ -277,7 +322,7 @@ class Uploads
       foreach (MediaFile::where('parent_id', $file->id)->get() as $file) {
         // Рекурсивно удаляем все файлы в папке
         // if (count($res) > 0)
-          $res = array_merge($res, self::deleteFile($file));
+        $res = array_merge($res, self::deleteFile($file));
       }
     } else {
       // Проверяем, используется ли файл в таблице связей
@@ -307,29 +352,15 @@ class Uploads
     }
 
     // Иначе удаляем файл из хранилища
-    Storage::disk($file->disk)->delete($file->path . $file->name);
+    if ($file->type !== 'folder') {
+      Storage::disk($file->disk)->delete($file->path . $file->name);
+    } else {
+      Storage::disk($file->disk)->deleteDirectory($file->path . $file->name);
+    }
     $file->delete();
 
     return [];
   }
-
-  // Удаляет массив файлов
-  // public static function deleteFiles($files)
-  // {
-  //   foreach ($files as $file) {
-  //     // Удаляем основной файл
-  //     Storage::disk($file['disk'])->delete($file['path'] . $file['file']);
-
-  //     if (!is_array($file['sizes']))
-  //       continue;
-  //     // Удаляем миниатюры
-  //     foreach ($file['sizes'] as $fileSizes) {
-  //       Storage::disk($file['disk'])->delete($file['path'] . $fileSizes['path'] . $fileSizes['file']);
-  //     }
-  //     // Удаляем из базы
-  //     MediaFile::destroy($file['id']);
-  //   }
-  // }
 }
 
 ?>

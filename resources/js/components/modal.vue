@@ -79,6 +79,7 @@ export default {
   },
   methods: {
     action: function (data) {
+      console.log('action', data);
       switch (data.action) {
         case 'show':
           this.show();
