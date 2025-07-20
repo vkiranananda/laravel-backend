@@ -319,10 +319,10 @@ class Uploads
     // Если папка, то удаляем все файлы в папке
     if ($file->type === 'folder') {
       // Удаляем все файлы в папке
-      foreach (MediaFile::where('parent_id', $file->id)->get() as $file) {
+      foreach (MediaFile::where('parent_id', $file->id)->get() as $fileNext) {
         // Рекурсивно удаляем все файлы в папке
         // if (count($res) > 0)
-        $res = array_merge($res, self::deleteFile($file));
+        $res = array_merge($res, self::deleteFile($fileNext));
       }
     } else {
       // Проверяем, используется ли файл в таблице связей
