@@ -18,13 +18,12 @@ class Uploads
     $mediaFile->disk = $conf['disk'] ?? 'uploads';
     $mediaFile->parent_id = $conf['parentId'] ?? 0;
     $mediaFile->user_id = $conf['user-id'] ?? Auth::user()->id;
-    $mediaFile->orig_name = $conf['orig_name'] ?? $file->getClientOriginalName();
     $mediaFile->path = isset($conf['path']) ? self::pathNormalize($conf['path']) : self::generatePath();
     $mediaFile->key = self::generateKey();
 
     // Если имя файла задано, то генерируем уникальное имя файла
     if (isset($conf['name'])) {
-      $mediaFile->name = self::generateFileName(
+      $mediaFile->orig_name = $mediaFile->name = self::generateFileName(
         $mediaFile->path,
         self::fileNameNormalize($conf['name']),
         $mediaFile->disk
@@ -32,6 +31,7 @@ class Uploads
       // Получаем расширение файла из имени файла
       $mediaFile->extension = strtolower(self::parceFileName($mediaFile->name)['extension']);
     } else {
+      $mediaFile->orig_name = $file->getClientOriginalName();
       // Получаем расширение файла из оригинального имени файла
       $mediaFile->extension = strtolower(self::parceFileName($mediaFile->orig_name)['extension']);
       // Если имя файла не задано, то генерируем уникальное случайное имя файла
@@ -59,6 +59,109 @@ class Uploads
     $file->storeAs($mediaFile->path, $mediaFile->name, $mediaFile->disk);
 
     return $mediaFile;
+  }
+
+  // Перемещаем файл
+  public static function move($file, $path, $name, $parentId)
+  {
+    setlocale(LC_ALL, 'ru_RU.utf8');
+
+    // Нормализуем имя файла и путь
+    $name = self::fileNameNormalize($name);
+    $path = self::pathNormalize($path);
+
+    if ($file->parent_id === $parentId && $file->name === $name) {
+      abort(400, 'Нельзя перемещать в ту же папку');
+    }
+
+    $newFile = self::getFile($path, $name, $file->disk);
+    // Если файл с таким именем уже существует, то выбрасываем ошибку
+    if ($newFile) {
+      abort(400, ($newFile->type === 'folder' ? 'Папка' : 'Файл') . ' с таким именем уже существует');
+    }
+
+    if ($file->type === 'folder') {
+      $dirPath = $file->path . $file->name . '/';
+      $toDirPath = $path . $name . '/';
+      // Проверяем, что нельзя переместить папку внутрь самой себя
+      if (strpos($path, $dirPath) === 0) {
+        abort(400, 'Нельзя переместить папку внутрь самой себя');
+      }
+      // Обновляем все файлы и папки, находящиеся внутри перемещаемой папки, чтобы их path начинался с нового пути
+      // Получаем все элементы, у которых path начинается с dirPath и диск совпадает
+      $items = MediaFile::where('disk', $file->disk)
+        ->where('path', 'like', $dirPath . '%')
+        ->get();
+
+      $dirPathLen = strlen($dirPath);
+      foreach ($items as $item) {
+        // Вычисляем новую часть пути: заменяем dirPath на $path . $name . '/'
+        $relativePath = substr($item->path, $dirPathLen);
+        $item->path = $toDirPath . $relativePath;
+        $item->save();
+      }
+    }
+
+    // Перемещаем файл в хранилище
+    Storage::disk($file->disk)->move($file->path . $file->name, $path . $name);
+
+    $file->path = $path;
+    $file->parent_id = $parentId;
+    $file->name = $file->orig_name = $name;
+
+    $file->save();
+
+    return $file;
+  }
+
+  // Копируем файл
+  public static function copy($file, $path, $name, $parentId, $self = false)
+  {
+    setlocale(LC_ALL, 'ru_RU.utf8');
+
+    // Нормализуем имя файла и путь
+    $path = self::pathNormalize($path);
+
+    // Генерируем уникальное имя файла
+    if ($self === false) {
+      $name = self::generateFileName(
+        $path,
+        self::fileNameNormalize($name),
+        $file->disk
+      );
+      if ($file->type === 'folder') {
+        // Проверяем, что нельзя копировать папку внутрь самой себя
+        if (strpos($path, $file->path . $file->name . '/') === 0) {
+          abort(400, 'Нельзя копировать папку внутрь самой себя');
+        }
+      }
+    }
+
+    $newFile = new MediaFile;
+    $newFile->disk = $file->disk;
+    $newFile->parent_id = $parentId;
+    $newFile->user_id = Auth::user()->id;
+    $newFile->path = $path;
+    $newFile->name = $name;
+    $newFile->orig_name = $name;
+    $newFile->extension = $file->extension;
+    $newFile->type = $file->type;
+    $newFile->array_data = [];
+    $newFile->key = self::generateKey();
+    $newFile->save();
+
+    if ($file->type === 'folder') {
+      Storage::disk($file->disk)->makeDirectory($path . $name);
+      Log::info('Создаю папку: ' . $newFile->path . $newFile->name);
+      foreach (MediaFile::where('parent_id', $file->id)->get() as $item) {
+        self::copy($item, $path . $name . '/', $item->name, $newFile->id, true);
+      }
+    } else {
+      Log::info('Создаю файл: ' . $newFile->path . $newFile->name);
+      Storage::disk($file->disk)->copy($file->path . $file->name, $path . $name);
+    }
+
+    return $newFile;
   }
 
   // Создаем папку
@@ -112,6 +215,153 @@ class Uploads
       ->where('path', $path)
       ->where('name', $name)
       ->first();
+  }
+
+  // Получаем миниатюру картинки
+  public static function getThumbnail($file, $size)
+  {
+    // Если файл не изображение, то возвращаем null
+    if ($file['type'] !== 'image') {
+      return false;
+    }
+
+    // Преобразуем массив с размером в строку
+    $textSize = self::sizeToStr($size);
+
+    // Получаем данные файла
+    $data = $file['array_data'];
+
+    // Если размер уже есть, то возвращаем его
+    if (isset($data['sizes'][$textSize])) {
+      return $data['sizes'][$textSize];
+    }
+    $loadedFile = Storage::disk($file['disk'])->get($file['path'] . $file['name']);
+    // Если файл не найден, то возвращаем false
+    if (!$loadedFile) {
+      return false;
+    }
+
+    $img = Image::make($loadedFile);
+
+    // Если размер указан как fit, то используем метод fit
+    if (isset($size[2]) && $size[2] == 'fit') {
+      $img->fit($size[0], $size[1], function ($constraint) {
+        $constraint->upsize();
+      });
+    } else {
+      // Если размер указан как auto, то используем метод resize и сохраняем в jpg формате
+      if ($size[0] == 'auto')
+        $size[0] = null;
+      if ($size[1] == 'auto')
+        $size[1] = null;
+      $img->resize($size[0], $size[1], function ($constraint) {
+        $constraint->aspectRatio();
+        $constraint->upsize();
+      });
+    }
+
+    // Сохраняем миниатюру в кеш
+    $thumbnail = self::createCacheFileFrom($file, $img->encode('jpg', 100), 'jpg');
+    $data['sizes'][$textSize] = self::getFileData($thumbnail);
+
+    $file['array_data'] = $data;
+    $file->save();
+
+    return $data['sizes'][$textSize];
+  }
+
+  // Создаем кеш файла из другого файла, например для миниатюры
+  public static function createCacheFileFrom($fromFile, $file, $extension = '')
+  {
+    setlocale(LC_ALL, 'ru_RU.utf8');
+
+    $mediaFile = new MediaFile;
+    $mediaFile->disk = 'uploads';
+    $mediaFile->parent_id = $fromFile->id;
+    $mediaFile->user_id = $fromFile->user_id;
+    $mediaFile->orig_name = $fromFile->orig_name;
+    $mediaFile->path = self::generatePath();
+    $mediaFile->key = self::generateKey();
+    $mediaFile->name = self::generateFileNameRandom($mediaFile->path, $extension, $mediaFile->disk);
+    $mediaFile->extension = strtolower($extension);
+    $mediaFile->array_data = [];
+    $mediaFile->size = strlen($file);
+    $mediaFile->type = 'cache';
+
+    $mediaFile->save();
+
+    Storage::disk($mediaFile->disk)->put($mediaFile->path . $mediaFile->name, $file);
+
+    return $mediaFile;
+  }
+
+  // Удаляем файл. Возвращает массив с файлами которые не удалось удалить или true
+  public static function deleteFile($file)
+  {
+    $res = [];
+    // Если папка, то удаляем все файлы в папке
+    if ($file->type === 'folder') {
+      // Удаляем все файлы в папке
+      foreach (MediaFile::where('parent_id', $file->id)->get() as $fileNext) {
+        // Рекурсивно удаляем все файлы в папке
+        // if (count($res) > 0)
+        $res = array_merge($res, self::deleteFile($fileNext));
+      }
+    } else {
+      // Проверяем, используется ли файл в таблице связей
+      $relations = MediaFileRelation::where('file_id', $file->id)->get();
+
+      // Если файл используется в таблице связей, то не удаляем его
+      if ($relations->count() > 0) {
+        $relRes = [];
+        foreach ($relations as $relation) {
+          // Получаем модель того кто использует файл и id
+          $relRes[] = ['type' => $relation->post_type, 'id' => $relation->post_id];
+        }
+        return ['file' => $file, 'relations' => $relRes];
+      }
+      // Удаляем все файлы привязанные к этому файлу. Например, миниатюры.
+      // К файлу могут быть привязаны только файлы без вложенных файлов.
+      foreach (MediaFile::where('parent_id', $file->id)->get() as $cacheFile) {
+        // Удаляем "миниатюры" из хранилища
+        Storage::disk($cacheFile->disk)->delete($cacheFile->path . $cacheFile->name);
+        $cacheFile->delete();
+      }
+    }
+
+    // Если есть ошибки, то возвращаем их
+    if (count($res) > 0) {
+      return $res;
+    }
+
+    // Иначе удаляем файл из хранилища
+    if ($file->type !== 'folder') {
+      Storage::disk($file->disk)->delete($file->path . $file->name);
+    } else {
+      Storage::disk($file->disk)->deleteDirectory($file->path . $file->name);
+    }
+    $file->delete();
+
+    return [];
+  }
+
+  // Преобразуем массив с размером в строку...
+  public static function sizeToStr($size)
+  {
+    if (count($size) < 2)
+      return '';
+    $res = $size[0] . 'x' . $size[1];
+    $res .= (isset($size[2]) && $size[2] == 'fit') ? '-fit' : '';
+    return $res;
+  }
+
+  // Получаем данные о файле
+  public static function getFileData($file)
+  {
+    return [
+      'path' => $file->path . $file->name,
+      'key' => $file->key . self::getFileExt($file->extension),
+    ];
   }
 
   // Генерируем уникальный путь
@@ -194,7 +444,7 @@ class Uploads
   }
 
   // Парсим имя файла и расширение.
-  private static function parceFileName($name)
+  public static function parceFileName($name)
   {
     $dotPos = strrpos($name, '.');
     if ($dotPos === false || $dotPos === 0) {
@@ -209,157 +459,9 @@ class Uploads
 
   // Получаем расширение файла, если есть вернет расширение с точкой
   // если нет пустую строку.
-  private static function getFileExt($extension)
+  public static function getFileExt($extension)
   {
     return ($extension !== '' ? '.' . $extension : '');
-  }
-
-  // Получаем миниатюру картинки
-  public static function getThumbnail($file, $size)
-  {
-    // Если файл не изображение, то возвращаем null
-    if ($file['type'] !== 'image') {
-      return false;
-    }
-
-    // Преобразуем массив с размером в строку
-    $textSize = self::sizeToStr($size);
-
-    // Получаем данные файла
-    $data = $file['array_data'];
-
-    // Если размер уже есть, то возвращаем его
-    if (isset($data['sizes'][$textSize])) {
-      return $data['sizes'][$textSize];
-    }
-    Log::info('gen');
-    $loadedFile = Storage::disk($file['disk'])->get($file['path'] . $file['name']);
-    // Если файл не найден, то возвращаем false
-    if (!$loadedFile) {
-      return false;
-    }
-
-    $img = Image::make($loadedFile);
-
-    // Если размер указан как fit, то используем метод fit
-    if (isset($size[2]) && $size[2] == 'fit') {
-      $img->fit($size[0], $size[1], function ($constraint) {
-        $constraint->upsize();
-      });
-    } else {
-      // Если размер указан как auto, то используем метод resize и сохраняем в jpg формате
-      if ($size[0] == 'auto')
-        $size[0] = null;
-      if ($size[1] == 'auto')
-        $size[1] = null;
-      $img->resize($size[0], $size[1], function ($constraint) {
-        $constraint->aspectRatio();
-        $constraint->upsize();
-      });
-    }
-
-    // Сохраняем миниатюру в кеш
-    $thumbnail = self::createCacheFileFrom($file, $img->encode('jpg', 100), 'jpg');
-    $data['sizes'][$textSize] = self::getFileData($thumbnail);
-
-    $file['array_data'] = $data;
-    $file->save();
-
-    return $data['sizes'][$textSize];
-  }
-
-  // Получаем данные о файле
-  public static function getFileData($file)
-  {
-    return [
-      'path' => $file->path . $file->name,
-      'key' => $file->key . self::getFileExt($file->extension),
-    ];
-  }
-
-  // Создаем кеш файла из другого файла, например для миниатюры
-  public static function createCacheFileFrom($fromFile, $file, $extension = '')
-  {
-    setlocale(LC_ALL, 'ru_RU.utf8');
-
-    $mediaFile = new MediaFile;
-    $mediaFile->disk = 'uploads';
-    $mediaFile->parent_id = $fromFile->id;
-    $mediaFile->user_id = $fromFile->user_id;
-    $mediaFile->orig_name = $fromFile->orig_name;
-    $mediaFile->path = self::generatePath();
-    $mediaFile->key = self::generateKey();
-    $mediaFile->name = self::generateFileNameRandom($mediaFile->path, $extension, $mediaFile->disk);
-    $mediaFile->extension = strtolower($extension);
-    $mediaFile->array_data = [];
-    $mediaFile->size = strlen($file);
-    $mediaFile->type = 'cache';
-
-    $mediaFile->save();
-
-    Storage::disk($mediaFile->disk)->put($mediaFile->path . $mediaFile->name, $file);
-
-    return $mediaFile;
-  }
-
-  // Преобразуем массив с размером в строку...
-  public static function sizeToStr($size)
-  {
-    if (count($size) < 2)
-      return '';
-    $res = $size[0] . 'x' . $size[1];
-    $res .= (isset($size[2]) && $size[2] == 'fit') ? '-fit' : '';
-    return $res;
-  }
-
-  // Удаляем файл. Возвращает массив с файлами которые не удалось удалить или true
-  public static function deleteFile($file)
-  {
-    $res = [];
-    // Если папка, то удаляем все файлы в папке
-    if ($file->type === 'folder') {
-      // Удаляем все файлы в папке
-      foreach (MediaFile::where('parent_id', $file->id)->get() as $fileNext) {
-        // Рекурсивно удаляем все файлы в папке
-        // if (count($res) > 0)
-        $res = array_merge($res, self::deleteFile($fileNext));
-      }
-    } else {
-      // Проверяем, используется ли файл в таблице связей
-      $relations = MediaFileRelation::where('file_id', $file->id)->get();
-
-      // Если файл используется в таблице связей, то не удаляем его
-      if ($relations->count() > 0) {
-        $relRes = [];
-        foreach ($relations as $relation) {
-          // Получаем модель того кто использует файл и id
-          $relRes[] = ['type' => $relation->post_type, 'id' => $relation->post_id];
-        }
-        return ['file' => $file, 'relations' => $relRes];
-      }
-      // Удаляем все файлы привязанные к этому файлу. Например, миниатюры.
-      // К файлу могут быть привязаны только файлы без вложенных файлов.
-      foreach (MediaFile::where('parent_id', $file->id)->get() as $cacheFile) {
-        // Удаляем "миниатюры" из хранилища
-        Storage::disk($file->disk)->delete($cacheFile->path . $cacheFile->name);
-        $cacheFile->delete();
-      }
-    }
-
-    // Если есть ошибки, то возвращаем их
-    if (count($res) > 0) {
-      return $res;
-    }
-
-    // Иначе удаляем файл из хранилища
-    if ($file->type !== 'folder') {
-      Storage::disk($file->disk)->delete($file->path . $file->name);
-    } else {
-      Storage::disk($file->disk)->deleteDirectory($file->path . $file->name);
-    }
-    $file->delete();
-
-    return [];
   }
 }
 
