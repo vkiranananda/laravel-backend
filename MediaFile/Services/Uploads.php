@@ -152,12 +152,10 @@ class Uploads
 
     if ($file->type === 'folder') {
       Storage::disk($file->disk)->makeDirectory($path . $name);
-      Log::info('Создаю папку: ' . $newFile->path . $newFile->name);
       foreach (MediaFile::where('parent_id', $file->id)->get() as $item) {
         self::copy($item, $path . $name . '/', $item->name, $newFile->id, true);
       }
     } else {
-      Log::info('Создаю файл: ' . $newFile->path . $newFile->name);
       Storage::disk($file->disk)->copy($file->path . $file->name, $path . $name);
     }
 
