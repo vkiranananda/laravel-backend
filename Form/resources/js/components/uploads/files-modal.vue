@@ -17,10 +17,10 @@ import uploadFile from './upload-file.vue'
 export default {
     //Создаем слушателей событий
     created() {
-        this.emitter.on('UploadFilesModalShow', this.showModal)
+        this.emitter.on('FileManagerModalShow', this.showModal)
     },
     beforeDestroy() {
-        this.emitter.off('UploadFilesModalShow', this.showModal)
+        this.emitter.off('FileManagerModalShow', this.showModal)
     },
 
     props: ['url'],

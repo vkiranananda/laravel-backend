@@ -1,0 +1,44 @@
+<div
+  class="file-list__files position-relative"
+  :class="{
+          'file-list__list_type_list': listType === 'list',
+          'file-list__list_type_grid': listType === 'grid'
+        }"
+  ref="body"
+  @mousedown="onMouseDownSelectionBox"
+  @contextmenu="showMainMenu">
+  <div
+    v-for="file in files"
+    :key="file.id"
+    class="file-list__file-item"
+    :class="{
+            'file-list__file-item_selected': selectedFileIds[file.id] || isHoveringFileId === file.id,
+            'file-list__file-item_cut': idFilesToMove[file.id]
+          }"
+    @click="selectFile(file, $event)"
+    :ref="'fileItem' + file.id"
+    @mousedown="onMouseDownFile(file, $event)"
+    @mouseenter="onMouseEnterFile(file, $event)"
+    @mouseleave="onMouseLeaveFile(file, $event)"
+    @contextmenu="showFileMenu(file, $event)">
+    <file-icon :file="file" />
+    <div class="file-list__file-item-name w-100 px-2">
+      <div class="file-list__file-item-name-text">{{ file.name }}</div>
+    </div>
+
+    <div class="file-list__file-item-date">{{ file.dateFormatted || '' }}</div>
+    <div class="file-list__file-item-size">{{ formatFileSize(file.size) }}</div>
+  </div>
+  <div v-show="isSelecting" ref="selectionBox" class="file-list__selection-box"></div>
+  <div class="file-list__file-move-box" ref="moveBox" v-show="isMovingFiles"></div>
+  <div class="file-list__menu" ref="menu" v-show="menuItems">
+    <v-dropdown :width="200" :key="menuKey">
+      <template v-for="item in menuItems">
+        <div class="item" @click="item.method()">
+          <v-icon :name="item.icon" />
+          {{ item.label }}
+        </div>
+      </template>
+    </v-dropdown>
+  </div>
+</div>

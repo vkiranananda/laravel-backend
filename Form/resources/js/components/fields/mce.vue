@@ -14,7 +14,6 @@
         methods: {
         	insertImage: function(files, link) {
         		var res = ''
-                console.log(files)
                 for ( var file of files) {
 
                    if (file.file_type == 'image') {

@@ -33,8 +33,7 @@
         <send-form :url='conf.url' :method='conf.method'></send-form>
 
         <div v-if="conf.upload !== false && conf.upload != undefined">
-            <upload-files-modal :url="conf.upload.uploadUrl"></upload-files-modal>
-            <upload-edit-file-modal :url="conf.upload.editUrl"></upload-edit-file-modal>
+            <file-manager-modal :list-url="conf.upload.listUrl"></file-manager-modal>
         </div>
     </div>
 </template>
@@ -44,8 +43,7 @@
 
 import size from 'lodash.size'
 import fieldsList from './fields.vue'
-import uploadFilesModal from '../uploads/files-modal.vue'
-import uploadEditFileModal from '../uploads/edit-modal.vue'
+import fileManagerModal from '../../../../../FileManager/resources/js/components/file-manager-modal.vue'
 import sendForm from './send.vue'
 import formData from '../../store/form-data.js'
 import {computed} from "vue";
@@ -53,8 +51,7 @@ import {computed} from "vue";
 export default {
     components: {
         'fields-list': fieldsList,
-        'upload-files-modal': uploadFilesModal,
-        'upload-edit-file-modal': uploadEditFileModal,
+        'file-manager-modal': fileManagerModal,
         'send-form': sendForm,
     },
     props: {

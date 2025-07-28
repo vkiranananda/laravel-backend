@@ -13,4 +13,5 @@ Route::group(['prefix' => 'content', 'middleware' => ['auth.basic']], function (
     Backend::installRoutes('User', ['module']);
     Backend::installRoutes('Option', ['upload']);
     Backend::installRoutes('MenuBuilder');
+    Backend::installRoutes('FileManager', ['module']);
 });

@@ -1,0 +1,39 @@
+.file-manager {
+  &__card-body-main {
+    height: calc(100vh - 140px);
+  }
+
+  &__card-body-modal {
+    height: 400px;
+  }
+
+  .file-manager__body {
+    min-height: 200px;
+    padding: 0;
+  }
+  &__modal-item {
+    padding: 5px 0;
+  }
+  &__item-content {
+    .file-icon {
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      min-height: 30px;
+      svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  }
+  &__modal-item-name {
+    width: 100%;
+    padding: 0 10px;
+    overflow: hidden;
+  }
+  &__files-title-path {
+    a {
+      color: #000;
+    }
+  }
+}

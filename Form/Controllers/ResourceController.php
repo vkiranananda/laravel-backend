@@ -325,13 +325,12 @@ class ResourceController extends Controller
 
     private function uploadUrls($clone = false)
     {
-        if ($this->config['upload']['enable']) {
+        if (isset($this->config['upload']['route-list'])) {
 
-            $urlPostfix = ($clone == true) ? "?clone=" . $clone : '';
-
+            // $urlPostfix = ($clone == true) ? "?clone=" . $clone : '';
+            
             return [
-                'uploadUrl' => action($this->config['base-namespace'] . 'Controllers\\' . $this->config['upload']['controller'] . '@index', $this->post['id']) . $urlPostfix,
-                'editUrl' => action($this->config['base-namespace'] . 'Controllers\\' . $this->config['upload']['controller'] . '@edit')
+                'listUrl' => action($this->config['upload']['route-list'])
             ];
         } else return false;
     }

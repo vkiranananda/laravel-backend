@@ -26,7 +26,7 @@ class BackendImage {
     }
 
     attachFileModal = (files, link) => {
-        emitter.emit('UploadFilesModalShow', {
+        emitter.emit('FileManagerModalShow', {
             type: 'image',
             showLink: true,
             count: 1,

@@ -1,84 +1,85 @@
 <?php
-	// Default config file
-	return [
-	    // Опции списка
-		'list' => [
-			// Количество записей на странице
-			'count-items' => 30,
-			// Кнопка создания новой записи
-			'create' => true,
-			// Ссылки редактирования, удаления, клонирования и просмотра у каждой записи.
-            // Если false исчезнет данная ссылка и кнопка что на нее ссылается.
-			'item-edit' => true,
-			'item-destroy' => true,
-			'item-clone' => true,
-            'item-view' => true,
-			// Меню для записи в списке
-			'item-menu-default' => [
-				'view' => [ 'label' => 'Просмотр', 'link' => 'view', 'icon' => 'book' ],
-				'edit' => [ 'label' => 'Править', 'link' => 'edit', 'icon' => 'pencil' ],
-				'clone' => [ 'label' => 'Клонировать', 'link' => 'clone', 'icon' => 'copy' ],
-				'destroy' => [ 'label' => 'Удалить', 'link' => 'destroy', 'icon' => 'delete', 'confirm' => 'Вы действительно хотите удалить эту запись?' ]
-			],
-			'default-order' => ['col' => 'id', 'type' => 'desc'],
-			// Сортировка списка перетаскиванием объектов, должны быть созданы соответсвующие роутнг и поле в бд sort_num
-			'sortable' => false,
-		],
-        // Опции редактирования записи
-		'edit' => [
-		    // Шаблон
-			'template' => 'Form::edit',
-            // Кнопки создать и прочие внизу страницы
-            'buttons-default' => [
-                'save-and-exit' => [
-                    'label' => 'Сохранить и выйти',
-                    'hook' => 'FormSendAndExit',
-                    'icon' => 'checklist'
-                ],
-                'save' => [
-                    'label' => 'Сохранить',
-                    'hook' => 'FormSend',
-                    'type' => 'secondary',
-                    'icon' => 'check'
-                ],
-                'exit' => [
-                    'label' => 'Назад',
-                    'hook' => 'FormBack',
-                    'type' => 'light',
-                    'icon' => 'back',
-                    'float-class' => 'mt-4',
-                    'class' => 'ms-4'
-                ],
-            ]
-		],
-        // Перезагружать поля после сохранения записи
-        'reload-fields' => false,
-        // Опции просмотра
-		'show' => [
-		    // Шаблон
-			'template' => 'Form::show',
-            // Разрешить редактирование.
-            'edit' => true,
-            // Кнопки создать закрыть и редактировать внизу страницы
-            'buttons-default' => [
-                'exit' => [
-                    'label' => 'Выйти',
-                    'hook' => 'FormBack',
-                    'type' => 'secondary',
-                ],
-                'edit' => [
-                    'label' => 'Редактировать',
-                    'url' => ''
-                ],
-            ]
-		],
-        // Опции загрузки файлов
-		'upload' => [
-			// Контролер для работы с загрузкой файлов, лучше не менять, там много что на это завязано
-			'controller' => 'UploadController',
-            // Разрешнить загрузку файлов, должны быть созданы соответсвующие роутнги
-			'enable' => false,
-		],
-        // Массив дополнительных параметров которые будут прикрепляться к url адресу в списке и создании новой записи.
-		'url-params' => [],
-	];
+// Default config file
+return [
+    // Опции списка
+    'list' => [
+        // Количество записей на странице
+        'count-items' => 30,
+        // Кнопка создания новой записи
+        'create' => true,
+        // Ссылки редактирования, удаления, клонирования и просмотра у каждой записи.
+        // Если false исчезнет данная ссылка и кнопка что на нее ссылается.
+        'item-edit' => true,
+        'item-destroy' => true,
+        'item-clone' => true,
+        'item-view' => true,
+        // Меню для записи в списке
+        'item-menu-default' => [
+            'view' => ['label' => 'Просмотр', 'link' => 'view', 'icon' => 'book'],
+            'edit' => ['label' => 'Править', 'link' => 'edit', 'icon' => 'pencil'],
+            'clone' => ['label' => 'Клонировать', 'link' => 'clone', 'icon' => 'copy'],
+            'destroy' => ['label' => 'Удалить', 'link' => 'destroy', 'icon' => 'delete', 'confirm' => 'Вы действительно хотите удалить эту запись?']
+        ],
+        'default-order' => ['col' => 'id', 'type' => 'desc'],
+        // Сортировка списка перетаскиванием объектов, должны быть созданы соответсвующие роутнг и поле в бд sort_num
+        'sortable' => false,
+    ],
+    // Опции редактирования записи
+    'edit' => [
+        // Шаблон
+        'template' => 'Form::edit',
+        // Кнопки создать и прочие внизу страницы
+        'buttons-default' => [
+            'save-and-exit' => [
+                'label' => 'Сохранить и выйти',
+                'hook' => 'FormSendAndExit',
+                'icon' => 'checklist'
+            ],
+            'save' => [
+                'label' => 'Сохранить',
+                'hook' => 'FormSend',
+                'type' => 'secondary',
+                'icon' => 'check'
+            ],
+            'exit' => [
+                'label' => 'Назад',
+                'hook' => 'FormBack',
+                'type' => 'light',
+                'icon' => 'back',
+                'float-class' => 'mt-4',
+                'class' => 'ms-4'
+            ],
+        ]
+    ],
+    // Перезагружать поля после сохранения записи
+    'reload-fields' => false,
+    // Опции просмотра
+    'show' => [
+        // Шаблон
+        'template' => 'Form::show',
+        // Разрешить редактирование.
+        'edit' => true,
+        // Кнопки создать закрыть и редактировать внизу страницы
+        'buttons-default' => [
+            'exit' => [
+                'label' => 'Выйти',
+                'hook' => 'FormBack',
+                'type' => 'secondary',
+            ],
+            'edit' => [
+                'label' => 'Редактировать',
+                'url' => ''
+            ],
+        ]
+    ],
+    // Опции загрузки файлов
+    'upload' => [
+        // Роут для получения файла.
+        'route-get-file' => '\Backend/FileManager/Controllers/FileManagerController@getFile',
+        // Роут для получения списка файлов.
+        // Остальные роуты для работы с файлами находятся получаются через list.
+        'route-list' => '\Backend\FileManager\Controllers\FileManagerController@list',
+    ],
+    // Массив дополнительных параметров которые будут прикрепляться к url адресу в списке и создании новой записи.
+    'url-params' => [],
+];

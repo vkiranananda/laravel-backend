@@ -11,7 +11,7 @@ export default {
 
     methods: {
         show() {
-            this.emitter.emit('UploadFilesModalShow', this.config)
+            this.emitter.emit('FileManagerModalShow', this.config)
         },
     }
 }

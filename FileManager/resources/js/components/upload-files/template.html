@@ -1,0 +1,48 @@
+<div class="upload-files">
+  <div
+    class="upload-files__drop-zone"
+    :class="{
+      'upload-files__drag-over': isDragOver,
+    }"
+    @drop="handleDrop"
+    @dragover="handleDragOver"
+    @dragleave="handleDragLeave"
+    @dragenter.prevent>
+    <!-- Область для перетаскивания -->
+    <input ref="fileInput" type="file" multiple class="d-none" @change="handleFileSelect" />
+    <slot />
+  </div>
+
+  <!-- Модальное окно загрузки -->
+  <v-modal title="Загрузка файлов" :centerAlign="true" :closeModal="false" class="upload-files__modal" ref="modal">
+    <div v-for="item in uploadQueue" :key="item.id" class="upload-files__item">
+      <div class="upload-files__item-content d-flex align-items-center">
+        <file-icon :file="item" />
+
+        <div class="upload-files__item-info">
+          <div class="upload-files__item-name">{{ item.file.name }}</div>
+          <div class="upload-files__item-size text-muted">{{ item.size }}</div>
+        </div>
+        <div class="upload-files__item-status">
+          <div class="progress" v-if="item.status == 'uploading'">
+            <div class="progress-bar" :style="{ width: item.progress + '%' }"></div>
+          </div>
+          <button
+            v-if="item.status == 'uploading' || item.status == 'pending'"
+            class="btn btn-sm btn-secondary"
+            @click="cancelUploadFile(item)">
+            Отменить
+          </button>
+          <div class="upload-files__item-status-text" v-if="item.status === 'pending'">Ожидание...</div>
+          <div class="upload-files__item-status-canceled" v-if="item.status === 'canceled'">Отменен</div>
+        </div>
+      </div>
+      <div class="upload-files__item-error text-danger" v-if="item.error">{{ item.error }}</div>
+    </div>
+    <template #footer>
+      <div class="text-end">
+        <button class="btn btn-secondary me-1" @click="cancelAllUploads">Отменить загрузку</button>
+      </div>
+    </template>
+  </v-modal>
+</div>

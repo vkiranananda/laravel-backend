@@ -88,7 +88,7 @@ export default {
       type: String,
     },
     centerAlign: {
-      default: false,
+      default: true,
       type: Boolean,
     },
   },
@@ -118,7 +118,6 @@ export default {
   },
   methods: {
     action: function (data) {
-      console.log('action', data);
       switch (data.action) {
         case 'show':
           this.show();
@@ -134,7 +133,6 @@ export default {
       this.modal.show();
       this.showBackdrop = true;
 
-      console.log('show');
       this.$nextTick(() => {
         const firstInput = this.$refs.modal.querySelector('input, textarea, select');
         if (firstInput) {

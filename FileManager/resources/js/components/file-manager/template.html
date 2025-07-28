@@ -1,0 +1,98 @@
+<div class="file-manager">
+  <h3 class="mb-4 title" v-show="!modal">Менеджер файлов</h3>
+  <div class="mb-3" v-show="!modal">
+    <button class="btn btn-primary me-3" @click="selectFiles">Загрузить файлы</button>
+    или перетащите файлы в рабочую область
+  </div>
+  <div class="card" :class="modal ? 'file-manager__card-body-modal' : 'file-manager__card-body-main'">
+    <div class="card-header bg-white py-3">
+      <div class="file-manager__files-title d-flex align-items-center justify-content-between">
+        <div class="file-manager__files-title-path">
+          <!--  -->
+          <a href="#" class="text-decoration-none" @click.stop.prevent="getFiles(0)">
+            <v-icon name="home" />
+            <span v-if="parentTree.length == 0"> Домашняя папка </span>
+          </a>
+          <!-- </span> -->
+          <template v-for="(item, index) in parentTree">
+            / <a href="#" class="text-decoration-none" @click.stop.prevent="getFiles(item.id)">{{item.name}}</a>
+          </template>
+        </div>
+        <div>
+          <select class="form-select form-select-sm w-auto d-inline-block" v-model="sortType">
+            <option value="name">Имя</option>
+            <option value="date">Дата</option>
+            <option value="size">Размер</option>
+          </select>
+          <button @click="toggleSortDirection" class="btn btn-light btn-sm ms-1">
+            <v-icon v-if="sortDirection === 'asc'" name="chevron-down" />
+            <v-icon v-else name="chevron-up" />
+          </button>
+          &nbsp;
+          <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" v-model="listType" value="list" id="list-type-list" />
+            <label class="btn btn-light btn-sm" for="list-type-list"><v-icon name="list" /></label>
+            <input type="radio" class="btn-check" v-model="listType" value="grid" id="list-type-grid" />
+            <label class="btn btn-light btn-sm" for="list-type-grid"><v-icon name="grid" /></label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body file-manager__body">
+      <upload-files :parent-id="parentId" ref="uploadFiles" :upload-url="urls.upload" @uploadFile="uploadFile">
+        <file-list
+          :files="files"
+          :list-type="listType"
+          :parent-id="parentId"
+          @moveFiles="moveFiles"
+          @downloadFile="downloadFile"
+          @renameFile="renameFileEvent"
+          @deleteFile="deleteFile"
+          @pasteFile="pasteFile"
+          @createFolder="createFolderEvent"
+          @doubleClick="doubleClick"
+          @uploadFiles="selectFiles"
+          @selectFiles="selectFilesEvent"
+          ref="fileList" />
+      </upload-files>
+    </div>
+  </div>
+</div>
+<!-- Модальное окно загрузки -->
+<v-modal :title="modalTitle" :centerAlign="true" :closeModal="false" class="file-manager__modal" ref="modal">
+  <div v-for="item in modalItems" :key="item.id" class="file-manager__modal-item">
+    <div class="file-manager__item-content d-flex align-items-center">
+      <file-icon :file="item" />
+      <div class="file-manager__modal-item-name">{{ item.name }}</div>
+      <div class="file-manager__modal-item-status">{{item.status}}</div>
+    </div>
+    <div class="file-manager__modal-item-error text-danger" v-if="item.error" v-html="item.error"></div>
+  </div>
+  <!-- Создание папки -->
+  <template v-if="formType === 'createFolder'">
+    <div class="file-manager__modal-input">
+      <input type="text" class="form-control" v-model="folderName" placeholder="Название папки" />
+    </div>
+    <div class="file-manager__modal-error text-danger" v-if="errorText">{{errorText}}</div>
+  </template>
+  <!-- Переименование файла -->
+  <template v-else-if="formType === 'renameFile'">
+    <div class="file-manager__modal-input">
+      <input type="text" class="form-control" v-model="fileName.name" />
+    </div>
+    <div class="file-manager__modal-error text-danger" v-if="errorText">{{errorText}}</div>
+  </template>
+  <div class="file-manager__modal-finish-text" v-if="finishText">{{finishText}}</div>
+  <template #footer>
+    <div class="text-end">
+      <!-- <button class="btn btn-secondary me-1" @click="cancelAll">{{canselButtonText}}</button> -->
+      <button class="btn btn-secondary me-1" @click="closeModal">Отменить</button>
+      <template v-if="formType === 'createFolder'">
+        <button class="btn btn-primary" @click="createFolder" role="submit">Создать</button>
+      </template>
+      <template v-else-if="formType === 'renameFile'">
+        <button class="btn btn-primary" @click="renameFile" role="submit">Переименовать</button>
+      </template>
+    </div>
+  </template>
+</v-modal>

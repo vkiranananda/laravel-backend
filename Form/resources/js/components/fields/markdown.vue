@@ -18,7 +18,7 @@ export default {
             img = {
                 name: "image",
                 action: (editor) => {
-                    this.emitter.emit('UploadFilesModalShow', {
+                    this.emitter.emit('FileManagerModalShow', {
                         type: 'all',
                         showLink: true,
                         return: this.attachFile

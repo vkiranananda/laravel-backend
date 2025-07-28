@@ -231,7 +231,7 @@ class Uploads
 
     // Если размер уже есть, то возвращаем его
     if (isset($data['sizes'][$textSize])) {
-      return $data['sizes'][$textSize];
+      return array_merge($data['sizes'][$textSize], ['extension' => 'jpg']);
     }
     $loadedFile = Storage::disk($file['disk'])->get($file['path'] . $file['name']);
     // Если файл не найден, то возвращаем false
@@ -265,7 +265,7 @@ class Uploads
     $file['array_data'] = $data;
     $file->save();
 
-    return $data['sizes'][$textSize];
+    return array_merge($data['sizes'][$textSize], ['extension' => 'jpg']);
   }
 
   // Создаем кеш файла из другого файла, например для миниатюры
@@ -358,7 +358,7 @@ class Uploads
   {
     return [
       'path' => $file->path . $file->name,
-      'key' => $file->key . self::getFileExt($file->extension),
+      'key' => $file->key,
     ];
   }
 
