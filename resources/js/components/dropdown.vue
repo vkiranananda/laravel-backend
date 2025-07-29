@@ -1,6 +1,7 @@
 <script>
 export default {
   name: 'dropdown',
+  inheritAttrs: false,
   props: {
     width: {
       type: Number,
@@ -23,38 +24,51 @@ export default {
     return {
       activeIndex: 0,
       actualPosition: 'right', // фактическая позиция с учетом края экрана
+      showMenu: false,
     };
   },
   mounted() {
-    this.setFirstActive();
-    this.addMouseListeners();
     // Что бы клик при активации элемента не отрабатывал уже в этом цикле
     // а то этот клик будет сразу закрывать меню.
     setTimeout(() => {
       document.addEventListener('click', this.handleClickOutside);
       document.addEventListener('keydown', this.handleKeydown);
+      this.setFirstActive();
+      this.addMouseListeners();
     }, 100);
 
-    // Вычисляем позицию с небольшой задержкой для полной инициализации
-    this.$nextTick(() => {
-      this.calculatePosition();
-    });
+    this.parentElement = this.$el.parentElement;
   },
   beforeUnmount() {
+    console.log('beforeUnmount');
     document.removeEventListener('click', this.handleClickOutside);
     document.removeEventListener('keydown', this.handleKeydown);
     this.removeMouseListeners();
   },
   methods: {
     handleClickOutside(event) {
-      const dropdown = this.$refs.dropdown;
-      if (dropdown && !dropdown.contains(event.target)) this.$emit('v-click-outside');
+      if (this.dropdown && !this.dropdown.contains(event.target)) {
+        this.hide();
+        this.$emit('v-click-outside');
+      }
     },
+
+    hide() {
+      this.showMenu = false;
+    },
+    show() {
+      this.showMenu = true;
+      this.$nextTick(() => {
+        this.dropdown = this.$refs.dropdown;
+        this.calculatePosition();
+      });
+    },
+
     handleKeydown(event) {
       const items = this.getItems();
       if (!items.length) return;
       if (event.key === 'Escape') {
-        this.$emit('v-click-outside');
+        this.hide();
       } else if (event.key === 'ArrowDown') {
         event.preventDefault();
         this.moveActive(1, items);
@@ -99,9 +113,8 @@ export default {
       });
     },
     getItems() {
-      const dropdown = this.$refs.dropdown;
-      if (!dropdown) return [];
-      return Array.from(dropdown.querySelectorAll('.item:not(.disabled)'));
+      if (!this.dropdown) return [];
+      return Array.from(this.dropdown.querySelectorAll('.item:not(.disabled)'));
     },
     addMouseListeners() {
       const items = this.getItems();
@@ -127,58 +140,51 @@ export default {
     },
 
     calculatePosition() {
-      // Проверяем, что компонент готов
-      if (!this.$el || !this.$el.parentElement) {
-        return;
-      }
-
       // Баг фикс, что бы не было ошибки при расчете позиции
-      this.$el.style.display = 'none';
+      // this.dropdown.style.display = 'none';
 
       // Получаем размеры экрана
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
 
       // Получаем позицию родительского элемента относительно экрана
-      const parentElement = this.$el.parentElement;
-      const parentRect = parentElement.getBoundingClientRect();
+      const parentRect = this.parentElement.getBoundingClientRect();
 
-      const top = parentRect.top;
-      const left = parentRect.left;
+      // Учитываем скролл страницы
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+      const top = parentRect.top + scrollTop;
+      const left = parentRect.left + scrollLeft;
 
       // Показываем элемент для получения его размеров
-      this.$el.style.display = 'block';
+      // this.dropdown.style.display = 'block';
 
       // Расчет позиции относительно экрана
       if (this.position === 'right') {
         if (left + this.width > screenWidth) {
-          this.$el.style.left = '-' + (this.width - parentElement.offsetWidth) + 'px';
+          this.dropdown.style.left = left - this.width + 'px';
         } else {
-          this.$el.style.left = '0px';
+          this.dropdown.style.left = left + 'px';
         }
       }
 
-      if (top + this.$el.clientHeight > screenHeight) {
-        this.$el.style.top = '-' + this.$el.clientHeight + 'px';
+      if (top + this.dropdown.clientHeight > screenHeight) {
+        this.dropdown.style.top = top - this.dropdown.clientHeight + 'px';
       } else {
-        this.$el.style.top = '0px';
+        this.dropdown.style.top = top + 'px';
       }
     },
-  },
-  updated() {
-    this.addMouseListeners();
-    // всегда поддерживаем только один .active
-    this.setActiveClass(this.getItems());
-    // Пересчитываем позицию при обновлении
-    this.calculatePosition();
   },
 };
 </script>
 
 <template>
-  <div class="dropdown" ref="dropdown" :style="dropdownStyle">
-    <slot></slot>
-  </div>
+  <Teleport to="body" v-if="showMenu">
+    <div class="dropdown" ref="dropdown" :style="dropdownStyle" v-bind="$attrs">
+      <slot></slot>
+    </div>
+  </Teleport>
 </template>
 
 <style lang="scss">
@@ -186,10 +192,13 @@ export default {
   border: 1px solid lightgray;
   background-color: white;
   padding: 5px;
-  z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: absolute;
-  display: none;
+  display: block;
+  /* Позволяет меню выходить за пределы родителя */
+  // overflow: visible !important;
+  /* Увеличиваем z-index для гарантии отображения поверх других элементов */
+  z-index: 9999;
   hr {
     margin: 5px 0;
   }

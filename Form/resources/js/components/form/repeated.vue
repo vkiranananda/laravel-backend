@@ -9,37 +9,19 @@
           :key="item.key"
           :ref="'block' + index">
           <div class="card">
-            <div
-              class="menu-con"
-              v-if="!field.readonly"
-              :ref="'menu' + index">
+            <div class="menu-con" v-if="!field.readonly">
               <div class="text-end">
-                <v-icon
-                  name="menu"
-                  class="menu-icon"
-                  width="18"
-                  height="18"
-                  @click="menuOpen(index)" />
+                <v-icon name="menu" class="menu-icon" width="18" height="18" @click="menuOpen(index)" />
               </div>
-              <v-dropdown
-                class="base-menu"
-                :width="350"
-                @v-click-outside="closeMenu()"
-                v-if="currentMenuOpen === index">
-                <div
-                  class="item"
-                  @click="addNew(index)">
-                  <v-icon
-                    name="plus"
-                    class="add-icon icon-green" />
+              <v-dropdown class="base-menu" :width="350" @v-click-outside="closeMenu()" :ref="'menu' + index" v-if="currentMenuOpen === index">
+                <div class="item" @click="addNew(index)">
+                  <v-icon name="plus" class="add-icon icon-green" />
                   Добавить новый элемент
                 </div>
                 <hr />
                 <template v-if="propFields">
                   <div class="prop-fields">
-                    <div
-                      v-for="field in propFields.fields"
-                      class="prop-field">
+                    <div v-for="field in propFields.fields" class="prop-field">
                       <label>{{ field.label }}</label>
                       <print-field
                         :field="field"
@@ -50,47 +32,29 @@
                   </div>
                   <hr />
                 </template>
-                <div
-                  class="item"
-                  :class="index == 0 ? 'disabled' : ''"
-                  @click="moveUp(index)">
+                <div class="item" :class="index == 0 ? 'disabled' : ''" @click="moveUp(index)">
                   <v-icon name="arrow-up" />
                   Переместить вверх
                 </div>
-                <div
-                  class="item"
-                  @click="delBlock(index)">
-                  <v-icon
-                    name="close"
-                    class="remove-icon icon-red" />
+                <div class="item" @click="delBlock(index)">
+                  <v-icon name="close" class="remove-icon icon-red" />
                   Удалить
                 </div>
-                <div
-                  class="item"
-                  :class="field.value.length - 1 == index ? 'disabled' : ''"
-                  @click="moveDown(index)">
+                <div class="item" :class="field.value.length - 1 == index ? 'disabled' : ''" @click="moveDown(index)">
                   <v-icon name="arrow-down" />
                   Переместить вниз
                 </div>
               </v-dropdown>
             </div>
             <div class="card-body">
-              <fields-list
-                :fields="item.fields"
-                :errors="errors[item.key]"></fields-list>
+              <fields-list :fields="item.fields" :errors="errors[item.key]"></fields-list>
             </div>
           </div>
         </div>
       </div>
-      <div
-        class="text-center mt-1 mb-2"
-        v-if="!field.readonly">
-        <div
-          class="add-button"
-          @click="addNew()">
-          <v-icon
-            name="plus"
-            class="add-icon" />
+      <div class="text-center mt-1 mb-2" v-if="!field.readonly">
+        <div class="add-button" @click="addNew()">
+          <v-icon name="plus" class="add-icon" />
           {{ field['add-label'] ? field['add-label'] : 'Добавить новый элемент' }}
         </div>
       </div>
@@ -141,6 +105,13 @@ export default {
         return fields.length > 0 ? { fieldsGroup, fields } : false;
       }
       return false;
+    },
+  },
+  watch: {
+    currentMenuOpen(newVal, oldVal) {
+      this.$nextTick(() => {
+        if (newVal !== false) this.$refs['menu' + newVal][0].show();
+      });
     },
   },
   methods: {

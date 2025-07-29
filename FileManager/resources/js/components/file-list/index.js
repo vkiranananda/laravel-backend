@@ -22,6 +22,10 @@ export default {
     parentId: {
       default: 0,
     },
+    folder: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -54,11 +58,13 @@ export default {
 
       const copyPaste = () => {
         if (this.filesToCopy && (!file || !this.filesToCopy.has(file.id))) {
-          items.push({
-            label: 'Вставить',
-            method: this.pasteFile,
-            icon: 'paste',
-          });
+          if (this.folder) {
+            items.push({
+              label: 'Вставить',
+              method: this.pasteFile,
+              icon: 'paste',
+            });
+          }
         }
 
         // Проверяем что файлы для перемещения не находятся в текущей папке
@@ -68,13 +74,16 @@ export default {
         // }
         //
         if (this.filesToMove && (!file || !this.filesToMove.has(file.id))) {
-          items.push({
-            label: 'Переместить',
-            method: this.moveFile,
-            icon: 'move',
-          });
+          if (this.folder) {
+            items.push({
+              label: 'Переместить',
+              method: this.moveFile,
+              icon: 'move',
+            });
+          }
         }
       };
+
       if (this.fileMenuOpen) {
         if (this.selectedFiles.size === 1) {
           if (file.type !== 'folder') {
@@ -93,16 +102,23 @@ export default {
             copyPaste();
           }
         }
-        items.push({
-          label: 'Копировать',
-          method: this.copyFile,
-          icon: 'copy',
-        });
-        items.push({
-          label: 'Вырезать',
-          method: this.cutFile,
-          icon: 'cut',
-        });
+        if (this.folder) {
+          items.push({
+            label: 'Копировать',
+            method: this.copyFile,
+            icon: 'copy',
+          });
+          items.push({
+            label: 'Переместить',
+            method: this.moveFile,
+            icon: 'move',
+          });
+          items.push({
+            label: 'Вырезать',
+            method: this.cutFile,
+            icon: 'cut',
+          });
+        }
         items.push({
           label: 'Удалить',
           method: this.deleteFile,
@@ -110,11 +126,13 @@ export default {
         });
       }
       if (this.mainMenuOpen) {
-        items.push({
-          label: 'Создать папку',
-          method: this.createFolder,
-          icon: 'folder',
-        });
+        if (this.folder) {
+          items.push({
+            label: 'Создать папку',
+            method: this.createFolder,
+            icon: 'folder',
+          });
+        }
         items.push({
           label: 'Загрузить файлы',
           method: this.uploadFiles,
@@ -209,9 +227,14 @@ export default {
     },
 
     setMenuPosition(e) {
-      const parentRect = this.$el.getBoundingClientRect();
-      this.$refs.menu.style.left = e.clientX - parentRect.left + 5 + 'px';
-      this.$refs.menu.style.top = e.clientY - parentRect.top + this.$refs.body.scrollTop + 5 + 'px';
+      this.$nextTick(() => {
+        const parentRect = this.$el.getBoundingClientRect();
+
+        this.$refs.menuBlock.style.left = e.clientX - parentRect.left + 5 + 'px';
+        this.$refs.menuBlock.style.top = e.clientY - parentRect.top + this.$refs.body.scrollTop + 5 + 'px';
+
+        this.$refs.menu.show();
+      });
     },
 
     showFileMenu(file, e) {
@@ -317,6 +340,7 @@ export default {
     },
 
     closeAllMenus() {
+      if (this.$refs.menu) this.$refs.menu.hide();
       this.fileMenuOpen = false;
       this.mainMenuOpen = false;
     },

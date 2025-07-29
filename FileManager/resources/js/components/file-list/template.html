@@ -31,8 +31,8 @@
   </div>
   <div v-show="isSelecting" ref="selectionBox" class="file-list__selection-box"></div>
   <div class="file-list__file-move-box" ref="moveBox" v-show="isMovingFiles"></div>
-  <div class="file-list__menu" ref="menu" v-show="menuItems">
-    <v-dropdown :width="200" :key="menuKey">
+  <div class="file-list__menu" ref="menuBlock" v-if="menuItems && (mainMenuOpen || fileMenuOpen)">
+    <v-dropdown :width="200" ref="menu">
       <template v-for="item in menuItems">
         <div class="item" @click="item.method()">
           <v-icon :name="item.icon" />

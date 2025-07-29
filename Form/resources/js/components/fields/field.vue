@@ -13,7 +13,7 @@
     import FormFieldDate from './date.vue'
     import FormFieldTextarea from './textarea.vue'
     import FormFieldMce from './mce.vue'
-    import FormFieldFiles from './files.vue'
+    import FormFieldFiles from '../../../../../FileManager/resources/js/components/files-field.vue'
     import FormFieldRadio from './radio.vue'
     import FormFieldSelect from './select.vue'
     import FormFieldCheckbox from './checkbox.vue'

@@ -4,7 +4,7 @@
     <button class="btn btn-primary me-3" @click="selectFiles">Загрузить файлы</button>
     или перетащите файлы в рабочую область
   </div>
-  <div class="card" :class="modal ? 'file-manager__card-body-modal' : 'file-manager__card-body-main'">
+  <div class="card">
     <div class="card-header bg-white py-3">
       <div class="file-manager__files-title d-flex align-items-center justify-content-between">
         <div class="file-manager__files-title-path">
@@ -38,7 +38,7 @@
         </div>
       </div>
     </div>
-    <div class="card-body file-manager__body">
+    <div class="card-body file-manager__body" :class="modal ? 'file-manager__card-body-modal' : 'file-manager__card-body-main'">
       <upload-files :parent-id="parentId" ref="uploadFiles" :upload-url="urls.upload" @uploadFile="uploadFile">
         <file-list
           :files="files"

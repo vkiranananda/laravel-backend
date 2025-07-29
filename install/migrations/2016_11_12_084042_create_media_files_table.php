@@ -21,7 +21,6 @@ class CreateMediaFilesTable extends Migration
             $table->string('file')->default('');
             $table->string('name')->nullable();
             $table->string('orig_name')->nullable();
-            $table->text('sizes')->nullable();
             $table->string('type', 20)->default('');
             $table->string('extension', 10)->default('');
             $table->text('array_data')->nullable();
