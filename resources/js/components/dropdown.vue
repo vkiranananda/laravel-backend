@@ -33,17 +33,14 @@ export default {
     setTimeout(() => {
       document.addEventListener('click', this.handleClickOutside);
       document.addEventListener('keydown', this.handleKeydown);
-      this.setFirstActive();
-      this.addMouseListeners();
     }, 100);
 
     this.parentElement = this.$el.parentElement;
   },
   beforeUnmount() {
-    console.log('beforeUnmount');
+    this.hide();
     document.removeEventListener('click', this.handleClickOutside);
     document.removeEventListener('keydown', this.handleKeydown);
-    this.removeMouseListeners();
   },
   methods: {
     handleClickOutside(event) {
@@ -54,14 +51,31 @@ export default {
     },
 
     hide() {
+      document.removeEventListener('wheel', this.wheelHandler);
+      document.removeEventListener('touchmove', this.wheelHandler);
+      this.removeMouseListeners();
+      // Обязательно в конце
       this.showMenu = false;
     },
+
     show() {
+      this.hide();
       this.showMenu = true;
+      document.addEventListener('wheel', this.wheelHandler, { passive: false });
+      document.addEventListener('touchmove', this.wheelHandler, { passive: false });
+
       this.$nextTick(() => {
         this.dropdown = this.$refs.dropdown;
+        this.setFirstActive();
         this.calculatePosition();
+        this.addMouseListeners();
       });
+    },
+
+    wheelHandler(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
     },
 
     handleKeydown(event) {
@@ -106,7 +120,8 @@ export default {
       items.forEach((el, i) => {
         if (i === this.activeIndex) {
           el.classList.add('active');
-          el.scrollIntoView({ block: 'nearest' });
+          // Убираем scrollIntoView чтобы не скроллить страницу
+          // el.scrollIntoView({ block: 'nearest' });
         } else {
           el.classList.remove('active');
         }

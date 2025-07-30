@@ -1,16 +1,20 @@
 <template>
   <div class="files-field">
+    <div class="mb-2 mt-1">
+      <button type="button" class="text-button btn btn-secondary btn-sm me-2" @click="selectFiles()">
+        Выбрать файл
+      </button>
+      <button type="button" class="text-button btn btn-secondary btn-sm" @click="uploadFile()">Загрузить файл</button>
+    </div>
     <div class="card">
-      <div class="card-body">
+      <div class="card-body p-0">
         <upload-files ref="uploadFiles" :upload-url="field['upload-url']" @uploadFile="uploadFile">
           <file-list
-            :files="files"
+            :files="field.value"
             :list-type="field['file-type'] === 'image' ? 'grid' : 'list'"
             :folder="false"
-            @downloadFile="downloadFile"
             @deleteFile="deleteFile"
-            @doubleClick="doubleClick"
-            @uploadFiles="selectFiles"
+            @uploadFiles="uploadFile"
             ref="fileList" />
         </upload-files>
       </div>
@@ -52,8 +56,44 @@ export default {
     doubleClick(file) {
       this.files = this.files.filter(f => f.id !== file.id);
     },
+    uploadFiles(files) {},
+
+    // Выбор файлов
     selectFiles(files) {
-      this.files = files;
+      this.emitter.emit('FileManagerModalShow', {
+        return: this.insertFiles,
+      });
+    },
+
+    // Вставка файлов
+    insertFiles(files) {
+      this.field['max-files'];
+
+      let newFiles = this.field.value.slice();
+
+      files.forEach(file => {
+        // Проверка на максимальное количество файлов
+        if (this.field['max-files'] && newFiles.length >= this.field['max-files']) {
+          return;
+        }
+        // Проверка на тип файла
+        if (this.field['file-type'] == 'image' && file.type != 'image') {
+          return;
+        }
+
+        // Проверка на существование файла с таким же id
+        if (newFiles.some(existingFile => existingFile.id === file.id)) {
+          return;
+        }
+
+        newFiles.push(file);
+      });
+
+      // Если массив изменился, то вызываем событие change
+      if (newFiles.length > this.field.value.length) {
+        this.$emit('v-change', newFiles);
+        console.log(newFiles.length);
+      }
     },
   },
 };

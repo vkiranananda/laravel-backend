@@ -27,30 +27,22 @@ import showUploadsButton from '../uploads/show-uploads-button.vue'
 import cloneDeep from 'clone-deep'
 
 export default {
-    mounted() {
-        this._sortable = new Sortable(this.$refs.listSortable, {
-            onEnd: (evt) => {
-                let res = this.files.slice()
-                let oldEl = res[evt.oldIndex]
-                res[evt.oldIndex] = res[evt.newIndex]
-                res[evt.newIndex] = oldEl
-                console.log(res)
-                this.$emit('v-change', res)
-            }
-        });
-    },
-    beforeUnmount() {
-        if (this._sortable !== undefined) this._sortable.destroy();
-    },
-    created() {
-        this.emitter.on('UploadFilesDeleteFile', this.delById)
-    },
-    beforeDestroy() {
-        this.emitter.off('UploadFilesDeleteFile', this.delById)
-    },
-    components: {
-        'show-uploads-button': showUploadsButton
-    },
+    // mounted() {
+    //     this._sortable = new Sortable(this.$refs.listSortable, {
+    //         onEnd: (evt) => {
+    //             let res = this.files.slice()
+    //             let oldEl = res[evt.oldIndex]
+    //             res[evt.oldIndex] = res[evt.newIndex]
+    //             res[evt.newIndex] = oldEl
+    //             console.log(res)
+    //             this.$emit('v-change', res)
+    //         }
+    //     });
+    // },
+    // beforeUnmount() {
+    //     if (this._sortable !== undefined) this._sortable.destroy();
+    // },
+
     props: ['field'],
     computed: {
         // Количество файлов доступное для загрузки

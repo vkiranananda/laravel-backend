@@ -216,15 +216,7 @@ export default {
       }
     },
 
-    // Скачивание файла
-    downloadFile(file) {
-      const link = document.createElement('a');
-      link.href = file.url + '?download=true';
-      link.download = file.name_orig || '';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    },
+
 
     // Переименование файла
     renameFileEvent(file) {
@@ -406,11 +398,6 @@ export default {
       if (file.type === 'folder') {
         this.getFiles(file.id);
         return;
-      }
-      if (file.type === 'image') {
-        window.open(file.url, '_blank');
-      } else {
-        this.downloadFile(file);
       }
     },
     toggleSortDirection() {

@@ -2,56 +2,58 @@
 
 namespace Backend\Root\Form\Fields;
 
-use \Backend\Root\MediaFile\Models\MediaFileRelation;
-use \Backend\Root\MediaFile\Models\MediaFile;
+use Log;
 use UploadedFiles;
+use \Backend\Root\MediaFile\Models\MediaFile;
+use \Backend\Root\MediaFile\Models\MediaFileRelation;
+use \Backend\Root\MediaFile\Services\Uploads;
 
-class FilesField extends Field {
+class FilesField extends Field
+{
+  // Получаем значение для сохраниения
+  public function save($value)
+  {
+    if (is_array($value) && count($value) > 0) {
+      // Получаем все загруженные файлы
+      $fileReq = MediaFile::whereIn('key', array_column($value, 'id'));
 
-	// Получаем значение для сохраниения
-	public function save($value)
-	{
-        if ( is_array($value) && count($value) > 0 ) {
-        	//Получаем уникальные записи 
-            $uniqueValue = array_unique($value);
+      // Если тип файла image, то фильтруем по типу
+      if ($this->field['type'] == 'image')
+        $fileReq = $fileReq->where('type', 'image');
 
-            // Инитим запрос
-            $imgReq = MediaFile::whereIn('id', $uniqueValue);
+      $keys = array_fill_keys(array_column($fileReq->get(['key'])->toArray(), 'key'), true);
 
-            if ($this->field['type'] == 'gallery' ) 
-            	$imgReq = $imgReq->where('file_type', 'image');
+      $result = [];
 
-            // Проверка на валидность, если количество записей не совпадает, значит пользователь мудрит
-            if ( $imgReq->get()->count() != count($uniqueValue) ) {
-            	abort (403, 'DateField не существуют какие то файлы ' . $this->field['type'].':'.$this->field['name']);
-            }
-        } else {
-            $value = [];
-        }
-        return $value;
-	}
+      foreach ($value as $file) {
+        if (isset($keys[$file['id']]))
+          $result[] = ['id' => $file['id'], 'name' => $file['name']];
+      }
 
-	// Получаем сырое значние элемента для редактирования
-	public function edit($value)
-	{
-        if ( !is_array($value) || count($value) == 0 ) return [];
+      Log::info($result);
 
-        //Получаем миниатюры и полные версии изображений
-    	$files = MediaFile::whereIn('id', $value)->get();
+      return $result;
+    } else {
+      return [];
+    }
+  }
 
-    	$filesGoodKey = [];
-    	//Перебираем массив и создаем из свойства id ключ
-        foreach (UploadedFiles::prepGaleryData( $files ) as $file) {
-        	$filesGoodKey[ $file['id'] ] = $file;
-        }
+  // Получаем сырое значние элемента для редактирования
+  public function edit($value)
+  {
+    if (!is_array($value) || count($value) == 0)
+      return [];
 
-        // Теперь наполняем значние value. Весь этот сыр бор замучен для сортировки и если
-        // в value есть одинаковые файлы.
-        $res = [];
-        foreach ($value as $fileId) {
-        	if (isset($filesGoodKey[$fileId])) $res[] = $filesGoodKey[$fileId];
-        }
-   
-		return $res;
-	}
+    // Получаем миниатюры и полные версии изображений
+    $files = MediaFile::whereIn('key', array_column($value, 'id'))->get()->keyBy('key');
+
+    $result = [];
+
+    foreach ($value as $file) {
+      if (isset($files[$file['id']]))
+        $result[] = Uploads::getFileToList($files[$file['id']]);
+    }
+
+    return $result;
+  }
 }

@@ -6,8 +6,8 @@ use Backend\Root\MediaFile\Models\MediaFile;
 use Backend\Root\MediaFile\Services\Uploads;
 use Illuminate\Http\Request;
 use GetConfig;
-use Storage;
 use Log;
+use Storage;
 
 class FileManagerController
 {
@@ -30,35 +30,6 @@ class FileManagerController
 		return view('FileManager::index');
 	}
 
-	// Получаем файл ?download=true для скачивания
-
-	public function getFile(Request $request, $key)
-	{
-		// Удаляем расширение из key, если оно есть
-		$key = preg_replace('/\.[^.]+$/', '', $key);
-
-		$file = MediaFile::where('key', $key)->first();
-		if (!$file) {
-			abort(404, 'Файл не найден');
-		}
-
-		$filePath = Storage::disk($file->disk)->path($file->path . $file->name);
-
-		if (!file_exists($filePath)) {
-			abort(404, 'Файл не найден на диске');
-		}
-
-		if ($request->input('download', false)) {
-			return response()->download($filePath, $file->name_orig);
-		}
-
-		// Добавляем кеширование для файлов из файлового менеджера
-		return response()->file($filePath, [
-			'Cache-Control' => 'public, max-age=2592000',  // 30 дней
-			'Expires' => gmdate('D, d M Y H:i:s \G\M\T', time() + 2592000)
-		]);
-	}
-
 	// Получаем список всех файлов в папке, parentId = false - берем с корня
 	public function list(Request $request)
 	{
@@ -71,14 +42,14 @@ class FileManagerController
 				// На всякий случай проверяем что файлы находятся на нужном диске
 				->where('disk', $this->config['disk'])
 				->get() as $file) {
-			$files[] = $this->_getFileArray($file);
+			$files[] = Uploads::getFileToList($file);
 		}
 
 		$parentTreeRes = [];
 
 		// Добавляем родителей в дерево?
 		foreach ($parentTree as $el) {
-			$parentTreeRes[] = $this->_getFileArray($el);
+			$parentTreeRes[] = Uploads::getFileToList($el);
 		}
 
 		return [
@@ -119,7 +90,7 @@ class FileManagerController
 			'orig_name' => $name,
 		]);
 
-		return $this->_getFileArray($savedFile);
+		return Uploads::getFileToList($savedFile);
 	}
 
 	// Создаем папку
@@ -149,7 +120,7 @@ class FileManagerController
 			'name' => $request->input('name', ''),
 		]);
 
-		return $this->_getFileArray($savedFolder);
+		return Uploads::getFileToList($savedFolder);
 	}
 
 	// Перемещаем или переименовываем файл
@@ -210,7 +181,7 @@ class FileManagerController
 
 		$toName = $request->input('name', $file->name);
 
-		return $this->_getFileArray(Uploads::move($file, $toPath, $toName, $toParentId));
+		return Uploads::getFileToList(Uploads::move($file, $toPath, $toName, $toParentId));
 	}
 
 	// Копируем файл или каталог
@@ -286,7 +257,8 @@ class FileManagerController
 		}
 
 		// Uploads::copy($file, $toPath, $toName, $toParentId);
-		return $this->_getFileArray(Uploads::copy($file, $toPath, $toName, $toParentId));
+		$copiedFile = Uploads::copy($file, $toPath, $toName, $toParentId);
+		return Uploads::getFileToList($copiedFile);
 	}
 
 	// Удаляем файл
@@ -358,39 +330,5 @@ class FileManagerController
 		}
 		$lastEl = end($parentTree);
 		return $lastEl->path . $lastEl->name . '/';
-	}
-
-	// Получаем массив данных о файле для отображения в списке
-	private function _getFileArray($file)
-	{
-		$dateConfig = GetConfig::backend('backend');
-		$res = [
-			'id' => $file->key,
-			'name' => $file->name,
-			'orig_name' => $file->orig_name,
-			'type' => $file->type,
-			'size' => $file->size,
-			'timestamp' => $file->created_at->timestamp,
-			'dateFormatted' => (new \Carbon\Carbon($file->created_at))
-				->setTimezone($dateConfig['time-zone'])
-				->format($dateConfig['datetime-format']),
-		];
-
-		if ($file->type !== 'folder') {
-			$res['url'] = $this->_getUrl($file);
-		}
-
-		$thumbnail = Uploads::getThumbnail($file, ['80', '80', 'fit']);
-
-		if ($thumbnail) {
-			$res['thumb'] = $this->_getUrl($thumbnail);
-		}
-
-		return $res;
-	}
-
-	private function _getUrl($fileData)
-	{
-		return route('file-manager.get-file', $fileData['key'] . Uploads::getFileExt($fileData['extension']));
 	}
 }

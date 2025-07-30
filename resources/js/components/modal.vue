@@ -130,6 +130,10 @@ export default {
       }
     },
     show: function () {
+      // Запрещаем скролл страницы при показе модального окна
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      
       this.modal.show();
       this.showBackdrop = true;
 
@@ -141,6 +145,10 @@ export default {
       });
     },
     hide: function () {
+      // Восстанавливаем скролл страницы при скрытии модального окна
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      
       this.modal.hide();
       this.showBackdrop = false;
     },

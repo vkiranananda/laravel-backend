@@ -7,6 +7,7 @@ use Intervention\Image\Facades\Image as Image;
 use Auth;
 use Log;
 use Storage;
+use GetConfig;
 
 class Uploads
 {
@@ -143,6 +144,7 @@ class Uploads
     $newFile->user_id = Auth::user()->id;
     $newFile->path = $path;
     $newFile->name = $name;
+    $newFile->size = $file->size;
     $newFile->orig_name = $name;
     $newFile->extension = $file->extension;
     $newFile->type = $file->type;
@@ -216,7 +218,7 @@ class Uploads
   }
 
   // Получаем миниатюру картинки
-  public static function getThumbnail($file, $size)
+  public static function getThumbnail(&$file, $size)
   {
     // Если файл не изображение, то возвращаем null
     if ($file['type'] !== 'image') {
@@ -341,6 +343,41 @@ class Uploads
     $file->delete();
 
     return [];
+  }
+
+	// Получаем массив данных о файле для отображения в списке
+	public static function getFileToList(&$file)
+	{
+		$dateConfig = GetConfig::backend('backend');
+		$res = [
+			'id' => $file->key,
+			'name' => $file->name,
+			'orig_name' => $file->orig_name,
+			'type' => $file->type,
+			'size' => $file->size,
+			'timestamp' => $file->created_at->timestamp,
+			'dateFormatted' => (new \Carbon\Carbon($file->created_at))
+				->setTimezone($dateConfig['time-zone'])
+				->format($dateConfig['datetime-format']),
+		];
+
+		if ($file->type !== 'folder') {
+			$res['url'] = self::getUrl($file);
+		}
+
+		$thumbnail = self::getThumbnail($file, ['80', '80', 'fit']);
+
+		if ($thumbnail) {
+			$res['thumb'] = self::getUrl($thumbnail);
+		}
+
+		return $res;
+	}
+
+  // Получаем url файла
+  public static function getUrl(&$file)
+  {
+    return route('uploads.get-file', $file['key'] . self::getFileExt($file['extension']));
   }
 
   // Преобразуем массив с размером в строку...

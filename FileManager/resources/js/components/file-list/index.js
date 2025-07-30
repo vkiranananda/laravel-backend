@@ -207,7 +207,7 @@ export default {
           if (this._mouseLastClickTime && currentTime - this._mouseLastClickTime < 300) {
             // Если событие doubleClick не было вызвано за последние 1500 мс, то вызываем событие doubleClick
             if (!this._mouseLastSecondClickTime || currentTime - this._mouseLastSecondClickTime > 1500) {
-              this.$emit('doubleClick', file);
+              this.doubleClick(file);
             }
             // Пишем время последнего двойного клика
             this._mouseLastSecondClickTime = currentTime;
@@ -224,6 +224,15 @@ export default {
         // Пишем id последнего кликнутого файла
         this._mouseLastClickFileId = file.id;
       }
+    },
+
+    doubleClick(file) {
+      if (file.type === 'image') {
+        window.open(file.url, '_blank');
+      } else if (file.type != 'folder') {
+        this.downloadFile(file);
+      }
+      this.$emit('doubleClick', file);
     },
 
     setMenuPosition(e) {
@@ -255,8 +264,17 @@ export default {
     },
 
     // Скачивание файлов
-    downloadFile() {
-      this.$emit('downloadFile', this.selectedFiles.values().next().value);
+    downloadFile(file = false) {
+      if (!file) {
+        file = this.selectedFiles.values().next().value;
+      }
+      const link = document.createElement('a');
+      link.href = file.url + '?download=true';
+      link.download = file.name_orig || file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       this.closeAllMenus();
     },
 

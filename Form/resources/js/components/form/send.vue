@@ -96,6 +96,7 @@ export default {
 
                     // Получаем скрытые поля
                     res.hidden = formData.hiddenFields.value;
+
                     // Получаем загруженные файлы
                     res.files = formData.uploadFiles.value;
 
@@ -255,11 +256,11 @@ async function getValuesFromFields(fields) {
             continue;
         }
         //Обрабатываем галлереи и файлы
-        if (currentField.type == 'gallery' || currentField.type == 'files') {
-            res[fieldName] = [];
-            for (var currentFieldValue of currentField.value) res[fieldName].push(currentFieldValue.id);
-            continue;
-        }
+        // if (currentField.type == 'gallery' || currentField.type == 'files') {
+        //     res[fieldName] = [];
+        //     for (var currentFieldValue of currentField.value) res[fieldName].push(currentFieldValue.id);
+        //     continue;
+        // }
         res[fieldName] = currentField.saveMethod ? await currentField.saveMethod() : currentField['value']
     }
     return res;

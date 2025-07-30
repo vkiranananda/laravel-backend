@@ -12,7 +12,7 @@
     import FormFieldInput from './input.vue'
     import FormFieldDate from './date.vue'
     import FormFieldTextarea from './textarea.vue'
-    import FormFieldMce from './mce.vue'
+    // import FormFieldMce from './mce.vue'
     import FormFieldFiles from '../../../../../FileManager/resources/js/components/files-field.vue'
     import FormFieldRadio from './radio.vue'
     import FormFieldSelect from './select.vue'
@@ -46,7 +46,7 @@
             FormFieldInput,
             FormFieldDate,
             FormFieldTextarea,
-            FormFieldMce,
+            // FormFieldMce,
             FormFieldFiles,
             FormFieldRadio,
             FormFieldSelect,
