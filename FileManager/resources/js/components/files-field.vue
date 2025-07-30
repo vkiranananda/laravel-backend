@@ -13,12 +13,37 @@
             :files="field.value"
             :list-type="field['file-type'] === 'image' ? 'grid' : 'list'"
             :folder="false"
+            :sortable="true"
             @deleteFile="deleteFile"
             @uploadFiles="uploadFile"
+            @renameFile="renameFileEvent"
             ref="fileList" />
         </upload-files>
       </div>
     </div>
+    <v-modal
+      v-if="modalShow"
+      :title="modalTitle"
+      :centerAlign="true"
+      :closeModal="false"
+      class="file-manager__modal"
+      ref="modal">
+      <!-- Переименование файла -->
+      <template v-if="formType === 'renameFile'">
+        <div class="file-manager__modal-input">
+          <input type="text" class="form-control" v-model="fileChange.name" />
+        </div>
+        <div class="file-manager__modal-error text-danger" v-if="errorText">{{ errorText }}</div>
+      </template>
+      <template #footer>
+        <div class="text-end">
+          <button class="btn btn-secondary me-1" @click="closeModal">Отменить</button>
+          <template v-if="formType === 'renameFile'">
+            <button class="btn btn-primary" @click="renameFile" role="submit">Переименовать</button>
+          </template>
+        </div>
+      </template>
+    </v-modal>
   </div>
 </template>
 
@@ -32,6 +57,7 @@ export default {
     uploadFiles,
   },
   name: 'FilesField',
+  emits: ['v-change'],
   props: {
     field: {
       type: Object,
@@ -40,18 +66,75 @@ export default {
   },
   data() {
     return {
-      files: this.field.value || [],
+      modalTitle: '',
+      errorText: '',
+      modalShow: false,
+      fileChange: {},
     };
   },
+
   methods: {
+    renameFileEvent(file) {
+      this.modalTitle = 'Переименование файла';
+      this.formType = 'renameFile';
+      // Получаем расширение и имя файла отдельно, расширение с точкой
+      const lastDotIndex = file.name.lastIndexOf('.');
+      if (lastDotIndex > 0) {
+        this.fileChange['name'] = file.name.substring(0, lastDotIndex);
+        this.fileChange['ext'] = file.name.substring(lastDotIndex);
+        this.fileChange['file'] = file;
+      }
+
+      this.showModal();
+    },
+    renameFile() {
+      const newName = this.fileChange.name + this.fileChange.ext;
+
+      // Если имя файла не изменилось, то закрываем модальное окно
+      if (this.fileChange.file.name === newName) {
+        this.closeModal();
+        return;
+      }
+
+      // Проверяем, есть ли файл с таким же именем
+      if (this.field.value.some(f => f.name === newName)) {
+        this.errorText = 'Файл с таким именем уже существует.';
+        return;
+      }
+
+      // Создаем новый массив с обновленным файлом
+      let resFiles = this.field.value.slice();
+
+      let changedFileId = resFiles.indexOf(this.fileChange.file);
+      let changedFile = Object.assign({}, resFiles[changedFileId]);
+      changedFile.name = newName;
+      resFiles[changedFileId] = changedFile;
+
+      this.$emit('v-change', resFiles);
+      this.closeModal();
+    },
+    showModal() {
+      this.modalShow = true;
+      this.$nextTick(() => {
+        this.$refs.modal.show();
+      });
+    },
+    closeModal() {
+      this.$refs.modal.hide();
+      this.modalShow = false;
+    },
     uploadFile(file) {
       this.files.push(file);
     },
     downloadFile(file) {
       this.files.push(file);
     },
-    deleteFile(file) {
-      this.files = this.files.filter(f => f.id !== file.id);
+    deleteFile(files) {
+      let newFiles = this.field.value.slice();
+      files.forEach(file => {
+        newFiles = newFiles.filter(f => f.id !== file.id);
+      });
+      this.$emit('v-change', newFiles);
     },
     doubleClick(file) {
       this.files = this.files.filter(f => f.id !== file.id);

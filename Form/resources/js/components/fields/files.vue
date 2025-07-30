@@ -27,21 +27,7 @@ import showUploadsButton from '../uploads/show-uploads-button.vue'
 import cloneDeep from 'clone-deep'
 
 export default {
-    // mounted() {
-    //     this._sortable = new Sortable(this.$refs.listSortable, {
-    //         onEnd: (evt) => {
-    //             let res = this.files.slice()
-    //             let oldEl = res[evt.oldIndex]
-    //             res[evt.oldIndex] = res[evt.newIndex]
-    //             res[evt.newIndex] = oldEl
-    //             console.log(res)
-    //             this.$emit('v-change', res)
-    //         }
-    //     });
-    // },
-    // beforeUnmount() {
-    //     if (this._sortable !== undefined) this._sortable.destroy();
-    // },
+
 
     props: ['field'],
     computed: {

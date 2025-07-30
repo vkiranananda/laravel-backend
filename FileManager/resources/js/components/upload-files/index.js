@@ -36,8 +36,13 @@ export default {
   methods: {
     // Перетаскивание файлов
     handleDragOver(e) {
-      e.preventDefault();
-      this.isDragOver = true;
+      const hasFiles =
+        e.dataTransfer.types.includes('Files') || e.dataTransfer.types.includes('application/x-moz-file');
+
+      if (hasFiles) {
+        e.preventDefault();
+        this.isDragOver = true;
+      }
     },
 
     // Перетаскивание файлов отмена

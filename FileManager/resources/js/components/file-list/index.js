@@ -2,7 +2,7 @@ import template from './template.html?raw';
 import './style.scss';
 import FileIcon from '../file-icon.vue';
 import helpers from '../../helpers';
-
+import Sortable from '../../../../../resources/js/libs/sortable.js';
 export default {
   template,
   name: 'FileManager',
@@ -25,6 +25,10 @@ export default {
     folder: {
       type: Boolean,
       default: true,
+    },
+    sortable: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -49,6 +53,23 @@ export default {
       // Ключ для обновления меню
       menuKey: 1,
     };
+  },
+  mounted() {
+    if (this.sortable) {
+    this._sortable = new Sortable(this.$refs.body, {
+      onEnd: evt => {
+        // let res = this.files.slice();
+        // let oldEl = res[evt.oldIndex];
+        // res[evt.oldIndex] = res[evt.newIndex];
+        // res[evt.newIndex] = oldEl;
+        // console.log(res);
+        // this.$emit('v-change', res);
+      },
+    });
+    }
+  },
+  beforeUnmount() {
+    if (this._sortable !== undefined) this._sortable.destroy();
   },
   computed: {
     menuItems() {
@@ -107,11 +128,6 @@ export default {
             label: 'Копировать',
             method: this.copyFile,
             icon: 'copy',
-          });
-          items.push({
-            label: 'Переместить',
-            method: this.moveFile,
-            icon: 'move',
           });
           items.push({
             label: 'Вырезать',
@@ -367,7 +383,7 @@ export default {
     // Обработка нажатия левой кнопки мыши на файл, для перемещения файла
     onMouseDownFile(file, e) {
       // Правая кнопка мыши
-      if (e.button !== 0) return;
+      if (e.button !== 0 || this.folder === false || this.sortable) return;
       this._mouseDown = true;
       // Если список в виде сетки, то перемещение файла только по иконке
       if (this.listType === 'grid' && !e.target.closest('.file-icon')) return;

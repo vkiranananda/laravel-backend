@@ -51,7 +51,9 @@ class FilesField extends Field
 
     foreach ($value as $file) {
       if (isset($files[$file['id']]))
-        $result[] = Uploads::getFileToList($files[$file['id']]);
+        $resFile = Uploads::getFileToList($files[$file['id']]);
+        $resFile['name'] = $file['name'];
+        $result[] = $resFile;
     }
 
     return $result;

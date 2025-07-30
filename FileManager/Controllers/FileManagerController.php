@@ -181,7 +181,8 @@ class FileManagerController
 
 		$toName = $request->input('name', $file->name);
 
-		return Uploads::getFileToList(Uploads::move($file, $toPath, $toName, $toParentId));
+		$movedFile = Uploads::move($file, $toPath, $toName, $toParentId);
+		return Uploads::getFileToList($movedFile);
 	}
 
 	// Копируем файл или каталог
