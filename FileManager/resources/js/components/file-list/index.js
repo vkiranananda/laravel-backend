@@ -30,6 +30,7 @@ export default {
       type: Boolean,
       default: false,
     },
+
   },
   data() {
     return {
@@ -62,8 +63,8 @@ export default {
         // let oldEl = res[evt.oldIndex];
         // res[evt.oldIndex] = res[evt.newIndex];
         // res[evt.newIndex] = oldEl;
-        // console.log(res);
-        // this.$emit('v-change', res);
+        // console.log(evt);
+        this.$emit('sortable', evt.oldIndex, evt.newIndex);
       },
     });
     }

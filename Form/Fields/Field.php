@@ -2,8 +2,8 @@
 
 namespace Backend\Root\Form\Fields;
 
-class Field {
-
+class Field
+{
 	protected $field = [];
 
 	function __construct($field)
@@ -27,5 +27,17 @@ class Field {
 	public function list($value)
 	{
 		return $value;
+	}
+
+	// Изменяем поле
+	public function changeField()
+	{
+		return $this->field;
+	}
+
+	// Получаем файлы
+	public function getFiles()
+	{
+		return [];
 	}
 }

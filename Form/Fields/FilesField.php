@@ -10,10 +10,18 @@ use \Backend\Root\MediaFile\Services\Uploads;
 
 class FilesField extends Field
 {
+  private $files = [];
+
   // Получаем значение для сохраниения
   public function save($value)
   {
+    $result = [];
     if (is_array($value) && count($value) > 0) {
+      // Если указан максимальное количество файлов, то обрезаем массив
+      if (isset($this->field['max-files']) && is_numeric($this->field['max-files'])) {
+        $value = array_slice($value, 0, $this->field['max-files']);
+      }
+
       // Получаем все загруженные файлы
       $fileReq = MediaFile::whereIn('key', array_column($value, 'id'));
 
@@ -21,21 +29,21 @@ class FilesField extends Field
       if ($this->field['type'] == 'image')
         $fileReq = $fileReq->where('type', 'image');
 
-      $keys = array_fill_keys(array_column($fileReq->get(['key'])->toArray(), 'key'), true);
-
-      $result = [];
+      $keys = $fileReq->get(['key', 'id'])->keyBy('key')->toArray();
 
       foreach ($value as $file) {
-        if (isset($keys[$file['id']]))
+        if (isset($keys[$file['id']])) {
           $result[] = ['id' => $file['id'], 'name' => $file['name']];
+          $this->files[] = $keys[$file['id']]['id'];
+        }
       }
-
-      Log::info($result);
-
-      return $result;
-    } else {
-      return [];
     }
+    return $result;
+  }
+
+  public function getFiles()
+  {
+    return $this->files;
   }
 
   // Получаем сырое значние элемента для редактирования
@@ -52,8 +60,8 @@ class FilesField extends Field
     foreach ($value as $file) {
       if (isset($files[$file['id']]))
         $resFile = Uploads::getFileToList($files[$file['id']]);
-        $resFile['name'] = $file['name'];
-        $result[] = $resFile;
+      $resFile['name'] = $file['name'];
+      $result[] = $resFile;
     }
 
     return $result;

@@ -30,6 +30,8 @@ class Fields
         'editor-blocks' => '\Backend\Root\Form\Fields\EditorBlocksField',
     ];
 
+    private $filesToSave = [];
+
     public $request = [];
 
     function __construct()
@@ -57,6 +59,18 @@ class Fields
         // Инитим класс обработчик
         return new $this->fieldsClasses[$type_field]($field);
     }
+
+    // Добавляем файлы в массив для сохранения
+    private function addFilesToSave($files)
+    {
+        $this->filesToSave = array_merge($this->filesToSave, $files);
+    }
+
+    // Получаем массив файлов для сохранения
+    public function getFilesToSave()
+    {
+        return array_unique($this->filesToSave);
+    }   
 
     // Подготавливаем все поля для отображения. Только в readonly
     public function readFields($post, $fields)
@@ -438,10 +452,12 @@ class Fields
             return (count($errors) > 0) ? $errors : true;
 
         }
+        $fieldClass = $this->initField($field);
 
-        $value = $this->initField($field)->save($value);
+        $value = $fieldClass->save($value);
+        $this->addFilesToSave($fieldClass->getFiles());
 
-        //Правила валидации
+        // Правила валидации
         if (isset($field['validate'])) {
             $v = Validator::make([$field['name'] => $value], [$field['name'] => $field['validate']]);
 

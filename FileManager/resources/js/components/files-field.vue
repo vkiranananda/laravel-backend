@@ -1,10 +1,10 @@
 <template>
   <div class="files-field">
-    <div class="mb-2 mt-1">
-      <button type="button" class="text-button btn btn-secondary btn-sm me-2" @click="selectFiles()">
+    <div class="mb-2 mt-1" v-if="!maxFiles && field['readonly'] !== true">
+      <button v-if="field['insert-button'] !== false" type="button" class="text-button btn btn-secondary btn-sm me-2" @click="selectFiles()">
         Выбрать файл
       </button>
-      <button type="button" class="text-button btn btn-secondary btn-sm" @click="uploadFile()">Загрузить файл</button>
+      <button v-if="field['upload-button'] !== false" type="button" class="text-button btn btn-secondary btn-sm" @click="uploadFile()">Загрузить файл</button>
     </div>
     <div class="card">
       <div class="card-body p-0">
@@ -17,6 +17,7 @@
             @deleteFile="deleteFile"
             @uploadFiles="uploadFile"
             @renameFile="renameFileEvent"
+            @sortable="sortable"
             ref="fileList" />
         </upload-files>
       </div>
@@ -73,7 +74,21 @@ export default {
     };
   },
 
+  computed: {
+    // Если false, то можно добавлять файлы
+    maxFiles() {
+      return this.field['max-files'] && this.field.value.length >= this.field['max-files'];
+    },
+  },
   methods: {
+    sortable(oldIndex, newIndex) {
+      let resFiles = this.field.value.slice();
+      let oldEl = resFiles[oldIndex];
+      let newEl = resFiles[newIndex];
+      resFiles[oldIndex] = newEl;
+      resFiles[newIndex] = oldEl;
+      this.$emit('v-change', resFiles);
+    },
     renameFileEvent(file) {
       this.modalTitle = 'Переименование файла';
       this.formType = 'renameFile';

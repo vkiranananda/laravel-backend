@@ -70,7 +70,7 @@ export default {
       if (items) {
         // Получаем файлы из перетаскивания
         items.forEach(item => {
-          console.log(item);
+          // console.log(item);
           const data = item.webkitGetAsEntry && item.webkitGetAsEntry();
           if (data) {
             if (data.isDirectory) {
@@ -85,7 +85,7 @@ export default {
             const file = item.getAsFile();
             if (file) {
               files.push(file);
-              console.log(file);
+              // console.log(file);
             }
           }
         });
