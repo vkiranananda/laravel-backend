@@ -78,7 +78,7 @@ return [
         'route-get-file' => '\Backend/FileManager/Controllers/FileManagerController@getFile',
         // Роут для получения списка файлов.
         // Остальные роуты для работы с файлами находятся получаются через list.
-        'route-list' => '\Backend\FileManager\Controllers\FileManagerController@list',
+        'route-list' => '\Backend\MediaFile\Controllers\FileManagerController@list',
     ],
     // Массив дополнительных параметров которые будут прикрепляться к url адресу в списке и создании новой записи.
     'url-params' => [],

@@ -13,11 +13,6 @@ const customIcons = {
     width: 24,
     height: 24,
   },
-  'file-fill': {
-    svg: '<foreignObject width="74.188" height="93.688" x="2.906" y="-6.844"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(3.43px);clip-path:url(#a);height:100%;width:100%"></div></foreignObject><g data-figma-bg-blur-radius="6.869"><path fill="url(#b)" d="M10.75 6.85v66.3A5.85 5.85 0 0 0 16.6 79h46.8a5.85 5.85 0 0 0 5.85-5.85V25.805c0-.623-.242-1.222-.674-1.671L46.978 1.736A2.4 2.4 0 0 0 45.245 1H16.6a5.85 5.85 0 0 0-5.85 5.85"/><path stroke="#fff" stroke-opacity=".5" stroke-width=".975" d="M45.245.513c.786 0 1.538.319 2.084.884l21.598 22.399.183.21c.405.51.627 1.143.627 1.799V73.15c0 3.5-2.837 6.337-6.337 6.337H16.6a6.337 6.337 0 0 1-6.337-6.337V6.85c0-3.5 2.837-6.337 6.337-6.337z"/></g><mask id="e" width="60" height="37" x="10" y="1" maskUnits="userSpaceOnUse" style="mask-type:alpha"><foreignObject width="74.188" height="93.688" x="2.906" y="-6.844"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(3.43px);clip-path:url(#c);height:100%;width:100%"></div></foreignObject><path fill="url(#d)" d="M10.75 5.815v27.007a4.815 4.815 0 0 0 4.815 4.814h48.87a4.815 4.815 0 0 0 4.815-4.814v-7.017c0-.623-.242-1.222-.674-1.671L46.978 1.736A2.4 2.4 0 0 0 45.245 1h-29.68a4.815 4.815 0 0 0-4.815 4.815" data-figma-bg-blur-radius="6.869"/></mask><g filter="url(#f)" mask="url(#e)"><path fill="#F4F6FF" d="M45.85.025v19.5a5.85 5.85 0 0 0 5.85 5.85h18.525z"/></g><defs><linearGradient id="b" x1="82.115" x2="13.526" y1="165.609" y2="-34.511" gradientUnits="userSpaceOnUse"><stop stop-color="#D8DBE8"/><stop offset=".86" stop-color="#F4F6FF"/></linearGradient><linearGradient id="d" x1="75.478" x2="12.413" y1="149.853" y2="-34.13" gradientUnits="userSpaceOnUse"><stop offset=".208" stop-color="#ADCCFF"/><stop offset=".952" stop-color="#F5F9FF"/></linearGradient><clipPath id="a" transform="translate(-2.906 6.844)"><path d="M10.75 6.85v66.3A5.85 5.85 0 0 0 16.6 79h46.8a5.85 5.85 0 0 0 5.85-5.85V25.805c0-.623-.242-1.222-.674-1.671L46.978 1.736A2.4 2.4 0 0 0 45.245 1H16.6a5.85 5.85 0 0 0-5.85 5.85"/></clipPath><clipPath id="c" transform="translate(-2.906 6.844)"><path d="M10.75 5.815v27.007a4.815 4.815 0 0 0 4.815 4.814h48.87a4.815 4.815 0 0 0 4.815-4.814v-7.017c0-.623-.242-1.222-.674-1.671L46.978 1.736A2.4 2.4 0 0 0 45.245 1h-29.68a4.815 4.815 0 0 0-4.815 4.815"/></clipPath><filter id="f" width="36.412" height="37.387" x="41.035" y="-4.789" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/><feOffset dx="1.204" dy="1.204"/><feGaussianBlur stdDeviation="3.009"/><feComposite in2="hardAlpha" operator="out"/><feColorMatrix values="0 0 0 0 0.627451 0 0 0 0 0.65098 0 0 0 0 0.74902 0 0 0 0.8 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow_584_14851"/><feBlend in="SourceGraphic" in2="effect1_dropShadow_584_14851" result="shape"/></filter></defs>',
-    width: 80,
-    height: 80,
-  },
   'close': {
     svg: '<path d="M5.72 5.72a.75.75 0 0 1 1.06 0L12 10.94l5.22-5.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L13.06 12l5.22 5.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L12 13.06l-5.22 5.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L10.94 12 5.72 6.78a.75.75 0 0 1 0-1.06Z"></path>',
     width: 24,
@@ -158,6 +153,11 @@ const customIcons = {
     width: 80,
     height: 80,
   },
+  'file-fill': {
+    svg: '<path fill="#90CAF9" d="M40 45L8 45 8 3 30 3 40 13z"></path><path fill="#E1F5FE" d="M38.5 14L29 14 29 4.5z"></path>',
+    width: 40,
+    height: 40,
+  },
   'chevron-down': {
     svg: '<path d="M5.22 8.22a.749.749 0 0 0 0 1.06l6.25 6.25a.749.749 0 0 0 1.06 0l6.25-6.25a.749.749 0 1 0-1.06-1.06L12 13.939 6.28 8.22a.749.749 0 0 0-1.06 0Z"></path>',
     width: 24,
@@ -208,8 +208,12 @@ const customIcons = {
     width: 24,
     height: 24,
   },
+  'image': {
+    svg: '<path d="M21.75 21.5H2.25A1.75 1.75 0 0 1 .5 19.75V4.25c0-.966.784-1.75 1.75-1.75h19.5c.966 0 1.75.784 1.75 1.75v15.5a1.75 1.75 0 0 1-1.75 1.75ZM2.25 4a.25.25 0 0 0-.25.25v15.5c0 .138.112.25.25.25h3.178L14 10.977a1.749 1.749 0 0 1 2.506-.032L22 16.44V4.25a.25.25 0 0 0-.25-.25ZM22 19.75v-1.19l-6.555-6.554a.248.248 0 0 0-.18-.073.247.247 0 0 0-.178.077L7.497 20H21.75a.25.25 0 0 0 .25-.25ZM10.5 9.25a3.25 3.25 0 1 1-6.5 0 3.25 3.25 0 0 1 6.5 0Zm-1.5 0a1.75 1.75 0 1 0-3.501.001A1.75 1.75 0 0 0 9 9.25Z"></path>',
+    width: 24,
+    height: 24,
+  },
 };
-
 
 
 export default {

@@ -7,7 +7,7 @@ return [
         ['name' => 'Category', 'root' => true],
         ['name' => 'Form', 'root' => true],
         ['name' => 'Menu', 'root' => true],
-        ['name' => 'FileManager', 'root' => true],
+        ['name' => 'MediaFile', 'root' => true],
         ['name' => 'Home'],
         ['name' => 'MenuBuilder'],
     ]

@@ -9,7 +9,7 @@ import icons from './components/icons.vue';
 import dropdown from './components/dropdown.vue';
 import formInit from '../../Form/resources/js/init.js';
 import menuInit from '../../Menu/resources/js/init.js';
-import fileManagerInit from '../../FileManager/resources/js/init.js';
+import fileManagerInit from '../../MediaFile/resources/js/init.js';
 import customInit from '../../../../../backend/resources/js/backend.js';
 import axios from 'axios';
 import helpers from './libs/helpers.js';

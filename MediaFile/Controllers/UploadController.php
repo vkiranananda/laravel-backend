@@ -2,38 +2,36 @@
 
 namespace Backend\Root\MediaFile\Controllers;
 
-use Backend\Root\Core\Services\Helpers;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Backend\Root\Core\Services\Helpers;
 use Backend\Root\MediaFile\Models\MediaFile;
 use Backend\Root\MediaFile\Models\MediaFileRelation;
 use Backend\Root\MediaFile\Services\Uploads;
+use Illuminate\Http\Request;
 use Content;
 use GetConfig;
-use UploadedFiles;
-use Storage;
-
 use Log;
+use Storage;
+use UploadedFiles;
 
 class UploadController extends Controller
 {
 	// use \Backend\Root\Form\Services\Traits\Fields;
 
-	//Название модуля
+	// Название модуля
 	protected $moduleName = '';
-	//Если установить в false будет загружен базовый конфиг
-    protected $configPath = false;
+	// Если установить в false будет загружен базовый конфиг
+	protected $configPath = false;
+	// Если малоли хочется изменить поля в форме редактирования файлв.
+	protected $editConfigPath = false;
 
-    // Если малоли хочется изменить поля в форме редактирования файлв.
-    protected $editConfigPath = false;
+	public function __construct()
+	{
+		// Инитим локаль
+		setlocale(LC_ALL, 'ru_RU.utf8');
+	}
 
-    public function __construct()
-    {
-    	//Инитим локаль
-    	setlocale(LC_ALL, 'ru_RU.utf8');
-    }
-
-			// Получаем файл ?download=true для скачивания
+	// Получаем файл ?download=true для скачивания
 
 	public function getFile(Request $request, $key)
 	{
@@ -62,22 +60,20 @@ class UploadController extends Controller
 		]);
 	}
 
-    //Загружаем файл
-    public function store(Request $request)
-    {
-    	// Получаем конфиг
-    	// $config = ($this->configPath === false)
-    	// 	? $this->config = GetConfig::backend("MediaFile::upload", true)
-	    //    	: $this->config = array_replace_recursive (
-	    //    		GetConfig::backend("MediaFile::upload", true),
-	    //    		GetConfig::backend($this->configPath)
-	    //    	);
+	// Загружаем файл
+	public function store(Request $request)
+	{
+		$file = $request->file('file');
+		$name = $request->input('name', $file->getClientOriginalName());
 
-      //   $this->validate( $request, [ 'file' => $config['validate'] ] );
-      //   $config['module'] = $this->moduleName;
+		// Сохраняем файл
+		$savedFile = Uploads::saveFile($file, [
+			'orig_name' => $name,
+		]);
 
-      //   $savedFile[] = Uploads::saveFile($config);
+		$file = Uploads::getFileToList($savedFile);
+		$file['name'] = $file['orig_name'];
 
-      //   return UploadedFiles::prepGaleryData( $savedFile )[0];
-    }
+		return $file;
+	}
 }

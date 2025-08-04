@@ -1,7 +1,7 @@
 import template from './template.html?raw';
 import './style.scss';
 import FileIcon from '../file-icon.vue';
-import helpers from '../../helpers';
+import helpers from '../../helpers.js';
 import Sortable from '../../../../../resources/js/libs/sortable.js';
 export default {
   template,
@@ -23,6 +23,10 @@ export default {
       default: 0,
     },
     folder: {
+      type: Boolean,
+      default: true,
+    },
+    upload: {
       type: Boolean,
       default: true,
     },
@@ -59,11 +63,6 @@ export default {
     if (this.sortable) {
     this._sortable = new Sortable(this.$refs.body, {
       onEnd: evt => {
-        // let res = this.files.slice();
-        // let oldEl = res[evt.oldIndex];
-        // res[evt.oldIndex] = res[evt.newIndex];
-        // res[evt.newIndex] = oldEl;
-        // console.log(evt);
         this.$emit('sortable', evt.oldIndex, evt.newIndex);
       },
     });
@@ -150,11 +149,13 @@ export default {
             icon: 'folder',
           });
         }
-        items.push({
-          label: 'Загрузить файлы',
-          method: this.uploadFiles,
-          icon: 'upload',
-        });
+        if (this.upload) {
+          items.push({
+            label: 'Загрузить файлы',
+            method: this.uploadFiles,
+            icon: 'upload',
+          });
+        }
         copyPaste();
       }
       return items.length > 0 ? items : false;
@@ -254,6 +255,7 @@ export default {
 
     setMenuPosition(e) {
       this.$nextTick(() => {
+        if (!this.menuItems) return;
         const parentRect = this.$el.getBoundingClientRect();
 
         this.$refs.menuBlock.style.left = e.clientX - parentRect.left + 5 + 'px';

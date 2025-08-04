@@ -43,7 +43,7 @@
 
 import size from 'lodash.size'
 import fieldsList from './fields.vue'
-import fileManagerModal from '../../../../../FileManager/resources/js/components/file-manager-modal.vue'
+import fileManagerModal from '../../../../../MediaFile/resources/js/components/file-manager-modal.vue'
 import sendForm from './send.vue'
 import formData from '../../store/form-data.js'
 import {computed} from "vue";

@@ -41,6 +41,11 @@ class FilesField extends Field
     return $result;
   }
 
+  public function addProps()
+  {
+    return !isset($this->field['upload-url']) ? ['upload-url' => route('media-file.upload')] : [];
+  }
+
   public function getFiles()
   {
     return $this->files;

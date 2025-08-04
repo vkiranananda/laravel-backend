@@ -19,6 +19,7 @@ class Fields
         'default' => '\Backend\Root\Form\Fields\Field',
         'date' => '\Backend\Root\Form\Fields\DateField',
         'files' => '\Backend\Root\Form\Fields\FilesField',
+        'image' => '\Backend\Root\Form\Fields\ImageField',
         'gallery' => '\Backend\Root\Form\Fields\FilesField',
         'mce' => '\Backend\Root\Form\Fields\EditorField',
         'editor' => '\Backend\Root\Form\Fields\EditorField',
@@ -243,7 +244,11 @@ class Fields
             }
         }
         else {
-            $field['value'] = $this->initField($field)->edit($this->getFieldValue($field, $post, $arrayData, $none));
+            $fieldClass = $this->initField($field);
+            // Изменяем поле
+            $field = array_merge($field, $fieldClass->addProps());
+            // Получаем значение для отображения
+            $field['value'] = $fieldClass->edit($this->getFieldValue($field, $post, $arrayData, $none));
         }
         // Убираем лишние опции
         unset($field['field-save']);

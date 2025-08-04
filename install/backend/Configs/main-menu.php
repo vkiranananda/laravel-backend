@@ -22,6 +22,12 @@ return [
     ],[
         'separator' => true,
     ],[
+        'label' => 'Менеджер файлов',
+        'icon' => 'folder',
+        'url' => action('\Backend\MediaFile\Controllers\FileManagerController@index'),
+    ],[
+        'separator' => true,
+    ],[
         'label' => 'Разделы',
         'icon' => 'list-unordered',
         'url' => action('\Backend\Category\Controllers\CategoryRootController@index'),

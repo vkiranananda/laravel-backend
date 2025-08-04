@@ -1,33 +1,31 @@
 <?php
 
-namespace Backend\Root\FileManager\Controllers;
+namespace Backend\Root\MediaFile\Controllers;
 
 use Backend\Root\MediaFile\Models\MediaFile;
 use Backend\Root\MediaFile\Services\Uploads;
 use Illuminate\Http\Request;
-use GetConfig;
-use Log;
-use Storage;
 
 class FileManagerController
 {
-	protected $config;
-	// Если установить в false будет загружен базовый конфиг
-	// protected $configPath = false;
-	// Если малоли хочется изменить поля в форме редактирования файлв.
-	// protected $editConfigPath = false;
+	protected $config = [
+		// Разрешенные форматы файлов, если пустой то разрешены все
+		'allow-formats' => [],
+		// Диск, по умолчанию filemanager
+		'disk' => 'filemanager',
+		// Корневой каталог. Если пустой то берем с корня
+		'path' => '',
+	];
 
 	public function __construct()
 	{
 		// Инитим локаль
 		setlocale(LC_ALL, 'ru_RU.utf8');
-
-		$this->config = GetConfig::backend('FileManager::upload');
 	}
 
 	public function index(Request $request)
 	{
-		return view('FileManager::index');
+		return view('MediaFile::file-manager');
 	}
 
 	// Получаем список всех файлов в папке, parentId = false - берем с корня

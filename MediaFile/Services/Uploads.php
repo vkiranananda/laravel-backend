@@ -5,9 +5,9 @@ use Backend\Root\MediaFile\Models\MediaFile;
 use Backend\Root\MediaFile\Models\MediaFileRelation;
 use Intervention\Image\Facades\Image as Image;
 use Auth;
+use GetConfig;
 use Log;
 use Storage;
-use GetConfig;
 
 class Uploads
 {
@@ -32,7 +32,11 @@ class Uploads
       // Получаем расширение файла из имени файла
       $mediaFile->extension = strtolower(self::parceFileName($mediaFile->name)['extension']);
     } else {
-      $mediaFile->orig_name = $file->getClientOriginalName();
+      if (isset($conf['orig_name'])) {
+        $mediaFile->orig_name = self::fileNameNormalize($conf['orig_name']);
+      } else {
+        $mediaFile->orig_name = self::fileNameNormalize($file->getClientOriginalName());
+      }
       // Получаем расширение файла из оригинального имени файла
       $mediaFile->extension = strtolower(self::parceFileName($mediaFile->orig_name)['extension']);
       // Если имя файла не задано, то генерируем уникальное случайное имя файла
@@ -190,15 +194,6 @@ class Uploads
     return $mediaFile;
   }
 
-  // Нормализуем путь. Добавляем / в конец если нет
-  public static function pathNormalize($path)
-  {
-    if ($path != '' && substr($path, -1) !== '/') {
-      $path .= '/';
-    }
-    return $path;
-  }
-
   // Проверяем существование файла
   public static function fileExists($path, $name, $disk)
   {
@@ -295,30 +290,49 @@ class Uploads
     return $mediaFile;
   }
 
+  // Переносим файл в uploads, например при удалении файла
+  // Если файл уже в uploads, то ничего не делаем
+  private static function moveToUploads($file)
+  {
+    setlocale(LC_ALL, 'ru_RU.utf8');
+
+    if ($file->disk === 'uploads') {
+      return false;
+    }
+
+    $oldDisk = $file->disk;
+    $oldFilePath = $file->path . $file->name;
+
+    $file->disk = 'uploads';
+    $file->path = self::generatePath();
+    $file->name = self::generateFileNameRandom($file->path, $file->extension, $file->disk);
+
+    // Копируем файл потоково, не загружая в память
+    $sourceStream = Storage::disk($oldDisk)->readStream($oldFilePath);
+    Storage::disk($file->disk)->writeStream($file->path . $file->name, $sourceStream);
+    Storage::disk($oldDisk)->delete($oldFilePath);
+
+    $file->save();
+
+    return $file;
+  }
+
   // Удаляем файл. Возвращает массив с файлами которые не удалось удалить или true
   public static function deleteFile($file)
   {
-    $res = [];
     // Если папка, то удаляем все файлы в папке
     if ($file->type === 'folder') {
       // Удаляем все файлы в папке
       foreach (MediaFile::where('parent_id', $file->id)->get() as $fileNext) {
         // Рекурсивно удаляем все файлы в папке
-        // if (count($res) > 0)
-        $res = array_merge($res, self::deleteFile($fileNext));
+        self::deleteFile($fileNext);
       }
     } else {
       // Проверяем, используется ли файл в таблице связей
-      $relations = MediaFileRelation::where('file_id', $file->id)->get();
-
-      // Если файл используется в таблице связей, то не удаляем его
-      if ($relations->count() > 0) {
-        $relRes = [];
-        foreach ($relations as $relation) {
-          // Получаем модель того кто использует файл и id
-          $relRes[] = ['type' => $relation->post_type, 'id' => $relation->post_id];
-        }
-        return ['file' => $file, 'relations' => $relRes];
+      if (MediaFileRelation::where('file_id', $file->id)->count() > 0) {
+        // Если файл используется в таблице связей, то перемещаем его в uploads
+        self::moveToUploads($file);
+        return;
       }
       // Удаляем все файлы привязанные к этому файлу. Например, миниатюры.
       // К файлу могут быть привязаны только файлы без вложенных файлов.
@@ -329,11 +343,6 @@ class Uploads
       }
     }
 
-    // Если есть ошибки, то возвращаем их
-    if (count($res) > 0) {
-      return $res;
-    }
-
     // Иначе удаляем файл из хранилища
     if ($file->type !== 'folder') {
       Storage::disk($file->disk)->delete($file->path . $file->name);
@@ -341,43 +350,50 @@ class Uploads
       Storage::disk($file->disk)->deleteDirectory($file->path . $file->name);
     }
     $file->delete();
-
-    return [];
   }
 
-	// Получаем массив данных о файле для отображения в списке
-	public static function getFileToList(&$file)
-	{
-		$dateConfig = GetConfig::backend('backend');
-		$res = [
-			'id' => $file->key,
-			'name' => $file->name,
-			'orig_name' => $file->orig_name,
-			'type' => $file->type,
-			'size' => $file->size,
-			'timestamp' => $file->created_at->timestamp,
-			'dateFormatted' => (new \Carbon\Carbon($file->created_at))
-				->setTimezone($dateConfig['time-zone'])
-				->format($dateConfig['datetime-format']),
-		];
+  // Получаем массив данных о файле для отображения в списке
+  public static function getFileToList(&$file)
+  {
+    $dateConfig = GetConfig::backend('backend');
+    $res = [
+      'id' => $file->key,
+      'name' => $file->name,
+      'orig_name' => $file->orig_name,
+      'type' => $file->type,
+      'size' => $file->size,
+      'timestamp' => $file->created_at->timestamp,
+      'dateFormatted' => (new \Carbon\Carbon($file->created_at))
+        ->setTimezone($dateConfig['time-zone'])
+        ->format($dateConfig['datetime-format']),
+    ];
 
-		if ($file->type !== 'folder') {
-			$res['url'] = self::getUrl($file);
-		}
+    if ($file->type !== 'folder') {
+      $res['url'] = self::getUrl($file);
+    }
 
-		$thumbnail = self::getThumbnail($file, ['80', '80', 'fit']);
+    $thumbnail = self::getThumbnail($file, ['80', '80', 'fit']);
 
-		if ($thumbnail) {
-			$res['thumb'] = self::getUrl($thumbnail);
-		}
+    if ($thumbnail) {
+      $res['thumb'] = self::getUrl($thumbnail);
+    }
 
-		return $res;
-	}
+    return $res;
+  }
 
   // Получаем url файла
   public static function getUrl(&$file)
   {
     return route('uploads.get-file', $file['key'] . self::getFileExt($file['extension']));
+  }
+
+  // Нормализуем путь. Добавляем / в конец если нет
+  public static function pathNormalize($path)
+  {
+    if ($path != '' && substr($path, -1) !== '/') {
+      $path .= '/';
+    }
+    return $path;
   }
 
   // Преобразуем массив с размером в строку...

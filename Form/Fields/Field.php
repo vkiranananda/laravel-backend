@@ -29,10 +29,10 @@ class Field
 		return $value;
 	}
 
-	// Изменяем поле
-	public function changeField()
+	// Добавляем дополнительные свойства
+	public function addProps()
 	{
-		return $this->field;
+		return [];
 	}
 
 	// Получаем файлы

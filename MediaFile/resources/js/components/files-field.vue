@@ -1,10 +1,20 @@
 <template>
   <div class="files-field">
     <div class="mb-2 mt-1" v-if="!maxFiles && field['readonly'] !== true">
-      <button v-if="field['insert-button'] !== false" type="button" class="text-button btn btn-secondary btn-sm me-2" @click="selectFiles()">
+      <button
+        v-if="field['insert-button'] !== false"
+        type="button"
+        class="text-button btn btn-secondary btn-sm me-2"
+        @click="selectFiles()">
         Выбрать файл
       </button>
-      <button v-if="field['upload-button'] !== false" type="button" class="text-button btn btn-secondary btn-sm" @click="uploadFile()">Загрузить файл</button>
+      <button
+        v-if="field['upload-button'] !== false"
+        type="button"
+        class="text-button btn btn-secondary btn-sm"
+        @click="uploadFile()">
+        Загрузить файл
+      </button>
     </div>
     <div class="card">
       <div class="card-body p-0">
@@ -14,8 +24,9 @@
             :list-type="field['file-type'] === 'image' ? 'grid' : 'list'"
             :folder="false"
             :sortable="true"
+            :upload="!maxFiles"
             @deleteFile="deleteFile"
-            @uploadFiles="uploadFile"
+            @uploadFiles="uploadFilesEvent"
             @renameFile="renameFileEvent"
             @sortable="sortable"
             ref="fileList" />
@@ -73,7 +84,6 @@ export default {
       fileChange: {},
     };
   },
-
   computed: {
     // Если false, то можно добавлять файлы
     maxFiles() {
@@ -83,10 +93,8 @@ export default {
   methods: {
     sortable(oldIndex, newIndex) {
       let resFiles = this.field.value.slice();
-      let oldEl = resFiles[oldIndex];
-      let newEl = resFiles[newIndex];
-      resFiles[oldIndex] = newEl;
-      resFiles[newIndex] = oldEl;
+      resFiles.splice(oldIndex, 1);
+      resFiles.splice(newIndex, 0, this.field.value[oldIndex]);
       this.$emit('v-change', resFiles);
     },
     renameFileEvent(file) {
@@ -139,10 +147,11 @@ export default {
       this.modalShow = false;
     },
     uploadFile(file) {
-      this.files.push(file);
-    },
-    downloadFile(file) {
-      this.files.push(file);
+      if (this.maxFiles) return;
+      if (this.field['file-type'] == 'image' && file.type != 'image') return;
+      let newFiles = this.field.value.slice();
+      newFiles.push(file);
+      this.$emit('v-change', newFiles);
     },
     deleteFile(files) {
       let newFiles = this.field.value.slice();
@@ -154,7 +163,9 @@ export default {
     doubleClick(file) {
       this.files = this.files.filter(f => f.id !== file.id);
     },
-    uploadFiles(files) {},
+    uploadFilesEvent() {
+      this.$refs.uploadFiles.selectFiles();
+    },
 
     // Выбор файлов
     selectFiles(files) {

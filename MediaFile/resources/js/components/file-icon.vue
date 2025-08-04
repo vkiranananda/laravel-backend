@@ -1,6 +1,6 @@
 <template>
   <div class="file-icon">
-    <v-icon v-if="file.type === 'folder'" name="folder-fill" />
+    <v-icon v-if="file.type === 'folder'" name="folder-fill" class="file-icon__icon-folder" />
     <img v-else-if="file.type === 'image' && file.thumb" :src="file.thumb" draggable="false" />
     <v-icon v-else name="file-fill" class="file-icon__icon-file" />
   </div>
@@ -18,9 +18,5 @@ export default {
 </script>
 
 <style lang="scss">
-.file-icon {
-  &__icon-file {
-    fill: #edeff9;
-  }
-}
+
 </style>

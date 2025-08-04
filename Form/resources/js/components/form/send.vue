@@ -66,7 +66,6 @@ export default {
     },
     methods: {
         btnClick(btn, type) {
-            console.log('23434')
             if (btn.link) window.location = btn.link
             if (!btn.hook) return
             this.statusArea = type

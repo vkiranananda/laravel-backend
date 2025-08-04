@@ -1,7 +1,8 @@
 <?php
 
 // if (app()->runningInConsole()) return;
-Route::get('uploads/{id}', '\Backend\Root\MediaFile\Controllers\UploadController@getFile')->name('uploads.get-file');
+
+Route::get('uploads/{id}', '\Backend\MediaFile\Controllers\UploadController@getFile')->name('uploads.get-file');
 
 Route::group(['prefix' => 'content', 'middleware' => ['auth.basic']], function () {
     Route::get('/', '\Backend\Home\Controllers\HomeController@index');
@@ -14,5 +15,6 @@ Route::group(['prefix' => 'content', 'middleware' => ['auth.basic']], function (
     Backend::installRoutes('User', ['module']);
     Backend::installRoutes('Option', ['upload']);
     Backend::installRoutes('MenuBuilder');
-    Backend::installRoutes('FileManager', ['module']);
+    Backend::installRoutes('MediaFile', ['module']);
 });
+                                            
