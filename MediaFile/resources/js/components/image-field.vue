@@ -14,7 +14,7 @@
               class="image-field__action-button btn btn-light btn-sm"
               @click="deleteFile()"
               v-if="field.value.id">
-              <v-icon name="delete" />
+              <v-icon name="delete" class="icon-red" />
             </button>
           </div>
           <div

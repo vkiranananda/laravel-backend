@@ -32,7 +32,7 @@ class FilesField extends Field
       $keys = $fileReq->get(['key', 'id'])->keyBy('key')->toArray();
 
       foreach ($value as $file) {
-        if (isset($keys[$file['id']])) {
+        if (is_array($file) && isset($keys[$file['id']])) {
           $result[] = ['id' => $file['id'], 'name' => $file['name']];
           $this->files[] = $keys[$file['id']]['id'];
         }

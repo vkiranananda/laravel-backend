@@ -237,8 +237,8 @@ export default {
         ? 'icon-' + this.size
         : '';
     // Цвет
-    let style = {};
-    if (this.color) style.color = this.color;
+    // let style = {};
+    // if (this.color) style.color = this.color;
     // Рендер
     return h('span', {
       class: `icon icon-${this.name} ${sizeClass}`,

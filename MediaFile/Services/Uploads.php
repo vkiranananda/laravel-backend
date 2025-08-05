@@ -384,7 +384,13 @@ class Uploads
   // Получаем url файла
   public static function getUrl(&$file)
   {
-    return route('uploads.get-file', $file['key'] . self::getFileExt($file['extension']));
+    return self::getBaseUrl($file['key'] . self::getFileExt($file['extension']));
+  }
+
+  // Получаем url файла
+  public static function getBaseUrl($fileName = '')
+  {
+    return route('uploads.get-file', $fileName);
   }
 
   // Нормализуем путь. Добавляем / в конец если нет

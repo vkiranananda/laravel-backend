@@ -1,5 +1,7 @@
+<!-- https://github.com/Alex-D/Trumbowyg/issues/407 как сделать чтобы нельзя было вставлять изображения из буфера обмена -->
 <template>
   <div class="editor">
+    <upload-files ref="uploadFiles" :upload-url="field['upload-url']" @uploadFile="uploadFile"> </upload-files>
     <div v-if="field.readonly" v-html="field.value" class="readonly-field"></div>
     <div v-else class="small-mce" :class="field.size ? field.size : 'small'">
       <div ref="editor"></div>
@@ -8,7 +10,12 @@
 </template>
 
 <script>
+import uploadFiles from '../../../../../MediaFile/resources/js/components/upload-files/index.js';
+
 export default {
+  components: {
+    uploadFiles,
+  },
   mounted() {
     if (!this.field.readonly) this.init();
   },
@@ -39,17 +46,18 @@ export default {
           this.editor.trumbowyg('html', this.field.value);
         });
     },
-    attachFile: function (files, link) {
+    attachFiles: function (files, link) {
       var res = '';
       for (var file of files) {
+        let code = '';
         if (file.type == 'image') {
-          let img = '<img alt="" title="" src="' + file.url + '" data-id="' + file.id + '" />';
-          res += link ? '<a href="' + file.url + '">' + img + '</a> ' : img;
+          let img = `<img alt="" title="" src="${file.url}" data-file-id="${file.id}" />`;
+          code = link ? `<a href="${file.url}">${img}</a> ` : img;
         } else {
-          res += link ? '<a href="' + file.url + '">' + file.orig_name + '</a> ' : file.url;
+          code = `<a href="${file.url}" data-file-id="${file.id}">${file.orig_name}</a>`;
         }
 
-        res += ' ';
+        res += `<p>${code}</p>\n`;
       }
 
       this.editor.trumbowyg('restoreRange');
@@ -57,6 +65,9 @@ export default {
         cmd: 'insertHtml',
         param: res,
       });
+    },
+    uploadFile: function (file) {
+      this.attachFiles([file], false);
     },
   },
   computed: {
@@ -69,7 +80,12 @@ export default {
         // Очищаем цсс, изолируем от сайта
         resetCss: true,
         // Очищаем форматирование при вставке
-        removeformatPasted: true,
+        // removeformatPasted: true,
+
+        // Запрещаем вставку изображений
+        disablePasteImages: true,
+        // Запрещаем перетаскивание
+        disableDragAndDrop: true,
 
         // tagsToKeep: ['i', 'b', 'strong', 'a'],
         // Автовысота
@@ -83,16 +99,31 @@ export default {
               this.emitter.emit('FileManagerModalShow', {
                 type: 'all',
                 showLink: true,
-                return: this.attachFile,
+                return: this.attachFiles,
               });
               this.saveRange();
             },
+            title: 'Вставить',
             ico: 'insertImage',
+          },
+          uploadImage: {
+            fn: () => {
+              this.$refs.uploadFiles.selectFiles();
+              this.saveRange();
+            },
+            title: 'Загрузить',
+            ico: 'upload',
+          },
+          dropdownInsertImage: {
+            dropdown: ['insertImage', 'uploadImage'],
+            title: 'Вставить изображение',
+            ico: 'insertImage',
+            hasIcon: true,
           },
         },
       };
 
-      let image = this.field.upload ? 'insertImage' : '';
+      let insertImage = this.field.upload !== false ? 'dropdownInsertImage' : '';
 
       if (this.field.format == 'fool') {
         config.btns = [
@@ -102,7 +133,7 @@ export default {
           ['strong', 'em', 'del'],
           ['superscript', 'subscript'],
           ['link'],
-          [image],
+          [insertImage],
           ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
           ['unorderedList', 'orderedList'],
           ['horizontalRule'],
@@ -114,7 +145,7 @@ export default {
           ['viewHTML'],
           ['strong', 'em'],
           ['link'],
-          [image],
+          [insertImage],
           ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
           ['removeformat'],
           ['fullscreen'],
@@ -149,6 +180,8 @@ export default {
 
       .trumbowyg-editor {
         min-height: 100px !important;
+        // user-drag: none;
+        // -webkit-user-drag: none; /* For WebKit browsers */
       }
 
       &.trumbowyg-editor-visible .trumbowyg-textarea,

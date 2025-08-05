@@ -12,7 +12,7 @@
         v-if="field['upload-button'] !== false"
         type="button"
         class="text-button btn btn-secondary btn-sm"
-        @click="uploadFile()">
+        @click="uploadFilesEvent()">
         Загрузить файл
       </button>
     </div>
