@@ -4,9 +4,8 @@
 namespace Backend\Root\Option\Controllers;
 
 use Option;
-use Backend\Root\Form\Controllers\ResourceController;
 
-class OptionResourcesController extends ResourceController
+class OptionResourcesController extends \Backend\Root\Form\Controllers\ResourceController
 {
     public $model = '\Backend\Root\Option\Models\Option';
     public $optionName = false;

@@ -3,8 +3,8 @@
 namespace Backend\Root\Option\Services;
 
 use Backend\Root\Option\Models\Option;
-use Backend;
 use Illuminate\Support\Arr;
+use Backend;
 use Route;
 
 class Options
@@ -12,7 +12,6 @@ class Options
     private $options = false;
 
     /**
-     *
      * Возвращает указанную запись, если указан ключ, то вернется значение этого поля.
      *
      * @param string $name название опции :: значение ключа, массива если есть
@@ -27,12 +26,15 @@ class Options
         // Загружаем опцию если нет
         $this->loadOption($name['name']);
 
-        if (!isset($this->options[$name['name']]['array_data']['fields'])) return $default;
+        if (!isset($this->options[$name['name']]['array_data']['fields']))
+            return $default;
         // Получаем значения по ключу если есть.
-        if ($name['key']) return Arr::get($this->options[$name['name']]['array_data']['fields'], $name['key'], $default);
+        if ($name['key'])
+            return Arr::get($this->options[$name['name']]['array_data']['fields'], $name['key'], $default);
 
         // Если массив не существует возвращаем значение по умолчанию
-        if (!isset($this->options[$name['name']]['array_data']['fields'])) return $default;
+        if (!isset($this->options[$name['name']]['array_data']['fields']))
+            return $default;
 
         // Иначе возвращаем весь массив
         return $this->options[$name['name']]['array_data']['fields'];
@@ -60,7 +62,6 @@ class Options
     }
 
     /**
-     *
      * Выставляем значение опциям.
      * $replace - Если установлено true то все данные записи будут заменены значением $array,
      * иначе значения $array заменят только те ключи которые есть рекурсивно.
@@ -109,11 +110,14 @@ class Options
                 $newData = $data;
             }
         } else {
-            //Если ключа нет меняем корневое значние
-            if ($replace) $newData = $value;
+            // Если ключа нет меняем корневое значние
+            if ($replace)
+                $newData = $value;
             else {
-                if (!is_array($data) || !is_array($value)) $newData = $value;
-                else $newData = array_replace_recursive($data, $value);
+                if (!is_array($data) || !is_array($value))
+                    $newData = $value;
+                else
+                    $newData = array_replace_recursive($data, $value);
             }
         }
 
@@ -131,7 +135,8 @@ class Options
 
         // Получаем данные
         $data = $this->get($name['name'], []);
-        if (!isset($this->options[$name['name']])) return;
+        if (!isset($this->options[$name['name']]))
+            return;
 
         $option = &$this->options[$name['name']];
 
@@ -147,7 +152,6 @@ class Options
     }
 
     /**
-     *
      * Возвращаем модель опции если она есть, если $create true создаем новую запись
      * @param string $name имя опции
      * @param bool $create
@@ -161,10 +165,12 @@ class Options
         $this->loadOption($name);
 
         // Если опция существует
-        if (isset($this->options[$name])) return $this->options[$name];
+        if (isset($this->options[$name]))
+            return $this->options[$name];
 
         // Если создавать не нужно возвращаем false так как опция не найдена
-        if (!$create) return false;
+        if (!$create)
+            return false;
 
         // Создаем новую запись
         $this->options[$name] = new Option();
@@ -179,19 +185,15 @@ class Options
         return $option;
     }
 
-    /**
-     * Инсталим роуты для модуля, создается именной роутинг по названию модуля
-     * @param string $moduleName имя модуля
-     * @param array $ext Дополнительные параметры. upload - роуты для аплоадинга
-     */
-    public function installRoutes(string $moduleName, $ext = [])
+    // Устанавливаем роуты. $path - url, $class - класс контроллера, $routeName - название роута
+    public function installRoutes($path, $class, $routeName = false)
     {
-        $modUrl = mb_strtolower($moduleName);
+        if ($routeName)
+            Route::get($path, $class . '@edit')->name($routeName);
+        else
+            Route::get($path, $class . '@edit');
 
-        if (array_search('upload', $ext) !== false) Backend::installUploadRoute($modUrl, $moduleName);
-
-        Route::get($modUrl, '\Backend\\' . $moduleName . '\Controllers\\' . $moduleName . 'Controller@edit')->name($moduleName);
-        Route::put($modUrl, '\Backend\\' . $moduleName . '\Controllers\\' . $moduleName . 'Controller@update');
+        Route::put($path, $class . '@update');
     }
 
     /**
@@ -201,12 +203,11 @@ class Options
      */
     private function parseName($name)
     {
-        $parseName = explode("::", $name, 2);
+        $parseName = explode('::', $name, 2);
 
         return [
             'key' => (count($parseName) == 2) ? $parseName[1] : false,
             'name' => $parseName[0]
         ];
     }
-
 }

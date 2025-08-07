@@ -8,3 +8,4 @@ Route::delete('filemanager/upload/', '\Backend\MediaFile\Controllers\FileManager
 Route::post('filemanager/create-folder', '\Backend\MediaFile\Controllers\FileManagerController@createFolder')->name('file-manager.create-folder');
 Route::post('filemanager/move', '\Backend\MediaFile\Controllers\FileManagerController@move')->name('file-manager.move');
 Route::post('filemanager/copy', '\Backend\MediaFile\Controllers\FileManagerController@copy')->name('file-manager.copy');
+Option::installRoutes('filemanager-settings', '\Backend\Root\MediaFile\Controllers\SettingsController', 'file-manager.settings');

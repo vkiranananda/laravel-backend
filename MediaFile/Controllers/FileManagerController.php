@@ -57,6 +57,7 @@ class FileManagerController
 				'delete' => action('\\' . get_class($this) . '@destroy'),
 				'move' => action('\\' . get_class($this) . '@move'),
 				'copy' => action('\\' . get_class($this) . '@copy'),
+				'settings' => route('file-manager.settings'),
 			],
 			'parentTree' => $parentTreeRes,
 			'files' => $files,

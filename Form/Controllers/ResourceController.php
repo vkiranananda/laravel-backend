@@ -29,6 +29,9 @@ class ResourceController extends Controller
   // Основной конфиг  по умолчанию config
   protected $fieldsPath = false;
 
+  // Если true то конфиг берется из плагина иначе из бэкенда
+  protected $configRoot = false;
+
   // Конфиг полей по умолчанию fields
   protected $config = [];
 
@@ -62,8 +65,9 @@ class ResourceController extends Controller
     // Получаем конфиги
     $this->config = array_replace_recursive(
       GetConfig::backend('Form::config', true),
-      GetConfig::backend($this->configPath)
+      GetConfig::backend($this->configPath, $this->configRoot)
     );
+
 
     // Получаем путь до модуля.
     $this->config['base-namespace'] = '\\' . $baseNamespace . '\\';
@@ -92,7 +96,7 @@ class ResourceController extends Controller
   {
     if (!$this->fieldsPath)
       $this->fieldsPath = $this->config['module-name'] . '::fields';
-    $this->fields = GetConfig::backend($this->fieldsPath);
+    $this->fields = GetConfig::backend($this->fieldsPath, $this->configRoot);
   }
 
   // Создаем запись вебка
@@ -330,8 +334,6 @@ class ResourceController extends Controller
   {
     return true;
   }
-
-  // Получаем список файлов для клонирования
 
   protected function resourceCombine($type) {}
 

@@ -1,8 +1,14 @@
 <div class="file-manager">
   <h3 class="mb-4 title" v-show="!modal">Менеджер файлов</h3>
-  <div class="mb-3" v-show="!modal">
-    <button class="btn btn-primary me-3" @click="selectFiles">Загрузить файлы</button>
-    или перетащите файлы в рабочую область
+  <div class="mb-3" v-show="!modal" class="d-flex align-items-center justify-content-between">
+    <div>
+      <button class="btn btn-primary me-3" @click="selectFiles">Загрузить файлы</button>
+      или перетащите файлы в рабочую область
+    </div>
+
+    <div v-if="urls.settings">
+      <a class="btn" :href="urls.settings"><v-icon name="settings" /></a>
+    </div>
   </div>
   <div class="card">
     <div class="card-header bg-white py-3">
@@ -38,13 +44,14 @@
         </div>
       </div>
     </div>
-    <div class="card-body file-manager__body" :class="modal ? 'file-manager__card-body-modal' : 'file-manager__card-body-main'">
+    <div
+      class="card-body file-manager__body"
+      :class="modal ? 'file-manager__card-body-modal' : 'file-manager__card-body-main'">
       <upload-files :parent-id="parentId" ref="uploadFiles" :upload-url="urls.upload" @uploadFile="uploadFile">
         <file-list
           :files="files"
           :list-type="listType"
           :parent-id="parentId"
-
           @moveFiles="moveFiles"
           @renameFile="renameFileEvent"
           @deleteFile="deleteFile"
