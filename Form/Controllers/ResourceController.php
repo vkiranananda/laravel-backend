@@ -68,7 +68,6 @@ class ResourceController extends Controller
       GetConfig::backend($this->configPath, $this->configRoot)
     );
 
-
     // Получаем путь до модуля.
     $this->config['base-namespace'] = '\\' . $baseNamespace . '\\';
     // Получаем название модуля
@@ -100,11 +99,6 @@ class ResourceController extends Controller
   }
 
   // Создаем запись вебка
-
-  /**
-   * Сохраняем запись
-   * @return array
-   */
   public function store()
   {
     // Проверка на права доступа
@@ -134,6 +128,7 @@ class ResourceController extends Controller
       Response::json(['errors' => $data['errors']], 422)->send();
       die();
     }
+
     // Устанавливаем новое значние поста
     $this->post = $data['post'];
 
@@ -184,10 +179,26 @@ class ResourceController extends Controller
         'post_type' => $imageable,
       ];
     }
-    
+
     if (!empty($relations)) {
       MediaFileRelation::insert($relations);
     }
+  }
+
+  // Удаляем все связи с медиафайлами
+  public function removeAllMediaRelations($imageable = false, $id = false)
+  {
+    // Возможность задать класс для сохранения файла
+    if ($imageable == false)
+      $imageable = class_basename($this->post);
+    // Возможность задать id
+    if ($id == false)
+      $id = $this->post->id;
+
+    // Удаляем все существующие связи для данного поста и типа
+    MediaFileRelation::where('post_id', $id)
+      ->where('post_type', $imageable)
+      ->delete();
   }
 
   //    public function edit
@@ -281,8 +292,7 @@ class ResourceController extends Controller
     return $date->toDateTimeString();
   }
 
-  // !Показываем запись
-
+  // Создаем запись
   public function create()
   {
     // Проверка на права доступа
@@ -305,9 +315,8 @@ class ResourceController extends Controller
         'url' => action($this->config['controller-name'] . '@store'),
         'title' => $this->config['lang']['create-title'],
         'method' => 'post',
-        'upload' => $this->uploadUrls($clone),
+        'upload' => $this->uploadUrls(),
         'buttons' => $this->formEditButtons(),
-        'clone-files' => ($this->cloneGetFiles($clone))
       ],
       'fields' => [
         'fields' => $this->fieldsPrep->editFields($this->post, $this->fields['fields']),
@@ -339,11 +348,9 @@ class ResourceController extends Controller
 
   // Сахраняем загруженные данные.
 
-  private function uploadUrls($clone = false)
+  private function uploadUrls()
   {
     if (isset($this->config['upload']['route-list'])) {
-      // $urlPostfix = ($clone == true) ? "?clone=" . $clone : '';
-
       return [
         'listUrl' => action($this->config['upload']['route-list'])
       ];
@@ -373,24 +380,6 @@ class ResourceController extends Controller
       return $res;
     }
     return $this->config['edit']['buttons-default'];
-  }
-
-  // Получаем url для загрузки, $clone для включения клонирования в урл
-
-  protected function cloneGetFiles($id)
-  {
-    $list = ($id) ? MediaFile::join('media_file_relations as rel', 'rel.file_id', '=', 'media_files.id')
-      ->where('rel.post_id', '=', $id)
-      ->where('rel.post_type', '=', class_basename($this->post))
-      ->select('media_files.id')
-      ->get() : [];
-
-    $res = [];
-
-    foreach ($list as $file)
-      $res[] = $file['id'];
-
-    return $res;
   }
 
   protected function resourceCombineAfter($type) {}
@@ -513,16 +502,13 @@ class ResourceController extends Controller
     return $this->config['show']['buttons-default'];
   }
 
-  // Функция возвращает урл поста
-
+  // Удаляем запись
   public function destroy($id)
   {
     $this->getPost($id, 'destroy-owner');
-
     $this->resourceCombine('destroy');
-
     $this->post->destroy($id);
-
+    $this->removeAllMediaRelations();
     $this->resourceCombineAfter('destroy');
 
     return $this->dataReturn;

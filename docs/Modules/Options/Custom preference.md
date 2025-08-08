@@ -2,9 +2,8 @@
 
 **Controllers/SettingsController.php**
 
-```
+```php
 <?php
-
 
 namespace Backend\Settings\Controllers;
 
@@ -25,7 +24,7 @@ class SettingsController extends OptionResourcesController
 
 **Configs/config.php**
 
-```
+```php
 <?php
 return [
     'lang' => [
@@ -33,7 +32,7 @@ return [
     ],
     'options' => [
         // Уникальный ключ для доступа к настройкам.
-        'name' => '_media_file_settings',
+        'name' => '_settings',
     ],
     'edit' => [
         'buttons' => [
@@ -51,7 +50,7 @@ return [
 
 **Configs/fields.php**
 
-```
+```php
 <?php
 return [
     'fields' => [
@@ -75,6 +74,6 @@ return [
 
 **Добавляем роуты**
 
-```
+```php
 Option::installRoutes('settings', '\Backend\Settings\Controllers\SettingsController', 'settings');
 ```

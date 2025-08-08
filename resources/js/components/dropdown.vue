@@ -28,22 +28,17 @@ export default {
     };
   },
   mounted() {
-    // Что бы клик при активации элемента не отрабатывал уже в этом цикле
-    // а то этот клик будет сразу закрывать меню.
-    setTimeout(() => {
-      document.addEventListener('click', this.handleClickOutside);
-      document.addEventListener('keydown', this.handleKeydown);
-    }, 100);
-
     this.parentElement = this.$el.parentElement;
   },
   beforeUnmount() {
     this.hide();
-    document.removeEventListener('click', this.handleClickOutside);
-    document.removeEventListener('keydown', this.handleKeydown);
   },
   methods: {
     handleClickOutside(event) {
+      if (this.handleClickOutsideFirst === true) {
+        this.handleClickOutsideFirst = false;
+        return;
+      }
       if (this.dropdown && !this.dropdown.contains(event.target)) {
         this.hide();
         this.$emit('v-click-outside');
@@ -51,8 +46,11 @@ export default {
     },
 
     hide() {
+      console.log('hide');
       document.removeEventListener('wheel', this.wheelHandler);
       document.removeEventListener('touchmove', this.wheelHandler);
+      document.removeEventListener('click', this.handleClickOutside);
+      document.removeEventListener('keydown', this.handleKeydown);
       this.removeMouseListeners();
       // Обязательно в конце
       this.showMenu = false;
@@ -60,9 +58,16 @@ export default {
 
     show() {
       this.hide();
+      console.log('show');
       this.showMenu = true;
       document.addEventListener('wheel', this.wheelHandler, { passive: false });
       document.addEventListener('touchmove', this.wheelHandler, { passive: false });
+
+      // Что бы клик открывающий меню не отрабатывал.
+      this.handleClickOutsideFirst = true;
+      this.handleKeydown = this.handleKeydown.bind(this);
+      document.addEventListener('click', this.handleClickOutside);
+      document.addEventListener('keydown', this.handleKeydown);
 
       this.$nextTick(() => {
         this.dropdown = this.$refs.dropdown;
@@ -189,6 +194,7 @@ export default {
       } else {
         this.dropdown.style.top = top + 'px';
       }
+      console.log(this.dropdown.style.top, this.dropdown.style.left, this.dropdown.style.width);
     },
   },
 };
@@ -224,6 +230,7 @@ export default {
     border-radius: 4px;
     transition: background 0.15s, color 0.15s;
     display: block;
+    text-decoration: none;
 
     &.active {
       background-color: #f0f0f0;

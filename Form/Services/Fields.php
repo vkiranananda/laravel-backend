@@ -4,16 +4,14 @@ namespace Backend\Root\Form\Services;
 
 use GetConfig;
 use Helpers;
+use Log;
 use Request;
 use Validator;
-use Log;
 
 // Подготовка и сохарнение полей
 
-
 class Fields
 {
-
     // Базовые поля идущие в комплекте
     private $fieldsClasses = [
         'default' => '\Backend\Root\Form\Fields\Field',
@@ -71,12 +69,11 @@ class Fields
     public function getFilesToSave()
     {
         return array_unique($this->filesToSave);
-    }   
+    }
 
     // Подготавливаем все поля для отображения. Только в readonly
     public function readFields($post, $fields)
     {
-
         // Выставляем все поля в readonly
         foreach ($fields as &$field) {
             $field['readonly'] = true;
@@ -85,7 +82,6 @@ class Fields
         return $this->editFields($post, $fields);
     }
 
-
     // Подготавливаем все поля для отображения. fields корневой список
     public function editFields($post, $fields)
     {
@@ -93,11 +89,11 @@ class Fields
 
         // Перебираем корневые поля и устанавлтваем значение по умолчанию
         foreach ($fields as &$field) {
-
             // Если нет данных полей пропускаем
-            if (!isset($field['name']) || !isset($field['type'])) continue;
+            if (!isset($field['name']) || !isset($field['type']))
+                continue;
 
-            //Обрабатываем конкретное поле устанавливая нужные значния
+            // Обрабатываем конкретное поле устанавливая нужные значния
             $field = $this->prepEditField($field, $post, $arrayData);
         }
         // dd($fields['blocks']['fields']['blocks']);
@@ -109,7 +105,8 @@ class Fields
     public function editHiddenFields($post, $fields)
     {
         // Если не массив или он пуст, возвращаем пустой массив
-        if (!is_array($fields) || count($fields) == 0) return [];
+        if (!is_array($fields) || count($fields) == 0)
+            return [];
 
         $res = [];
 
@@ -124,14 +121,17 @@ class Fields
     // Получаем значение для поля, none - если значение
     private function getFieldValue($field, &$post, $arrayData, $none = false)
     {
-        if ($none) return '';
+        if ($none)
+            return '';
 
         // Проверяем откуда брать значние. Если условие выполняеся берем из array_data
-        if (isset($field['field-save'])
-            && ($field['field-save'] == 'array' || $field['field-save'] == 'relation')) {
-            if (isset($arrayData[$field['name']])) return $arrayData[$field['name']];
-        } //Проверяем есть ли значение в корне записи если field-save не установлен
-        elseif (isset($post[$field['name']])) return $post[$field['name']];
+        if (isset($field['field-save']) &&
+                ($field['field-save'] == 'array' || $field['field-save'] == 'relation')) {
+            if (isset($arrayData[$field['name']]))
+                return $arrayData[$field['name']];
+        }  // Проверяем есть ли значение в корне записи если field-save не установлен
+        elseif (isset($post[$field['name']]))
+            return $post[$field['name']];
 
         // Выводим значение по умолчанию, если нет пустое значение.
         return (isset($field['value'])) ? $field['value'] : '';
@@ -148,21 +148,20 @@ class Fields
 
             unset($field['load-from']);
 
-
             // Присваиваем значение value. Бере
             if (isset($field['field-save'])) {
                 $value = (isset($arrayData[$field['name']])) ? $arrayData[$field['name']] : [];
-            } else $value = $arrayData;
-
-
+            } else
+                $value = $arrayData;
 
             // Если readonly то присваиваем это всем влоежнным полям
-            if (isset($field['readonly']) && $field['readonly']) $this->setFieldsAttr($field['fields'], 'readonly', true);
+            if (isset($field['readonly']) && $field['readonly'])
+                $this->setFieldsAttr($field['fields'], 'readonly', true);
 
             foreach ($field['fields'] as $groupFieldName => &$groupField) {
-
                 // Если поле не имеет name и type пропускаем
-                if (!isset($groupField['name']) || !isset($groupField['type'])) continue;
+                if (!isset($groupField['name']) || !isset($groupField['type']))
+                    continue;
 
                 // Выставляем, что дальнейшие поля будут браться из массива если в корневом указана эта опция или
                 if (
@@ -173,27 +172,26 @@ class Fields
                     $groupField['field-save'] = 'array';
                 }
 
-               // if ($field['name'] == 'conf-multi-col') dd($field, $groupField, $value,  $this->getFieldValue($groupField, $post, $value, $none), $none);
+                // if ($field['name'] == 'conf-multi-col') dd($field, $groupField, $value,  $this->getFieldValue($groupField, $post, $value, $none), $none);
 
                 // Выставляем значние, берем из value текущего поля
                 $groupField['value'] = $this->getFieldValue($groupField, $post, $value, $none);
 
-
-                //Делаем дополнительные обработки по полям.
+                // Делаем дополнительные обработки по полям.
                 $groupField = $this->prepEditField($groupField, $post, $value, $none);
             }
             unset($field['value']);
-        } // для повторителей.
+        }  // для повторителей.
         elseif ($field['type'] == 'repeated') {
-
             $field['field-save'] = 'array';
             $value = $this->getFieldValue($field, $post, $arrayData, $none);
 
-           // if($field['name'] == 'blocks') dd($field);
+            // if($field['name'] == 'blocks') dd($field);
 
             // dd($value);
             // Если значение не установлено, создаем первую запись
-            if (!is_array($value)) $value = [];
+            if (!is_array($value))
+                $value = [];
 
             // Уникальный индекc
             $field['unique-index'] = 0;
@@ -202,20 +200,20 @@ class Fields
             $field['value'] = [];
 
             // Если readonly то присваиваем это всем влоежнным полям
-            if (isset($field['readonly']) && $field['readonly']) $this->setFieldsAttr($field['fields'], 'readonly', true);
+            if (isset($field['readonly']) && $field['readonly'])
+                $this->setFieldsAttr($field['fields'], 'readonly', true);
 
             // Перебираем массив с value-s
             foreach ($value as $valuesBlock) {
-
                 // Копируем базовые поля
                 $field['value'][$field['unique-index']]['fields'] = $field['fields'];
                 $field['value'][$field['unique-index']]['key'] = $field['unique-index'];
 
                 // Перебираем поля которые есть и задаем им value
                 foreach ($field['value'][$field['unique-index']]['fields'] as &$oneRepField) {
-
                     // Если поле не имеет name и type пропускаем
-                    if (!isset($oneRepField['name']) || !isset($oneRepField['type'])) continue;
+                    if (!isset($oneRepField['name']) || !isset($oneRepField['type']))
+                        continue;
 
                     // if ($field['name'] == 'conf-multi-col')
                     // Полюбому значения в массиве
@@ -231,19 +229,19 @@ class Fields
             // Устанавливаем умолчания для базовых полей ... Выставляем значение перменной $none
             // Что бы лишний раз не искался value.
             foreach ($field['fields'] as &$baseField) {
-
                 // Если поле не имеет name и type пропускаем
-                if (!isset($baseField['name']) || !isset($baseField['type'])) continue;
+                if (!isset($baseField['name']) || !isset($baseField['type']))
+                    continue;
 
                 $baseField['field-save'] = 'array';
 
-                if (!isset($baseField['value'])) $baseField['value'] = '';
+                if (!isset($baseField['value']))
+                    $baseField['value'] = '';
 
                 // Сделал правку тут в конце было true
                 $baseField = $this->prepEditField($baseField, $post, []);
             }
-        }
-        else {
+        } else {
             $fieldClass = $this->initField($field);
             // Изменяем поле
             $field = array_merge($field, $fieldClass->addProps());
@@ -269,8 +267,7 @@ class Fields
         }
     }
 
-
-    ///////---------------------------------------Saving-----------------------------------------------
+    // /////---------------------------------------Saving-----------------------------------------------
 
     // Сохраяняем данные. Возвращаем изменненый объект post, fields - полный массив со всеми полями и табами
     public function saveFields($post, $fields)
@@ -285,22 +282,21 @@ class Fields
         // Получаем все поля в табах которые не скрыты
         foreach ($fields['edit'] as $tab) {
             // не скрытый
-            if (!isset($tab ['show']) || $this->showCheck($tab['show'], $request) !== false) {
-
-                foreach ($tab['fields'] as $fieldName) { //Массив из доступных полей
-                    //Если поля нет в общем списке, например его удалили, то пропускаем обработку
-                    if (!isset ($fields['fields'][$fieldName])) continue;
+            if (!isset($tab['show']) || $this->showCheck($tab['show'], $request) !== false) {
+                foreach ($tab['fields'] as $fieldName) {  // Массив из доступных полей
+                    // Если поля нет в общем списке, например его удалили, то пропускаем обработку
+                    if (!isset($fields['fields'][$fieldName]))
+                        continue;
 
                     $newFields[$fieldName] = $fields['fields'][$fieldName];
                 }
             }
         }
 
-
         $errors = $this->saveFieldsList($newFields, $this->request['fields'] ?? [], $post, $arrayDataFields, $relationData);
 
         // Сохраняем скрытые поля
-        if (isset ($fields['hidden']) && is_array($fields['hidden'])) {
+        if (isset($fields['hidden']) && is_array($fields['hidden'])) {
             // Проставляем всем полям тип
             $hiddenFields = [];
             foreach ($fields['hidden'] as $field) {
@@ -329,7 +325,6 @@ class Fields
         ];
     }
 
-
     /**
      * Сохраняем одно поле
      * @param $post
@@ -355,32 +350,34 @@ class Fields
         ];
     }
 
-
     // Обходит массив полей и сохраняет данные. Рекурсивная функция
     private function saveFieldsList(
-        $fields, // Список полей
-        $request, // Данные формы
-        &$post, //  Пост
-        &$arrayData, // Массивные данные
-        &$relationData, // Данные для сохранения в другую таблицу
-        $fieldSave = null // Куда сохраняем поле
-    )
-    {
+        $fields,  // Список полей
+        $request,  // Данные формы
+        &$post,  //  Пост
+        &$arrayData,  // Массивные данные
+        &$relationData,  // Данные для сохранения в другую таблицу
+        $fieldSave = null  // Куда сохраняем поле
+    ) {
         $res = [];
         $errors = [];
 
         foreach ($fields as $field) {
             // Если не установлены нужные параметры не обрабатываем
-            if (!isset($field['name']) || !isset($field['type'])) continue;
+            if (!isset($field['name']) || !isset($field['type']))
+                continue;
 
             // Если поле только чтение не обрабатываем
-            if (isset($field['readonly']) && $field['readonly']) continue;
+            if (isset($field['readonly']) && $field['readonly'])
+                continue;
 
             // Html поля пропускаем
-            if (array_search($field['type'], ['none', 'html', 'html-title'])) continue;
+            if (array_search($field['type'], ['none', 'html', 'html-title']))
+                continue;
 
             // Если поле скрыто, так же не обрабатываем
-            if (isset($field['show']) && $this->showCheck($field['show'], $request) === false) continue;
+            if (isset($field['show']) && $this->showCheck($field['show'], $request) === false)
+                continue;
 
             $fieldName = $field['name'];
 
@@ -388,11 +385,13 @@ class Fields
             $field['value'] = (isset($request[$fieldName])) ? $request[$fieldName] : '';
 
             // Выставляем fieldSave
-            if (isset($fieldSave)) $field['field-save'] = $fieldSave;
+            if (isset($fieldSave))
+                $field['field-save'] = $fieldSave;
 
             $error = $this->saveFieldData($field, $post, $arrayData, $relationData);
 
-            if ($error !== true) $errors [$field['name']] = $error;
+            if ($error !== true)
+                $errors[$field['name']] = $error;
         }
 
         return (count($errors) > 0) ? $errors : true;
@@ -401,15 +400,14 @@ class Fields
     // Обработка конечного поля
     private function saveFieldData($field, &$post, &$arrayData, &$relationData)
     {
-
         $value = $field['value'];
 
-        if (!isset($field['field-save'])) $field['field-save'] = null;
+        if (!isset($field['field-save']))
+            $field['field-save'] = null;
 
-        //------------------------------Group------------------------------------
+        // ------------------------------Group------------------------------------
 
         if ($field['type'] == 'group') {
-
             // Подгружаем данные если нужно
             if (isset($field['load-from'])) {
                 $field['fields'] = GetConfig::backend($field['load-from']);
@@ -418,12 +416,11 @@ class Fields
             $error = $this->saveFieldsList($field['fields'], $value, $post, $arrayData[$field['name']], $relationData, $field['field-save']);
 
             return $error;
-        } //------------------------------Repeated---------------------------------
-
+        }  // ------------------------------Repeated---------------------------------
         elseif ($field['type'] == 'repeated') {
-
             // Если данных нет выходим
-            if (!is_array($value)) return;
+            if (!is_array($value))
+                return;
 
             // Обнуляем предыдущие данные.
             $arrayData[$field['name']] = [];
@@ -433,7 +430,6 @@ class Fields
 
             // Перебираем блоки репитед полей
             foreach ($value as $repData) {
-
                 // Тут важно что переменная с сервера идет не значением, а объектом, где указан ключ
                 // группы репитед, оно надо для отображения ошибок и при сортировке что бы формы не
                 // рендерились поновой.
@@ -451,11 +447,11 @@ class Fields
 
                 $indexRepBlock++;
                 // Обрабатываем ошибки
-                if ($error !== true) $errors [$repData['key']] = $error;
+                if ($error !== true)
+                    $errors[$repData['key']] = $error;
             }
 
             return (count($errors) > 0) ? $errors : true;
-
         }
         $fieldClass = $this->initField($field);
 
@@ -466,14 +462,24 @@ class Fields
         if (isset($field['validate'])) {
             $v = Validator::make([$field['name'] => $value], [$field['name'] => $field['validate']]);
 
-            if ($v->fails()) return implode(' ', $v->errors()->all());
+            if ($v->fails())
+                return implode(' ', $v->errors()->all());
         }
 
+        // Проверяем уникальность поля
+        if (isset($field['unique']) && $field['unique']) {
+            $uniqueQuery = $post->where($field['name'], $value);
+            if (isset($post['id']))
+                $uniqueQuery->where('id', '!=', $post['id']);
+            if ($uniqueQuery->exists())
+                return 'Значение должно быть уникальным. ';
+        }
 
         // Сохраняем данные в массив
         if (($field['field-save'] == 'array' || $field['field-save'] == 'relation')) {
             // Баг фикс, если поле было снача текстовым, а потом стало массивом будет ошибка...
-            if(!is_array($arrayData)) $arrayData = [];
+            if (!is_array($arrayData))
+                $arrayData = [];
 
             $arrayData[$field['name']] = $value;
             // Добавляем в связи
@@ -487,32 +493,37 @@ class Fields
         return true;
     }
 
-
     // Проверка условий на видимость.
     private function showCheck($show, &$data)
     {
         $res = false;
 
         foreach ($show as $key => $showBlock) {
-            //Если поля проверочного нет, выводим отказ
+            // Если поля проверочного нет, выводим отказ
             if (!array_key_exists($showBlock['field'], $data)) {
                 return false;
             }
 
-            if ($key != 0) { //не первая запись
-                //Оператор &&, если предыдущее условие ошибка тогда сл тоже ошибка, проверку не делаем
-                if ($showBlock['operator'] == '&&' && $res == false) continue;
-                //Опертор ||, если предыдущее истинно, тогда возвращем истину, если ложно делаем проверки дальше.
-                if ($showBlock['operator'] == '||' && $res == true) return $res;
+            if ($key != 0) {  // не первая запись
+                // Оператор &&, если предыдущее условие ошибка тогда сл тоже ошибка, проверку не делаем
+                if ($showBlock['operator'] == '&&' && $res == false)
+                    continue;
+                // Опертор ||, если предыдущее истинно, тогда возвращем истину, если ложно делаем проверки дальше.
+                if ($showBlock['operator'] == '||' && $res == true)
+                    return $res;
             }
 
             // Проверяем соответсвия условиям
             if ($showBlock['type'] == '==') {
-                if ($data[$showBlock['field']] == $showBlock['value']) $res = true;
-                else $res = false;
-            } else { //!=
-                if ($data[$showBlock['field']] != $showBlock['value']) $res = true;
-                else $res = false;
+                if ($data[$showBlock['field']] == $showBlock['value'])
+                    $res = true;
+                else
+                    $res = false;
+            } else {  // !=
+                if ($data[$showBlock['field']] != $showBlock['value'])
+                    $res = true;
+                else
+                    $res = false;
             }
         }
 

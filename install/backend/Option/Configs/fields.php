@@ -3,19 +3,20 @@
 // Если нужно добавить группу полей то нужно делать через group
 return [
     'list' => [
-        [ 'name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true ],
-        [ 'name' => 'type', 'sortable' => true, 'attr' => [ 'width' => '100px' ] ],
-        [ 'name' => 'autoload', 'sortable' => true, 'attr' => [ 'width' => '100px' ] ],
+        ['name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true],
+        ['name' => 'type', 'sortable' => true, 'attr' => ['width' => '100px']],
+        ['name' => 'autoload', 'sortable' => true, 'attr' => ['width' => '100px']],
     ],
     'search' => [
-          [ 'name' => 'search', 'type' => 'text', 'fields' => [ 'name' ] ],
+        ['name' => 'search', 'type' => 'text', 'fields' => ['name']],
     ],
     'fields' => [
         'name' => [
             'type' => 'text',
             'name' => 'name',
             'label' => 'Ключ',
-            'validate' => 'required|unique:options,name,NULL,id,deleted_at,NULL',
+            'validate' => 'required',
+            'unique' => true,
         ],
         'type' => [
             'type' => 'select',
@@ -31,20 +32,22 @@ return [
             'value' => 'gallery',
         ],
         'gallery' => [
-            'type' => 'gallery',
+            'type' => 'files',
             'name' => 'gallery',
+            'file-type' => 'image',
             'label' => 'Галерея',
             'field-save' => 'array',
-             'show' => [
+            'show' => [
                 ['field' => 'type', 'value' => 'gallery', 'type' => '=='],
             ],
         ],
         'files' => [
             'type' => 'files',
             'name' => 'files',
+            'file-type' => 'file',
             'label' => 'Файлы',
             'field-save' => 'array',
-             'show' => [
+            'show' => [
                 ['field' => 'type', 'value' => 'files', 'type' => '=='],
             ],
         ],
@@ -52,9 +55,8 @@ return [
             'type' => 'editor',
             'name' => 'editor',
             'label' => 'Текст',
-            'upload' => true,
             'field-save' => 'array',
-             'show' => [
+            'show' => [
                 ['field' => 'type', 'value' => 'editor', 'type' => '=='],
             ],
         ],
@@ -62,9 +64,9 @@ return [
             'type' => 'textarea',
             'name' => 'text',
             'label' => 'Значение',
-            'attr' => [ 'rows' => '15' ],
+            'attr' => ['rows' => '15'],
             'field-save' => 'array',
-             'show' => [
+            'show' => [
                 ['field' => 'type', 'value' => 'text', 'type' => '=='],
             ],
         ],
@@ -80,12 +82,11 @@ return [
             ],
         ],
     ],
-
     'edit' => [
         'default' => [
             'label' => 'Основные',
             'name' => 'main',
-            'fields' => [ 'name', 'type', 'gallery','files', 'editor', 'text', 'autoload' ],
+            'fields' => ['name', 'type', 'gallery', 'files', 'editor', 'text', 'autoload'],
         ],
     ],
 ];

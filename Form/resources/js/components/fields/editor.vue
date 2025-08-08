@@ -125,10 +125,9 @@ export default {
 
       let insertImage = this.field.upload !== false ? 'dropdownInsertImage' : '';
 
-      if (this.field.format == 'fool') {
+      if (this.field.format == 'full') {
         config.btns = [
           ['viewHTML'],
-          ['undo', 'redo'], // Only supported in Blink browsers
           ['formatting'],
           ['strong', 'em', 'del'],
           ['superscript', 'subscript'],
@@ -156,7 +155,7 @@ export default {
           ['formatting'],
           ['strong', 'em'],
           ['link'],
-          [image],
+          [insertImage],
           ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
           ['removeformat'],
           ['fullscreen'],

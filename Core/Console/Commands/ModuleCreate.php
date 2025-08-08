@@ -55,7 +55,6 @@ class ModuleCreate extends Command
 
             if ($category) $app = $this->confirm('Установить контроллер в app/Http/Controllers ?', $app ?? true);
 
-            $upload = $this->confirm('Разрешить загрузку файлов?', $upload ?? true);
             $sort = $this->confirm('Разрешить ручную сортировку данных?', $sort ?? false);
             $url = $this->confirm('Добавить поле URL?', $url ?? true);
             $seo = $this->confirm('Добавить СЕО поля?', $seo ?? true);
@@ -69,7 +68,6 @@ class ModuleCreate extends Command
                 if ($app) $this->info("Установаем контроллер в app/Http/Controllers");
             } 
 
-            if ($upload) $this->info("Разрешаем загрузку файлов");
             if ($sort) $this->info("Разрешаем ручную сортировку данных");
             if ($url) $this->info("Добавляем поле URL");
             if ($seo) $this->info("Добавляем СЕО поля");
@@ -90,8 +88,8 @@ class ModuleCreate extends Command
         // Создаем каталог модуля
         File::makeDirectory($modPath);
 
-        $this->createConfigs(compact('modPath', 'upload', 'sort', 'seo', 'url'));
-        $this->createControllers(compact('modPath', 'module', 'upload', 'sitemap', 'sort'));
+        $this->createConfigs(compact('modPath', 'sort', 'seo', 'url'));
+        $this->createControllers(compact('modPath', 'module', 'sitemap', 'sort'));
         $this->createModel($modPath, $module);
         $this->createMigrations(compact('modPath', 'module', 'sort', 'url'));
         // Чистим кэш бэкенда
