@@ -4,6 +4,7 @@ namespace Backend\Root\MediaFile\Controllers;
 
 use Backend\Root\MediaFile\Models\MediaFile;
 use App\Models\User;
+use Backend\User\Models\UserRole;
 
 class SettingsController extends \Backend\Root\Option\Controllers\OptionResourcesController
 {
@@ -28,6 +29,12 @@ class SettingsController extends \Backend\Root\Option\Controllers\OptionResource
       $this->fields['fields']['policy']['fields']['user']['options'][] = [
         'value' => $user->id,
         'label' => $user->name,
+      ];
+    }
+    foreach (UserRole::all(['id', 'name']) as $role) {
+      $this->fields['fields']['policy']['fields']['role']['options'][] = [
+        'value' => $role->id,
+        'label' => $role->name,
       ];
     }
   }

@@ -5,6 +5,9 @@ namespace Backend\Root\MediaFile\Controllers;
 use Backend\Root\MediaFile\Models\MediaFile;
 use Backend\Root\MediaFile\Services\Uploads;
 use Illuminate\Http\Request;
+use Auth;
+use Log;
+use Option;
 
 class FileManagerController
 {
@@ -36,10 +39,36 @@ class FileManagerController
 		$parentTree = $this->_getParentTree($request->input('parentId', 0));
 		$parentId = $this->_getParentId($parentTree);
 
+		$rootFolder = count($parentTree) == 0;
+		$rootShowAll = false;
+
+		// Если папка не корневая и нет доступа, то выходим
+		if (!$rootFolder) {
+			if (!$this->checkUserAccess('read', $parentTree)) {
+				abort(403, 'Нет доступа к просмотру файлов');
+			}
+		} else {
+			// Если папка корневая, то проверяем доступ к папке, правило сработает
+			// Только если выбрана опция "все папки"
+			if ($this->checkUserAccess('read', $parentTree)) {
+				$rootShowAll = true;
+			}
+		}
+
 		foreach (MediaFile::where('parent_id', $parentId)
 				// На всякий случай проверяем что файлы находятся на нужном диске
 				->where('disk', $this->config['disk'])
 				->get() as $file) {
+			// Если папка корневая, то проверяем доступ к папке
+			// Если выбрана опция "все папки" то пропускаем проверку
+			if ($rootFolder && !$rootShowAll) {
+				$parentTreeCurrent = [$file];
+				// Если файл не папка и доступа к корню нет пропускаем
+				// Если файл папка и доступа к папке нет пропускаем
+				if ($file->type != 'folder' || !$this->checkUserAccess('read', $parentTreeCurrent)) {
+					continue;
+				}
+			}
 			$files[] = Uploads::getFileToList($file);
 		}
 
@@ -292,9 +321,61 @@ class FileManagerController
 
 	// Проверка прав пользователя
 	// $access может быть read и write
-	protected function checkUserAccess($access, &$parentTree)
+	protected function checkUserAccess($accessKey, &$parentTree)
 	{
-		return true;
+		$access = Option::get('_media_file_settings', ['enable-check-access' => 0]);
+		// Если не включена проверка прав, то пропускаем
+		if ($access['enable-check-access'] != 1) {
+			return true;
+		}
+
+		$userId = Auth::user()->id;
+		$roleId = Auth::user()->role;
+
+		// Если админы то пропускаем везде.
+		// if ($roleId == 0) return true;
+
+		foreach ($access['policy'] as $policy) {
+			// Если выбрана папка, то проверяем ее.
+			// Это правило пропускает если выбрано "все папки"
+			if ($policy['folder'] != 0) {
+				// Если каталог корневой. Значит правило точно к нему не относится
+				// Так как выбран каталог.
+				if (count($parentTree) == 0) {
+					Log::info('root folder');
+					continue;
+				}
+				// Тут смотрим если папка не соответсвует идем к следующему правилу
+				elseif ($parentTree[0]['id'] != $policy['folder']) {
+					Log::info('folder not match');
+					continue;
+				}
+			}
+
+			// Отсеиваем все записи с permission = read если мы хотим записать
+			if ($accessKey == 'write' && $policy['permission'] == 'read') {
+				Log::info('read permission');
+				continue;
+			}
+
+			// Если текущий пользователь не соответствует правилу, то пропускаем
+			if ($policy['type'] == 'user') {
+				if ($policy['user'] != 0 && $policy['user'] != $userId) {
+					Log::info('user');
+					continue;
+				}
+			} else if ($policy['type'] == 'role') {
+				// Если роль пользователя не соответствует правилу, то пропускаем
+				if ($policy['role'] != $roleId) {
+					Log::info('role');
+					continue;
+				}
+			}
+
+			// Если дошли до этого места, то все проверки пройдены и мы можем продолжать
+			return true;
+		}
+		return false;
 	}
 
 	// Получаем дерево родителей, key true первый поиск будет по ключу, false по id

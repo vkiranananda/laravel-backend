@@ -210,13 +210,9 @@ export default {
       if (this.modalItems.length === 0) {
         this.finishText = 'Файлы успешно перемещены';
         this.canselButtonText = 'Закрыть';
-        setTimeout(() => {
-          this.closeModal();
-        }, 1000);
+        this.closeModal();
       }
     },
-
-
 
     // Переименование файла
     renameFileEvent(file) {
@@ -308,9 +304,7 @@ export default {
       if (this.modalItems.length === 0) {
         this.finishText = 'Файлы успешно скопированы';
         this.canselButtonText = 'Закрыть';
-        setTimeout(() => {
-          this.closeModal();
-        }, 1000);
+        this.closeModal();
       }
     },
 
@@ -363,9 +357,7 @@ export default {
         if (this.modalItems.length === 0) {
           this.finishText = 'Файлы успешно удалены';
           this.canselButtonText = 'Закрыть';
-          setTimeout(() => {
-            this.closeModal();
-          }, 1000);
+          this.closeModal();
         }
       });
     },

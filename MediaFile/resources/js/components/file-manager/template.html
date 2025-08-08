@@ -1,6 +1,6 @@
 <div class="file-manager">
-  <h3 class="mb-4 title" v-show="!modal">Менеджер файлов</h3>
-  <div v-show="!modal" class="mb-3 d-flex align-items-center justify-content-between">
+  <h3 class="mb-4 title" v-if="!modal">Менеджер файлов</h3>
+  <div v-if="!modal" class="mb-3 d-flex align-items-center justify-content-between">
     <div>
       <button class="btn btn-primary me-3" @click="selectFiles">Загрузить файлы</button>
       или перетащите файлы в рабочую область

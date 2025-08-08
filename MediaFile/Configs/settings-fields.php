@@ -29,17 +29,53 @@ return [
         ['type' => '==', 'field' => 'enable-check-access', 'value' => 1],
       ],
       'fields' => [
+        'type' => [
+          'name' => 'type',
+          'type' => 'select',
+          'label' => 'Тип',
+          'value' => 'user',
+          'col-classes' => 'col-2',
+          'options' => [
+            [
+              'value' => 'user',
+              'label' => 'Пользователь',
+            ],
+            [
+              'value' => 'role',
+              'label' => 'Роль',
+            ],
+          ],
+        ],
         'user' => [
           'name' => 'user',
           'type' => 'select',
           'label' => 'Пользователь',
           'value' => 0,
-          'col-classes' => 'col-5',
+          'col-classes' => 'col-4',
           'options' => [
             [
               'value' => 0,
               'label' => 'Все пользователи',
             ],
+          ],
+          'show' => [
+            ['type' => '==', 'field' => 'type', 'value' => 'user'],
+          ],
+        ],
+        'role' => [
+          'name' => 'role',
+          'type' => 'select',
+          'label' => 'Роль',
+          'value' => 0,
+          'col-classes' => 'col-4',
+          'options' => [
+            [
+              'value' => 0,
+              'label' => 'Админ',
+            ],
+          ],
+          'show' => [
+            ['type' => '==', 'field' => 'type', 'value' => 'role'],
           ],
         ],
         'folder' => [
@@ -47,7 +83,7 @@ return [
           'type' => 'select',
           'label' => 'Папка',
           'value' => 0,
-          'col-classes' => 'col-5',
+          'col-classes' => 'col-4',
           'options' => [
             [
               'value' => 0,
