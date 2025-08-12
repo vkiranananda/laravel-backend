@@ -55,6 +55,9 @@ class FileManagerController
 			}
 		}
 
+		// Проверяем права на запись
+		$writeAccess = $this->checkUserAccess('write', $parentTree);
+
 		foreach (MediaFile::where('parent_id', $parentId)
 				// На всякий случай проверяем что файлы находятся на нужном диске
 				->where('disk', $this->config['disk'])
@@ -74,23 +77,31 @@ class FileManagerController
 
 		$parentTreeRes = [];
 
-		// Добавляем родителей в дерево?
+		// Добавляем родителей в дерево
 		foreach ($parentTree as $el) {
 			$parentTreeRes[] = Uploads::getFileToList($el);
 		}
 
-		return [
-			'urls' => [
-				'upload' => action('\\' . get_class($this) . '@store', $parentId),
-				'createFolder' => action('\\' . get_class($this) . '@createFolder'),
-				'delete' => action('\\' . get_class($this) . '@destroy'),
-				'move' => action('\\' . get_class($this) . '@move'),
-				'copy' => action('\\' . get_class($this) . '@copy'),
-				'settings' => route('file-manager.settings'),
-			],
+		// writeAccess
+		$result = [
+			'urls' => [],
 			'parentTree' => $parentTreeRes,
 			'files' => $files,
 		];
+
+		if ($writeAccess) {
+			$result['urls']['upload'] = action('\\' . get_class($this) . '@store', $parentId);
+			$result['urls']['createFolder'] = action('\\' . get_class($this) . '@createFolder');
+			$result['urls']['delete'] = action('\\' . get_class($this) . '@destroy');
+			$result['urls']['move'] = action('\\' . get_class($this) . '@move');
+			$result['urls']['copy'] = action('\\' . get_class($this) . '@copy');
+		}
+
+		if (Auth::user()->user_role_id == 0) {
+			$result['urls']['settings'] = route('file-manager.settings');
+		}
+
+		return $result;
 	}
 
 	// Загружаем файл, parentId = false - грузим в корень

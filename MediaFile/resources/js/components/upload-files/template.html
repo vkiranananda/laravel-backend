@@ -1,5 +1,5 @@
 <div class="upload-files">
-  <div
+  <div v-if="uploadUrl"
     class="upload-files__drop-zone"
     :class="{
       'upload-files__drag-over': isDragOver,
@@ -10,6 +10,9 @@
     @dragenter.prevent>
     <!-- Область для перетаскивания -->
     <input ref="fileInput" type="file" multiple class="d-none" @change="handleFileSelect" />
+    <slot />
+  </div>
+  <div v-else>
     <slot />
   </div>
 

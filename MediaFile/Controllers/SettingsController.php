@@ -5,6 +5,7 @@ namespace Backend\Root\MediaFile\Controllers;
 use Backend\Root\MediaFile\Models\MediaFile;
 use App\Models\User;
 use Backend\User\Models\UserRole;
+use Auth;
 
 class SettingsController extends \Backend\Root\Option\Controllers\OptionResourcesController
 {
@@ -12,8 +13,14 @@ class SettingsController extends \Backend\Root\Option\Controllers\OptionResource
   protected $fieldsPath = 'MediaFile::settings-fields';
   protected $configRoot = true;
 
-  protected string $userAccessKey = 'MediaFile';
-  use \Backend\Root\User\Services\UserAccessTrait;
+  // Разрешаем доступ только для админа
+  public function __construct()
+  {
+    if (Auth::user()->user_role_id != 0) {
+      abort(403, 'Доступ запрещен');
+    }
+    parent::__construct();
+  }
 
   public function resourceCombine($type)
   {

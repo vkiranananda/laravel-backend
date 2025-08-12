@@ -24,6 +24,8 @@
             :list-type="field['file-type'] === 'image' ? 'grid' : 'list'"
             :folder="false"
             :sortable="true"
+            :cut="false"
+            :copy="false"
             :upload="!maxFiles"
             @deleteFile="deleteFile"
             @uploadFiles="uploadFilesEvent"

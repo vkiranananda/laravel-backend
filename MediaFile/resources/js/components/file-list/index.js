@@ -34,7 +34,22 @@ export default {
       type: Boolean,
       default: false,
     },
-
+    delete: {
+      type: Boolean,
+      default: true,
+    },
+    cut: {
+      type: Boolean,
+      default: true,
+    },
+    rename: {
+      type: Boolean,
+      default: true,
+    },
+    copy: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -61,11 +76,11 @@ export default {
   },
   mounted() {
     if (this.sortable) {
-    this._sortable = new Sortable(this.$refs.body, {
-      onEnd: evt => {
-        this.$emit('sortable', evt.oldIndex, evt.newIndex);
-      },
-    });
+      this._sortable = new Sortable(this.$refs.body, {
+        onEnd: evt => {
+          this.$emit('sortable', evt.oldIndex, evt.newIndex);
+        },
+      });
     }
   },
   beforeUnmount() {
@@ -114,32 +129,39 @@ export default {
               icon: 'download',
             });
           }
-          items.push({
-            label: 'Переименовать',
-            method: this.renameFile,
-            icon: 'pencil',
-          });
+          if (this.rename) {
+            items.push({
+              label: 'Переименовать',
+              method: this.renameFile,
+              icon: 'pencil',
+            });
+          }
           if (file.type === 'folder') {
             copyPaste();
           }
         }
-        if (this.folder) {
+        if (this.copy) {
           items.push({
             label: 'Копировать',
             method: this.copyFile,
             icon: 'copy',
           });
+        }
+        if (this.cut) {
           items.push({
             label: 'Вырезать',
             method: this.cutFile,
             icon: 'cut',
           });
         }
-        items.push({
-          label: 'Удалить',
-          method: this.deleteFile,
-          icon: 'delete',
-        });
+
+        if (this.delete) {
+          items.push({
+            label: 'Удалить',
+            method: this.deleteFile,
+            icon: 'delete',
+          });
+        }
       }
       if (this.mainMenuOpen) {
         if (this.folder) {

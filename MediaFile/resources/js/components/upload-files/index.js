@@ -12,7 +12,7 @@ export default {
   props: {
     uploadUrl: {
       type: String,
-      required: true,
+      default: '',
     },
     parentId: {
       default: 0,
