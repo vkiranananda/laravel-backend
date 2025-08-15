@@ -7,53 +7,65 @@ use Request;
 
 class Menu
 {
-	public function show($args = [])
-	{
-		if (!isset ($args['name'])) return 'MenuBulder: параметр name не установлен';
-		
-		$menu = MenuBuilder::where('name', $args['name'])->first();
+    public function show($args = [])
+    {
+        if (! isset($args['name'])) {
+            return 'MenuBulder: параметр name не установлен';
+        }
 
-		if (!$menu) return 'MenuBulder: меню с имененем "' . $args['name'] . '" не найдено';
+        $menu = MenuBuilder::where('name', $args['name'])->first();
 
-		$tree = (is_array($menu['menu'])) ? $menu['menu'] : [];
+        if (! $menu) {
+            return 'MenuBulder: меню с имененем "' . $args['name'] . '" не найдено';
+        }
 
-		$url = "/" . Request::path();
-		do {
-			$res = $this->setActive($tree, $url);
+        $tree = (is_array($menu['menu'])) ? $menu['menu'] : [];
 
-			// Выходим если нашли совпадение
-			if ($res) break;
+        $url = "/" . Request::path();
+        do {
+            $res = $this->setActive($tree, $url);
 
-			$url = preg_replace("/(.*)\/.*/", '${1}', $url);
-			
-		} while($url != '');
+            // Выходим если нашли совпадение
+            if ($res) {
+                break;
+            }
 
-		$template = (isset($args['template'])) ? $args['template'] : 'MenuBuilder::menu';
+            $url = preg_replace("/(.*)\/.*/", '${1}', $url);
 
-		return view($template, [ 'menu' => $tree, 'template' => $template ]);
-	}
+        } while ($url != '');
 
-	// Проходимся и выставляем класс active если урл подпадает под раздел
-	private function setActive(&$tree, $url)
-	{
-		$res = false;
-		foreach ($tree as &$el) {
-			// Ищем сначала во вложенных эементах.
-			if (count($el['elements']) > 0) {
-				$res = $this->setActive($el['elements'], $url);
-				if ($res) $el['active-child'] = true;
-			}
+        $template = (isset($args['template'])) ? $args['template'] : 'MenuBuilder::menu';
 
-			// Потом смотрим текущий, если есть дальше не идем
-			if ($el['url'] == $url) {
-				$el['active'] = true;
-				return true;
-			}
+        return view($template, [ 'menu' => $tree, 'template' => $template ]);
+    }
 
-			//Если во вложенных был то дальше не идем
-			if ($res) return true;
+    // Проходимся и выставляем класс active если урл подпадает под раздел
+    private function setActive(&$tree, $url)
+    {
+        $res = false;
+        foreach ($tree as &$el) {
+            // Ищем сначала во вложенных эементах.
+            if (count($el['elements']) > 0) {
+                $res = $this->setActive($el['elements'], $url);
+                if ($res) {
+                    $el['active-child'] = true;
+                }
+            }
 
-		}
-		return $res;		
-	}
+            // Потом смотрим текущий, если есть дальше не идем
+            if ($el['url'] == $url) {
+                $el['active'] = true;
+
+                return true;
+            }
+
+            //Если во вложенных был то дальше не идем
+            if ($res) {
+                return true;
+            }
+
+        }
+
+        return $res;
+    }
 }

@@ -4,8 +4,18 @@
 			"path": "MediaFile/Controllers/FileManagerController.php",
 			"bookmarks": [
 				{
-					"line": 69,
+					"line": 70,
 					"column": 55,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "install/backend/resources/views/layouts/admin.blade.php",
+			"bookmarks": [
+				{
+					"line": 13,
+					"column": 0,
 					"label": ""
 				}
 			]

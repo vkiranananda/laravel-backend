@@ -9,12 +9,11 @@ Route::group(['prefix' => 'content', 'middleware' => ['auth.basic']], function (
     Route::get('/icons', function () {
         return view('Backend::icons');
     })->name('icons');
-    Backend::installRoutes('Category', ['upload', 'module']);
-    Backend::installRoutes('News', ['upload']);
-    Backend::installRoutes('Page', ['upload']);
+    Backend::installRoutes('Category', ['module']);
+    Backend::installRoutes('News');
+    Backend::installRoutes('Page');
     Backend::installRoutes('User', ['module']);
-    Backend::installRoutes('Option', ['upload']);
+    Backend::installRoutes('Option');
     Backend::installRoutes('MenuBuilder');
     Backend::installRoutes('MediaFile', ['module']);
 });
-                                            

@@ -2,12 +2,15 @@
 
 namespace Backend\MenuBuilder\Controllers;
 
-class MenuBuilderController extends \Backend\Root\Form\Controllers\ResourceController	
+class MenuBuilderController extends \Backend\Root\Form\Controllers\ResourceController
 {
+    use \Backend\Root\User\Services\UserAccessTrait;
+    protected string $userAccessKey = 'MenuBuilder';
+
     public function update($id)
     {
-    	// Игнорим текущую запись в валидации имени
-        $this->fields['fields']['name']['validate'] = str_replace ('NULL,id', $id.',id', $this->fields['fields']['name']['validate']); 
+        // Игнорим текущую запись в валидации имени
+        $this->fields['fields']['name']['validate'] = str_replace('NULL,id', $id . ',id', $this->fields['fields']['name']['validate']);
 
         return parent::update($id);
     }

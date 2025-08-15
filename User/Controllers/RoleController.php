@@ -5,10 +5,9 @@ namespace Backend\Root\User\Controllers;
 
 
 use App\Models\User;
-use Backend\Root\Form\Controllers\ResourceController;
 use GetConfig;
 
-class RoleController extends ResourceController
+class RoleController extends \Backend\Root\Form\Controllers\ResourceController
 {
     use \Backend\Root\User\Services\UserAccessTrait;
 

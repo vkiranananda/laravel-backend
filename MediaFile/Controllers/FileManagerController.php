@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Log;
 use Option;
+use Backend\Root\User\Services\UserAccess;
 
 class FileManagerController
 {
@@ -341,10 +342,11 @@ class FileManagerController
 		}
 
 		$userId = Auth::user()->id;
-		$roleId = Auth::user()->role;
+		$roleId = Auth::user()->user_role_id;
 
 		// Если админы то пропускаем везде.
-		// if ($roleId == 0) return true;
+		if ($roleId == 0)
+			return true;
 
 		foreach ($access['policy'] as $policy) {
 			// Если выбрана папка, то проверяем ее.

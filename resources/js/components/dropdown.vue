@@ -46,7 +46,6 @@ export default {
     },
 
     hide() {
-      console.log('hide');
       document.removeEventListener('wheel', this.wheelHandler);
       document.removeEventListener('touchmove', this.wheelHandler);
       document.removeEventListener('click', this.handleClickOutside);
@@ -58,7 +57,6 @@ export default {
 
     show() {
       this.hide();
-      console.log('show');
       this.showMenu = true;
       document.addEventListener('wheel', this.wheelHandler, { passive: false });
       document.addEventListener('touchmove', this.wheelHandler, { passive: false });
@@ -194,7 +192,6 @@ export default {
       } else {
         this.dropdown.style.top = top + 'px';
       }
-      console.log(this.dropdown.style.top, this.dropdown.style.left, this.dropdown.style.width);
     },
   },
 };

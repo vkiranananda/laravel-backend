@@ -4,7 +4,7 @@
 return [
     'list' => [
         ['name' => 'name', 'icon' => 'file', 'link' => 'edit', 'sortable' => true],
-        ['name' => 'type', 'sortable' => true, 'attr' => ['width' => '100px']],
+        ['name' => 'type', 'sortable' => true, 'attr' => ['width' => '170px']],
         ['name' => 'autoload', 'sortable' => true, 'attr' => ['width' => '100px']],
     ],
     'search' => [

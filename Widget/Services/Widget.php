@@ -16,16 +16,16 @@ class Widget {
 
     static public function print($name, $params = '', $cache = [])
     {
-        $timeCache = ( isset($cache['time']) ) ? $cache['time'] : 0; //43200;//30 days
+        $timeCache = $cache['time'] ?? 0; //43200;//30 days
         // $tagsCache = ( isset($cache['tags']) ) ? $cache['tags'] : 'widgets';
-        $nameCache = ( isset($cache['name']) ) ? $cache['name'] : $name;
+        $nameCache = $cache['name'] ?? $name;
+
 
 
 
         return  Cache::remember($nameCache, $timeCache, function() use ($name, $params)
         {
         	// Преобразуем строку если в ней есть - то убираем тире и делаем следующий символ заглвным
-        	
             $name_arr = explode('::', $name);
 
             if (count($name_arr) > 1) {
