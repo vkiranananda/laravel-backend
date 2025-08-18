@@ -268,7 +268,11 @@ export default {
 
     doubleClick(file) {
       if (file.type === 'image') {
-        window.open(file.url, '_blank');
+        let gallery = this.files.filter(f => f.type === 'image').map(f => ({ id: f.id, url: f.url }));
+        this.emitter.emit('FileManagerImageView', {
+          gallery,
+          current: { id: file.id, url: file.url },
+        });
       } else if (file.type != 'folder') {
         this.downloadFile(file);
       }

@@ -10,10 +10,7 @@
             <button class="image-field__action-button btn btn-light btn-sm" @click="uploadFilesEvent">
               <v-icon name="upload" />
             </button>
-            <button
-              class="image-field__action-button btn btn-light btn-sm"
-              @click="deleteFile()"
-              v-if="field.value.id">
+            <button class="image-field__action-button btn btn-light btn-sm" @click="deleteFile()" v-if="field.value.id">
               <v-icon name="delete" class="icon-red" />
             </button>
           </div>
@@ -21,7 +18,11 @@
             class="image-field__image-item"
             :style="{ width: field.width ? field.width : '250px', height: field.height ? field.height : 'auto' }">
             <div class="image-field__image" v-if="field.value.url">
-              <img :src="field.value.url" />
+              <img 
+                :src="field.value.url" 
+                @dblclick="doubleClick(field.value)"
+                :title="'Двойной клик для просмотра'"
+              />
             </div>
             <div class="image-field__text" v-else @click="uploadFilesEvent">
               Перетащите изображение сюда или кликните для выбора
@@ -56,7 +57,9 @@ export default {
       this.$emit('v-change', []);
     },
     doubleClick(file) {
-      this.files = this.files.filter(f => f.id !== file.id);
+      this.emitter.emit('FileManagerImageView', {
+        current: { id: file.id, url: file.url },
+      });
     },
     uploadFilesEvent() {
       this.$refs.uploadFiles.selectFiles();
