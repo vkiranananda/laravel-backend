@@ -46,7 +46,8 @@ class BackendInstall extends Command
     $this->info("Дальнейшие инструкции\n");
 
     $this->info('Добавляем в файл с маршрутами routes/web.php строку');
-    $this->line("Backend::installBaseRoutes();\n");
+    $this->line('Backend::installBaseRoutes();');
+    $this->line("Categories::installRoutes();\n");
 
     $this->info('Добавляем в файл composer.json в секцию autoload -> psr-4 новое пространство имен');
     $this->line('"Backend\\\\": "backend/"');
@@ -60,12 +61,18 @@ class BackendInstall extends Command
 
     $this->line("'uploads' => [\n"
       . "\t'driver' => 'local',\n"
-      . "\t'root' => public_path().'/uploads',\n"
+      . "\t'root' => public_path().'/uploads/cache',\n"
+      . "\t'visibility' => 'public',\n"
+      . "],\n");
+
+    $this->line("'filemanager' => [\n"
+      . "\t'driver' => 'local',\n"
+      . "\t'root' => public_path().'/uploads/files',\n"
       . "\t'visibility' => 'public',\n"
       . "],\n");
 
     $this->info('Сборка фронтенда:');
-    $this->line("npm install @vitejs/plugin-vue clone-deep vuedraggable@next sass mitt @popperjs/core bootstrap lodash.clonedeep lodash.size vue vue-multiselect fecha @primer/octicons vue-datepicker-next vue-multiselect@next @editorjs/editorjs @editorjs/header @editorjs/list @editorjs/quote @editorjs/marker @editorjs/table  @editorjs/underline @editorjs/inline-code @editorjs/raw vue-multiselect@next\n");
+    $this->line("npm install @vitejs/plugin-vue@latest vuedraggable@next clone-deep sass mitt lodash.clonedeep lodash.size vue vue-multiselect fecha @primer/octicons vue-datepicker-next vue-multiselect@next @editorjs/editorjs @editorjs/header @editorjs/list @editorjs/quote @editorjs/marker @editorjs/table  @editorjs/underline @editorjs/inline-code @editorjs/raw vue-multiselect@next\n");
 
     $this->info('Далее запускаем компиляцию для сброки продакшен:');
     $this->line("npm run build\n");
@@ -104,20 +111,15 @@ class BackendInstall extends Command
 
       // Инсталим миграции
       foreach (File::files($this->installPath . 'migrations') as $file) {
-        $fileName = basename($file);
-
-        if (File::exists($this->migrationsPath . $fileName)) {
-          $this->line("Миграция $fileName уже существует, пропускаю.");
-        } else {
-          File::copy($file, $this->migrationsPath . $fileName);
-        }
+        File::copy($file, $this->migrationsPath . basename($file));
       }
 
-      if (File::exists($this->publicBackendPath)) {
-        $this->line("Каталог $publicBackend уже сущетвует, пропускаю.");
-      } else {
-        File::copyDirectory($this->installPath . 'public/backend', $this->publicBackendPath);
+      // Инсталим базовые контроллеры
+      foreach (File::files($this->installPath . 'app/controllers') as $file) {
+        File::copy($file, base_path('app/Http/Controllers/') . basename($file));
       }
+
+      File::copyDirectory($this->installPath . 'public/backend', $this->publicBackendPath);
 
       // Очищаем кэши
       $this->call('cache:clear');
