@@ -192,22 +192,12 @@ class ModuleCreate extends Command
 
         // Вывод справки о маршрутах
         $routeArr = [];
-        if ($upload) $routeArr[] = "'upload'";
         if ($sort) $routeArr[] = "'sortable'";
         
         $routeStr = "Backend::installRoutes('".$module."', [".implode(',', $routeArr)."]);";
 
         $this->info("Добавьте строку роутинга '$routeStr' в файл " . $this->backendPath . "routes.php\n");
             
-
-        if ($upload) {
-            $this->replaceModName(
-                    $templatePath . 'UploadController.php', 
-                    $conPath . 'UploadController.php', 
-                    $module
-            );
-        }
-
         if ($sitemap) {
             $this->replaceModName(
                     $templatePath . 'SitemapController.php', 
@@ -252,7 +242,6 @@ class ModuleCreate extends Command
         // Конфиг
         $replace = [];
         if (!$sort) $replace[] = 'sort';
-        if (!$upload) $replace[] = 'upload';
 
         $this->removeStr($templatePath . 'config.php', $confPath . 'config.php', $replace);
 
@@ -264,9 +253,6 @@ class ModuleCreate extends Command
         if (!$seo && !$url)  $replace[] = 'urlseo';
 
         $this->removeStr($templatePath . 'fields.php', $confPath . 'fields.php', $replace);
-
-        // Копируем конфиг для загрузок
-        if ($upload) File::copy($this->templatePath . 'Configs/upload.php', $confPath . 'upload.php');
     }
 
     // Открываем файл, сохраняем файл, массив замен 
