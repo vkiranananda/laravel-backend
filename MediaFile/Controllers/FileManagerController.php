@@ -335,9 +335,10 @@ class FileManagerController
 	// $access может быть read и write
 	protected function checkUserAccess($accessKey, &$parentTree)
 	{
-		$access = Option::get('_media_file_settings', ['enable-check-access' => 0]);
+		$access = Option::get('_media_file_settings', []);
+
 		// Если не включена проверка прав, то пропускаем
-		if ($access['enable-check-access'] != 1) {
+		if (!isset($access['enable-check-access']) || $access['enable-check-access'] != 1) {
 			return true;
 		}
 
