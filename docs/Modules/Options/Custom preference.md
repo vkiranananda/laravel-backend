@@ -1,4 +1,5 @@
 # Для создания отдельной страницы с настройками используйте такую схему
+Создаем каталог для настроек в backend/Settings/ и в нем файлы:
 
 **Controllers/SettingsController.php**
 
@@ -7,7 +8,7 @@
 
 namespace Backend\Settings\Controllers;
 
-use Backend\Option\Controllers\OptionResourcesController;
+use Backend\Root\Option\Controllers\OptionResourcesController;
 
 class SettingsController extends OptionResourcesController
 {
@@ -76,4 +77,15 @@ return [
 
 ```php
 Option::installRoutes('settings', '\Backend\Settings\Controllers\SettingsController', 'settings');
+```
+
+**Добавляем в меню**
+
+```php
+    [
+        'label' => 'Настройки',
+        'icon' => 'key',
+        'url' => action('\Backend\Settings\Controllers\SettingsController@edit'),
+        'user-access-key' => 'Settings',
+    ],
 ```
