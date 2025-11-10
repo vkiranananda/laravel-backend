@@ -28,7 +28,7 @@ return [
             'name' => 'user_role_id',
             'label' => 'Роль пользователя',
             'options' => [
-                ['label' => 'Админ', 'value' => 0]
+                ['label' => 'Администратор', 'value' => 0]
             ]
         ],
         'password' => [

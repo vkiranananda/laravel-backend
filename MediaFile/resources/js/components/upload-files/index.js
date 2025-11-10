@@ -65,11 +65,12 @@ export default {
       e.preventDefault();
       this.isDragOver = false;
 
-      const items = e.dataTransfer.items || e.dataTransfer.files;
+      const items = e.dataTransfer.items;
+      const fileList = e.dataTransfer.files;
       let files = [];
-      if (items) {
+      if (items && items.length) {
         // Получаем файлы из перетаскивания
-        items.forEach(item => {
+        Array.from(items).forEach(item => {
           // console.log(item);
           const data = item.webkitGetAsEntry && item.webkitGetAsEntry();
           if (data) {
@@ -89,6 +90,8 @@ export default {
             }
           }
         });
+      } else if (fileList && fileList.length) {
+        files = Array.from(fileList);
       }
       this.startUpload(files);
     },
