@@ -1,4 +1,4 @@
-import { createApp } from 'vue/dist/vue.esm-bundler.js';
+import { createApp } from 'vue';
 import { vAlert, vConfirm } from './libs/alert';
 import modalFunc from './libs/modal';
 import emitter from './libs/mitt';
