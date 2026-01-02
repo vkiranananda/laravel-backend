@@ -3,16 +3,10 @@
 namespace Backend\Root\MediaFile\Controllers;
 
 use App\Http\Controllers\Controller;
-use Backend\Root\Core\Services\Helpers;
 use Backend\Root\MediaFile\Models\MediaFile;
-use Backend\Root\MediaFile\Models\MediaFileRelation;
 use Backend\Root\MediaFile\Services\Uploads;
 use Illuminate\Http\Request;
-use Content;
-use GetConfig;
-use Log;
 use Storage;
-use UploadedFiles;
 
 class UploadController extends Controller
 {
