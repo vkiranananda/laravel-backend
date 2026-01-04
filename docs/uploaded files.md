@@ -28,14 +28,6 @@ UploadedFiles::loadByField($post, $field);
 UploadedFiles::loadByPost($post);
 ```
 
-### thumbnailSize - Устанавливает размер возвращаемой миниатюры. Только для картинок. Для генерации нескольких размеров испольем несколько раз.
-
-пример: [100, 100, 'fit'], [100, 'auto']
-
-```php
-UploadedFiles::thumbnailSize($size);
-```
-
 ## Получение данных
 
 ### getByField - Инитим данные из поля, для выборки массива
@@ -44,4 +36,18 @@ UploadedFiles::thumbnailSize($size);
 
 ```php
 UploadedFiles::getByField($post, $field, $first = false);
+```
+
+### thumbUrl - Выводит URL миниатюры или оригинального файла. Только для картинок. Если $original = true, то будет выведен массив с оригинальным и миниатюрой файла иначе будет выведен только URL **миниатюры**.
+пример: [100, 100, 'fit'], [100, 'auto']
+
+```php
+UploadedFiles::thumbUrl($size);
+```
+
+### url - Выводит URL файла.
+пример: [100, 100, 'fit'], [100, 'auto']
+
+```php
+UploadedFiles::url($size);
 ```

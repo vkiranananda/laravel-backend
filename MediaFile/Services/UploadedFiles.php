@@ -14,26 +14,62 @@ class UploadedFiles
 	private $files = [];
 	// Запрошенные файлы в текущем запросе
 	private $reqFiles = [];
-	// Запрошенные размеры в текущем запросе
-	private $reqImgSize = [];
 	// Тип возвращаемого значения.
 	private $reqResultArray = true;
 	// Прелоадинг файлов
 	private $loadFiles = [];
 
-	// Генерим миниатюрку к файлу пример: [100, 100, 'fit'], [100, 'auto']
-	public function getThumbnail($file, $size)
+	// Генерим миниатюрку к файлу пример: [100, 100, 'fit'], [100, 'auto'] и возвращает массив с урлами 
+	// или оригинальный файл если $original = true
+	public function thumbUrl($size, $original = false)
 	{
-		if (count($size) > 0 && $file['type'] == 'image') {
-			// Если gif, то возвращаем оригинал
-			if ($file['extension'] == 'gif') {
-				return $this->getFileUrl($file);
+		// Добавляем ключи в массив для загрузки
+		$this->loadByKeys($this->reqFiles);
+		// Получаем файлы из базы данных
+		$this->getFiles();
+
+		$res = [];
+
+		foreach ($this->reqFiles as $key) {
+			$resUrl = [
+				'orig' => '',
+				'thumb' => '',
+			];
+
+			// Если файла нет игнорим
+			if (isset($this->files[$key])) {
+				$file = &$this->files[$key];
+				$resUrl['orig'] = Uploads::getUrl($file);
+				// Если файл изображение, то генерируем миниатюру
+				if (count($size) > 0 && $file['type'] == 'image') {
+					// Если gif, то возвращаем оригинал
+					if ($file['extension'] == 'gif') {
+						$resUrl['thumb'] = Uploads::getUrl($file);
+					} else {
+						$resThumb = Uploads::getThumbnail($file, $size);
+						$resUrl['thumb'] = Uploads::getBaseUrl($resThumb['key'] . '.jpg');
+					}
+				}
+			}
+
+			// Если запрошен оригинал, то возвращаем массив
+			if ($original) {
+				$res[] = $resUrl;
 			} else {
-				$resThumb = Uploads::getThumbnail($file, $size);
-				return Uploads::getBaseUrl($resThumb['key'] . '.jpg');
+				$res[] = $resUrl['thumb'];
+			}
+
+			// Выводим первый элемент если запрошен только один элемент
+			if ($this->reqResultArray === false) {
+				return $res[0];
 			}
 		}
-		return '';
+
+		if ($this->reqResultArray === false) {
+			return ($original) ? ['orig' => '', 'thumb' => ''] : '';
+		}
+
+		return $res;
 	}
 
 	// Получаем все ранее иниченные файлы и сохраняем в массив картинок
@@ -121,28 +157,6 @@ class UploadedFiles
 	// 	return $this;
 	// }
 
-	// Формируем вывод для галерей(Для админки)
-	// public function prepGaleryData(&$list)
-	// {
-	// 	$res = [];
-
-	// 	foreach ($list as $key => $file) {
-	// 		$item = ['orig' => $this->getFileUrl($file)];
-
-	// 		if ($file['file_type'] == 'image') {
-	// 			$item['thumb'] = $this->genFileLink($file, [128, 128, 'fit']);
-	// 		} else {
-	// 			$item['thumb'] = '/backend/images/file.png';
-	// 		}
-
-	// 		foreach (['id', 'orig_name', 'file_type'] as $key) {
-	// 			$item[$key] = Helpers::getDataField($file, $key);
-	// 		}
-
-	// 		$res[] = $item;
-	// 	}
-	// 	return $res;
-	// }
 
 	// app('UploadedFiles')->getByField($post, 'gallery')->size([128, 128, 'fit'])->htmlImg(['class' => 'thumb']);
 	// Получаем массивы картинок из поля.
@@ -152,9 +166,6 @@ class UploadedFiles
 	// Результат будет таким же либо массив либо единичный элемент
 	public function get($keys, $first = false)
 	{
-		// Обнуляем массивы предыдущих запросов
-		$this->reqImgSize = [];
-
 		$this->reqResultArray = ($first) ? false : true;
 
 		if (is_array($keys)) {  // Если массив
@@ -180,6 +191,10 @@ class UploadedFiles
 	public function getByField($post, $field, $first = false)
 	{
 		$keys = $this->getKeys(Helpers::getDataField($post, $field, []));
+
+		// Устанавливаем тип возвращаемого значения
+		$this->reqResultArray = ($first) ? false : true;
+		
 		if (empty($keys))
 			return $this;
 
@@ -188,89 +203,8 @@ class UploadedFiles
 		return $this;
 	}
 
-	// Устанавливает размер возвращаемой миниатюры. Только для картинок.
-	public function thumbnailSize($size)
-	{
-		$this->reqImgSize[] = $size;
-
-		return $this;
-	}
-
-	// Приватная функция создает из файла тэг img, если картинкой не является выводит пустую строку.
-	// private function _htmlImg(&$file, $attr = [])
-	// {
-	// 	if ($file['file_type'] != 'image')
-	// 		return '';
-
-	// 	$attrNew = $attr;
-
-	// 	if (!isset($attr['title']))
-	// 		$attrNew['title'] = Helpers::getDataField($file, 'img_title');
-	// 	if (!isset($attr['alt']))
-	// 		$attrNew['alt'] = Helpers::getDataField($file, 'img_alt');
-
-	// 	$title = Helpers::getDataField($file, 'img_title');
-	// 	$alt = Helpers::getDataField($file, 'img_alt');
-
-	// 	$countImgSize = count($this->reqImgSize);
-	// 	$srcset = '';
-	// 	if ($countImgSize > 0) {
-	// 		foreach ($this->reqImgSize as $key => $size) {
-	// 			// Получаем урлы миниатюры и если нету генерим ее
-	// 			$thumb = $this->genFileLink($file, $size);
-
-	// 			// Генерим srcset если функция size была вызвана более одного раза
-	// 			if ($countImgSize > 1) {
-	// 				// Далее получаем текстовый размер
-	// 				$strSize = Uploads::sizesToStr($size);
-	// 				// Тут нужно получить ширину для srcset, если нет миниатюры не добавляем srcset
-	// 				if (isset($file['sizes'][$strSize])) {
-	// 					$srcset .= $thumb . ' ' . $file['sizes'][$strSize]['size'][0] . 'w, ';
-	// 				}
-	// 			}
-	// 			if ($key == 0)
-	// 				$src = $thumb;
-	// 		}
-	// 	} else
-	// 		$src = $this->getFileUrl($file);  // Получаем оригинал
-
-	// 	if ($srcset != '')
-	// 		$srcset = 'srcset="' . mb_substr($srcset, 0, -2) . '"';
-
-	// 	return '<img src="' . $src . '" ' . $srcset . ' ' . Helpers::getAttrs($attrNew) . '>';
-	// }
-
-	// Получаем готовый тэг html img, только для картинок, если вызван метод size будут сгенереный нужные размеры,
-	// если метод size вызван несколько раз, будет сгенерирован тег srcset. src будет первый вызваный size,
-	// если $link = true будет создана ссылка с атрибутами linkAttr
-	// public function htmlImg($link = false, $attr = [], $linkAttr = [])
-	// {
-	// 	$this->loadByArray($this->reqFiles);
-	// 	$this->getFiles();
-
-	// 	$res = [];
-	// 	foreach ($this->reqFiles as $id) {
-	// 		if (!isset($this->images[$id]) || $this->images[$id]['file_type'] != 'image')
-	// 			continue;
-
-	// 		$res[] = ($link)
-	// 			? '<a href="'
-	// 				. $this->getFileUrl($this->images[$id]) . '" '
-	// 				. Helpers::getAttrs($linkAttr) . '>'
-	// 				. $this->_htmlImg($this->images[$id], $attr) . '</a>'
-	// 			: $this->_htmlImg($this->images[$id], $attr);
-	// 	}
-	// 	// dd($this->reqResultArray);
-	// 	if ($this->reqResultArray)
-	// 		return $res;
-	// 	elseif (count($res) > 0)
-	// 		return $res[0];
-	// }
-
-	// Получить список урлов, если вызван метод size будут сгенерены нужные размеры(только для изображений).
-	// Если указано нескольколь размеров, то будет отдан массив с размерами по порядку указания.
-	// Парметр $attr добавляет дополнительный опции из массива файла
-	public function url($attr = [])
+	// Получить список урлов
+	public function url()
 	{
 		// Добавляем ключи в массив для загрузки
 		$this->loadByKeys($this->reqFiles);
@@ -284,37 +218,22 @@ class UploadedFiles
 			if (!isset($this->files[$key]))
 				continue;
 
-			$file = ['orig' => Uploads::getUrl($this->files[$key])];
+			$res[] = Uploads::getUrl($this->files[$key]);
 
-			// FixMe: Добавить генерацию миниатюр
-			if (count($this->reqImgSize) > 0 && $this->files[$key]['type'] == 'image') {
-				foreach ($this->reqImgSize as $size) {
-					$file['sizes'][] = $this->getThumbnail($this->files[$key], $size);
-				}
-			}
-
-			if (count($attr) > 0) {
-				foreach ($attr as $key) {
-					$file['attr'][$key] = Helpers::getDataField($this->files[$key], $key, '');
-				}
-			}
-
-			if ($this->reqResultArray)
-				$res[] = $file;
-			else
-				return $file;
+			if (!$this->reqResultArray)
+				return $res[0];
 		}
 
 		return $res;
 	}
 
 	// Выведет нужный ключ или значение второго параметра defValue.
-	public function keyOrEmpty($key, $defValue = '', $attr = [])
-	{
-		$res = $this->url($attr);
+	// public function keyOrEmpty($key, $defValue = '', $attr = [])
+	// {
+	// 	$res = $this->url($attr);
 
-		return Helpers::getDataField($res, $key, $defValue);
-	}
+	// 	return Helpers::getDataField($res, $key, $defValue);
+	// }
 
 	// Получить массив файлов
 	// public function files()
