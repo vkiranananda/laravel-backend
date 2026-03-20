@@ -9,7 +9,6 @@ use View;
 
 class Backend
 {
-
     private $data;
 
     public function init()
@@ -20,9 +19,12 @@ class Backend
             echo "Бэкенд не установлен\n\n";
             return;
         }
+        View::addNamespace('Backend-Root', base_path('vendor/vkiranananda/backend/resources/views'));
+
         foreach ($config['views'] as $view) {
             $path = (isset($view['root']) && $view['root'] === true)
-                ? base_path('vendor/vkiranananda/backend/') : base_path('backend/');
+                ? base_path('vendor/vkiranananda/backend/')
+                : base_path('backend/');
 
             View::addNamespace($view['name'], $path . $view['name'] . '/resources/views');
         }
@@ -38,8 +40,8 @@ class Backend
      */
     public function installRoutes($mod = '', $ext = [])
     {
-
-        if (!is_array($ext)) abort(418, 'installRoutes: Параметр $ext должен быть массивом');
+        if (!is_array($ext))
+            abort(418, 'installRoutes: Параметр $ext должен быть массивом');
 
         $modUrl = mb_strtolower($mod);
 
@@ -61,7 +63,7 @@ class Backend
                     $resource = false;
                     break;
                 case 'module':
-                    require_once(base_path('backend/' . $mod . '/routes.php'));
+                    require_once (base_path('backend/' . $mod . '/routes.php'));
                     // Отменяем ресурс роутинг так как подключаем роутинг модуля
                     $resource = false;
                     break;
@@ -69,42 +71,46 @@ class Backend
                     break;
             }
         }
-        if ($resource) $this->installResourceRoute($modUrl, $mod);
+        if ($resource)
+            $this->installResourceRoute($modUrl, $mod);
     }
 
     public function installResourceRoute($modUrl, $mod, $controller = false)
     {
+        if (!$controller)
+            $controller = $mod;
 
-        if (!$controller) $controller = $mod;
-
-        Route::resource($modUrl, '\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller');
+        Route::resource($modUrl, '\\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller');
     }
 
     public function installSortableRoute($modUrl, $mod, $controller = false)
     {
-        if (!$controller) $controller = $mod;
+        if (!$controller)
+            $controller = $mod;
 
-        Route::get($modUrl . '/sortable', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@listSortable');
-        Route::put($modUrl . '/sortable', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@listSortableSave');
+        Route::get($modUrl . '/sortable', '\\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller@listSortable');
+        Route::put($modUrl . '/sortable', '\\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller@listSortableSave');
     }
 
     public function installEditableRoute($modUrl, $mod, $controller = false)
     {
-        if (!$controller) $controller = $mod;
+        if (!$controller)
+            $controller = $mod;
 
-        Route::get($modUrl . '/editable/{postId}/{fieldName}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@IndexEditableEdit');
-        Route::put($modUrl . '/editable/{postId}/{fieldName}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@IndexEditableUpdate');
+        Route::get($modUrl . '/editable/{postId}/{fieldName}', '\\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller@IndexEditableEdit');
+        Route::put($modUrl . '/editable/{postId}/{fieldName}', '\\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller@IndexEditableUpdate');
     }
 
     public function installUploadRoute($modUrl, $mod, $controller = false)
     {
-        if (!$controller) $controller = 'Upload';
+        if (!$controller)
+            $controller = 'Upload';
 
-        Route::get($modUrl . '/upload/index/{id?}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@index');
-        Route::post($modUrl . '/upload', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@store');
-        Route::delete($modUrl . '/upload/{postId}/{fileId}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@destroy');
-        Route::get($modUrl . '/upload/edit/{id?}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@edit');
-        Route::put($modUrl . '/upload/update/{id?}', '\Backend\\' . $mod . '\Controllers\\' . $controller . 'Controller@update');
+        Route::get($modUrl . '/upload/index/{id?}', '\\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller@index');
+        Route::post($modUrl . '/upload', '\\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller@store');
+        Route::delete($modUrl . '/upload/{postId}/{fileId}', '\\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller@destroy');
+        Route::get($modUrl . '/upload/edit/{id?}', '\\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller@edit');
+        Route::put($modUrl . '/upload/update/{id?}', '\\Backend\\' . $mod . '\\Controllers\\' . $controller . 'Controller@update');
     }
 
     /**
@@ -112,6 +118,6 @@ class Backend
      */
     public function installBaseRoutes()
     {
-        require_once(base_path('backend/routes.php'));
+        require_once (base_path('backend/routes.php'));
     }
 }

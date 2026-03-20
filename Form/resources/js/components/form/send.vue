@@ -66,9 +66,10 @@ export default {
     },
     methods: {
         btnClick(btn, type) {
-            if (btn.link) window.location = btn.link
+            if (btn.url) window.location = btn.url
             if (!btn.hook) return
             this.statusArea = type
+
             switch (btn.hook) {
                 case 'FormSend':
                     this.submit()

@@ -7,7 +7,7 @@ Route::get('uploads/{id?}', '\Backend\MediaFile\Controllers\UploadController@get
 Route::group(['prefix' => 'content', 'middleware' => ['auth.basic']], function () {
     Route::get('/', '\Backend\Home\Controllers\HomeController@index');
     Route::get('/icons', function () {
-        return view('Backend::icons');
+        return view('Backend-Root::icons');
     })->name('icons');
     Backend::installRoutes('Category', ['module']);
     Backend::installRoutes('News');
