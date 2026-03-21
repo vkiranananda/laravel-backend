@@ -1,10 +1,13 @@
 <template>
     <div class="field-block d-flex align-items-center">
         <div class="field">
-            <template v-if="field.readonly === true && field.html">
+            <template
+                v-if="field.readonly === true && field.html !== undefined"
+            >
                 <div v-html="field.html"></div>
             </template>
-            <component v-else
+            <component
+                v-else
                 v-if="component"
                 :is="'form-field-' + component"
                 :field="fieldChanged"

@@ -1,45 +1,65 @@
+<!-- 
+ v-model пришлось убрать так как работала не корректно.
+  -->
 <template>
     <div class="datepicker">
-        <div class="readonly-field" v-if="field.readonly">{{field.value}}</div>
-        <date-picker v-else :type="type" :input-class="inputClass" v-model:value="date" :first-day-of-week="1" :format="format"
-                     lang="ru" :minute-step="field['minute-step'] ? field['minute-step'] : 1"
-                     v-bind="field.attr" :disabled="field.readonly"></date-picker>
+        <div class="readonly-field" v-if="field.readonly">
+            {{ field.value }}
+        </div>
+        <date-picker
+            v-else
+            :type="type"
+            :value="pickerDate"
+            :input-class="inputClass"
+            @update:value="onDatePickerValueUpdate"
+            :first-day-of-week="1"
+            :format="format"
+            :placeholder="field.placeholder"
+            lang="ru"
+            :minute-step="field['minute-step'] ? field['minute-step'] : 1"
+            v-bind="field.attr"
+            :disabled="field.readonly"
+        ></date-picker>
     </div>
 </template>
 
 <script>
-import DatePicker from 'vue-datepicker-next'
-import 'vue-datepicker-next/index.css'
-// {{todo}}
-// import 'vue-datepicker-next/index.css';
-import fecha from 'fecha'
+import DatePicker from 'vue-datepicker-next';
+import 'vue-datepicker-next/index.css';
+import fecha from 'fecha';
 
 export default {
     props: ['field', 'error'],
 
-    components: {DatePicker},
-    created() {
-        if (this.field.value == 'now') this.date = new Date();
+    data() {
+        return {
+            pickerDate: null,
+        };
+    },
+    components: { DatePicker },
+    watch: {
+        'field.value': {
+            immediate: true,
+            handler(val) {
+                if (val == 'now') {
+                    this.pickerDate = new Date();
+                } else {
+                    this.pickerDate = this.getDate(val);
+                }
+            },
+        },
     },
     computed: {
-        date: {
-            get: function () {
-                // Обрабатываем timestamp, он идет объектом с тайм зоной.
-                return this.getDate(this.field.value)
-            },
-            set: function (newDate) {
-                let date = (newDate != null) ? fecha.format(newDate, this.inputFormat) : ''
-                this.$emit('v-change', date)
-            }
-        },
-
         format: function () {
-            let format = this.field.format != undefined ? this.field.format : 'DD.MM.YYYY'
-            if (this.field.time != undefined) format += ' HH:mm'
-            return format
+            let format =
+                this.field.format != undefined
+                    ? this.field.format
+                    : 'DD.MM.YYYY';
+            if (this.field.time != undefined) format += ' HH:mm';
+            return format;
         },
         type: function () {
-            return this.field.time ? 'datetime' : 'date'
+            return this.field.time ? 'datetime' : 'date';
         },
         // Генерим классы
         inputClass: function () {
@@ -48,29 +68,35 @@ export default {
 
             if (this.error) objClass += ' is-invalid';
 
-            if (attr != undefined && attr.class != undefined) objClass += ' ' + attr.class;
+            if (attr != undefined && attr.class != undefined)
+                objClass += ' ' + attr.class;
 
             return objClass;
         },
         //Возвращаем дату с нужным форматированем
         inputFormat: function () {
-            if (this.field['input-format'] != undefined) return this.field['input-format']
-            if (this.field.time) return 'YYYY-MM-DD HH:mm:ss'
-            return 'YYYY-MM-DD'
-        }
+            if (this.field['input-format'] != undefined)
+                return this.field['input-format'];
+            if (this.field.time) return 'YYYY-MM-DD HH:mm:ss';
+            return 'YYYY-MM-DD';
+        },
     },
     methods: {
+        onDatePickerValueUpdate: function (value) {
+            this.pickerDate = value;
+            let date = (value != null) ? fecha.format(value, this.inputFormat) : '';
+            this.$emit('v-change', date);
+        },
         getDate: function (date) {
             if (date == undefined || date == null || date == '') return null;
             if (date == 'now') return new Date();
             else return fecha.parse(date, this.inputFormat);
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
-
-<style lang='scss'>
+<style lang="scss">
 .datepicker {
     .readonly-field {
         //display: inline-block;
@@ -83,4 +109,3 @@ export default {
     }
 }
 </style>
-

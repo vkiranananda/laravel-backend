@@ -2,14 +2,13 @@
 
 namespace Backend\Root\Form\Services\Traits;
 
+use Illuminate\Database\Eloquent\Model;
 use Auth;
 use Helpers;
-use Illuminate\Database\Eloquent\Model;
 use Request;
 
 trait Index
 {
-
     // !Ввод списка записей
     public function index()
     {
@@ -18,9 +17,11 @@ trait Index
             // Если нет проверяем на владельца и делаем выборку.
             if ($this->getUserAccess('read-owner')) {
                 // Если в конфиге стоит опция user-id делаем выборку по этому полю, иначе выводим все записи.
-                if (isset($this->config['user-id']) && $this->config['user-id']) $this->post = $this->post->where('user_id', Auth::user()->id);
-            } // Иначе выходим.
-            else abort(403, 'Access deny!');
+                if (isset($this->config['user-id']) && $this->config['user-id'])
+                    $this->post = $this->post->where('user_id', Auth::user()->id);
+            }  // Иначе выходим.
+            else
+                abort(403, 'Access deny!');
         }
 
         $this->resourceCombine('index');
@@ -31,7 +32,7 @@ trait Index
         $this->indexOrder();
 
         // Параметры к урлу
-        $urlPostfix = "";
+        $urlPostfix = '';
 
         // Получаем все дополнительные параметры.
         foreach ($this->config['url-params'] as $param) {
@@ -40,7 +41,7 @@ trait Index
 
         $this->dataReturn['config']['urlPostfix'] = $urlPostfix;
 
-        //------------------------------Кнопка Создать----------------------------------------
+        // ------------------------------Кнопка Создать----------------------------------------
 
         $this->dataReturn['config']['menu'] = $this->indexListMenu($urlPostfix);
 
@@ -52,18 +53,16 @@ trait Index
 
         $this->dataReturn['components'] = $this->indexComponents();
 
-        //-------------------------------Подготавливаем поля----------------------------------
+        // -------------------------------Подготавливаем поля----------------------------------
 
         $fields = [];
-        $fields_prep = []; // Методы доп обработки values
-        $optionFields = []; // Поля имеющие option
+        $fields_prep = [];  // Методы доп обработки values
+        $optionFields = [];  // Поля имеющие option
 
         // Меню для элемента списка
         $this->dataReturn['itemMenu'] = $this->indexItemMenu();
 
-
         foreach ($this->fields['list'] as $field) {
-
             // Получаем базовые поля. ВСЕ ПОЛЯ ДОЛЖНЫ БЫТЬ КОРНЕВЫМИ
             $mainField = $this->fields['fields'][$field['name']] ?? [];
 
@@ -88,7 +87,7 @@ trait Index
         // урл страницы списка.
         $this->dataReturn['config']['indexUrl'] = $query->path();
 
-        //Список полей для вывода
+        // Список полей для вывода
         $this->dataReturn['fields'] = $fields;
         $this->dataReturn['config']['title'] = $this->config['lang']['list-title'];
 
@@ -97,19 +96,18 @@ trait Index
         // Добавляем поля поиска
         if (isset($this->fields['search'])) {
             foreach ($this->fields['search'] as $field) {
-                unset($field['fields']); // удаляем ненужные опции
+                unset($field['fields']);  // удаляем ненужные опции
                 $this->dataReturn['search'][] = $field;
             }
         }
 
         // Подготваливаем все поля
         foreach ($query->items() as $post) {
-            $res = []; // Преобразованные данные
+            $res = [];  // Преобразованные данные
 
             $res['_links'] = $this->indexLinks($post, $urlPostfix);
             $res['_row_class'] = $this->indexRowClass($post);
             foreach ($fields as $key => $field) {
-
                 $name = $field['name'];
 
                 // Если нужно указать название столбца базы данных отличное от названия поля.
@@ -132,13 +130,14 @@ trait Index
             $this->dataReturn['items']['data'][] = $res;
         }
 
-        //Получаем шаблон
+        // Получаем шаблон
         $templite = (isset($this->config['list']['template'])) ? $this->config['list']['template'] : 'Form::list';
 
-        //Хук перед выходом
+        // Хук перед выходом
         $this->resourceCombineAfter('index');
 
-        if (Request::ajax()) return $this->dataReturn;
+        if (Request::ajax())
+            return $this->dataReturn;
 
         return view($templite, ['data' => $this->dataReturn]);
     }
@@ -164,14 +163,15 @@ trait Index
     // Главное меню в списке. urlPostfix добавочная строка к url адресу.
     protected function indexListMenu($urlPostfix = '')
     {
-
         $menu = [];
 
         // Если нужно создавать запись
-        if (($btn = $this->indexMenuCreateButton($urlPostfix))) $menu[] = $btn;
+        if (($btn = $this->indexMenuCreateButton($urlPostfix)))
+            $menu[] = $btn;
 
         // Для ручной сортировки
-        if (($btn = $this->listSortableButton($urlPostfix))) $menu[] = $btn;
+        if (($btn = $this->listSortableButton($urlPostfix)))
+            $menu[] = $btn;
 
         return $menu;
     }
@@ -182,11 +182,13 @@ trait Index
         if ($this->config['list']['create'] && $this->getUserAccess('create')) {
             return [
                 'label' => isset($this->config['lang']['create-title'])
-                    ? $this->config['lang']['create-title'] : 'Создать',
+                    ? $this->config['lang']['create-title']
+                    : 'Создать',
                 'url' => action($this->config['controller-name'] . '@create') . $urlPostfix,
                 'btn-type' => 'primary'
             ];
-        } else return false;
+        } else
+            return false;
     }
 
     // Получаем пункты меню для строки списка
@@ -203,7 +205,8 @@ trait Index
                     // Удаляем опцию дефаулт что бы не передавать в админку
                     unset($newItem['default']);
                     $res[] = $newItem;
-                } else $res[] = $item;
+                } else
+                    $res[] = $item;
             }
             return $res;
         }
@@ -217,7 +220,7 @@ trait Index
      */
     protected function indexRowClass($post): string
     {
-        return "";
+        return '';
     }
 
     // Обрабатываем ссылки в списке
@@ -262,7 +265,7 @@ trait Index
         // Если выставлена опция ручной сортировки, то сортировка по умолчанию будет по sort_num
         if (isset($this->config['list']['sortable']) && $this->config['list']['sortable']) {
             $orderField = 'sort_num';
-            $orderType = 'asc'; //от меньшего к большему
+            $orderType = 'asc';  // от меньшего к большему
         } else {
             $orderField = $this->config['list']['default-order']['col'];
             $orderType = $this->config['list']['default-order']['type'];
@@ -279,19 +282,18 @@ trait Index
         $this->post = $this->post->orderBy($orderField, $orderType);
     }
 
-    //Функция поиска для списка, возвращает true если есть что искать.
+    // Функция поиска для списка, возвращает true если есть что искать.
     protected function indexSearch()
     {
-
         $searchReq = false;
 
-        //Если есть поля для поиска
+        // Если есть поля для поиска
         if (isset($this->fields['search'])) {
             // Перебираем
             foreach ($this->fields['search'] as $key => &$field) {
                 // Проверяем на валидность
-                if (!isset($field['name']) || !isset($field['fields']) || !is_array($field['fields'])) continue;
-
+                if (!isset($field['name']) || !isset($field['fields']) || !is_array($field['fields']))
+                    continue;
 
                 // Копируем данные поля из основных полей
                 if (isset($field['field-from'])) {
@@ -308,24 +310,31 @@ trait Index
                 $field['value'] = Request::input($field['name'], '');
 
                 // Обработка запроса будет где то в другом месте
-                if (isset($field['query']) && $field['query'] == 'none') continue;
+                if (isset($field['query']) && $field['query'] == 'none')
+                    continue;
 
                 // Добавляем пустой элемент в начало.
                 if (isset($field['options-empty']) && isset($field['options']) && is_array($field['options'])) {
                     array_unshift($field['options'], ['value' => '', 'label' => $field['options-empty']]);
                 }
 
-                if ($field['value'] == '') continue;
+                if ($field['value'] == '')
+                    continue;
+
+                if (isset($field['func-cahge-value'])) {
+                    $func = $field['func-cahge-value'];
+                    $field['value'] = $this->$func($field['value'], $field);
+                }
 
                 $req = $field['value'];
 
                 // Проверяем значения и добавляем дополнительные опции из options
                 if ($field['type'] == 'select') {
-
                     $option = Helpers::searchArray($field['options'], 'value', $field['value']);
 
                     // Если нет значния
-                    if (!$option) abort(403, 'indexSearch: select value not found ' . $field['value']);
+                    if (!$option)
+                        abort(403, 'indexSearch: select value not found ' . $field['value']);
 
                     // подменяем элемент нельзя передать в строке запроса. например null
                     if (array_key_exists('change-value', $option)) {
@@ -341,8 +350,10 @@ trait Index
                         }
                     }
 
-                    if (!isset($field['exact-match'])) $field['exact-match'] = true;
-                    if (!isset($field['type-comparison'])) $field['type-comparison'] = '=';
+                    if (!isset($field['exact-match']))
+                        $field['exact-match'] = true;
+                    if (!isset($field['type-comparison']))
+                        $field['type-comparison'] = '=';
                 }
 
                 // Тип выборки, по умолчанию like
@@ -353,12 +364,13 @@ trait Index
                 }
 
                 // По умолчанию добавляем %% для запроса
-                if (isset($field['exact-match']) && $field['exact-match']) unset($field['exact-match']);
-                else $req = '%' . $req . '%';
+                if (isset($field['exact-match']) && $field['exact-match'])
+                    unset($field['exact-match']);
+                else
+                    $req = '%' . $req . '%';
 
                 // Выборка по группе полей, если в каком то поле есть то данные выведутся
-                $this->post = $this->post->where(function ($query)
-                use (&$field, $req, $typeComparison, &$searchReq) {
+                $this->post = $this->post->where(function ($query) use (&$field, $req, $typeComparison, &$searchReq) {
                     $first = true;
 
                     foreach ($field['fields'] as $column) {
@@ -369,11 +381,11 @@ trait Index
 
                         if (isset($field['field-save']) && $field['field-save'] == 'relation') {
                             $func .= 'Has';
-                            $query = $query->$func('relationFields', function ($query)
-                            use ($column, $req, $typeComparison, $first) {
+                            $query = $query->$func('relationFields', function ($query) use ($column, $req, $typeComparison, $first) {
                                 $query->where('value', $typeComparison, $req)->where('field_name', $column);
                             });
-                        } else $query = $query->$func($column, $typeComparison, $req);
+                        } else
+                            $query = $query->$func($column, $typeComparison, $req);
 
                         $first = false;
                     }
