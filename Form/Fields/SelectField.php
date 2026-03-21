@@ -59,7 +59,7 @@ class SelectField extends Field
         }
 
         // Для одинарного чекбокса
-        if ($this->field['type'] === 'checkbox') {
+        if ($this->field['type'] === 'checkbox' && isset($this->field['yes-no'])) {
             $firestValue = reset($this->field['options']);
             if (isset($firestValue['value'])) {
                 if ($firestValue['value'] === $value) {
