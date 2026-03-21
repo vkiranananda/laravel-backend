@@ -60,7 +60,6 @@ export default {
         //     }
         // },
         show: function (data) {
-            console.log(data)
             this.params = data
             this.modal.show("AlertModal")
             // Добавляем в конец очереди

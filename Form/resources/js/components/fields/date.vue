@@ -105,6 +105,7 @@ export default {
     .mx-datepicker {
         .mx-input {
             font-size: 1rem;
+            height: auto;
         }
     }
 }

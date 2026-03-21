@@ -124,6 +124,7 @@ export default {
       this.$emit('v-change', { sortable: key, orderType });
     },
     itemActionClick: function (url, el) {
+      console.log(url, el);
       if (el.confirm) {
         this.currentMenuOpen = null;
         this.msgConfirm(el.confirm, () => {
@@ -132,6 +133,7 @@ export default {
       } else this.itemAction(url, el);
     },
     itemAction: function (url, el) {
+      // console.log(url, el);
       if (el.link == 'destroy') this.deleteItem(url);
       else {
         if (el.target) window.open(url, el.target);

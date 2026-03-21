@@ -27,9 +27,9 @@
         </div>
       </div>
     </div>
+    <v-alert></v-alert>
+    <v-image-view></v-image-view>
   </div>
-  <v-alert></v-alert>
-  <v-image-view></v-image-view>
 </body>
 
 <script src="/backend/js/jquery.min.js"></script>
