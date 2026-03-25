@@ -95,6 +95,9 @@ export default {
     'list-paginate': paginate,
     'edit-field': editField,
   },
+  created() {
+    console.log('11', this.itemMenu);
+  },
   data() {
     return {
       currentMenuOpen: null,

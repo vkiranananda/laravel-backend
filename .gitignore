@@ -1,7 +1,0 @@
-.env
-/.vscode
-/storage
-/vendor/
-/node_modules/
-/npm-debug.log
-
