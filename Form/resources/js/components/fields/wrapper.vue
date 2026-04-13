@@ -5,7 +5,7 @@
         <slot></slot>
         <div class="invalid-feedback d-block" v-show="error">{{ error }}</div>
         <small class="form-text text-muted" v-if="field.desc != ''" v-html="field.desc"></small>
-        <v-icon v-if='field._changed != undefined' name="back" class="back icon-green" @click="$emit('v-back')" />
+        <v-icon v-if='field.changed !== false && field._changed != undefined' name="back" class="back icon-green" @click="$emit('v-back')" />
     </div>
 </template>
 

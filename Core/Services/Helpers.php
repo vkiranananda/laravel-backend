@@ -2,12 +2,11 @@
 
 namespace Backend\Root\Core\Services;
 
-use Illuminate\Database\Eloquent\Collection;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class Helpers
 {
-
     // Получаем все поля, где есть массив options, передается параметр табов
     static public function changeFieldsOptions($fields)
     {
@@ -37,9 +36,9 @@ class Helpers
             $item = [];
             foreach ($fields as $field) {
                 $item[$field['name']] = Helpers::getDataField($el, $field['name']);
-                if (isset($field['options'])
-                    && is_array($field['options'])
-                    && isset($field['options'][$item[$field['name']]])) {
+                if (isset($field['options']) &&
+                        is_array($field['options']) &&
+                        isset($field['options'][$item[$field['name']]])) {
                     $item[$field['name']] = $field['options'][$item[$field['name']]];
                 }
             }
@@ -65,7 +64,8 @@ class Helpers
     static public function searchArray($arr, $key, $val)
     {
         foreach ($arr as $vArr) {
-            if (isset($vArr[$key]) && $vArr[$key] == $val) return $vArr;
+            if (isset($vArr[$key]) && $vArr[$key] == $val)
+                return $vArr;
         }
         return false;
     }
@@ -94,12 +94,13 @@ class Helpers
         return $res;
     }
 
-    // Ищем по опциям (value) можно передать и простой массив,тогда будет 
-    // искаться по значению. Первый параметр список опиций, второй искомая 
+    // Ищем по опциям (value) можно передать и простой массив,тогда будет
+    // искаться по значению. Первый параметр список опиций, второй искомая
     // строка или массив значний
     static public function optionsSearch($arr, $str)
     {
-        if (!is_array($arr)) return false;
+        if (!is_array($arr))
+            return false;
 
         $count = 0;
 
@@ -108,7 +109,8 @@ class Helpers
                 if (!isset($el['value'])) {
                     $el['value'] = '';
                 }
-            } else $el = ['value' => $el];
+            } else
+                $el = ['value' => $el];
 
             if (is_array($str)) {
                 foreach ($str as $lastStr) {
@@ -116,10 +118,12 @@ class Helpers
                         $count++;
                     }
                 }
-            } elseif ($el['value'] == $str) return true;
+            } elseif ($el['value'] == $str)
+                return true;
         }
 
-        if (is_array($str) && count($str) == $count) return true;
+        if (is_array($str) && count($str) == $count)
+            return true;
 
         return false;
     }
@@ -140,18 +144,22 @@ class Helpers
     static public function getDataField($data, $key, $res = false)
     {
         $result = $res;
-        foreach (explode(".", $key) as $i => $k) {
+        foreach (explode('.', $key) as $i => $k) {
             if ($i == 0) {
                 // Ищем в корне записи
-                if (isset($data[$k])) $result = $data[$k];
+                if (isset($data[$k]))
+                    $result = $data[$k];
                 // Ищем в массиве array_data
                 elseif (isset($data['array_data']['fields'][$k]))
                     $result = $data['array_data']['fields'][$k];
                 // Ничего не найдено
-                else return $res;
+                else
+                    return $res;
             } else {
-                if (isset($result[$k])) $result = $result[$k];
-                else return $res;
+                if (isset($result[$k]))
+                    $result = $result[$k];
+                else
+                    return $res;
             }
         }
         return $result;
@@ -162,7 +170,8 @@ class Helpers
     {
         $value = Helpers::getDataField($data, $key);
 
-        if ($value != '' && $value !== false) return $value;
+        if ($value != '' && $value !== false)
+            return $value;
 
         return $res;
     }
