@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Backend\Root\User\Services;
-
 
 trait UserAccessTrait
 {
@@ -17,5 +15,10 @@ trait UserAccessTrait
     protected function getUserAccess($access, $userId = false, $accessKey = false)
     {
         return UserAccess::checkAccess($access, $accessKey ? $accessKey : $this->userAccessKey, $userId);
+    }
+
+    protected function getCustomeAccess($accessName, $userId = false, $accessKey = false)
+    {
+        return UserAccess::checkCustomAccess($accessName, $accessKey ? $accessKey : $this->userAccessKey, $userId);
     }
 }

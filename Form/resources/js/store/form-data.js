@@ -1,5 +1,5 @@
-import cloneDeep from 'lodash.clonedeep'
-import {readonly, ref} from 'vue';
+import cloneDeep from 'lodash.clonedeep';
+import { readonly, ref } from 'vue';
 
 const data = {
     fields: ref({}),
@@ -11,8 +11,8 @@ const data = {
     dataKey: ref(0),
     errors: ref({}),
     config: ref({}),
-    show: ref({}),  // Показываем скрываем элементы
-}
+    show: ref({}), // Показываем скрываем элементы
+};
 
 export default {
     fields: readonly(data.fields),
@@ -36,56 +36,58 @@ export default {
     delRepeatedBlock,
     moveRepeatedBlock,
     beforeClose,
-}
+};
 
 let indexesOfFields = [];
 
 // Добавляем индекс поля если его нет
 function addFieldIndex(field) {
-    if (!field['_index']) field['_index'] = indexesOfFields.push(field) - 1
+    if (!field['_index']) field['_index'] = indexesOfFields.push(field) - 1;
 }
 
 // Индексируем поля
 function indexingFields(fields) {
     for (let name in fields) {
-        addFieldIndex(fields[name])
+        addFieldIndex(fields[name]);
         // Обрабатываем группу полей
         if (fields[name].type == 'group') {
-            indexingFields(fields[name].fields)
-            console.log(fields[name].fields)
+            indexingFields(fields[name].fields);
+            console.log(fields[name].fields);
         } else if (fields[name].type == 'repeated') {
-            for (let rFields of fields[name].value) indexingFields(rFields.fields)
+            for (let rFields of fields[name].value)
+                indexingFields(rFields.fields);
         }
     }
 }
 
 function setTabActive(value) {
-    data.tabActive.value = value
+    data.tabActive.value = value;
 }
 
-function initData({fields, config}) {
-    data.hiddenFields.value = fields.hidden
-    data.config.value = config
-    data.uploadFiles.value = (config['clone-files']) ? config['clone-files'] : []
+function initData({ fields, config }) {
+    data.hiddenFields.value = fields.hidden;
+    data.config.value = config;
+    data.uploadFiles.value = config['clone-files'] ? config['clone-files'] : [];
 
     // Выходим если не выставлены поля
-    if (fields.fields === undefined) return
+    if (fields.fields === undefined) return;
 
-    data.dataKey.value++
-    data.fields.value = fields.fields
-    data.tabs.value = fields.tabs
+    data.dataKey.value++;
+    data.fields.value = fields.fields;
+    data.tabs.value = fields.tabs;
 
     // Обнуляем индексы полей
-    indexesOfFields = []
+    indexesOfFields = [];
     // Индексируем
-    indexingFields(data.fields.value)
+    indexingFields(data.fields.value);
 
     // Наполняем табы реальными полями
     for (let name in data.tabs.value) {
         let resFields = {};
-        for (let fieldName of data.tabs.value[name].fields) if (data.fields.value[fieldName] != undefined) {
-            resFields[fieldName] = data.fields.value[fieldName];
-        }
+        for (let fieldName of data.tabs.value[name].fields)
+            if (data.fields.value[fieldName] != undefined) {
+                resFields[fieldName] = data.fields.value[fieldName];
+            }
         data.tabs.value[name].fields = resFields;
     }
 
@@ -95,7 +97,10 @@ function initData({fields, config}) {
     let tabActive = false;
     if (data.tabActive.value != '') {
         // Если активная таба есть, ничего не меняем.
-        if (data.tabs.value[data.tabActive.value] != undefined && data.tabs.value[data.tabActive.value]['v-show'] !== false) {
+        if (
+            data.tabs.value[data.tabActive.value] != undefined &&
+            data.tabs.value[data.tabActive.value]['v-show'] !== false
+        ) {
             tabActive = data.tabActive.value;
         }
     }
@@ -103,25 +108,24 @@ function initData({fields, config}) {
     if (!tabActive) {
         for (let key in data.tabs.value) {
             if (data.tabs.value[key]['v-show'] !== false) {
-                data.tabActive.value = key
+                data.tabActive.value = key;
                 break;
             }
         }
     }
 }
 
-
 // Устанавливаем value
-function setFieldProp({fields, name, property, value, fieldsType, changed}) {
+function setFieldProp({ fields, name, property, value, fieldsType, changed }) {
     // Берем из индексов что бы можно было править.
-    let field = _getField(fields[name])
+    let field = _getField(fields[name]);
     // Старое значение
-    let oldValue = field[property]
+    let oldValue = field[property];
 
     // Устанавливаем значение в поле.
-    _setFieldProp(field, property, value)
+    _setFieldProp(field, property, value);
 
-    console.log(field)
+    // console.log(field)
     if (property == 'value') {
         // Если тип селект или радио обрабатываем отображние полей.
         if (field.type == 'select' || field.type == 'radio') {
@@ -130,66 +134,76 @@ function setFieldProp({fields, name, property, value, fieldsType, changed}) {
         }
 
         if (field.autosave == true) {
-            if (field.type == 'select') emitter.emit('FormSave')
+            if (field.type == 'select') emitter.emit('FormSave');
         }
         // Обрабатываем изменения только если поле без autosave
         else {
             // Добавляем первоначальное значение при изменении...
             if (field._changed == undefined && changed === true)
-                _setFieldProp(field, '_changed', oldValue)
-            else if (field.value == field._changed) _setFieldProp(field, '_changed', undefined)
+                _setFieldProp(field, '_changed', oldValue);
+            else if (field.value == field._changed)
+                _setFieldProp(field, '_changed', undefined);
         }
-        beforeClose();
+         beforeClose();
     }
 }
 
 // Добавляем новый репитед блок
-function addRepeatedBlock({field, index = false}) {
-    let lField = _getField(field)
+function addRepeatedBlock({ field, index = false }) {
+    let lField = _getField(field);
 
     // Если не указан индекс
     if (index === false) {
-        index = lField.value.length
+        index = lField.value.length;
     }
-    lField.value.splice(index, 0, {fields: cloneDeep(lField['fields']), key: lField['unique-index']})
+    lField.value.splice(index, 0, {
+        fields: cloneDeep(lField['fields']),
+        key: lField['unique-index'],
+    });
 
     // lField.value.push();
     lField['unique-index']++;
 
     // Индексируем
-    indexingFields(lField.value[index].fields)
+    indexingFields(lField.value[index].fields);
     // Обновляем видимость полей
     setVShowData(lField.value[index].fields, true);
 }
 
 // Удаляем репитед блок
-function delRepeatedBlock({field, index}) {
+function delRepeatedBlock({ field, index }) {
     // Можно бы удалить конечно индексы из indexesOfFields, но тогда надо менять способ добавления, но смысла в этом не вижу
     // Какой то глобальной утечки памяти тут реально достич трудно :)
-    indexesOfFields[field['_index']].value.splice(index, 1)
+    indexesOfFields[field['_index']].value.splice(index, 1);
 }
 
 // Перемещаем блоки
-function moveRepeatedBlock({field, newIndex, oldIndex}) {
+function moveRepeatedBlock({ field, newIndex, oldIndex }) {
     // Меняем местами
-    let els = indexesOfFields[field['_index']].value
-    let tmp = els[newIndex]
-    els[newIndex] = els[oldIndex]
-    els[oldIndex] = tmp
+    let els = indexesOfFields[field['_index']].value;
+    let tmp = els[newIndex];
+    els[newIndex] = els[oldIndex];
+    els[oldIndex] = tmp;
 }
 
 // Возвращаем первоначальное значение
-function setFieldBack({fields, name, fieldsType}) {
-    console.log({fields, name, fieldsType})
-    let field = fields[name]
+function setFieldBack({ fields, name, fieldsType }) {
+    console.log({ fields, name, fieldsType });
+    let field = fields[name];
 
-    setFieldProp({name, property: 'value', value: field['_changed'], fields, fieldsType})
-    _setFieldProp(field, '_changed', undefined)
+    setFieldProp({
+        name,
+        property: 'value',
+        value: field['_changed'],
+        fields,
+        fieldsType,
+    });
+    _setFieldProp(field, '_changed', undefined);
     // setFieldProp({name, property: '_changed', value: undefined, fields})
 }
 
 function initCustomConfig(data) {
-    for (var key in data) data.config[key] = data[key]
+    for (var key in data) data.config[key] = data[key];
 }
 
 // //Устанавливаем уникальный идентификатор для некоторых полей. Нужно для репитед полей, что бы обозначить уникальность поля с одним именем
@@ -203,29 +217,27 @@ function initCustomConfig(data) {
 //     // Vue.set(data.field, 'v-show', data.value)
 // },
 
-
 function addUploadFile(id) {
-    data.uploadFiles.value.push(id)
+    data.uploadFiles.value.push(id);
 }
 
 function delUploadFile(id) {
-    let elId = data.uploadFiles.value.indexOf(id)
-    if (elId != -1) data.uploadFiles.value.splice(elId, 1)
+    let elId = data.uploadFiles.value.indexOf(id);
+    if (elId != -1) data.uploadFiles.value.splice(elId, 1);
 }
 
 function setErrors(errors) {
-    data.errors.value = errors
+    data.errors.value = errors;
 }
-
 
 // Получаем поле из индекса
 function _getField(field) {
-    return indexesOfFields[field['_index']]
+    return indexesOfFields[field['_index']];
 }
 
 // Устанавливаем свойство полю
 function _setFieldProp(field, prop, value) {
-    _getField(field)[prop] = value
+    _getField(field)[prop] = value;
 }
 
 //-------------------------Код для отбражения скрития элементов----------------------------------
@@ -236,14 +248,15 @@ function setVShowData(fields, all) {
     for (let key in fields) {
         let field = _getField(fields[key]);
         if (field.show != undefined) {
-            _setFieldProp(field, 'v-show', vShowCheck(field.show, fields))
+            _setFieldProp(field, 'v-show', vShowCheck(field.show, fields));
         }
         // Проходим по всему дереву вверх текущих полей
         if (all === true) {
             if (field.type == 'repeated') {
-                for (let repDataBlock of field.value) setVShowData(repDataBlock.fields, all)
+                for (let repDataBlock of field.value)
+                    setVShowData(repDataBlock.fields, all);
             }
-            if (field.type == 'group') setVShowData(field.fields, all)
+            if (field.type == 'group') setVShowData(field.fields, all);
         }
     }
 }
@@ -256,37 +269,36 @@ function setVShowDataRoot(all) {
 
     // Начинае обработку с табов
     for (let tabName in data.tabs.value) {
-        let currentTab = data.tabs.value[tabName]
+        let currentTab = data.tabs.value[tabName];
         // Если есть show выставляем значение
         if (currentTab['show'] != undefined) {
             data.tabs.value[data.name]['v-show'] = {
                 name: tabName,
-                value: vShowCheck(currentTab['show'], data.fields.value)
-            }
+                value: vShowCheck(currentTab['show'], data.fields.value),
+            };
         }
 
         // Скрываем табу если в ней нет не одного поля.
         let showTab = false;
         for (let fieldName in currentTab.fields) {
             // Если поле скрыто.
-            if (currentTab.fields[fieldName]['v-show'] === false) continue
-            showTab = true
-            break
+            if (currentTab.fields[fieldName]['v-show'] === false) continue;
+            showTab = true;
+            break;
         }
-        currentTab['v-show'] = showTab
+        currentTab['v-show'] = showTab;
     }
-
 }
 
 // Проверка условий на видимость.
 function vShowCheck(show, fields) {
-
     if (!Array.isArray(show)) return true;
 
     var res = false;
 
     for (var i = 0; i < show.length; i++) {
-        if (i != 0) { //не первая запись
+        if (i != 0) {
+            //не первая запись
             //Оператор &&, если предыдущее условие ошибка тогда сл тоже ошибка, проверку не делаем
             if (show[i].operator == '&&' && res == false) continue;
             //Опертор ||, если предыдущее истинно, тогда возвращем истину, если ложно делаем проверки дальше.
@@ -294,13 +306,14 @@ function vShowCheck(show, fields) {
         }
 
         let showField = show[i]['field'];
-        let field = _getField(fields[showField])
+        let field = _getField(fields[showField]);
 
         // Проверяем соответсвия условиям
         if (show[i].type == '==') {
             if (field.value == show[i].value) res = true;
             else res = false;
-        } else { //!=
+        } else {
+            //!=
             if (field.value != show[i].value) res = true;
             else res = false;
         }
