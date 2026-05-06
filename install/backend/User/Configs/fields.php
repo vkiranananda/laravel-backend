@@ -1,6 +1,5 @@
 <?php
 return [
-
     'list' => [
         ['name' => 'id', 'label' => 'ID', 'attr' => ['width' => '30px'], 'sortable' => true],
         ['name' => 'name', 'icon' => 'file', 'link' => 'edit-show', 'sortable' => true],
@@ -8,7 +7,6 @@ return [
         ['name' => 'user_role_id', 'link' => 'user-role'],
         ['name' => 'updated_at', 'type' => 'date', 'time' => true, 'label' => 'Дата модификации', 'attr' => ['width' => '190px;'], 'sortable' => true]
     ],
-
     'fields' => [
         'name' => [
             'type' => 'text',
@@ -38,8 +36,10 @@ return [
             'validate' => 'min:6',
             'desc' => 'Минимальная длина пароля 6 символов',
             'value' => '',
+            'attr' => ['autocomplete' => 'off'],
         ],
-        'send_mail' => ['type' => 'radio',
+        'send_mail' => [
+            'type' => 'radio',
             'name' => 'send_mail',
             'label' => 'Отправить письмо',
             'desc' => 'Отправить письмо с данными пользователя на указанную почту.',
@@ -51,7 +51,6 @@ return [
             ],
         ],
     ],
-
     'edit' => [
         'main' => [
             'label' => 'Основные',
