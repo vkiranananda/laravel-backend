@@ -97,11 +97,11 @@ export default {
                 let changed = true
 
                 // Возвращается более сложный объект
-                if (value && value.value != undefined) {
-                    // Не сохраняем это изменение
-                    if (value.changed === false) changed = false
-                    value = value.value
-                }
+                // if (value && value.value != undefined) {
+                //     // Не сохраняем это изменение
+                //     if (value.changed === false) changed = false
+                //     value = value.value
+                // }
 
                 formData.setFieldProp({
                     name,
