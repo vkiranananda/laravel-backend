@@ -1,4 +1,5 @@
 # Для создания отдельной страницы с настройками используйте такую схему
+
 Создаем каталог для настроек в backend/Settings/ и в нем файлы:
 
 **Controllers/SettingsController.php**
@@ -12,18 +13,17 @@ use Backend\Root\Option\Controllers\OptionResourcesController;
 
 class SettingsController extends OptionResourcesController
 {
-  // Если нужно указать нестандартное расположение конфигов
-  protected $configPath = 'MediaFile::settings-config';
-  protected $fieldsPath = 'MediaFile::settings-fields';
-  protected $configRoot = true;
-
   // Для подключения обработки прав доступа
   protected string $userAccessKey = 'MediaFile';
   use \Backend\Root\User\Services\UserAccessTrait;
+
+  // Если нужно указать нестандартное расположение конфигов
+  protected $configPath = 'MediaFile::config-settings';
+  protected $fieldsPath = 'MediaFile::fields-settings';
 }
 ```
 
-**Configs/config.php**
+**Configs/config-settings.php**
 
 ```php
 <?php
@@ -49,7 +49,7 @@ return [
 
 ```
 
-**Configs/fields.php**
+**Configs/fields-settings.php**
 
 ```php
 <?php
@@ -76,6 +76,8 @@ return [
 **Добавляем роуты**
 
 ```php
+// Устанавливаем роуты. $path - url, $class - класс контроллера, $routeName - название роута
+
 Option::installRoutes('settings', '\Backend\Settings\Controllers\SettingsController', 'settings');
 ```
 
