@@ -227,6 +227,30 @@ class UploadedFiles
 		return $res;
 	}
 
+		// Получить список урлов
+	public function files()
+	{
+		// Добавляем ключи в массив для загрузки
+		$this->loadByKeys($this->reqFiles);
+		// Получаем файлы из базы данных
+		$this->getFiles();
+
+		$res = [];
+
+		foreach ($this->reqFiles as $key) {
+			// Если файла нет игнорим
+			if (!isset($this->files[$key]))
+				continue;
+
+			$res[] = Uploads::getFileData($this->files[$key]);
+
+			if (!$this->reqResultArray)
+				return $res[0];
+		}
+
+		return $res;
+	}
+
 	// Выведет нужный ключ или значение второго параметра defValue.
 	// public function keyOrEmpty($key, $defValue = '', $attr = [])
 	// {

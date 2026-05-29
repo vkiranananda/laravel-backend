@@ -418,6 +418,9 @@ class Uploads
     return [
       'path' => $file->path . $file->name,
       'key' => $file->key,
+      'url' => self::getUrl($file),
+      'storage' => $file->disk,
+      // 'storagePath' => Storage::disk($file->disk)->get($file->path . $file->name)
     ];
   }
 
