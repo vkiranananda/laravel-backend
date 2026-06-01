@@ -18,9 +18,9 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // Обновляет страницу при history.back()
 // Не работает в сафари
-// if (performance.navigation.type == 2) {
-//     location.reload(true);
-// }
+if (performance.navigation.type == 2) {
+    location.reload(true);
+}
 // // А вот этот код похоже работает в сафари но в хроме нет :).
 // window.onpopstate = (event) => {
 //     location.reload(true);
